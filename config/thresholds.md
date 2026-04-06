@@ -2,7 +2,7 @@
 
 ## Agreement Threshold (θ_accept = 0.90)
 
-If the judge rates semantic agreement between provers at ≥ 0.90, the protocol accepts without escalation (Level 0). This threshold was set prior to evaluation based on pilot testing during protocol development.
+If the judge rates semantic agreement between provers at ≥ 0.90, the protocol accepts without escalation (Level 0). This threshold was specified in the graduated dissent protocol paper prior to benchmark evaluation and was not modified based on results.
 
 ## Noise Floor (θ_noise = 0.15)
 
