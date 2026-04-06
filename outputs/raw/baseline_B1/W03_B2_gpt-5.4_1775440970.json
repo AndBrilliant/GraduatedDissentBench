@@ -1,0 +1,87 @@
+{
+  "verdict": "flagged",
+  "confidence": 0.84,
+  "reasoning": "This is a review/methods-description manuscript rather than a hypothesis-testing primary research paper, so classic retraction-level statistical errors are less applicable. However, there are substantial methodological overclaims and validation gaps. The manuscript presents EnzyDock as addressing TPS-specific docking challenges and cites successful applications, but it does not provide a rigorous benchmark, prospective validation framework, uncertainty quantification, or evidence that the scoring/ranking protocol can reliably identify mechanistically correct poses rather than poses favored by user-imposed restraints or prior structural knowledge. Several claims of success are supported mainly by case studies, visual inspection, and unpublished results. These issues do not make the software unusable, but they materially weaken claims of methodological correctness and general effectiveness.",
+  "findings": [
+    {
+      "finding": "Lack of rigorous validation/benchmarking for the central methodological claim that EnzyDock can reliably generate mechanistically meaningful multistate poses for TPS.",
+      "severity": "MAJOR-REVISION",
+      "justification": "The manuscript's core contribution is methodological, yet it does not present a systematic benchmark against standard docking tools, blinded pose prediction tests, recovery rates for known bound/intermediate-like structures, or quantitative success criteria. If confirmed, this would require revision because the paper's broad claims of methodological superiority are insufficiently supported, though the software concept itself is not invalidated."
+    },
+    {
+      "finding": "Use of restraints based on 'chemical intuition' and known mechanistic/product information risks circularity in pose generation and mechanistic interpretation.",
+      "severity": "MAJOR-REVISION",
+      "justification": "The method allows NOE, distance, dihedral, and consensus restraints informed by expected stereochemistry, PP proximity, water placement, and reaction trajectory. If the same prior knowledge is then used to argue that the resulting docked poses are mechanistically correct, the validation becomes partly self-fulfilling. This could materially alter conclusions about predictive power, but does not automatically invalidate all uses of the method."
+    },
+    {
+      "finding": "No clear separation between hypothesis generation and validation in the CotB2 example; the crystal-bound intermediate-like ligand and known mechanism appear to guide the seed choice and pose selection.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Choosing intermediate B as a docking seed because a similar ligand is crystallographically observed, then enforcing consensus relative to that seed, strongly injects structural prior information. This is acceptable for mechanism refinement, but not as strong evidence of de novo predictive performance. If confirmed, the conclusions should be revised to emphasize guided modeling rather than validated prediction."
+    },
+    {
+      "finding": "Scoring protocol is not demonstrated to rank mechanistically correct poses above incorrect ones, especially for carbocations and transition-state-like structures.",
+      "severity": "MAJOR-REVISION",
+      "justification": "The manuscript itself acknowledges that even a perfect docking method may not rank biologically relevant poses as global minima, yet still presents energy-guided selection of plausible pathways. Without evidence that the multilevel scoring discriminates correct from incorrect mechanistic poses, energetic interpretation remains uncertain. This weakens inferential claims but does not make the method unusable."
+    },
+    {
+      "finding": "QM/MM treatment uses ligand-only QM region in the final scoring stage, excluding nearby residues/cofactors/waters that may be essential for carbocation stabilization and proton transfer chemistry.",
+      "severity": "MAJOR-REVISION",
+      "justification": "For TPS chemistry, PP, metals, catalytic waters, and side chains can directly influence charge localization and geometry. Restricting the QM region to ligand atoms only may produce inaccurate relative energies/geometries for unusual cations or water-assisted states. If confirmed, conclusions about detailed stabilization mechanisms and pose ranking could change, though the general docking workflow would remain potentially useful."
+    },
+    {
+      "finding": "Transition states are claimed as dockable/scorable targets, but the manuscript provides no concrete validation that the protocol can meaningfully handle transition states rather than only intermediates and products.",
+      "severity": "MAJOR-REVISION",
+      "justification": "The paper states EnzyDock can dock intermediate and transition states, yet examples and validation are centered on substrate/intermediate/product states. Transition-state docking in an enzyme is especially sensitive to the QM region and scoring model. If unsupported, the claim should be narrowed; this is a revision issue, not a retraction issue."
+    },
+    {
+      "finding": "Heavy reliance on visual inspection and 'biochemical intuition' for selecting consensus paths introduces subjectivity and possible analyst bias.",
+      "severity": "MAJOR-REVISION",
+      "justification": "The workflow repeatedly recommends visual inspection of many candidate paths to decide which are plausible. Without predefined objective criteria or inter-analyst reproducibility, the selected mechanism may depend on user expectations. This could change conclusions about specific pathways and residue roles, requiring revision."
+    },
+    {
+      "finding": "No quantitative uncertainty analysis or reproducibility assessment for stochastic sampling steps (MC/SAMC/SAMD), clustering, and pathfinder selection.",
+      "severity": "MAJOR-REVISION",
+      "justification": "The procedure is stochastic and multistage, but the manuscript does not report replicate runs, convergence diagnostics, sensitivity to seeds/restraint strengths/grid definitions, or path stability across runs. If confirmed, confidence in individual mechanistic predictions is overstated and should be revised."
+    },
+    {
+      "finding": "The example application mixes docking, free-energy simulations, machine learning, crystallography, and unpublished observations, making it difficult to attribute success specifically to EnzyDock.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Claims that the method 'rationalized' mutations or predicted catalytic water placement are not cleanly isolated from downstream or external methods. This weakens direct methodological support for EnzyDock and would require clearer attribution and evidence."
+    },
+    {
+      "finding": "Use of unpublished results as supporting evidence for catalytic water prediction is not methodologically acceptable support within the manuscript.",
+      "severity": "MINOR",
+      "justification": "This does not invalidate the method, but unpublished confirmation cannot substantiate a methodological claim for readers. The claim should be removed, softened, or replaced with published evidence."
+    },
+    {
+      "finding": "The manuscript presents EnzyDock as a 'low-cost alternative' that provides energetic information, but docking scores/minimized energies are not equivalent to free energies and may be overinterpreted.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Without rigorous thermodynamic calibration, minimized MM/QM/MM scores should not be treated as accurate reaction energetics or as substitutes for free-energy simulations. If confirmed, claims about energetic insight need narrowing because conclusions about pathway preference could change."
+    },
+    {
+      "finding": "Vacuum pre-docking conformational search for highly charged or polarizable species may bias starting conformers away from enzyme-relevant conformations.",
+      "severity": "MINOR",
+      "justification": "A vacuum conformer search is a common heuristic, but for ion pairs/carbocations/substrate-cofactor assemblies it may not reflect the protein environment. This is a limitation that should be acknowledged; it would not by itself overturn the manuscript's main points."
+    },
+    {
+      "finding": "Restraining cofactors and waters near fixed experimental positions may suppress relevant induced fit or alternate catalytic arrangements.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Fixing PP, Mg2+, and waters can help stabilize docking, but may also predetermine the active-site electrostatics and exclude alternative mechanistic states. If confirmed, mechanistic conclusions about residue/cofactor roles could change, though the general utility of the tool remains."
+    },
+    {
+      "finding": "No direct benchmark is provided for mutant prediction accuracy despite claims that product distributions were rationalized across many variants.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If mutant outcomes are used as support for method validity, the manuscript should report prospective or at least quantitative retrospective accuracy. Without that, claims of predictive design utility are insufficiently supported and need revision."
+    },
+    {
+      "finding": "The discussion sometimes blurs distinction between describing a software workflow and establishing that it is methodologically correct for broad TPS applications.",
+      "severity": "MINOR",
+      "justification": "This is largely a framing issue. The paper is stronger as a review/tutorial plus case-study narrative than as a validated general-purpose methodological proof. Clarifying scope would improve correctness but is not central invalidation."
+    }
+  ],
+  "paper_id": "W03",
+  "model": "gpt-5.4",
+  "baseline": "B2",
+  "timestamp": 1775440970,
+  "rw_count": 0
+}

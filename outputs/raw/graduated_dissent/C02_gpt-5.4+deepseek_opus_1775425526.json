@@ -1,0 +1,114 @@
+{
+  "paper_id": "C02",
+  "prover_a": "gpt-5.4",
+  "prover_b": "deepseek",
+  "judge": "deepseek",
+  "arbiter": "opus",
+  "verdict": "flagged",
+  "confidence": 0.92,
+  "reasoning": "Both reviewers independently flagged the manuscript for major revision, agreeing on core methodological concerns. The paper presents valuable long-term observational data on an invasive spittlebug in Hawai'i, but its two main inferential contributions\u2014(1) statistically supported seasonal/elevational abundance patterns and (2) spittlebug-driven vegetation change\u2014rest on analyses with significant methodological problems. No single finding rises to retraction-worthy level, but the cumulative weight of interconnected MAJOR-REVISION issues (pseudoreplication in GLMMs, inappropriate groundcover tests, causal overreach, software/model mismatch) means the paper requires substantial reanalysis and reframing before its conclusions can be trusted.",
+  "findings": [
+    {
+      "finding": "Repeated-measures structure likely modeled incorrectly in abundance GLMMs. Monthly observations on the same 17 permanent transects over ~5 years are modeled with only ranch and year as random effects, omitting transect-level random effects and temporal correlation structure.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers converged on this concern (A directly, B upgrading after steelman). Omitting transect-level random effects for repeated monthly sampling is a textbook pseudoreplication error that inflates significance of season and elevation effects. However, the large observed seasonal contrasts are biologically plausible and likely directionally robust, so reanalysis may confirm patterns even if P-values and confidence intervals change. This weakens but does not definitively invalidate core abundance findings.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Mismatch between claimed negative-binomial GLMMs and stated use of lme4::glmer. Standard glmer() does not fit negative-binomial models; glmer.nb() or another package is required.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "Identified by Review A and recognized as a new error by Review B during steelman. If the actual model was Poisson rather than negative-binomial, overdispersion would be unaccounted for and all model-based inferences could change. If the authors used glmer.nb() but misreported, this is a reporting error requiring correction. Either way, clarification and possible reanalysis are needed. Not retraction-worthy because the underlying data and patterns likely persist, but the statistical support is uncertain.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Groundcover analysis uses Wilcoxon-Mann-Whitney tests comparing 2018 vs. 2022, ignoring repeated measures on the same transects and ranch-level clustering.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.92,
+      "justification": "Both reviewers independently identified this as MAJOR-REVISION with near-identical reasoning. The reported P-values for vegetation change are likely anti-conservative. A proper longitudinal mixed model is needed. Additionally, comparing only endpoints (2018 vs. 2022) discards the intervening years' data and is vulnerable to endpoint anomalies (e.g., the 2020 drought). The descriptive observation that grass cover declined may still hold, but the statistical evidence as presented is flawed.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Causal attribution of vegetation change to spittlebug feeding without experimental controls or quasi-experimental design.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.93,
+      "justification": "Both reviewers agree strongly on this point. The study is observational with no exclusion plots, no BACI design, and acknowledged confounders (drought, grazing). The causal narrative is the paper's central applied contribution but is unsupported by the design. Revision to associational/correlational language and explicit discussion of alternative drivers is required. This is a common limitation in field ecology and warrants reframing rather than retraction.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Likelihood-ratio test reporting is internally inconsistent: df=1 reported for tests involving a 3-level elevation factor, and it is unclear which terms are being tested.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.72,
+      "justification": "Identified by Review A. A 3-level factor should have df=2 in an omnibus test, not df=1. This obscures the statistical basis for the elevation effect and may indicate model misspecification or reporting error. Review A considered downgrading to MINOR during steelman if it turns out to be shorthand, but the ambiguity is substantial enough that readers cannot verify the inference. Retained at MAJOR-REVISION with moderate confidence.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Claim of '20 new food-plant records' is overstated given that lifecycle completion was not confirmed and misassignment is acknowledged when spittle contacted multiple plants.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.7,
+      "justification": "Review A initially rated MAJOR-REVISION; Review B rated MINOR. During steelman, Review A conceded a possible downgrade if the manuscript consistently uses cautious language and only needs terminological correction. Review B considered upgrading. The manuscript does include cautionary language in the Discussion. This is primarily a labeling/presentation issue affecting one stated novelty claim. A terminological correction to 'plant associations' or 'putative hosts' resolves the concern without requiring new data or reanalysis. Settled at MINOR given the steelman convergence.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Percent cover components analyzed independently despite being compositional data summing to ~100%.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Identified by Review A as MINOR, recognized by Review B during steelman. This is a common simplification in ecology. A compositional or beta-regression approach would be more rigorous but is unlikely to overturn the broad descriptive pattern. The main conclusions about vegetation shifts would likely be refined rather than reversed.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Inference of '2 generations per year' from bimodal field peaks without direct developmental or cohort-tracking evidence.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.88,
+      "justification": "Identified by Review A as MINOR. The bimodal pattern is consistent with two generations, but the claim should be softened to 'consistent with' rather than asserted. This is overinterpretation, not a fundamental error.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Wet/dry season classification based on historical rainfall averages rather than site- and year-specific data during the study period.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Identified by Review A, acknowledged by Review B during steelman. This introduces potential exposure misclassification, especially in drought years, but the seasonal abundance contrast is large enough that this is more a precision limitation than a central defect.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Non-random transect placement (influenced by habitat suitability) limits generalizability of abundance estimates.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Identified by Review A as MINOR. Affects external validity and landscape-scale inferences but does not invalidate within-transect temporal patterns, which are the paper's primary contribution.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Arbitrary binning of continuous elevation into Low/Mid/High categories.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.75,
+      "justification": "Identified by Review B as MINOR. Review B considered upgrading during steelman when combined with the df=1 reporting issue, but the binning itself is a common ecological simplification. The interaction with the LRT reporting issue is captured separately. Standing alone, this is suboptimal but defensible.",
+      "source": "prover_b",
+      "survived_steelman": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 5,
+    "MINOR": 6
+  },
+  "protocol": {
+    "level": "L2",
+    "agreement": 0.85,
+    "prover_a_findings": 11,
+    "prover_a_rw": 0,
+    "prover_b_findings": 5,
+    "prover_b_rw": 0
+  },
+  "timestamp": 1775425526
+}

@@ -1,0 +1,102 @@
+{
+  "paper_id": "W02",
+  "condition": "B3_no_steelman",
+  "prover_a": "gpt-5.4",
+  "prover_b": "deepseek",
+  "arbiter": "opus",
+  "verdict": "flagged",
+  "confidence": 0.85,
+  "reasoning": "Both reviewers independently flagged this manuscript with high confidence, converging on the same core concerns: the MD simulation protocol used to generate candidate structures is physically questionable, the ensemble fitting is underconstrained relative to the information content of TRXSS/SAXS data, and the kinetic model selection is insufficiently justified. The raw experimental observation\u2014that a pH-jump induces time-dependent X-ray scattering changes consistent with compaction\u2014is plausible and not invalidated. However, the paper's central and most novel claims go far beyond this: they assert atomically resolved transient structures and specific population fractions for intermediate and folded states. These structural claims rest on an MD-generated candidate pool from short, ultra-high-temperature simulations that is unlikely to be physically representative, fitted via an ensemble optimization that cannot be validated for uniqueness given the low-dimensional information in scattering data. Additional concerns about sequence/template mismatch, time-range inconsistencies, buffer condition differences, and lack of pH-jump quantification further weaken the interpretive framework. None of these issues definitively prove the experimental signal is artifactual, so a retraction classification is not warranted. But collectively, they represent a substantial body of major concerns that could materially change the paper's central structural and mechanistic conclusions.",
+  "findings": [
+    {
+      "finding": "The MD simulation protocol for generating candidate structural ensembles is physically unrealistic: it relies on very short (20\u201340 ns) simulations at 800 K to sample conformational space, with no enhanced sampling validation, and the starting template (PDB 1EL2) may not match the experimental oligonucleotide sequence. This undermines the entire structural library from which ensemble fitting selects 'representative' transient species.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers independently identified this as a critical weakness. High-temperature simulations generate denatured, non-physical conformations unlikely to represent the true folding landscape at 298 K. If the candidate pool is unrepresentative, all downstream structural assignments (U, I, F species and their sub-populations) become unreliable. However, this does not invalidate the raw TRXSS kinetic observations, so it falls short of retraction-worthy.",
+      "source": "both"
+    },
+    {
+      "finding": "The ensemble optimization is highly underconstrained: 30-member ensembles are selected from a potentially non-representative MD pool to fit low-information-content SAXS/TRXSS curves, with no demonstration of solution uniqueness, uncertainty quantification, or external validation.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers raised this concern. SAXS profiles encode global shape information and cannot uniquely determine atomistic ensembles. The specific population fractions (e.g., 'F1 = 20% i-motif, F2 = 47%') and structural identities are model-dependent and likely non-unique. This directly undermines the paper's strongest claims about atomically resolved folding intermediates, but the observation of compaction kinetics could survive.",
+      "source": "both"
+    },
+    {
+      "finding": "The kinetic model (U \u2192 I \u2192 F \u2192 U) is insufficiently justified against alternatives, especially given that the pH perturbation is transient, spatially heterogeneous, and governed by proton diffusion dynamics that are not quantitatively characterized.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Reviewer A flagged this as major, while Reviewer B classified it as minor. Given the transient and spatially heterogeneous nature of the pH-jump, the observed kinetics likely convolve molecular folding with proton diffusion/recovery. Without testing alternative kinetic schemes or demonstrating the uniqueness of the sequential model, the assigned time constants (113 ns, 10 ms) may not correspond to discrete structural transitions. This concern is real but does not definitively invalidate the observation of staged kinetics, warranting major revision rather than retraction.",
+      "source": "both"
+    },
+    {
+      "finding": "There is an inconsistency in reported time coverage: the Methods state profiles were collected from 300 ns to 50 ms, but the Results discuss delays from 10 ns to 50 ms. If the earliest data point is 300 ns, resolving a 113 ns kinetic component is problematic.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "Identified by Reviewer A. If the actual earliest time point is 300 ns, the 113 ns time constant is derived from extrapolation beyond the data range, which would substantially weaken the nanosecond kinetic assignment. If it is a typographical error, it is correctable but still significant for reproducibility and credibility.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The pH-jump magnitude, spatial uniformity, and temporal pH profile are not quantitatively characterized, yet the mechanistic conclusions assume a well-defined, synchronized folding trigger.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "Both reviewers noted this. Without knowing the actual pH excursion, its spatial distribution, and time-dependent recovery, it is unclear what fraction of molecules experiences sufficient acidification and for how long. This propagates uncertainty into population estimates and kinetic interpretation. Reviewer B classified this as minor, but given its direct impact on the quantitative mechanistic claims, it warrants major revision.",
+      "source": "both"
+    },
+    {
+      "finding": "Equilibrium SAXS and pH-jump TRXSS experiments use different buffer compositions (phosphate buffer vs. deionized water with NaCl + photoacid), yet species from both conditions are compared as directly commensurate.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "Identified by Reviewer A. i-Motif folding is sensitive to ionic strength and buffer identity. Comparing equilibrium folded/unfolded signatures obtained under different conditions with transient TRXSS species could lead to erroneous structural assignments.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The reported oligonucleotide sequence length appears inconsistent: the manuscript refers to a 21-nucleotide sequence, but the written sequence may be longer, and the modeling template (PDB 1EL2) may correspond to a different sequence.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "Identified by Reviewer A. If the actual construct differs from what was simulated, the structural interpretations are mismatched. This is potentially a simple reporting error, but it creates ambiguity about what was measured and modeled.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The solvent/photoacid subtraction procedure for isolating molecular TRXSS signals is not adequately demonstrated in the main text, despite the potential for o-nitrobenzaldehyde photochemistry and heating to strongly affect early-time scattering.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.72,
+      "justification": "Identified by Reviewer A. If solvent contributions are not accurately removed, early-time difference signals could be misattributed to DNA structural change. The paper references prior methodology and supplementary material, providing partial mitigation, but the main text should demonstrate adequacy of the subtraction.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Guinier-derived Rg and P(r) analyses are presented somewhat over-definitively for what are likely heterogeneous, flexible ensembles sensitive to q-range selection.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers effectively acknowledged this as a standard limitation. It does not change the broad conclusion of acidification-induced compaction.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "No clear replication or error structure is described for the TRXSS kinetic experiment in the main text.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "A common reporting weakness that reduces confidence in precision but does not by itself invalidate conclusions.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The novelty claim of 'first pH-jump TRXSS experiment on a nucleic acid' is slightly overstated given prior pH-jump studies using other techniques.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "A framing issue that does not affect methodological correctness or conclusions.",
+      "source": "prover_b"
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 8,
+    "MINOR": 3
+  },
+  "protocol": {
+    "level": "B3",
+    "prover_a_findings": 12,
+    "prover_a_rw": 0,
+    "prover_b_findings": 5,
+    "prover_b_rw": 0
+  },
+  "timestamp": 1775467626
+}
