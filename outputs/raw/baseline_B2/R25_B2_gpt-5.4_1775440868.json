@@ -1,0 +1,82 @@
+{
+  "verdict": "flagged",
+  "confidence": 0.91,
+  "reasoning": "The manuscript addresses an important question and uses a large longitudinal EHR cohort, but there are several methodological concerns that materially affect causal interpretation and some of the paper\u2019s highlighted claims. The most important issues are possible immortal-time/selection bias induced by the enrollment eligibility rules, inadequate control for major confounders tied to both residence/air pollution and dementia ascertainment, and overinterpretation of source-specific effect-size comparisons and subgroup heterogeneity despite very different exposure scales and imprecise subgroup estimates. These issues do not make the entire analysis obviously impossible, but they are serious enough that the conclusions would require major revision and likely reanalysis before being reliable. I do not see a clear internal impossibility or single fatal statistical contradiction that would by itself mandate retraction from the text provided.",
+  "findings": [
+    {
+      "finding": "Potential selection/immortal-time bias from cohort entry and enrollment requirements is insufficiently specified and may bias incidence estimates and associations.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Eligibility required age >=60, at least 1 year of continuous enrollment, and also enrollment for 1 day in the year following the baseline year. Requiring future enrollment after baseline can condition on survival and non-dropout after cohort entry, creating immortal-time/selection bias if person-time before satisfying that requirement is handled incorrectly. The manuscript does not clearly define baseline year, cohort entry date, or how delayed entry/left truncation was implemented. If confirmed, reanalysis is needed; conclusions could change, but the analysis is not necessarily irredeemable."
+    },
+    {
+      "finding": "Confounding control appears inadequate for a residential air-pollution study of dementia because education, individual socioeconomic status, neighborhood deprivation beyond poverty, comorbidity/health-care utilization, and urbanicity are not adequately controlled.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Wildfire and nonwildfire PM2.5 exposures are strongly patterned by geography, socioeconomic position, and health-care access, all of which also affect dementia diagnosis likelihood in EHRs. Adjusting only for age, sex, race/ethnicity, smoking, relationship status, interpreter need, tract poverty, and population density likely leaves substantial residual confounding. This is especially concerning because the reported nonwildfire effect is very small (OR 1.01 per 1 ug/m3), making conclusions sensitive to modest bias. If addressed differently, estimates could attenuate materially."
+    },
+    {
+      "finding": "Outcome ascertainment through routine diagnostic codes in EHR may be differentially related to health-care access and utilization, but the models do not adjust for utilization intensity or competing diagnostic opportunity.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Incident dementia diagnosis in EHR is not the same as incident dementia onset. People with more encounters are more likely to receive a diagnosis; encounter frequency is plausibly associated with demographics, comorbidity, residence, smoke exposure disruptions, and retention in the health system. Without accounting for diagnostic opportunity, associations may partly reflect ascertainment bias. This would require revision/reanalysis, not necessarily retraction."
+    },
+    {
+      "finding": "The paper claims wildfire PM2.5 has a stronger association than nonwildfire PM2.5 based mainly on per-1 ug/m3 coefficients, despite dramatically different exposure distributions and likely measurement error structures.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Wildfire PM2.5 has median 0.09 ug/m3 and IQR about 0.11, whereas nonwildfire PM2.5 has IQR about 2.8-3 ug/m3. Comparing ORs per 1 ug/m3 across these two exposures is not directly meaningful, especially when one unit is far outside the typical wildfire contrast and source-specific exposures are estimated with different uncertainty. Their own IQR-scaled results are much more similar (1.02 vs 1.03). Thus the highlighted conclusion that wildfire PM2.5 is more harmful per same concentration change is overstated and potentially misleading."
+    },
+    {
+      "finding": "Source-specific PM2.5 decomposition uses smoke-plume intersection plus imputation for counterfactual nonwildfire PM2.5 on smoky days, but uncertainty from this multistage exposure estimation is not propagated into health-effect standard errors.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Wildfire PM2.5 is derived, not directly observed: total PM2.5 is modeled, smoky days are identified by HMS plume polygons, nonwildfire PM2.5 on smoky days is imputed, and wildfire PM2.5 is computed by subtraction. This induces nontrivial measurement error and dependence structure. Treating predicted exposures as fixed without accounting for first-stage uncertainty can understate confidence intervals and overstate precision. The direction of bias is not guaranteed, so revision is needed."
+    },
+    {
+      "finding": "Adjustment for calendar year alone may be insufficient to control spatial confounding in a highly geographic exposure setting; no tract/county fixed effects or finer regional trends are described.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Wildfire and nonwildfire PM2.5 vary strongly across place, and dementia diagnosis and population composition also vary geographically. Using only tract-level poverty and population density plus calendar-year fixed effects may leave unmeasured spatial confounding from neighborhood, county, or health-system service area differences. More robust spatial control could change estimates."
+    },
+    {
+      "finding": "The subgroup claims by race/ethnicity and poverty are overinterpreted given imprecision, unstable categories, and multiple testing.",
+      "severity": "MAJOR-REVISION",
+      "justification": "The manuscript emphasizes stronger effects in racially minoritized groups and the 'Other' group, yet many subgroup confidence intervals are wide and include the null; the 'Other' category is heterogeneous and small, with an OR of 3.45 likely unstable. Numerous subgroup and alternative-metric analyses were conducted with limited discussion of multiplicity. These claims should be toned down and treated as exploratory unless better supported."
+    },
+    {
+      "finding": "Age was modeled as age at cohort entry rather than clearly updating attained age over follow-up, despite age being the dominant determinant of dementia risk.",
+      "severity": "MAJOR-REVISION",
+      "justification": "In a longitudinal dementia analysis, attained age should generally be handled as a time-varying timescale or updated covariate. The text states models controlled for 'age at study entry' using a spline. If age was fixed at baseline over follow-up, age confounding would be incompletely controlled because risk increases steeply with attained age and follow-up length differs across participants. This could materially bias incidence comparisons and exposure associations."
+    },
+    {
+      "finding": "Pooled logistic regression is acceptable for discrete-time survival, but the manuscript does not report the interval structure, whether person-period data were used correctly, or whether odds ratios approximate hazard ratios under the chosen interval length.",
+      "severity": "MINOR",
+      "justification": "The method could be valid, especially with quarterly-updated exposures, but key implementation details are missing. This is a reporting/clarification issue unless reanalysis reveals incorrect specification."
+    },
+    {
+      "finding": "No information is provided on handling of within-person correlation or geographic clustering in standard errors.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Repeated quarterly observations per participant and shared tract-level exposures induce correlated residuals. If naive standard errors were used, confidence intervals may be too narrow. This affects inference rather than point estimates and requires re-estimation with robust or clustered variance."
+    },
+    {
+      "finding": "The controlled direct effect analysis 'after eliminating loss to follow-up and the competing risk of death' is not adequately described and may be mischaracterized.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Estimating a controlled direct effect in the presence of competing risks requires strong assumptions and explicit intervention definitions. The text gives only a brief mention of inverse probability censoring and death weights, without models, positivity diagnostics, or assumptions. Calling this a controlled direct effect may be incorrect or at least insufficiently justified. Because these are sensitivity analyses, this does not invalidate the main result, but it needs major clarification."
+    },
+    {
+      "finding": "Using a single 2010 Census snapshot for tract poverty and population density across 2008-2019 can misclassify time-varying neighborhood confounders.",
+      "severity": "MINOR",
+      "justification": "This likely introduces some exposure-confounder mismatch but is common in cohort studies and unlikely by itself to overturn conclusions."
+    },
+    {
+      "finding": "Exclusion of participants with missing sex data or rural-urban commuting area codes is odd because rural-urban commuting area was not otherwise described as an eligibility variable or covariate.",
+      "severity": "MINOR",
+      "justification": "This inconsistency suggests reporting problems and possible undocumented exclusions. It should be clarified, but by itself it does not imply fatal invalidity."
+    },
+    {
+      "finding": "Interpretation occasionally shifts from odds to risk as though equivalent.",
+      "severity": "MINOR",
+      "justification": "The models estimate odds ratios; the discussion sometimes describes these as risk increases. With relatively low interval-specific event probabilities this may be close, but the language should be corrected."
+    }
+  ],
+  "paper_id": "R25",
+  "model": "gpt-5.4",
+  "baseline": "B2",
+  "timestamp": 1775440868,
+  "rw_count": 0
+}

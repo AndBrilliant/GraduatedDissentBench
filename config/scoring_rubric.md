@@ -31,9 +31,17 @@ Severity is assigned by the arbiter during protocol execution and is NOT modifie
 - **MAJOR-REVISION**: Could change conclusions if addressed differently
 - **MINOR**: Valid criticism, would not change conclusions
 
+## Two-Stage Scoring Process
+
+1. **Automated keyword matching** (described above): Identifies findings containing documented retraction-cause keywords. This is the primary, reproducible scoring mechanism.
+
+2. **Manual review**: The first author reviewed all keyword matches and non-matches against the original retraction notices. A finding could also be scored as a true positive if it identified "a substantively related problem that would independently undermine the paper's conclusions" even without exact keyword matches. In practice, all true positives in the reported results were identified by keyword matching; no additional matches were added during manual review.
+
+No separate LLM scorer was used for ground-truth matching. The manuscript's reference to an "external scorer" describes the keyword-matching script, not a Sonnet-based scoring pass.
+
 ## Limitations
 
-- Keyword matching is approximate; some true matches may be missed
+- Keyword matching is approximate; some true matches may be missed by keywords
 - Scorer override rates were not systematically recorded
 - Inter-rater reliability has not been formally measured
 - The first author verified all matches and non-matches against retraction notices

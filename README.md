@@ -12,13 +12,15 @@ This repository contains the complete dataset, prompts, raw model outputs, and s
 
 ### Key Results
 
-| Condition | GT Detection | FP Rate (n=24) |
-|-----------|-------------|-----------------|
+| Condition | GT Detection | FP Rate (n=19 probative) |
+|-----------|-------------|--------------------------|
 | B1: Single model, no rubric | 3/10 (30%) | N/A |
-| B2: Single model + rubric | 4/10 (40%) | 3/24 (12%) |
-| B3: Multi-model, no steelman | 3/10 (30%) | 1/24 (4%) |
+| B2: Single model + rubric | 4/10 (40%) | 3/19 (16%) |
+| B3: Multi-model, no steelman | 3/10 (30%) | 1/19 (5%) |
 | Prompted (told retracted) | 7/30 (23%) | N/A |
-| **Graduated Dissent** | **7/10 (70%)** | **0/24 (0%)** |
+| **Graduated Dissent** | **7/10 (70%)** | **0/19 (0%)** |
+
+*Probative controls = 10 matched + 9 hard-negative. 5 wildcard controls (0 FP across all conditions) reported separately.*
 
 ## Repository Structure
 

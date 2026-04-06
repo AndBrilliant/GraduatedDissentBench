@@ -31,7 +31,7 @@ See `config/thresholds.md` for escalation logic.
 ### 2. Baselines
 
 - **B1**: Run GPT-5.4 with `prompts/baseline_b1_prompt.txt` (no severity rubric)
-- **B2**: Run GPT-5.4 with `prompts/prover_prompt.txt` (same as prover, single model)
+- **B2**: Run GPT-5.4 with `prompts/baseline_b2_prompt.txt` (severity rubric, single model; note: slightly different framing from prover prompt)
 - **B3**: Run Prover A + Prover B, pool findings, send to Arbiter (no steelman). See `prompts/baseline_b3_prompt.txt`
 
 ### 3. Prompted Retraction
