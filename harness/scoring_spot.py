@@ -265,9 +265,14 @@ def score_sweep(sweep_dir: Path, gt_dir: Path, scoring_dir: Path,
     agg = pd.DataFrame(agg_rows).sort_values("condition")
     agg.to_csv(out_dir / "aggregates.csv", index=False)
 
-    print(f"\nWrote {(out_dir / 'per_paper.csv').relative_to(REPO)}")
-    print(f"Wrote {(out_dir / 'aggregates.csv').relative_to(REPO)}")
-    print(f"Wrote {judge_log_path.relative_to(REPO)}")
+    def rel(p: Path) -> str:
+        try:
+            return str(p.resolve().relative_to(REPO))
+        except ValueError:
+            return str(p)
+    print(f"\nWrote {rel(out_dir / 'per_paper.csv')}")
+    print(f"Wrote {rel(out_dir / 'aggregates.csv')}")
+    print(f"Wrote {rel(judge_log_path)}")
     print()
     print("Aggregates:")
     print(agg.to_string(index=False))
