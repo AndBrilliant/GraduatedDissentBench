@@ -245,10 +245,19 @@ def score_sweep(sweep_dir: Path, gt_dir: Path, scoring_dir: Path,
         recall_macro = grp["recall_i"].mean()
         ppr = grp["perfect_i"].mean()  # perfect-paper rate
         # SPOT's pass@1: papers where the model identified at least one true error
-        # (recall_i > 0). We report it for compatibility.
+        # (matches a ground-truth annotation). Strict.
         pass_at_1 = (grp["TP_i"] > 0).mean()
-        # Detection rate (our binary metric): paper has any TP at all.
+        # Detection rate (binary, strict): same as pass@1 here.
         detection_rate = (grp["TP_i"] > 0).mean()
+        # Lenient binary: did the model issue ANY retraction-worthy classification
+        # on the paper, regardless of whether it matched the specific SPOT
+        # annotation? This corresponds to our "would the protocol have flagged
+        # this for retraction at all" question, parallel to the retracted-paper
+        # benchmark's binary metric.
+        if "rw_count" in grp.columns:
+            rw_lenient = (grp["rw_count"].fillna(0).astype(int) > 0).mean()
+        else:
+            rw_lenient = float("nan")
 
         agg_rows.append({
             "condition": cond,
@@ -261,6 +270,7 @@ def score_sweep(sweep_dir: Path, gt_dir: Path, scoring_dir: Path,
             "PPR": round(ppr, 4),
             "pass_at_1": round(pass_at_1, 4),
             "detection_rate": round(detection_rate, 4),
+            "rw_lenient": round(rw_lenient, 4) if rw_lenient == rw_lenient else None,
         })
 
     agg = pd.DataFrame(agg_rows).sort_values("condition")
