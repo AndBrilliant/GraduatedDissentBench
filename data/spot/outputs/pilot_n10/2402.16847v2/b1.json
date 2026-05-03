@@ -1,0 +1,138 @@
+{
+  "condition": "B1",
+  "paper_id": "2402.16847v2",
+  "verdict": "flagged",
+  "confidence": 0.94,
+  "reasoning": "The manuscript has a clear algorithmic idea and a plausible high-level route to improving Fischer–Wennmann by restricting the dynamic-string universe to length d_max+1. However, as written, the methodological presentation is incomplete and contains several technical gaps that prevent verification of the claimed Õ(n+d_max) and Õ(n+d_max^m) bounds. The main concerns are missing formal definitions of the DP recurrence being modified, insufficient proof that the dynamic-string operations preserve correctness and complexity under repeated splits/concats, and an especially underdeveloped multi-machine extension. There are also multiple notation inconsistencies and proof-indexing errors that weaken confidence in the rigor of the analysis.",
+  "findings": [
+    {
+      "finding": "Strength: The central methodological insight is simple and potentially impactful: exploit the fact that states are already deadline-trimmed, so one only needs an indicator universe of size d_max+1 instead of P+1. This directly targets an open question and is well motivated."
+    },
+    {
+      "finding": "Strength: The argument in Lemma 3.2 captures a useful amortization principle—each new achievable time x in [0..d_max] is inserted at most once—mirroring the style of Fischer–Wennmann while potentially improving the state-space bound."
+    },
+    {
+      "finding": "Strength: The manuscript builds on a recent algorithmic framework rather than proposing an entirely unrelated technique, which increases plausibility and may ease implementation if the missing details are supplied."
+    },
+    {
+      "finding": "Weakness: The core DP recurrence being refined is not actually stated in the excerpt. The text refers to Eq. (3b) and Eq. (3c), but these equations are absent. Without the exact recurrence, it is impossible to verify that the split into L_{j-1} and R_{j-1}, the shift, and the OR merge are fully equivalent to the original update."
+    },
+    {
+      "finding": "Weakness: The manuscript does not explicitly state the required preprocessing assumption that jobs are sorted by nondecreasing deadlines before the DP iterations. The EDF observation is mentioned, but the algorithm and complexity need the sorting cost and tie-handling to be formalized. An Õ(n+d_max) claim usually requires either pre-sorted input or integer sorting/radix sorting assumptions."
+    },
+    {
+      "finding": "Weakness: The dynamic-string implementation details are too sparse to justify the claimed complexity. In particular, repeated split operations on the precomputed 0^u string to obtain many different 0^{p_j} strings may increase the total maintained-string length/number of operations in nontrivial ways; the manuscript does not carefully instantiate the parameter s of the data structure under this modified usage."
+    },
+    {
+      "finding": "Weakness: The initialization claim for building 0^u is imprecise. Repeated self-concatenation yields powers of two unless additional splitting/concatenation is specified; for arbitrary u, the stated O(log^2 u) construction is not fully justified."
+    },
+    {
+      "finding": "Weakness: There is a possible off-by-one/indexing ambiguity in split(x,i): the definition inserts x[0..i] and x(i..|x|], which appears to include position i in the left part. Yet later the split at position d_j-p_j is used to realize L_{j-1}=S_{j-1}∩[0..d_j-p_j]. This needs careful consistency proof because dynamic-string indices and set intervals must match exactly for correctness."
+    },
+    {
+      "finding": "Weakness: The proof of Lemma 3.2 has indexing inconsistencies: the lemma sums over i in [n] but uses |\\widetilde{S}_j \\setminus S_{j-1}| inside the sum, mixing i and j. This is likely a typo, but in a short technical note, such errors matter because the lemma is central to the running-time claim."
+    },
+    {
+      "finding": "Weakness: The statement 'Merging \\widetilde{S}_j with S_{j-1} is now a bit-wise OR ... and can be implemented in the same way as by Fischer and Wennmann [5]' is too hand-wavy. Since the claimed improvement hinges on reducing the number of insertions, the manuscript should show that the OR operation cost depends on insertions over a universe of size d_max+1 and does not reintroduce dependence on P."
+    },
+    {
+      "finding": "Weakness: The schedule-retrieval argument is not methodologically complete. Saying it can be done 'in a similar way' and omitting details is risky because reducing the represented universe may affect reconstruction metadata or parent pointers. At minimum, one should state whether only the value is improved or the actual subset can also be reconstructed within the same asymptotic time and space."
+    },
+    {
+      "finding": "Weakness: The multi-machine extension is substantially underjustified. The text claims one can 'apply our trimming strategy point-wise' to vectors in [0..P]^m, but feasibility for m machines is not just independent per-coordinate trimming unless the exact DP transition and machine-assignment semantics are formalized. This section currently reads as an intuition, not a proof."
+    },
+    {
+      "finding": "Weakness: Relatedly, the phrase 'the adapted multi-dimensional dynamic string data structure remains the same as in Fischer and Wennmann [5]' is too vague. A multidimensional indicator representation of size (d_max+1)^m is a major structural assumption, and the manuscript does not define the supported operations, memory model, or how OR/split/concat generalize."
+    },
+    {
+      "finding": "Weakness: The manuscript does not discuss memory usage. An Õ(n+d_max) time claim is stronger if accompanied by a corresponding space bound; storing strings and all derived fragments in a dynamic-string DAG may require nontrivial overhead. This is especially relevant in the multi-machine setting with universe size (d_max+1)^m."
+    },
+    {
+      "finding": "Weakness: There are several notation/typography issues that obscure the method: 'l.e.q.' instead of '≤', switching between j and i in sums, use of S ⊆ [n] for a set later represented by a string over positions [0..u), and inconsistent symbols such as dmax versus d_{max}. These do not by themselves invalidate the result but reduce confidence in formal correctness."
+    },
+    {
+      "finding": "Weakness: The manuscript claims optimality context from lower bounds for parameter P, but does not discuss whether an Õ(n+d_max) algorithm interacts with those lower bounds, or under what parameter regimes this is genuinely stronger. A methodological comparison section would help clarify novelty and scope."
+    },
+    {
+      "finding": "Overall methodological assessment: promising idea with plausible amortized state-space reduction, but the current write-up lacks enough formal detail and proof to support acceptance without revision."
+    }
+  ],
+  "severity_counts": null,
+  "raw_review": {
+    "verdict": "flagged",
+    "confidence": 0.94,
+    "reasoning": "The manuscript has a clear algorithmic idea and a plausible high-level route to improving Fischer–Wennmann by restricting the dynamic-string universe to length d_max+1. However, as written, the methodological presentation is incomplete and contains several technical gaps that prevent verification of the claimed Õ(n+d_max) and Õ(n+d_max^m) bounds. The main concerns are missing formal definitions of the DP recurrence being modified, insufficient proof that the dynamic-string operations preserve correctness and complexity under repeated splits/concats, and an especially underdeveloped multi-machine extension. There are also multiple notation inconsistencies and proof-indexing errors that weaken confidence in the rigor of the analysis.",
+    "findings": [
+      {
+        "finding": "Strength: The central methodological insight is simple and potentially impactful: exploit the fact that states are already deadline-trimmed, so one only needs an indicator universe of size d_max+1 instead of P+1. This directly targets an open question and is well motivated."
+      },
+      {
+        "finding": "Strength: The argument in Lemma 3.2 captures a useful amortization principle—each new achievable time x in [0..d_max] is inserted at most once—mirroring the style of Fischer–Wennmann while potentially improving the state-space bound."
+      },
+      {
+        "finding": "Strength: The manuscript builds on a recent algorithmic framework rather than proposing an entirely unrelated technique, which increases plausibility and may ease implementation if the missing details are supplied."
+      },
+      {
+        "finding": "Weakness: The core DP recurrence being refined is not actually stated in the excerpt. The text refers to Eq. (3b) and Eq. (3c), but these equations are absent. Without the exact recurrence, it is impossible to verify that the split into L_{j-1} and R_{j-1}, the shift, and the OR merge are fully equivalent to the original update."
+      },
+      {
+        "finding": "Weakness: The manuscript does not explicitly state the required preprocessing assumption that jobs are sorted by nondecreasing deadlines before the DP iterations. The EDF observation is mentioned, but the algorithm and complexity need the sorting cost and tie-handling to be formalized. An Õ(n+d_max) claim usually requires either pre-sorted input or integer sorting/radix sorting assumptions."
+      },
+      {
+        "finding": "Weakness: The dynamic-string implementation details are too sparse to justify the claimed complexity. In particular, repeated split operations on the precomputed 0^u string to obtain many different 0^{p_j} strings may increase the total maintained-string length/number of operations in nontrivial ways; the manuscript does not carefully instantiate the parameter s of the data structure under this modified usage."
+      },
+      {
+        "finding": "Weakness: The initialization claim for building 0^u is imprecise. Repeated self-concatenation yields powers of two unless additional splitting/concatenation is specified; for arbitrary u, the stated O(log^2 u) construction is not fully justified."
+      },
+      {
+        "finding": "Weakness: There is a possible off-by-one/indexing ambiguity in split(x,i): the definition inserts x[0..i] and x(i..|x|], which appears to include position i in the left part. Yet later the split at position d_j-p_j is used to realize L_{j-1}=S_{j-1}∩[0..d_j-p_j]. This needs careful consistency proof because dynamic-string indices and set intervals must match exactly for correctness."
+      },
+      {
+        "finding": "Weakness: The proof of Lemma 3.2 has indexing inconsistencies: the lemma sums over i in [n] but uses |\\widetilde{S}_j \\setminus S_{j-1}| inside the sum, mixing i and j. This is likely a typo, but in a short technical note, such errors matter because the lemma is central to the running-time claim."
+      },
+      {
+        "finding": "Weakness: The statement 'Merging \\widetilde{S}_j with S_{j-1} is now a bit-wise OR ... and can be implemented in the same way as by Fischer and Wennmann [5]' is too hand-wavy. Since the claimed improvement hinges on reducing the number of insertions, the manuscript should show that the OR operation cost depends on insertions over a universe of size d_max+1 and does not reintroduce dependence on P."
+      },
+      {
+        "finding": "Weakness: The schedule-retrieval argument is not methodologically complete. Saying it can be done 'in a similar way' and omitting details is risky because reducing the represented universe may affect reconstruction metadata or parent pointers. At minimum, one should state whether only the value is improved or the actual subset can also be reconstructed within the same asymptotic time and space."
+      },
+      {
+        "finding": "Weakness: The multi-machine extension is substantially underjustified. The text claims one can 'apply our trimming strategy point-wise' to vectors in [0..P]^m, but feasibility for m machines is not just independent per-coordinate trimming unless the exact DP transition and machine-assignment semantics are formalized. This section currently reads as an intuition, not a proof."
+      },
+      {
+        "finding": "Weakness: Relatedly, the phrase 'the adapted multi-dimensional dynamic string data structure remains the same as in Fischer and Wennmann [5]' is too vague. A multidimensional indicator representation of size (d_max+1)^m is a major structural assumption, and the manuscript does not define the supported operations, memory model, or how OR/split/concat generalize."
+      },
+      {
+        "finding": "Weakness: The manuscript does not discuss memory usage. An Õ(n+d_max) time claim is stronger if accompanied by a corresponding space bound; storing strings and all derived fragments in a dynamic-string DAG may require nontrivial overhead. This is especially relevant in the multi-machine setting with universe size (d_max+1)^m."
+      },
+      {
+        "finding": "Weakness: There are several notation/typography issues that obscure the method: 'l.e.q.' instead of '≤', switching between j and i in sums, use of S ⊆ [n] for a set later represented by a string over positions [0..u), and inconsistent symbols such as dmax versus d_{max}. These do not by themselves invalidate the result but reduce confidence in formal correctness."
+      },
+      {
+        "finding": "Weakness: The manuscript claims optimality context from lower bounds for parameter P, but does not discuss whether an Õ(n+d_max) algorithm interacts with those lower bounds, or under what parameter regimes this is genuinely stronger. A methodological comparison section would help clarify novelty and scope."
+      },
+      {
+        "finding": "Overall methodological assessment: promising idea with plausible amortized state-space reduction, but the current write-up lacks enough formal detail and proof to support acceptance without revision."
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 13002,
+    "duration_s": 28.47,
+    "n_api_calls": 1,
+    "cost_usd": 0.0237,
+    "total_input_tokens": 3946,
+    "total_output_tokens": 1382,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3946,
+        "output_tokens": 1382,
+        "cost_usd": 0.023685,
+        "duration_s": 28.47,
+        "label": "2402.16847v2/b1/review"
+      }
+    ]
+  }
+}
