@@ -1,0 +1,251 @@
+% Decorrelated Multi-Model Evaluation for Error Detection in Scientific Manuscripts
+% Combined theory + empirical paper for IJPRAI resubmission.
+%
+% Drafting in standard article class. Convert to WSPC/IJPRAI style before submission.
+\documentclass[11pt]{article}
+
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{enumitem}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!50!black,
+  citecolor=blue!50!black,
+  urlcolor=blue!50!black,
+}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\title{Decorrelated Multi-Model Evaluation for Error Detection in Scientific Manuscripts:\\[0.3em]
+Information-Theoretic Bounds and Empirical Validation}
+
+\author{Andrew Michael Brilliant\thanks{Applied Dynamics Research (Independent), Sapporo, Japan. \texttt{ab@ad-research.org}. ORCID 0009-0004-8024-5442.}}
+
+\date{\today}
+
+\begin{document}
+\maketitle
+
+%-------------------------------------------------------------------
+\begin{abstract}
+We present \emph{graduated dissent}, a multi-model evaluation protocol for detecting methodological errors in scientific manuscripts, and validate it on two benchmarks. On a paired-ablation benchmark of $n=10$ retracted papers and $19$ controls, the protocol identifies the documented retraction-causing error in $7/10$ retracted papers ($70\%$) while producing zero false retraction-worthy classifications across all $19$ controls---compared with $30\%$ detection at $16\%$ false-positive rate for single-model review with a severity rubric, and $30\%$ detection at $5\%$ false-positive rate for naive multi-model pooling. A paired ablation isolating the protocol's adversarial \emph{steelman exchange} from multi-model pooling yields $4/4$ discordant pairs favoring the steelman (McNemar exact $p = 0.125$ at $n = 10$). On the SPOT benchmark of human-annotated errors in real scientific papers \citep{son2025spot}, our text-only protocol attains \texttt{[FILL: SPOT pilot detection rate]} on the text-detectable subset, compared with the published $18.4\%$ pass@1 reported for o3 with vision access on the full benchmark.
+
+These empirical results are predicted by an information-theoretic analysis of self-correction: under a conditional independence assumption between selector and target given the generator and a latent ``blind spot'' variable, $k$ correlated critiques contain no more information about correctness than the blind spot itself (Theorem~\ref{thm:info_bound}, Lemma~\ref{lem:repeated}). Improvement therefore requires evaluation channels with at least partially independent failure modes. We argue---and the empirical results are consistent with the claim---that an adversarial steelman exchange is one such channel, structurally disrupting the correlation between proposers and adjudicator.
+\end{abstract}
+
+%-------------------------------------------------------------------
+\section{Introduction}
+\label{sec:intro}
+
+Large language models routinely misidentify methodological errors in scientific manuscripts they review \citep{son2025spot, liang2024can}, yet the same models often \emph{appear} confident in their reviews. The problem is not capability per se: the same model that misses the error frequently identifies it once a different prompt or persona surfaces it. This paper claims that the failure pattern is structural---self-evaluation by a single model is bounded in the evidence it can provide about its own correctness when error sources are correlated---and that the gap closes when evaluation is decorrelated from generation.
+
+We make this concrete with a protocol called \emph{graduated dissent}: two prover models with different training distributions independently review a manuscript under a fixed severity rubric, an LLM judge measures their agreement, and---when disagreement exceeds a noise floor---each prover is asked to construct the strongest case \emph{for the other reviewer's position} (the \emph{steelman exchange}). A separate arbiter integrates the deliberation. The contribution of the paper is threefold: an information-theoretic bound formalizing why self-correction has limits (\S\ref{sec:theory}); an architecture instantiating context separation between generation and evaluation (\S\ref{sec:method}); and empirical evaluation against two benchmarks with documented ground truth (\S\ref{sec:results}).
+
+\paragraph{Page-1 comparison.} Table~\ref{tab:comparison} situates our four conditions among recent published comparators on related tasks. The numbers from prior work are best-case figures from each paper; ground truth and metrics differ across studies. The headline pattern that survives every metric difference is that single-model review with structured prompting plateaus around $30\%$--$40\%$ on retraction-cause detection and around $20\%$ on SPOT-style annotated-error localization, while a decorrelated multi-model architecture with adversarial steelman exchange both raises detection and eliminates the false alarms that single-model review produces on controls.
+
+\input{tables/comparison_table.tex}
+
+%-------------------------------------------------------------------
+\section{Related Work and Quantitative Comparisons}
+\label{sec:related}
+
+\paragraph{LLM scientific review against ground truth.} \citet{son2025spot} introduce SPOT, a benchmark of $83$ peer-reviewed papers with $91$ human-annotated errors of types including equation/proof errors, statistical reporting errors, figure duplication, and figure-text inconsistencies; they report best-case $18.4\%$ pass@1 (and $37.8\%$ pass@4) for o3 with vision access, with precision $6.1\%$ and recall $21.1\%$. \citet{xi2025flaws} (FLAWS) construct a benchmark of $713$ papers with LLM-inserted errors and report GPT-5 identifying $39.1\%$ at $k = 10$ on holistic single-model review. \citet{chen2025pubguard} (Pub-Guard-LLM) achieve $\sim$$91\%$ \emph{retraction classification} accuracy on $11{,}000$ PubMed articles, but the task is binary classification rather than specific error identification, and the model is fine-tuned. \citet{toerris2025} report $83.2\%$ precision on a corpus of $316$ expert-validated mistakes restricted to objective ML errors. \citet{liang2024can} report a single GPT-4 review pipeline overlapping $30.85\%$ (Nature) and $39.23\%$ (ICLR) with human reviewer comments---an overlap metric, not a detection rate against ground truth. \citet{darcy2024marg} (MARG) reduce generic-comment rate from $60\%$ to $29\%$ via multi-agent generation, but do not test against ground truth.
+
+\paragraph{Self-correction and multi-agent reasoning.} \citet{wang2023self} (self-consistency) report $+17.9\%$ on GSM8K from majority-voting CoT outputs. \citet{du2023debate} report multi-agent debate gains of $67{\to}82\%$ on arithmetic, $77{\to}85\%$ on GSM8K, $64{\to}71\%$ on MMLU. \citet{kim2025correlated} measure $\sim$$60\%$ same-wrong-answer rates between paired models when both err, with correlation \emph{increasing} with capability. \citet{chen2024reconcile} (ReConcile) report $+11.4\%$ on Date and $+7.7\%$ on StrategyQA over debate from diverse-model consensus, attributing $6.8\%$ of gains to model-family diversity. \citet{huang2024self} show self-correction degrades without an oracle (correct-to-wrong $>$ wrong-to-correct), and that debate matches self-consistency at matched compute. \citet{tsui2025selfcorrection} measure a $64.5\%$ average self-correction blind-spot rate, reduced by $89.3\%$ when injecting a ``Wait'' marker into the reasoning trace---a context perturbation result we will return to in \S\ref{sec:theory}. \citet{li2024llmjudge} catalog $12$ latent biases in LLM-as-judge, with best-model robustness $0.86$ ($14\%$ flip rate under adversarial perturbation).
+
+\paragraph{Mapping our baselines onto this literature.} Our B1 (single GPT-5.4, no rubric) is the standard pipeline of \citet{liang2024can}. Our B2 (single GPT-5.4, severity rubric) corresponds to structured single-model evaluation. Our B3 (two-prover ensemble pooled to an arbiter, no steelman exchange) is structurally equivalent to the multi-model-pooling family studied by \citet{wang2023self} and \citet{du2023debate}. Graduated dissent (GD) adds the adversarial steelman exchange. Consistent with \citet{huang2024self}, B3 in our results is no better than B1 on detection rate---only the steelman exchange, which structurally disrupts error correlation, produces improvement.
+
+%-------------------------------------------------------------------
+\section{Theoretical Framework}
+\label{sec:theory}
+
+We formalize a setting in which self-correction is bounded by error correlation. The model has a generator $G$, a target correctness variable $T \in \{0, 1\}$, and a selector (or evaluator) producing scores $S$. A latent variable $Z$ represents the system's blind spots---features of the input that systematically govern when the generator errs, but that the generator may treat as mere style or nuisance.
+
+\begin{theorem}[Information bound via shared blind spots]
+\label{thm:info_bound}
+Suppose $S \perp T \mid (G, Z)$. Then
+\[
+I(T; S \mid G) \;\leq\; I(T; Z \mid G).
+\]
+In particular, if additionally $T \perp Z \mid G$, then $I(T; S \mid G) = 0$.
+\end{theorem}
+\begin{proof}
+By the chain rule, $I(T; S, Z \mid G) = I(T; Z \mid G) + I(T; S \mid G, Z)$. Under the assumption $S \perp T \mid (G, Z)$, $I(T; S \mid G, Z) = 0$, so $I(T; S, Z \mid G) = I(T; Z \mid G)$. Also $I(T; S, Z \mid G) = I(T; S \mid G) + I(T; Z \mid G, S) \geq I(T; S \mid G)$ since mutual information is nonnegative. Combining yields the bound. If $T \perp Z \mid G$, then $I(T; Z \mid G) = 0$ and the result follows. $\hfill\qed$
+\end{proof}
+
+The information about correctness that the evaluator can in principle provide is bounded by how much the blind-spot variable knows about correctness beyond the generator output. When $Z$ is a pure nuisance variable, self-evaluation provides zero additional information \emph{conditional on the assumption}. The theorem does not establish that the assumption holds for any particular system; it states what follows when it does.
+
+\begin{lemma}[Repeated self-critique bound]
+\label{lem:repeated}
+Consider $k$ selector outputs $S_1, \ldots, S_k$ with acceptance decisions $A_i = \mathbb{I}\{S_i \geq \tau\}$. Suppose $(S_1, \ldots, S_k) \perp T \mid (G, Z)$. Then
+\[
+I(T; A_{1:k} \mid G) \;\leq\; I(T; Z \mid G).
+\]
+\end{lemma}
+\begin{proof}
+By assumption $(S_1, \ldots, S_k) \perp T \mid (G, Z)$, and since each $A_i$ is a deterministic function of $S_i$, the data processing inequality gives $A_{1:k} \perp T \mid (G, Z)$. The argument of Theorem~\ref{thm:info_bound} applied to $A_{1:k}$ yields the bound. $\hfill\qed$
+\end{proof}
+
+\begin{remark}[Why joint, not just per-$i$]
+Pairwise conditional independence $S_i \perp T \mid (G, Z)$ for each $i$ does not in general imply the joint statement. The lemma requires the joint version, which is the substantive condition: the entire critique vector contains no information beyond what $(G, Z)$ already carries. In self-evaluation by a single model from the same $(G, Z)$, the joint condition is more plausible than for independent processes. Whether it holds in practice is empirical.
+\end{remark}
+
+\begin{proposition}[Sufficient conditions for positive evidence]
+\label{prop:positive_evidence}
+$I(T; S \mid G) > 0$ holds when at least one of the following fails:
+\begin{enumerate}[label=(\roman*), nosep]
+\item $S \perp T \mid (G, Z)$ (the selector accesses information not contained in $(G, Z)$);
+\item the selector's blind-spot variable $Z'$ has high overlap with $Z$ (low independence of failure modes);
+\item the false acceptance rate $\Pr(A=1 \mid T=0)$ is close to $1$ (saturation in the high-FA regime; cf.~\citealp{huang2024self}).
+\end{enumerate}
+\end{proposition}
+
+\paragraph{Three empirical predictions.} The framework predicts:
+\begin{enumerate}[label=(P\arabic*), nosep]
+\item \textbf{Self-consistency-style multi-model pooling without context separation should not strictly dominate single-model review.} If both are reading the same manuscript without any new external information channel, the bound is the same.
+\item \textbf{Context perturbation that breaks (i) above should help.} \citet{tsui2025selfcorrection}'s ``Wait'' intervention is one example; an adversarial steelman ask is another.
+\item \textbf{Adding diverse models alone---without context separation---may reduce, but not eliminate, the false-positive saturation problem.} The discriminative work is done by perturbing $Z$, not by averaging over selectors that share it.
+\end{enumerate}
+
+We test these predictions in \S\ref{sec:results}.
+
+%-------------------------------------------------------------------
+\section{Method: Graduated Dissent}
+\label{sec:method}
+
+The graduated dissent protocol coordinates two independent prover models, a judge, an optional steelman exchange, and an arbiter. Full architecture details and design rationale appear in the protocol preprint \citep{brilliant2026protocol}; we summarize here the elements load-bearing for the empirical results.
+
+\paragraph{Provers.} Two language models from different families and providers (Prover A: GPT-5.4, OpenAI; Prover B: DeepSeek V3.2) review the manuscript independently under a shared severity rubric (RETRACTION-WORTHY, MAJOR-REVISION, MINOR; the rubric is given in Appendix~\ref{app:rubric}). Both provers receive only the manuscript text---no prior reviewer's findings, no other prover's intermediate output. This implements \emph{context separation between provers} in the sense of \S\ref{sec:theory}.
+
+\paragraph{Judge and escalation.} A separate model (DeepSeek V3.2 in our runs) reads both reviews and rates semantic agreement on a $[0, 1]$ scale. With agreement threshold $\theta_{\mathrm{accept}} = 0.90$ and noise floor $\theta_{\mathrm{noise}} = 0.15$, the protocol escalates as: $\mathrm{L0}$ if $\mathrm{agreement} \geq \theta_{\mathrm{accept}}$ (accept); $\mathrm{L1}$ if $\mathrm{SNR} = (1 - \mathrm{agreement}) / \theta_{\mathrm{noise}} < 1$ (accept; disagreement is noise); $\mathrm{L2}$ otherwise (proceed to steelman).
+
+\paragraph{Steelman exchange.} On L2 escalation, each prover is shown its own review and the other prover's review, and asked to construct \emph{the strongest case for the other reviewer's position}, with explicit instructions to identify which of its own RETRACTION-WORTHY ratings might be MAJOR-REVISION instead. This step is the empirical contribution of the protocol: it asks the model to perform a context perturbation that (under the framework of \S\ref{sec:theory}) plausibly breaks the conditional independence assumption and provides positive evidence about which findings are robust.
+
+\paragraph{Arbiter.} A third-family model (Claude Opus 4.6) integrates both reviews, the judge analysis, and the steelman outputs into a final severity-ranked verdict. The arbiter prompt is calibrated conservatively: ``ONLY classify as RETRACTION-WORTHY if fundamentally broken. When in doubt, MAJOR-REVISION.''
+
+\paragraph{Why steelman disrupts correlation.} Returning to \S\ref{sec:theory}: the steelman ask is a context perturbation that prevents the prover from re-applying the same reasoning trace that produced its initial rating. The two provers were already context-separated from each other; the steelman ask additionally forces each prover to argue against its own reasoning, which (we hypothesize, and the paired ablation is consistent with) further reduces the conditional dependence of the final acceptance variable on the original $(G, Z)$ pair.
+
+%-------------------------------------------------------------------
+\section{Benchmark Design}
+\label{sec:benchmarks}
+
+We evaluate on two benchmarks with documented ground truth.
+
+\subsection{Retracted-paper benchmark}
+\label{sec:bench:retracted}
+
+The retracted-paper benchmark consists of $n = 10$ peer-reviewed papers retracted for documented methodological errors (Class A: methodological, not misconduct), each paired with controls: matched controls (same journal, same field), hard-negative controls (controversial but non-retracted), and wildcard controls (unrelated fields). All papers are anonymized: author names, journal names, dates, affiliations, references, and publisher templates removed. Ground truth is encoded as keyword groups derived from the published retraction notices; a model finding is scored as a match if it contains all keywords in any group for that paper. The benchmark and replication harness are released in the project repository \citep{brilliant2026benchmark}.
+
+We are expanding this benchmark to $n \geq 20$ retracted papers (target $n = 100$); preliminary expanded numbers will be substituted into Table~\ref{tab:detection_summary} when complete. The current paper reports primary results at $n = 10$ for direct comparability with the protocol preprint.
+
+\subsection{SPOT benchmark}
+\label{sec:bench:spot}
+
+SPOT \citep{son2025spot} provides $91$ human-annotated errors across $83$ peer-reviewed papers with categories spanning equation/proof errors, statistical reporting, experiment setup, reagent identity, figure duplication, and figure-text inconsistencies. We evaluate on the \emph{text-detectable subset}: errors whose category describes problems surfaceable from prose alone (Equation/proof, Statistical reporting, Experiment setup, Reagent identity, Data inconsistency, text-text inconsistency, plus figure-text inconsistencies where the text side is visible). Of $91$ total errors, $53$ are fully text-detectable, $9$ are partially text-detectable (figure-text), and $29$ are figure-only and excluded. Of $83$ papers, $62$ have parsed content available in the SPOT release; of those, $50$ have at least one text-detectable error and constitute our runnable subset.
+
+We report two metric families on SPOT:
+\begin{itemize}[nosep]
+\item \textbf{Our binary detection rate}, mirroring the retracted-paper benchmark scoring.
+\item \textbf{SPOT's precision/recall/PPR}, computed by the same LLM-as-judge protocol used in \citet{son2025spot}, so our numbers are directly comparable to the published o3 numbers.
+\end{itemize}
+
+We are transparent that running on the text-detectable subset is a deliberately constrained comparison: SPOT's published o3 number used a vision-capable model on the full multimodal content, while our protocol uses text-only inputs. This comparison answers the question ``how much can a decorrelated text-only protocol close the gap to a vision-capable single model?''---not ``does graduated dissent beat o3 in absolute terms.'' We also report a single-model GPT-5.4 baseline on the same text-detectable subset (B1), which is the apples-to-apples comparison for the architecture contribution.
+
+%-------------------------------------------------------------------
+\section{Results}
+\label{sec:results}
+
+\subsection{Headline detection and false-positive numbers}
+
+\begin{table}[ht]
+\centering
+\caption{Detection of documented retraction causes and false-positive rates on the retracted-paper benchmark ($n=10$ retracted papers, $19$ probative controls). \texttt{[FILL: SPOT pilot rows]}.}
+\label{tab:detection_summary}
+\small
+\begin{tabular}{lcc}
+\toprule
+\textbf{Condition} & \textbf{Ground-truth detection} & \textbf{False positive rate} \\
+\midrule
+B1: Single model, no rubric                 & $3/10$ ($30\%$)  & --- \\
+B2: Single model + severity rubric          & $4/10$ ($40\%$)  & $3/19$ ($16\%$) \\
+B3: Multi-model ensemble, no steelman       & $3/10$ ($30\%$)  & $1/19$ ($5\%$) \\
+\textbf{Graduated dissent} (this work)      & $\mathbf{7/10}$ ($\mathbf{70\%}$) & $\mathbf{0/19}$ ($\mathbf{0\%}$) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Paired ablation: B3 vs.~graduated dissent}
+
+The B3 condition isolates everything in graduated dissent \emph{except} the steelman exchange: same two provers, same arbiter, same severity rubric, no steelman. On the $10$ retracted papers, B3 detects $3/10$ ground-truth errors and graduated dissent detects $7/10$. The $4$ discordant pairs all favor graduated dissent (no paper is detected only by B3). McNemar's exact two-sided test gives $p = 0.125$. The expanded benchmark to $n \geq 20$ should be sufficient to cross conventional significance thresholds if the discordant ratio holds.
+
+\subsection{SPOT comparison}
+\label{sec:results:spot}
+
+\texttt{[FILL: SPOT pilot table after harness completes]}
+
+We report on $50$ runnable SPOT papers, with both our binary detection rate and SPOT's pass@1, precision, and recall. The single-model GPT-5.4 (B1) row provides the apples-to-apples text-only comparison; SPOT's published o3 number is shown for reference.
+
+\subsection{False-positive analysis}
+
+The $3$ false positives produced by single-model+rubric review (B2) on probative controls all involved findings rated RETRACTION-WORTHY despite the underlying methodological choice being defensible (e.g., a deliberate sample-size restriction described in the methods section, flagged as ``data exclusion bias''). In all three cases, when those findings entered the steelman exchange under graduated dissent, the originating prover downgraded its severity to MAJOR-REVISION; in two of the three cases, the arbiter then assigned MINOR. This is the mechanism the protocol predicts: the steelman context perturbation surfaces the strongest defense of the choice, and the originating prover's confidence in the RETRACTION-WORTHY rating does not survive that perturbation.
+
+\subsection{Testing the three theoretical predictions}
+
+(P1) \textbf{Multi-model pooling without context separation should not strictly dominate single-model review.} B3 detects $3/10$ ground-truth errors versus B1's $3/10$---identical at this $n$. (P2) \textbf{Context perturbation should help.} B3 + steelman ($=$ GD) goes from $3/10$ to $7/10$. (P3) \textbf{Adding diverse models without context separation should reduce but not eliminate false-positive saturation.} B3 false-positive rate is $5\%$ versus B2's $16\%$---reduced but not zero. Adding the steelman (GD) drives it to $0\%$. All three predictions are directionally supported at $n = 10$.
+
+\subsection{Mechanism analysis}
+
+\texttt{[FILL: protocol-log examples showing steelman at work --- one paper where steelman downgraded a false positive, one where steelman upheld a true positive.]}
+
+%-------------------------------------------------------------------
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{What the empirics establish.} The $n = 10$ retracted-paper results demonstrate that the protocol \emph{can} achieve high specificity at this scale; they do not establish that the effect generalizes. The $4/4$ discordant pair direction in the paired ablation is the strongest piece of within-experiment evidence that the steelman exchange is doing the work, but $4$ discordant pairs cannot reach conventional significance. The expanded benchmark and the SPOT comparison provide independent evidence channels.
+
+\paragraph{What the theory establishes.} Theorem~\ref{thm:info_bound} and Lemma~\ref{lem:repeated} are conditional results: they describe what follows from a conditional independence assumption. They do not establish that real LLM evaluators satisfy the assumption. They do explain \emph{why}, when self-correction fails, repeating the critique cannot rescue it, and they identify a specific structural property---decorrelating evaluation from generation---that an architectural intervention should target.
+
+\paragraph{Limitations.}
+\begin{itemize}[nosep]
+\item \textbf{Single-rater scoring on the retracted-paper benchmark.} Ground truth is encoded as keyword groups from the retraction notice; the keyword set is the first author's. SPOT's externally validated annotations and the LLM-as-judge protocol partially mitigate this for the SPOT comparison.
+\item \textbf{Stochastic variance.} All providers default to temperature $1.0$; we report single-run results per condition. The protocol preprint reports variance analysis.
+\item \textbf{Context separation is a heuristic.} ``The provers don't see each other's outputs'' is a sufficient condition for one form of context separation, but not sufficient for the conditional independence assumption of Theorem~\ref{thm:info_bound}. The same model weights still encode shared inductive biases.
+\item \textbf{Text-only on SPOT.} Excluding figure-only errors restricts what the protocol can detect on SPOT; we report on the text-detectable subset and are transparent about the exclusion.
+\end{itemize}
+
+%-------------------------------------------------------------------
+\section{Conclusion}
+\label{sec:conclusion}
+
+A multi-model architecture in which two provers context-separated from each other are forced through an adversarial steelman exchange before an arbiter integrates their findings achieves $70\%$ documented-error detection at $0\%$ false-positive rate on a small but rigorously controlled retracted-paper benchmark, and \texttt{[FILL: SPOT result]} on the SPOT text-detectable subset. The pattern is consistent with an information-theoretic prediction: self-correction is bounded when generator and selector share blind spots, and the discriminative work in a multi-model architecture is done by the context perturbations that disrupt this correlation, not by averaging over selectors that share it.
+
+%-------------------------------------------------------------------
+\appendix
+
+\section{Severity Rubric}
+\label{app:rubric}
+
+\texttt{[FILL: severity rubric verbatim from prompts/]}
+
+%-------------------------------------------------------------------
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}

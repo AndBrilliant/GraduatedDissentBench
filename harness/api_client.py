@@ -17,6 +17,7 @@ import json
 import os
 import re
 import sys
+import threading
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -89,21 +90,26 @@ class CallRecord:
 class CostTracker:
     cap_usd: float = 25.00
     calls: list[CallRecord] = field(default_factory=list)
+    _lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
 
     @property
     def total(self) -> float:
-        return sum(c.cost_usd for c in self.calls)
+        with self._lock:
+            return sum(c.cost_usd for c in self.calls)
 
     def check(self, projected_cost: float = 0.0) -> None:
-        """Raise if next call would exceed cap."""
-        if self.total + projected_cost > self.cap_usd:
-            raise BudgetExceeded(
-                f"Cost cap ${self.cap_usd:.2f} would be exceeded "
-                f"(spent ${self.total:.4f}, projected +${projected_cost:.4f})"
-            )
+        """Raise if next call would exceed cap. Thread-safe."""
+        with self._lock:
+            running = sum(c.cost_usd for c in self.calls)
+            if running + projected_cost > self.cap_usd:
+                raise BudgetExceeded(
+                    f"Cost cap ${self.cap_usd:.2f} would be exceeded "
+                    f"(spent ${running:.4f}, projected +${projected_cost:.4f})"
+                )
 
     def record(self, rec: CallRecord) -> None:
-        self.calls.append(rec)
+        with self._lock:
+            self.calls.append(rec)
 
     def summary(self) -> dict[str, Any]:
         by_model: dict[str, dict[str, Any]] = {}
