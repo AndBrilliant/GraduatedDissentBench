@@ -22,7 +22,18 @@ def main():
     paper_dirs.sort()
     n_papers = len(paper_dirs)
     expected_per_paper = 4
-    n_expected = n_papers * expected_per_paper
+    # If there is a sample.csv, the canonical denominator is len(sample) * 4.
+    sample_csv = sweep_dir / "sample.csv"
+    if sample_csv.exists():
+        try:
+            import csv
+            with sample_csv.open() as fh:
+                sample_n = sum(1 for _ in csv.reader(fh)) - 1  # minus header
+            n_expected = sample_n * expected_per_paper
+        except Exception:
+            n_expected = n_papers * expected_per_paper
+    else:
+        n_expected = n_papers * expected_per_paper
     files = []
     for pd_ in paper_dirs:
         files.extend(sorted(pd_.glob("*.json")))
