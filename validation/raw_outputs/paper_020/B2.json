@@ -2,186 +2,167 @@
   "condition": "B2",
   "paper_id": "paper_020",
   "verdict": "flagged",
-  "confidence": 0.98,
-  "reasoning": "The manuscript is methodologically unreliable in its present form because the text appears to conflate at least two different papers/methods (MSP-MVS and TSAR-MVS), yielding incompatible problem formulations, contributions, and experimental claims. This raises serious concerns that the described method, ablations, and benchmarks do not correspond to a single coherent study. In addition, the manuscript lacks essential implementation and evaluation details needed to verify correctness or reproduce the results, and it makes unsupported claims about state-of-the-art performance and generalization without sufficient methodological substantiation. While some issues are reporting-related, the core identity inconsistency of the method is severe enough that the paper’s central conclusions cannot be trusted as presented.",
+  "confidence": 0.97,
+  "reasoning": "The manuscript shows serious internal inconsistency and inadequate methodological reporting. Most importantly, the paper appears to conflate two different methods (MSP-MVS and TSAR-MVS), with incompatible problem formulations, contributions, and pipelines presented under one manuscript. This makes it impossible to determine what method was actually implemented and evaluated. In addition, the experimental section provides only outcome claims without the numerical tables, protocol details, training/inference settings, or enough implementation detail to verify that the benchmark comparisons are fair and reproducible. These issues do not prove the reported results are false, but they do prevent methodological verification and could materially affect the conclusions. I do not see a clear impossible statistical contradiction because the paper does not provide enough quantitative detail; however, the paper in its current form is not methodologically reliable.",
   "findings": [
     {
-      "finding": "The manuscript appears to merge two distinct methods/papers: an MSP-MVS method based on multi-granularity segmentation prior, anchor equidistribution, and iterative local search optimization, and a TSAR-MVS method described as a generalized post-processing pipeline using confidence-based outlier filtering, superpixel-based refinement, and textureless-aware segmentation.",
-      "severity": "RETRACTION-WORTHY",
-      "justification": "If the paper is not describing one coherent method, then the central claims, ablations, and benchmark results cannot be attributed to a well-defined algorithm. This is not a minor clarity issue: it prevents determining what was actually evaluated and whether the reported results support the stated conclusions."
-    },
-    {
-      "finding": "There is a direct contradiction in the method identity and contributions: the opening and closing sections claim the contribution is MSP-MVS, but the middle sections introduce 'Therefore, we propose TSAR-MVS' with a completely different pipeline and different contributions.",
-      "severity": "RETRACTION-WORTHY",
-      "justification": "If confirmed, the paper’s main methodological contribution is fundamentally ambiguous. A reader cannot know whether experiments evaluate MSP-MVS, TSAR-MVS, or a hybrid. This breaks the evidentiary link between method and results, invalidating the central support for the paper’s conclusions."
-    },
-    {
-      "finding": "The experimental evidence is not tied to a clearly specified algorithmic pipeline. The ablation sections discuss MSP-MVS components (SAM prior, anchor equidistribution, ILS), whereas earlier method sections describe TSAR-MVS components (joint hypothesis filter, RANSAC/WMF refinement, Roberts/Hough segmentation).",
-      "severity": "RETRACTION-WORTHY",
-      "justification": "Ablations must isolate components of the evaluated method. If the described ablations and method sections refer to different systems, the empirical support for effectiveness of individual components is uninterpretable. That undermines the paper’s core causal claims about why the method works."
-    },
-    {
-      "finding": "The manuscript claims 'state-of-the-art results' and 'strong generalization capability' but provides no actual quantitative tables, metric definitions, dataset splits, or statistical reporting in the submitted text.",
+      "finding": "The manuscript is internally inconsistent about the identity of the proposed method: the introduction and conclusion present MSP-MVS, but substantial middle sections instead introduce TSAR-MVS, a different post-processing pipeline with different contributions (confidence filtering, superpixel refinement, textureless-aware segmentation).",
       "severity": "MAJOR-REVISION",
-      "justification": "The absence of the numerical evidence itself does not prove the claims are false, but it prevents verification. If addressed with full tables and benchmark protocol details, the conclusions might still hold. As presented, however, the SOTA and generalization claims are unsupported."
+      "justification": "If confirmed, readers cannot know which algorithm was actually evaluated, reproduced, or compared against baselines. This undermines the entire methods-to-results link. It does not by itself prove the results are invalid, but conclusions cannot be properly assessed until the paper is rewritten to describe one coherent method."
     },
     {
-      "finding": "The benchmark protocol is insufficiently specified. For ETH3D and Tanks & Temples, the manuscript does not state whether official benchmark submissions were used, which subsets/scenes were evaluated, what preprocessing/postprocessing was applied, and whether all compared methods were run by the authors under identical settings.",
+      "finding": "The claimed contributions and technical pipeline are mutually incompatible across sections. One set of contributions concerns multi-granularity segmentation prior, anchor equidistribution, and iterative local search for deformable patches; another concerns joint hypothesis filtering, iterative correlation refinement with RANSAC/WMF, and edge+line based textureless segmentation.",
       "severity": "MAJOR-REVISION",
-      "justification": "Benchmark outcomes in MVS are highly sensitive to protocol. Without clear protocol specification, comparative claims may change materially. This weakens but does not automatically invalidate the conclusions."
+      "justification": "If confirmed, the paper does not establish what was actually implemented. Ablations and benchmark results become uninterpretable because they may refer to different systems. This could change all conclusions but is fixable if the authors provide a single consistent method description and rerun/report experiments accordingly."
     },
     {
-      "finding": "The use of Semantic-SAM-derived 'depth edges' is conceptually underjustified and methodologically underspecified. The manuscript acknowledges that image/semantic edges need not correspond to true depth discontinuities, yet treats them as deformation constraints without describing validation of edge precision/recall against depth boundaries.",
+      "finding": "Experimental evidence is asserted but not reported in a verifiable way. The manuscript states that quantitative results are presented and best entries are bold/red, yet no actual tables, values, variances, scene-level scores, or benchmark submission identifiers are included in the provided text.",
       "severity": "MAJOR-REVISION",
-      "justification": "If semantic segmentation boundaries are a poor proxy for depth edges, the central mechanism may not work as claimed and could bias patch deformation incorrectly. This concern could alter conclusions, but it is not definitively fatal without further evidence."
+      "justification": "Without the actual numbers and protocol, the state-of-the-art claims cannot be checked. This prevents validation of central empirical conclusions, though it is a reporting deficiency rather than definitive evidence of invalidity."
     },
     {
-      "finding": "The paper does not provide enough detail to reproduce key components such as multi-granularity edge aggregation/correction, sector averaging/anchor clustering, iterative local search optimization, confidence estimator design, or the exact optimization objectives and hyperparameters.",
+      "finding": "The evaluation protocol is under-specified for fair comparison to both learning-based and traditional methods. There is no clear statement of whether compared methods were retrained, run from official checkpoints, evaluated with their default settings, or whether the proposed method uses external pretrained models such as Semantic-SAM unavailable to some baselines.",
       "severity": "MAJOR-REVISION",
-      "justification": "Insufficient algorithmic specification limits reproducibility and independent validation. The method may still be correct, but as presented the results cannot be meaningfully audited or replicated."
+      "justification": "If confirmed, benchmark comparisons may be unfair or incomparable. Use of strong external pretrained segmentation priors can materially alter claims of superiority and generalization. This could change conclusions about state-of-the-art performance."
     },
     {
-      "finding": "There is no clear fairness analysis for comparisons against learning-based and traditional baselines, especially given that the proposed method may depend on a powerful pretrained foundation model (Semantic-SAM).",
+      "finding": "The method depends on Semantic-SAM to extract 'multi-granularity depth edges,' but the manuscript does not justify or validate the assumption that segmentation boundaries reliably approximate depth discontinuities in the tested benchmarks, nor does it quantify failure cases.",
       "severity": "MAJOR-REVISION",
-      "justification": "If the proposed method benefits from external pretrained priors while baselines do not, the comparison may not isolate the claimed methodological advance. This could materially affect claims of superiority and generalization, though it would not necessarily invalidate all findings."
+      "justification": "This is a central methodological assumption. If segmentation boundaries poorly align with true depth edges, the proposed deformation constraint may fail or bias results. The paper needs direct validation because this assumption underpins the claimed performance gain."
     },
     {
-      "finding": "The claim of 'robust generalization ability' is not methodologically demonstrated. The evaluation is limited to standard MVS benchmarks and does not isolate generalization to unseen domains, lighting conditions, or scene types; moreover, dependence on Semantic-SAM may import external-domain knowledge.",
+      "finding": "Core algorithmic details are missing or insufficient for reproduction: how multi-granularity edges are aggregated and corrected, how sectors are defined for anchor equidistribution, how anchors are clustered, how iterative local search scores candidates, and what hyperparameters/termination rules are used.",
       "severity": "MAJOR-REVISION",
-      "justification": "Generalization is a stronger claim than benchmark performance. The current evidence is insufficient and the conclusion could change with proper testing, but this is not itself fatal to all claims about benchmark performance."
+      "justification": "The method cannot be independently reproduced or carefully validated. Missing implementation detail may also hide sensitive choices affecting results. This is a substantive methodological deficiency but not automatic invalidation."
     },
     {
-      "finding": "Runtime and memory comparisons are asserted to be competitive, but the manuscript relegates details to supplementary material and does not state hardware, implementation language, batch size, image resolution normalization, or whether foundation-model inference time is included.",
+      "finding": "The ablation studies are only described narratively without effect sizes, exact metrics, statistical uncertainty, dataset splits, or compute settings. Statements such as one component being 'equally crucial' are unsupported by formal evidence in the text.",
       "severity": "MAJOR-REVISION",
-      "justification": "Efficiency claims can be substantially misleading without standardized measurement. This could change practical conclusions about applicability, but not necessarily the accuracy conclusions."
+      "justification": "Ablation is necessary to support causal claims about which components drive improvements. Without quantitative evidence, the claims are weak and could change if properly analyzed."
     },
     {
-      "finding": "The manuscript relies heavily on qualitative claims ('most complete and realistic reconstructed point clouds') without providing objective evidence in the text beyond vague benchmark assertions.",
+      "finding": "Runtime and memory claims are not documented. The manuscript states runtime is 'comparative' and details are in supplementary material, but the main text lacks hardware, implementation language, image resolution, number of views, or whether preprocessing with Semantic-SAM is included.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Efficiency claims are part of the paper's practical contribution. Excluding expensive preprocessing or using different hardware/settings could materially distort conclusions about competitiveness."
+    },
+    {
+      "finding": "The manuscript mixes benchmark claims across ETH3D, Tanks & Temples Intermediate/Advanced, and Strecha without specifying exact evaluation metrics, submission procedures, or whether all datasets were used for tuning.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Ambiguity in evaluation setup can lead to overfitting or incomparable results. This could affect the validity of the generalization claims."
+    },
+    {
+      "finding": "Use of external foundation model priors (Semantic-SAM) raises a comparability issue: the proposed method may benefit from broad pretraining unavailable to classical baselines, yet the paper presents results as if they directly reflect only the MVS algorithmic contribution.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If confirmed, superiority may partly derive from external pretrained semantic information rather than the proposed geometric method. This does not invalidate the method, but it requires transparent framing and control experiments."
+    },
+    {
+      "finding": "The claim of 'robust generalization ability' is not adequately substantiated. The manuscript reports performance on standard benchmarks only and provides no cross-domain stress test, no unseen-domain protocol, and no analysis of where the method fails.",
       "severity": "MINOR",
-      "justification": "This weakens presentation and evidentiary rigor but would not by itself overturn the main conclusions if quantitative evidence were properly supplied elsewhere."
+      "justification": "This overstates the evidence, but it would mainly require toning down claims or adding experiments. It does not on its own overturn the main empirical results."
     },
     {
-      "finding": "Several claims about limitations of prior methods are speculative or unsupported, e.g., that epipolar-module methods 'often exhibit limited generalization' or that GRU-based methods have constrained spatial recognition, without a controlled analysis.",
+      "finding": "Several references and placeholders are incomplete or malformed ([AUTHOR_1], [JOURNAL]), suggesting the manuscript may not be finalized and that citation context may be unreliable.",
       "severity": "MINOR",
-      "justification": "These are overstated literature characterizations but do not directly invalidate the proposed method’s results."
+      "justification": "This is primarily a reporting/production issue, though it contributes to concerns about care and reproducibility."
     },
     {
-      "finding": "The paper contains substantial writing inconsistencies and duplicated passages, including repeated discussion of APD-MVS and Semantic-SAM-derived depth edges. This raises concern about manuscript integrity and carefulness.",
+      "finding": "There is substantial text-level evidence of patchwork assembly from multiple sources or drafts, including repeated paragraphs, duplicated rationale about depth edges and Semantic-SAM, and abrupt topic shifts. This raises concern that sections may not correspond to the same implemented system.",
       "severity": "MAJOR-REVISION",
-      "justification": "Poor manuscript integrity increases the risk of deeper methodological errors and makes the study hard to audit. While not alone proving invalidity, it requires substantial revision and clarification."
-    },
-    {
-      "finding": "No uncertainty analysis, robustness checks, or failure-case analysis is described for segmentation errors, over-segmentation/under-segmentation, or scenes with non-planar textureless surfaces.",
-      "severity": "MINOR",
-      "justification": "These omissions limit scope and interpretation but are common and would not necessarily change the main conclusions."
+      "justification": "If confirmed, this reinforces that the described methodology may not map to a single actual experiment. The required fix is major rewriting and clear correspondence between method, ablation, and results."
     }
   ],
   "severity_counts": {
-    "RETRACTION-WORTHY": 3,
-    "MAJOR-REVISION": 8,
-    "MINOR": 3
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 11,
+    "MINOR": 2
   },
   "raw_review": {
     "verdict": "flagged",
-    "confidence": 0.98,
-    "reasoning": "The manuscript is methodologically unreliable in its present form because the text appears to conflate at least two different papers/methods (MSP-MVS and TSAR-MVS), yielding incompatible problem formulations, contributions, and experimental claims. This raises serious concerns that the described method, ablations, and benchmarks do not correspond to a single coherent study. In addition, the manuscript lacks essential implementation and evaluation details needed to verify correctness or reproduce the results, and it makes unsupported claims about state-of-the-art performance and generalization without sufficient methodological substantiation. While some issues are reporting-related, the core identity inconsistency of the method is severe enough that the paper’s central conclusions cannot be trusted as presented.",
+    "confidence": 0.97,
+    "reasoning": "The manuscript shows serious internal inconsistency and inadequate methodological reporting. Most importantly, the paper appears to conflate two different methods (MSP-MVS and TSAR-MVS), with incompatible problem formulations, contributions, and pipelines presented under one manuscript. This makes it impossible to determine what method was actually implemented and evaluated. In addition, the experimental section provides only outcome claims without the numerical tables, protocol details, training/inference settings, or enough implementation detail to verify that the benchmark comparisons are fair and reproducible. These issues do not prove the reported results are false, but they do prevent methodological verification and could materially affect the conclusions. I do not see a clear impossible statistical contradiction because the paper does not provide enough quantitative detail; however, the paper in its current form is not methodologically reliable.",
     "findings": [
       {
-        "finding": "The manuscript appears to merge two distinct methods/papers: an MSP-MVS method based on multi-granularity segmentation prior, anchor equidistribution, and iterative local search optimization, and a TSAR-MVS method described as a generalized post-processing pipeline using confidence-based outlier filtering, superpixel-based refinement, and textureless-aware segmentation.",
-        "severity": "RETRACTION-WORTHY",
-        "justification": "If the paper is not describing one coherent method, then the central claims, ablations, and benchmark results cannot be attributed to a well-defined algorithm. This is not a minor clarity issue: it prevents determining what was actually evaluated and whether the reported results support the stated conclusions."
-      },
-      {
-        "finding": "There is a direct contradiction in the method identity and contributions: the opening and closing sections claim the contribution is MSP-MVS, but the middle sections introduce 'Therefore, we propose TSAR-MVS' with a completely different pipeline and different contributions.",
-        "severity": "RETRACTION-WORTHY",
-        "justification": "If confirmed, the paper’s main methodological contribution is fundamentally ambiguous. A reader cannot know whether experiments evaluate MSP-MVS, TSAR-MVS, or a hybrid. This breaks the evidentiary link between method and results, invalidating the central support for the paper’s conclusions."
-      },
-      {
-        "finding": "The experimental evidence is not tied to a clearly specified algorithmic pipeline. The ablation sections discuss MSP-MVS components (SAM prior, anchor equidistribution, ILS), whereas earlier method sections describe TSAR-MVS components (joint hypothesis filter, RANSAC/WMF refinement, Roberts/Hough segmentation).",
-        "severity": "RETRACTION-WORTHY",
-        "justification": "Ablations must isolate components of the evaluated method. If the described ablations and method sections refer to different systems, the empirical support for effectiveness of individual components is uninterpretable. That undermines the paper’s core causal claims about why the method works."
-      },
-      {
-        "finding": "The manuscript claims 'state-of-the-art results' and 'strong generalization capability' but provides no actual quantitative tables, metric definitions, dataset splits, or statistical reporting in the submitted text.",
+        "finding": "The manuscript is internally inconsistent about the identity of the proposed method: the introduction and conclusion present MSP-MVS, but substantial middle sections instead introduce TSAR-MVS, a different post-processing pipeline with different contributions (confidence filtering, superpixel refinement, textureless-aware segmentation).",
         "severity": "MAJOR-REVISION",
-        "justification": "The absence of the numerical evidence itself does not prove the claims are false, but it prevents verification. If addressed with full tables and benchmark protocol details, the conclusions might still hold. As presented, however, the SOTA and generalization claims are unsupported."
+        "justification": "If confirmed, readers cannot know which algorithm was actually evaluated, reproduced, or compared against baselines. This undermines the entire methods-to-results link. It does not by itself prove the results are invalid, but conclusions cannot be properly assessed until the paper is rewritten to describe one coherent method."
       },
       {
-        "finding": "The benchmark protocol is insufficiently specified. For ETH3D and Tanks & Temples, the manuscript does not state whether official benchmark submissions were used, which subsets/scenes were evaluated, what preprocessing/postprocessing was applied, and whether all compared methods were run by the authors under identical settings.",
+        "finding": "The claimed contributions and technical pipeline are mutually incompatible across sections. One set of contributions concerns multi-granularity segmentation prior, anchor equidistribution, and iterative local search for deformable patches; another concerns joint hypothesis filtering, iterative correlation refinement with RANSAC/WMF, and edge+line based textureless segmentation.",
         "severity": "MAJOR-REVISION",
-        "justification": "Benchmark outcomes in MVS are highly sensitive to protocol. Without clear protocol specification, comparative claims may change materially. This weakens but does not automatically invalidate the conclusions."
+        "justification": "If confirmed, the paper does not establish what was actually implemented. Ablations and benchmark results become uninterpretable because they may refer to different systems. This could change all conclusions but is fixable if the authors provide a single consistent method description and rerun/report experiments accordingly."
       },
       {
-        "finding": "The use of Semantic-SAM-derived 'depth edges' is conceptually underjustified and methodologically underspecified. The manuscript acknowledges that image/semantic edges need not correspond to true depth discontinuities, yet treats them as deformation constraints without describing validation of edge precision/recall against depth boundaries.",
+        "finding": "Experimental evidence is asserted but not reported in a verifiable way. The manuscript states that quantitative results are presented and best entries are bold/red, yet no actual tables, values, variances, scene-level scores, or benchmark submission identifiers are included in the provided text.",
         "severity": "MAJOR-REVISION",
-        "justification": "If semantic segmentation boundaries are a poor proxy for depth edges, the central mechanism may not work as claimed and could bias patch deformation incorrectly. This concern could alter conclusions, but it is not definitively fatal without further evidence."
+        "justification": "Without the actual numbers and protocol, the state-of-the-art claims cannot be checked. This prevents validation of central empirical conclusions, though it is a reporting deficiency rather than definitive evidence of invalidity."
       },
       {
-        "finding": "The paper does not provide enough detail to reproduce key components such as multi-granularity edge aggregation/correction, sector averaging/anchor clustering, iterative local search optimization, confidence estimator design, or the exact optimization objectives and hyperparameters.",
+        "finding": "The evaluation protocol is under-specified for fair comparison to both learning-based and traditional methods. There is no clear statement of whether compared methods were retrained, run from official checkpoints, evaluated with their default settings, or whether the proposed method uses external pretrained models such as Semantic-SAM unavailable to some baselines.",
         "severity": "MAJOR-REVISION",
-        "justification": "Insufficient algorithmic specification limits reproducibility and independent validation. The method may still be correct, but as presented the results cannot be meaningfully audited or replicated."
+        "justification": "If confirmed, benchmark comparisons may be unfair or incomparable. Use of strong external pretrained segmentation priors can materially alter claims of superiority and generalization. This could change conclusions about state-of-the-art performance."
       },
       {
-        "finding": "There is no clear fairness analysis for comparisons against learning-based and traditional baselines, especially given that the proposed method may depend on a powerful pretrained foundation model (Semantic-SAM).",
+        "finding": "The method depends on Semantic-SAM to extract 'multi-granularity depth edges,' but the manuscript does not justify or validate the assumption that segmentation boundaries reliably approximate depth discontinuities in the tested benchmarks, nor does it quantify failure cases.",
         "severity": "MAJOR-REVISION",
-        "justification": "If the proposed method benefits from external pretrained priors while baselines do not, the comparison may not isolate the claimed methodological advance. This could materially affect claims of superiority and generalization, though it would not necessarily invalidate all findings."
+        "justification": "This is a central methodological assumption. If segmentation boundaries poorly align with true depth edges, the proposed deformation constraint may fail or bias results. The paper needs direct validation because this assumption underpins the claimed performance gain."
       },
       {
-        "finding": "The claim of 'robust generalization ability' is not methodologically demonstrated. The evaluation is limited to standard MVS benchmarks and does not isolate generalization to unseen domains, lighting conditions, or scene types; moreover, dependence on Semantic-SAM may import external-domain knowledge.",
+        "finding": "Core algorithmic details are missing or insufficient for reproduction: how multi-granularity edges are aggregated and corrected, how sectors are defined for anchor equidistribution, how anchors are clustered, how iterative local search scores candidates, and what hyperparameters/termination rules are used.",
         "severity": "MAJOR-REVISION",
-        "justification": "Generalization is a stronger claim than benchmark performance. The current evidence is insufficient and the conclusion could change with proper testing, but this is not itself fatal to all claims about benchmark performance."
+        "justification": "The method cannot be independently reproduced or carefully validated. Missing implementation detail may also hide sensitive choices affecting results. This is a substantive methodological deficiency but not automatic invalidation."
       },
       {
-        "finding": "Runtime and memory comparisons are asserted to be competitive, but the manuscript relegates details to supplementary material and does not state hardware, implementation language, batch size, image resolution normalization, or whether foundation-model inference time is included.",
+        "finding": "The ablation studies are only described narratively without effect sizes, exact metrics, statistical uncertainty, dataset splits, or compute settings. Statements such as one component being 'equally crucial' are unsupported by formal evidence in the text.",
         "severity": "MAJOR-REVISION",
-        "justification": "Efficiency claims can be substantially misleading without standardized measurement. This could change practical conclusions about applicability, but not necessarily the accuracy conclusions."
+        "justification": "Ablation is necessary to support causal claims about which components drive improvements. Without quantitative evidence, the claims are weak and could change if properly analyzed."
       },
       {
-        "finding": "The manuscript relies heavily on qualitative claims ('most complete and realistic reconstructed point clouds') without providing objective evidence in the text beyond vague benchmark assertions.",
+        "finding": "Runtime and memory claims are not documented. The manuscript states runtime is 'comparative' and details are in supplementary material, but the main text lacks hardware, implementation language, image resolution, number of views, or whether preprocessing with Semantic-SAM is included.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Efficiency claims are part of the paper's practical contribution. Excluding expensive preprocessing or using different hardware/settings could materially distort conclusions about competitiveness."
+      },
+      {
+        "finding": "The manuscript mixes benchmark claims across ETH3D, Tanks & Temples Intermediate/Advanced, and Strecha without specifying exact evaluation metrics, submission procedures, or whether all datasets were used for tuning.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Ambiguity in evaluation setup can lead to overfitting or incomparable results. This could affect the validity of the generalization claims."
+      },
+      {
+        "finding": "Use of external foundation model priors (Semantic-SAM) raises a comparability issue: the proposed method may benefit from broad pretraining unavailable to classical baselines, yet the paper presents results as if they directly reflect only the MVS algorithmic contribution.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, superiority may partly derive from external pretrained semantic information rather than the proposed geometric method. This does not invalidate the method, but it requires transparent framing and control experiments."
+      },
+      {
+        "finding": "The claim of 'robust generalization ability' is not adequately substantiated. The manuscript reports performance on standard benchmarks only and provides no cross-domain stress test, no unseen-domain protocol, and no analysis of where the method fails.",
         "severity": "MINOR",
-        "justification": "This weakens presentation and evidentiary rigor but would not by itself overturn the main conclusions if quantitative evidence were properly supplied elsewhere."
+        "justification": "This overstates the evidence, but it would mainly require toning down claims or adding experiments. It does not on its own overturn the main empirical results."
       },
       {
-        "finding": "Several claims about limitations of prior methods are speculative or unsupported, e.g., that epipolar-module methods 'often exhibit limited generalization' or that GRU-based methods have constrained spatial recognition, without a controlled analysis.",
+        "finding": "Several references and placeholders are incomplete or malformed ([AUTHOR_1], [JOURNAL]), suggesting the manuscript may not be finalized and that citation context may be unreliable.",
         "severity": "MINOR",
-        "justification": "These are overstated literature characterizations but do not directly invalidate the proposed method’s results."
+        "justification": "This is primarily a reporting/production issue, though it contributes to concerns about care and reproducibility."
       },
       {
-        "finding": "The paper contains substantial writing inconsistencies and duplicated passages, including repeated discussion of APD-MVS and Semantic-SAM-derived depth edges. This raises concern about manuscript integrity and carefulness.",
+        "finding": "There is substantial text-level evidence of patchwork assembly from multiple sources or drafts, including repeated paragraphs, duplicated rationale about depth edges and Semantic-SAM, and abrupt topic shifts. This raises concern that sections may not correspond to the same implemented system.",
         "severity": "MAJOR-REVISION",
-        "justification": "Poor manuscript integrity increases the risk of deeper methodological errors and makes the study hard to audit. While not alone proving invalidity, it requires substantial revision and clarification."
-      },
-      {
-        "finding": "No uncertainty analysis, robustness checks, or failure-case analysis is described for segmentation errors, over-segmentation/under-segmentation, or scenes with non-planar textureless surfaces.",
-        "severity": "MINOR",
-        "justification": "These omissions limit scope and interpretation but are common and would not necessarily change the main conclusions."
+        "justification": "If confirmed, this reinforces that the described methodology may not map to a single actual experiment. The required fix is major rewriting and clear correspondence between method, ablation, and results."
       }
     ]
   },
   "meta": {
-    "paper_chars": 24408,
-    "duration_s": 30.05,
-    "n_api_calls": 2,
-    "cost_usd": 0.0584,
-    "total_input_tokens": 12148,
-    "total_output_tokens": 2802,
+    "paper_chars": 23966,
+    "duration_s": 29.31,
+    "n_api_calls": 1,
+    "cost_usd": 0.03,
+    "total_input_tokens": 6015,
+    "total_output_tokens": 1495,
     "calls": [
       {
         "model": "gpt-5.4",
         "provider": "openai",
-        "input_tokens": 6074,
-        "output_tokens": 1260,
-        "cost_usd": 0.027785,
-        "duration_s": 23.86,
-        "label": "paper_020/b3/prover_a"
-      },
-      {
-        "model": "gpt-5.4",
-        "provider": "openai",
-        "input_tokens": 6074,
-        "output_tokens": 1542,
-        "cost_usd": 0.030605,
-        "duration_s": 30.05,
+        "input_tokens": 6015,
+        "output_tokens": 1495,
+        "cost_usd": 0.0299875,
+        "duration_s": 29.31,
         "label": "paper_020/b2/review"
       }
     ]

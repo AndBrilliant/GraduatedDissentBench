@@ -1,0 +1,286 @@
+We propose Multi-Antenna (MA) Towards Inband Shift Keying (TISK): a new multi-carrier radio concept to cope with critical link budgets. In contrast to common proposals that rely on analog beamforming at both transmitter and receiver, MA-TISK does not require beam alignment. The transmitted signals have all constant envelope in continuous time, which allows for efficient, low-cost power amplification and up-conversion. The concept is compatible with any linear PSK-modulation as well as pulse position modulation. Each sub-carrier is sent over a separate antenna that is equipped with a voltage-controlled oscillator. The phases of these oscillators are controlled by digital baseband. Temporal signal combining makes up for the lack of beamforming gain at the transmitter. A common message may be broadcast to many receivers, simultaneously. Demodulation can be efficiently implemented by means of fast Fourier transform.
+
+MA-TISK does not suffer from spectral re-growth issues plaguing other constant envelope modulations like GMSK. Almost rectangular signal spectra similar to those for linear modulation with root-raised-cosine pulse shaping are possible.
+
+For the 100 MHz-wide spectral mask of 5G downlink, QPSK-modulation allows for 160 MBit/s with 5.74 MHz subcarrier spacing when using 16 transmit antennas. The wide carrier spacing makes the signals insensitive to Doppler effects. There is no loss in link budget gain compared to spatial beamforming at the transmitter.
+
+Wireless communication at increasingly high frequencies reduces the effective antenna area due to the smaller wavelengths. As a result, the link budget is reduced even for signal propagation in free space. This effect is often referred to as higher free-space attenuation at higher frequencies.
+
+To make up for the required link budget, i.e. the required antenna area, the common approach is to stack antenna elements into arrays in order to aggregate the effective antenna areas of the individual antenna elements. At the receiver this approach is equivalent to spatial beamforming.
+
+At the transmitter, spatial beamforming is also an option, but not the only one. Though, it is the one option that dominates present day’s literature. This work proposes a different option and wants to convince the reader of its many advantages compared to spatial beamforming at the transmitter. For that purpose, we take a holistic approach factoring in aspects of networking, information theory, digital communications, signal processing, and radio-frequency (RF) design.
+
+We look for an alternative to transmit beamforming, since it comes with various inconvenient issues:
+
+generally the larger the higher is the carrier frequency. The loss can be avoided, if the signal is amplified after phase shifting. This requires a separate power amplifier for each antenna element [5].
+
+3) Wideband RF-Hardware: All antennas send the same data. In order to squeeze the same amount of data into a given volume of space-time, data must change in time at maximum rate, as it does not change in space, at all. Thus, all RF-components must cope with the full channel bandwidth. Violations of the wideband properties may lead to beam squint [6].
+
+4) Signal Crest: Heisenberg’s Uncertainty Principle prohibits a signal to be well-constrained in both time and frequency. A signal whose symbol rate is similar to its bandwidth cannot be strongly constrained in time. A time-constraint like constant envelope, therefore, results in heavy spectral sidelobes, unless it is a complex sinusoid. Vice-versa, spectral confinement results in amplitude variations. With today’s hardware technology, amplitude variations incur major issues [7]:
+
+a) Amplifiers must be backed-off leading to lower power efficiency and higher hardware cost.
+b) Amplifiers convert amplitude variations into nonlinear signal distortions which pose various problems:
+i) They reduce the reliability of signal detection.
+ii) They create spectral re-growth at the transmitter and the need for pre-distortion as countermeasure. This is costly, as it requires wide-band analog hardware, typically several times wider than the channel bandwidth.
+
+5) Exposure to Electromagnetic Radiation: Since transmit beamforming concentrates the signal energy within a confined spatial area, limits on electromagnetic compatibility are more likely hit for the same total radiated power [8]. This puts stricter constraints on the total permissible radiated power and the overall link budget.
+
+6) Reduced Diversity: Forming a narrow beam reduces the number of independent propagation paths significantly [9]. Only strongly correlated propagation paths may remain that do not allow for beneficial multi-path diversity despite having a wide-band signal. To utilize signal paths with significantly different directions of propagation, multiple beams have to be formed. This compromises the overall beamforming gain twice, at both transmitter and receiver. The combining of these paths at the receiver, however, brings back the lost beamforming gain only once, not twice.
+
+## III. STATE OF THE ART
+
+Consider a radio transmitter with \(N\) antenna elements. Let \(x\) be a \(1 \times Q\)-vector of data symbols to be transmitted. Let \(Q\) be an integer multiple of \(N\) to ease notation. We write \(x = [x_0, \ldots, x_{B-1}]\) with \(B = Q/N\) and \(x_b \in \mathbb{C}^{1 \times N}\).
+
+### A. Transmit Beamforming
+
+The transmit signal at data block \(b \in \{0, \ldots, B-1\}\) is
+
+\[
+T_b^{\mathrm{BF}} = \phi x_b
+\tag{1}
+\]
+
+with \(\phi \in \mathbb{C}^{N \times 1}\) containing the phase shifts at the various antennas. The \(N \times N\) space-time transmit matrix \(T_b^{\mathrm{BF}}\) has rank one. Rows and columns indicate space and time, respectively. Despite its \(N^2\) entries, this matrix only contains \(N\) data symbols. Thus, coherent combining of \(N^2\) entries at the receiver to \(N\) data symbols can result in an \(N\)-fold gain in received power. That is commonly done by adjusting the phases in the vector \(\phi\) such that the signals of all antennas coherently superimpose at the receive antenna.
+
+Denoting the propagation channels of the \(N\) antenna elements towards the receiver as \(h \in \mathbb{C}^{1 \times N}\), the received signal becomes
+
+\[
+hT_b^{\mathrm{BF}} = h\phi x_b.
+\tag{2}
+\]
+
+The well-known theory of matched filters implies that \(\phi = h^\dagger\) (complex conjugate transpose of \(h\)) is an optimal choice. If \(\phi\) shall only contain phases, but not amplitudes, the optimum can only be approximated, in general.
+
+For some matrix \( \mathbf{F}_b \in \mathbb{C}^{T \times T} \) to be specified, we can alternatively allow for a more general \( N \times T \) transmit matrix
+
+\[
+\mathbf{T}_b = \operatorname{diag}(\mathbf{x}_b)\mathbf{F}_b \tag{3}
+\]
+
+with \( \operatorname{diag}(\cdot) \) denoting an \( N \times T \) diagonal matrix with the components of its argument as diagonal entries. This transmit matrix contains \( TN \) entries, but only \( N \) data symbols. Under mild conditions on the matrix \( \mathbf{F}_b \), it allows for a coherent superposition of the \( TN \) transmit signals onto \( N \) data symbols that results in a \( T \)-fold improvement of received power. For \( T = N \), the same combining gain as with transmit beamforming is achieved.
+
+The received signal is given by
+
+\[
+h \mathbf{T}_b = \sum_{n=0}^{N-1} h_n x_{b,n} f_{b,n} \tag{4}
+\]
+
+with \( h_n, x_{b,n}, \) and \( f_{b,n} \) denoting the \( n^\text{th} \) component of \( h \), the \( n^\text{th} \) component of \( \mathbf{x}_b \), and the \( n^\text{th} \) row of \( \mathbf{F}_b \), respectively. If the matrix \( \mathbf{F}_b \) is unitary, the data symbols \( x_{b,n} \) can be recovered without crosstalk by the matched filters \( f_{b,n}^\dagger \) that provide the \( T \)-fold improvement of SINR.
+
+While there are plenty of matrices \( \mathbf{F}_b \) that allow for coherent combining, there is a particular one, which provides invaluable advantages with respect to hardware cost and power consumption. That matrix is close to the discrete Fourier transform. Before we get to that particular matrix, let’s look at the exact discrete Fourier transform, first. This means the transmit signal is a kind of orthogonal frequency-division multiplexing (OFDM) where each subcarrier is served by a different antenna.
+
+For data symbols \( x_{b,n} \) on the complex unit circle, i.e. any phase-shift keying, the signal at any antenna has constant envelope in discrete time. This carries over to constant envelope in continuous time, if D/A-conversion is performed by phase-modulation of a voltage-controlled oscillator (VCO). This can be well approximated in discrete-time simulation by oversampling. By contrast, utilizing pulse shaping would lead to amplitude fluctuations in continuous time.
+
+Let
+
+\[
+t_n = [x_{0,n} f_{0,n}, \ldots, x_{B-1,n} f_{B-1,n}] \tag{5}
+\]
+
+be the transmit signal at antenna number \( n \). If all data symbols were identical, this signal would be a complex sinusoid and thus a single tone in the spectral domain. Due to modulation with the data symbols, phase jumps occur when data symbols change. These phase jumps lead to spectral regrowth that is unacceptable for most applications.
+
+Phase jumps can be avoided while preserving constant envelope in continuous time. Note that for any regular PSK constellation \( \mathcal{A} \) there are only as many possible phase jumps as there are constellation points. If we allow the discrete waveform \( f_{b,n} \) to depend on the data symbols of blocks \( b-1 \), \( b \), and \( b+1 \), phase jumps can be avoided. Of course, this means that the subcarrier waveform \( f_{b,n} \) no longer is exactly a complex sinusoid. However, we can keep it as a complex sinusoid most of the time.
+
+Let \( f_{b,n}^{(S)} \in \mathbb{C}^{1 \times ST} \) be a version of \( f_{b,n} \) oversampled by factor \( S \) and appropriately interpolated. For most of the time, it shall be a complex sinusoid, i.e.
+
+\[
+f_{b,n}^{(S)} = [f_{b,n,0}^{(S)}, \ldots, f_{b,n,s}^{(S)}, \ldots, f_{b,n,ST-1}^{(S)}] \tag{6}
+\]
+
+with
+
+\[
+f_{b,n,s}^{(S)} = \begin{cases}
+\exp\left(2\pi j \frac{s n}{S N}\right) & L_s \leq s < ST - L_e \\
+q_{n,s,d} & \text{else}
+\end{cases} \tag{7}
+\]
+
+for some values \( L_s \) and \( L_e \) with \( L = L_s + L_e < ST \), \( d \in \{ 1, \ldots, |A|^2 \} \), and some sequences \( q_{n,s,d} \) to be optimized. There are various ways to find good sequences \( q_{n,s,d} \). One could, for instance, use least-squares optimization in such a way as to minimize the aggregated out-of-band radiation, then, normalize the least-squares solution to unit modulus.
+
+Data-dependent pulse waveforms are proposed for quasi-linear direct-sequence spread-spectrum modulation with constant envelope in [10], [11] and successfully utilized in [12] for satellite communications with a tight spectral mask that asks for a stopband attenuation of \( -70 \) dB.
+
+For demodulation, references [10], [11] propose to correlate the received signal with the subcarrier waveforms averaged over all possible transitions of data symbols. During the period \( L_s \leq s < ST - L_e \), these subcarrier waveforms are all identical, thus, there is no need for averaging. During the time frames \( 0 \leq s < L_s \) and \( ST - L_e \leq s < ST \) the average is given by
+
+\[
+\frac{1}{|A|^2} \sum_{d=1}^{|A|^2} q_{n,s,d}. \tag{8}
+\]
+
+Such a correlator maximizes the received signal power, but ignores effects of interference between subcarriers. Discarding the signal during the transition phase and simply demodulate the data during the period \( L_s \leq s < ST - L_e \) can lead to better performance. Furthermore, this can easily be implemented by means of fast Fourier transform. Performance can also be improved by means of linear [13] or nonlinear [14] multiuser detection.
+
+## IV. MULTI-ANTENNA TOWARDS INBAND SHIFT KEYING
+
+Data dependent subcarrier waveforms can be implemented cost-effectively and power-efficiently in hardware for both transmitter and receiver. For that purpose, we introduce a new modulation technique in this section, which we call Multi-Antenna Towards Inband Shift Keying (MA-TISK).
+
+### A. Transmitter
+
+A cost-effective and power-efficient implementation at the transmitter should avoid multiple RF-chains comprising pre-distortion units, D/A-converters, and linear amplifiers. This is possible as discussed in the sequel.
+
+1) Power Amplifier: Obviously, during the sinusoidal phase, i.e. \( L_s \leq s < SN - L_e \), we do not need D/A-conversion, not even a mixer or upconverter. A high-power oscillator does the job. Such oscillators can be built in class F and can reach efficiencies above 80% in certain frequency ranges. For the period of a single symbol, typically spanning less than a microsecond, they may even not need phase control, but run freely. Only at symbol transitions, they need external steering to adjust the phase in a controlled manner in order to modulate the correct data and to avoid spectral regrowth. Such oscillators are state-of-the-art and called Switched Injection Locked Oscillators (SILO) [15]. Alternatively, one could also use an off-the-shelf VCO with phase-locked loop (PLL).
+
+VCOs are not only cost-effective and energy-efficient, they also reduce the effort of D/A conversion. A VCO converts a feeding voltage into the frequency of an oscillator by a linear mapping. As frequency is the temporal derivative of the phase, the VCO is fed with the phase derivative, also known as the instantaneous frequency. Thus, it integrates the input signal. This integration has two beneficial effects.
+
+- Integration has a low-pass characteristic. It smoothens phase transitions and reduces spectral regrowth.
+- It can be interpreted as the summation part of a \( \Sigma\)-Δ D/A-converter. Thus, with sufficient time resolution, only very few discrete levels are needed for the feeding voltage.
+
+2) Phase Transitions: There are various ways to implement the phase transitions at the transmitter. Some of them are more recommended than others. There is a common principle, though, that should be obeyed to create a favorable spectral shape: Do not rotate phase symmetrically.
+
+A phase shift is a temporary change of the instantaneous frequency towards either lower or higher values. As the instantaneous frequency is the temporal derivative of the phase, the phase shift is the integral of the
+
+temporary deviation of the instantaneous frequency from the subcarrier frequency over the duration of the phase transition. A temporarily higher or lower instantaneous frequency results in a positive or negative phase shift, respectively. Phase shifts by +π/2 are usually implemented by raising the instantaneous frequency, phase shifts by −π/2 by lowering it. This way, the frequency deviation is kept as low as possible and spectral regrowth minimized.
+
+With multiple subcarriers one direction of frequency deviation affects overall spectral regrowth more than the other. Positive and negative frequency deviations predominantly create spectral regrowth at higher and lower frequencies, respectively. Consider, e.g., the rightmost subcarrier. A frequency deviation towards higher frequencies creates out-of-band radiation. A frequency deviation towards lower frequencies, however, only creates interference to adjacent subcarriers. For the leftmost subcarrier, this consideration holds vice versa. Subcarriers further away from the upper and lower end are somewhat less affected by this asymmetry. Still this consideration is relevant for them.
+
+When implementing a phase shift of +π/2 at the rightmost subcarrier, it is better not to raise the instantaneous frequency, but to lower it three times as much as for −π/2. This results in a phase shift of −3π/2 which does not change the transmitted data symbol as phases are indifferent with respect to shifts of 2π. The overall spectral regrowth is even larger than for raising the instantaneous frequency. However, most of that regrowth appears in-band, i.e. within the licensed channel band, where it does not contribute to out-of-band radiation. Similar considerations hold for phase shifts other than ±π/2. For subcarriers left of the center frequency, these considerations hold vice versa. For a QPSK constellation, this means that there are some subcarriers which use phase shifts from {0, −π/2, −π, −3π/2}, some from {+π/2, 0, −π/2, −π}, some from {+π, +π/2, 0, −π/2}, and some from {+3π/2, +π, +π/2, 0}. The set that is used depends on the position of the subcarrier.
+
+The considerations above were exemplified for QPSK. However, they also hold for other PSK constellations. They even apply to pulse position modulation based on phase shifts. They show that some phase-shifts are more costly in terms of overall spectral shape and inter-carrier interference than others. Shaping the probabilities of the various phase shifts towards a non-uniform distribution could therefore turn out beneficial, as well.
+
+a) Round-Robin D/A-Conversion: An obvious way to generate arbitrary phase transitions is to use D/A-converters to steer the VCOs. The number of D/A-converters can be reduced significantly, if symbols transitions at the various antennas are not aligned in time. If transitions occur one after the other, the same D/A-converter can serve multiple antennas in a round-robin fashion. If ST ≥ LN, a single D/A-converter can serve all antennas. However, symbol transitions at one antenna create interference onto the data signals at other antennas. Thus, round-robin switching comes at the cost of significant interference between subcarriers. As a result, we do not recommend to use D/A-converters at all, unless spectral constraints are so tight that they cannot be avoided.
+
+b) Direct Phase Injection: Directly inject the four voltages corresponding to the four phases of the QPSK constellation into the VCO. The (in theory) rectangular voltages can be smoothened by an analog low-pass filter. An RC-low-pass of first order was found to work quite well. This helps to reduce spectral sidelobes at the expense of increased crosstalk between subcarriers. It also serves as a simple model for the limited bandwidths of the cables feeding the VCOs. Out-of-band radiation can be reduced using one period of a squared sine wave instead of a rectangular voltage pulse to feed the VCO. Note that such a sine wave can be generated easily in analog circuitry without the need for D/A-conversion.
+
+Although the transmitter dominates the overall cost, we would also like the receiver to be as cost-effective as possible. This is achieved by a receiver employing analog beamforming towards the transmitter. The combined signal of all antennas is bandlimited to filter adjacent channel signals and noise, fed into an A/D-converter, and sampled.
+
+1) Average Matched Filter: Average matched filters, i.e. filters matched to the average pulse waveforms, see (8), are not recommended. Although they are useful in code-multiplex with random waveforms [10], [11], they lead to severe degradation if partially orthogonal pulse waveforms are used. The average matched filter only
+
+aims to maximize the power of the targeted subcarrier. It ignores the presence of intercarrier interference which can be severe during the phase transitions.
+
+The FFT-based receiver can even be used to simplify the bandlimiting filter in front of the sampling unit. It is sufficient to limit the received signal to twice the channel bandwidth, if we sample twice as fast, and use an FFT of double length.
+
+Even for three or more separable propagation paths, two receiver chains are sufficient to equalize the resulting intersymbol interference. Note that these two receive chains span twice as many dimensions in signal space. This allows to implement frequency domain equalization of intersymbol interference [17] with only little noise enhancement similar to the reverse link of the 4G standard [18], [19]. These methods can be implemented at moderate complexity [20].
+
+In the sequel, we provide a few examples of numerical results to demonstrate the quantitative potential of our concept. In all examples, we use direct phase injection.
+
+We target the spectral mask of 5G downlink at 100 MHz channel bandwidth. We choose a transmit array with N = 16 antennas and QPSK modulation at a symbol rate of 5 Msymbols/s on each subcarrier resulting in a total data rate of 160 Mbit/s. The corresponding symbol period is 200 ns. In order to cope with the spectral mask, we set T = 18.375. This results in a subcarrier spacing of 5.74 MHz. This is, by far, wide enough to be insensitive to Doppler-induced frequency shifts.
+
+The four possible symbol transitions for the leftmost subcarrier are shown in Fig. 2 and compared to its average. The transition starts at t = 200 ns. The phase is changed by temporarily lowering the frequency.
+
+The average power spectral density (PSD) of the transmit signal is shown in Fig. 3. While the aggregate signal is wideband, the transmit signal of any individual antenna element is narrowband. This simplifies the
+
+In some cases, multipath propagation might be intended for, e.g. if diversity reception is required in order to reduce the outage probability. In this case, two or more beams may be formed. This comes at the expense of multiple receiver chains of analog combining, A/D-conversion and FFT.
+
+1) Rectangular Pulse Shape: We take a rectangular pulse of duration 21.8 ns and a first order RC-lowpass filter with cut-off frequency 50 MHz. The resulting instantaneous frequencies are shown in Fig. 1 for two symbol periods and all 16 subcarriers. The instantaneous frequencies change over time, but they always keep between the lowest and highest subcarrier frequency. Changes are predominantly directed towards the center of the frequency band. The RC-lowpass filter distorts the rectangular pulses to an almost triangular shape and the transition period extends significantly beyond the duration of the pulse.
+
+design of the RF-circuitry. The asymmetry of the PSD at the leftmost and rightmost subcarriers is evident. Even the spectrum of the centered carrier is not symmetric, as it performs phase shifts by −π, but not by +π. The overall spectrum shows significantly less sidelobes than the spectra of the individual subcarriers. This is a direct result of the in-band direction of the frequency deviations.
+
+The real parts of the 16 average matched filters are depicted in Fig. 4. The envelope of the matched filters reflects the asymmetry of the rectangular pulse after distortion by the lowpass filter. The real parts of the 16 smoothly windowed FFT-based receive filters are depicted in Fig. 5. The windowing exponent significantly reduces the length of the window. The signal-to-interference ratio (SIR) is found as 9.7 dB and 18.3 dB for the average matched filter and the FFT-based receive filter, respectively. No Gaussian noise was added. Interference is solely due to crosstalk of subcarriers and intersymbol interference. The distribution of the interference is depicted Fig. 6 and found close to Gaussian.
+
+The temporal combining gains of the two receive filters are 12.6 dB and 12.2 dB, respectively. The FFT-based receive filter has a slightly lower combining gain, as it windows the received signal more sharply. This compares favorably to the 12.0 dB combining gain of transmit beamforming with 16 antennas. Note that the temporal combining gain can exceed 12 dB as T = 18.375 > N = 16.
+
+2) Squared Sine Wave Pulse Shape: We take a squared sine wave pulse within [0; π] of duration 43.5 ns and a first order RC-lowpass filter with cut-off frequency 70 MHz. The resulting instantaneous frequencies are shown in Fig. 7 for two symbol periods. The RC-lowpass filter causes a minor distortion of the squared sine wave pulse. The average power spectral density (PSD) of the transmit signal is shown in Fig. 8. Above −50 dB, the PSD is hardly affected by the change of pulse waveform, cf. Fig. 3. Below that, spectral regrowth
+
+We also tried pulse shaping as in Gaussian minimum shift keying (GMSK). These pulses are convolutions of rectangular and Gaussian pulses. Despite their higher complexity, we were unable to identify any significant differences compared to squared sine-wave pulses.
+
+The spectral mask of 5G is quite loose. We give an example of a more sharply defined spectrum. Again, we target 100 MHz channel bandwidth. We choose a transmit array with \(N = 32\) antennas and QPSK modulation at
+
+is suppressed much better. For windowing exponent \(\alpha = 15\), the signal-to-interference-and-noise-ratio (SINR) is found as 9.7 dB and 20.9 dB for the average matched filter and the FFT-based receive filter, respectively. This is a minor improvement. The temporal combining gains of the two receive filters are 12.5 dB and 12.1 dB, respectively. It is almost unaffected by the choice of the pulse shape.
+
+a symbol rate of 2 Msymbols/s on each subcarrier resulting in a total data rate of 128 Mbit/s. This corresponds to a symbol period of 500 ns. The reduced data rate allows for a longer transition period. This results in greatly reduced out-of-band radiation. We set T = 46, which results in a subcarrier spacing of 2.88 MHz. We take a squared sine wave pulse of duration 152 ns and set the cut-off frequency of the RC-lowpass at 70 MHz.
+
+For such a wide pulse, the lowpass filter hardly distorts the pulse shape. Therefore, we use an FFT-based receiver with rectangular windowing. This achieves an SIR of 43 dB. The combining gain is 15 dB, exactly the same as for transmit beamforming.
+
+The average power spectral density (PSD) of the transmit signal is shown in Fig. 9. At 70 MHz, i.e. 40% above the edge of the channel band, the PSD has already decayed to −80 dB. This improvement is paid for with the reduced data rate compared to the previous examples. As a welcome by-product, the intercarrier interference
+
+is greatly reduced.
+
+Data rate R is fundamentally related to signal-to-noise ratio (SNR). For the complex-valued additive white Gaussian noise channel with power constraint, the relation is well-investigated and given by
+
+$$R = \log_2(1 + \text{SNR})$$                                          (9)
+
+If the link budget is critical, SNR is low, that means SNR ≪ 1. In that case, the logarithm in (9) is well approximated by a linear function. We have
+
+$$R \approx \frac{\text{SNR}}{\ln 2}.$$                                     (10)
+
+In that regime, you can hardly do anything better than concatenating standard methods of forward-error correction coding designed for moderate rates with repetition coding in order to get an overall very low rate.
+
+While average data rate is the most important performance figure of a wireless communication system, peak data rate also matters, not least for marketing a new system. There are two major ways to boost data rate, if the overall physical bandwidth (radio spectrum) is fixed: Higher order modulation and spatial multiplexing.
+
+Higher order modulation exploits high SNRs. For systems operating in critical link budgets, this happens rarely, but may occur, e.g., because only a single user is active or the distance between transmitter and receiver is small. However, higher order modulation converts a linear increase in SNR into a logarithmic increase in data rate. That is a bad deal.
+
+``` 
+0  -10  -20  -30  -40  -50  -60  power spectral density [dB]  -70  -80
+-75  -50  -25   0  25  50  75  f [MHz]
+
+Fig. 9: PSD of the transmit signal vs. the spectral mask of 5G. The bold purple line shows the average spectrum. The thin lines in blue, yellow, and red refer to the spectra of the leftmost, a center, and the rightmost subcarrier, respectively.
+
+## B. Spatial Multiplexing
+
+Spatial multiplexing exploits unused antenna elements. If the link budget is better than expected, not all transmit antennas are in need. Some of them can be used for spatial multiplexing. Spatial multiplexing converts a linear increase in the number of antennas into a linear increase in data rate. The problem with spatial multiplexing is twofold:
+
+1) In order to work at all, we either need near-field communication or rich scattering.
+2) Sophisticated signal processing effort is required at either transmitter or receiver.
+
+Both issues are well studied in literature [16].
+
+## C. Transmit Beamforming vs. MA-TISK
+
+For transmit beamforming spatial multiplexing is only an option in the near-field. Since narrow beams are formed at both transmitter and receiver, a rich scattering environment is very difficult to exploit [9]. It does not only require beam alignment for the direct signal path, but also for all the additional propagation paths. The peak data rate of transmit beamforming is, thus, predominantly determined by the performance of higher order modulation. It is compromised by the inefficient conversion of surplus antennas into surplus SNR which results in only a logarithmic surplus of data rate.
+
+MA-TISK can convert a linear increase in link-budget into a linear increase in data rate. The concept is based on omni-directional radiation of signals. There is nothing that prevents rich scattering of the transmit signal. For the implementation of Section IV, we propose to reduce the number of subcarriers and the duration between phase shifts to approximately half, a quarter, an eighth, etc. As a result, not all pulse waveforms will be approximately orthogonal any longer. Pairs, quadruples, 8-tuples, etc. of them will be close to identical. However, for any pair or quadruple, we have two or four receive antennas to match them. In rich scattering or near-field scenarios, a multiplexing gain can be realized. This leads to a linear increase in data rate.
+```
+
+Besides the linear increase of data rate by means of spatial multiplexing, MA-TISK also allows for a logarithmic increase via higher-order phase modulation. Furthermore, the phase modulation can be combined with pulse position modulation.
+
+While MA-TISK has the clear advantage to be able to serve users at different angular locations with the same data, effortlessly, it is less clear how it performs when it is supposed to serve those users with user-specific data. While there are many works, on how to serve multiple users at various angular locations with transmit beamforming architectures, the most advanced and promising one is probably [25]. The architecture uses a reflect antenna, currently also often termed reflecting intelligent surface, in the near-field of few active transmitters. The near-field allows to separate users in both angle and distance.
+
+A generalization of [21] is given in [22]. This reference allows for a more general signal transformation than the fast Fourier transform. However, the general concept to feed the transformed signal into a frequency modulator is kept untouched. The issue with spectral re-growth remains.
+
+OFDM with constant envelope is proposed in [21]. However, the approach there is entirely different from MA-TISK. The authors first create a standard OFDM signal by means of inverse Fourier transform, then feed that into a frequency modulator. While such a system is shown to perform well in terms of error rates after demodulation, the out-of-band radiation is problematic.
+
+Constant envelope OFDM with multi-antenna transmitters is studied in [23]. However, they create and modulate their transmit signals in the same way as [21]. Then, they are distributed to the multiple antenna elements, in parallel.
+
+At first sight, one could think that the angular separation is a feature that makes transmit beamforming superior to MA-TISK in terms of spectral efficiency, in particular, if there are many users to serve. However, that intuition is misguided. Such a system pays for serving K users with different data, instead of a single one, with a loss in beamforming gain by a factor of (at least) K, if the data rate per user stays fixed.¹ There are simply (by a factor of K) fewer antennas available to form a beam towards an individual user. In MA-TISK, users cannot be separated spatially. However, we do not need to split our antennas among users, as they radiate in all directions. Therefore, we can split our subcarriers among users. The K users are separated in frequency. As each antenna corresponds to one subcarrier, this is, in fact, also a split of antennas. In contrast to transmit beamforming, users do not suffer from a loss of combining gain, but they suffer from a loss in data rate by a factor of K. For critical link-budget, however, a loss in data rate and a loss in beamforming gain are equivalent due to (10). Data rate can be converted into link-budget and vice versa. This can be realized, e.g., by adapting the rate of the error correction code by a factor of K. We conclude that the overall performance in terms of rate per user and link-budget will be similar, if the system parameters are properly designed.
+
+Asymmetric frequency shift keying is proposed in [24] for the purpose of reducing out-of-band radiation. However, the authors do not encode information in phase, as we propose, but in frequency. Their design improves the spectral shape at the cost of power efficiency. This is counterproductive, if the link budget is critical.
+
+¹ Alternatively, the system could also pay by a factor of K in data rate, if the beamforming gain stays fixed, e.g., serving the users in time multiplex. However, this option is also available to MA-TISK.
+
+Due to a space-time transmit signal matrix with full rank, coherent combining can be performed at any receiver side, irrespective of location. This avoids the need for beamforming at the transmitter and makes beam alignment obsolete.
+
+Phase shifts are induced by steering voltage-controlled oscillators. This avoids insertion losses that occur when a common power amplifier drives multiple antennas.
+
+Each of the N antenna elements operates only at about (1/N)th of the channel bandwidth. So does the corresponding power oscillator, the cables, and connectors. Narrowband RF hardware is generally less costly than wideband equipment.
+
+The transmit signals have perfect constant envelope. This allows power-efficient and cost-effective RF hardware. This is possible despite the limitations of Heisenberg’s time-frequency uncertainty, as the frequency constraint is not per antenna, but only for the aggregate spectrum of all antennas.
+
+The signal is radiated omnidirectionally in space. There are no areas with critical electromagnetic compatibility, as coherent signal combining only occurs within the receiver.
+
+Diversity is fully exploited in both space, time, and frequency. Although the signals at individual antennas are narrowband, forward-error correction coding can span over the data symbols of multiple antennas. Thus, frequency diversity can be fully exploited. Temporal and spatial diversity is fully exploited as the transmit signal is sent omni-directionally, allowing for multi-path propagation without angular restrictions.
+
+The transmitter does not require explicit D/A-converters. It can directly feed the data symbols into the VCO. The transmit signal is inherently cyclo-stationary. This simplifies synchronization and reduces signaling overhead.
+
+Peak data rate can be made to grow linearly with SNR by means of spatial multiplexing even in far field scenarios, since omni-directional transmission does not prevent rich scattering.
+
+The author would like to thank Martin Vossiek, Christian Carlowitz, and Leonhard Hahn for helpful discussions on millimeter wave circuitry, in general, and SILOs, in particular. Further thanks go to Georg Fischer, Wolfgang Gerstacker, and Bernhard Niemann for fruitful discussions on RF amplifiers, frequency domain equalization, and 6G standardization, respectively. The author would also like to thank Robert Schober for his general support and discussions on D/A-converters.
+
+[10] Ralf R. Müller and Alexander Lampe. Spectral efficiency of random CDMA with constant envelope modulation. International Journal of Electronics and Communications, 65:701–706, 2011.
+
+[11] Ralf R. Müller. On random CDMA with constant envelope. In Proc. of IEEE International Symposium on Information Theory (ISIT), St. Petersburg, Russia, August 2011.
+
+[12] ITU-R M.2092-1. Technical characteristics for a VHF data exchange system in the VHF maritime mobile band. Technical report, International Telecommunication Union, February 2022.
+
+[13] Ralf R. Müller. Multiuser detection for continuous phase CDMA. In Proc. of IEEE Topical Conference on Antennas and Propagation for Wireless Communications, Turin, Italy, September 2011.
+
+[14] G. Gallinaro, N. Alagha, R. Müller, and S. Titomanlio. Quasi constant envelope CDMA for VHF maritime communications via satellite. In Ka and Broadband Communications Conference, Trieste, Italy, October 2017.
+
+[15] Martin Vossiek and Peter Gulden. The switched injection-locked oscillator: A novel versatile concept for wireless transponder and localization systems. IEEE Transactions on Microwave Theory and Techniques, 56(4):859–866, April 2008.
+
+[16] Shu Sun, Theodore S. Rappaport, Robert W. Heath, Andrew Nix, and Sundeep Rangan. MIMO for millimeter-wave wireless communications: Beamforming, spatial multiplexing, or both? IEEE Communications Magazine, 52(12):110–121, December 2014.
+
+[17] Fabrizio Pancaldi, Giorgio M. Vitetta, Reza Kalbasi, Naofal Al-Dhahir, Murat Uysal, and Hakam Mheidat. Single-carrier frequency domain equalization. IEEE Signal Processing Magazine, 25(5):37–56, September 2006.
+
+[18] Mohamed Noune and Andrew Nix. Frequency-domain precoding for single carrier frequency-division multiple access. IEEE Communications Magazine, 47(6):68–74, June 2009.
+
+[19] Michael A. Ruder and Wolfgang H. Gerstacker. Beamforming for energy efficient multiuser MIMO SC-FDMA transmission with QoS requirements. IEEE Communications Letters, 18(3):407–410, March 2014.
+
+[20] Katayoun Neshatpour, Mahdi Shabany, and Glenn Gulak. A high-throughput VLSI architecture for hard and soft SC-FDMA MIMO detectors. IEEE Transactions on Circuits and Systems I: Regular Papers, 62(3):761–770, March 2015.
+
+[21] Steve C. Thompson, Ahsen U. Ahmed, John G. Proakis, James R. Zeidler, and Michael J. Geile. Constant envelope OFDM. IEEE Transactions on Communications, 56(8):1300–1312, August 2008.
+
+[22] Talha Faizur Rahman, Claudio Sacchi, Simone Morosi, and Agnese Mazzinghi. Constant-envelope multicarrier waveforms for millimeter wave 5G applications. IEEE Transactions on Vehicular Technology, 67(10):9406–9420, October 2018.
+
+[23] Yanrui Wang, Yue Xiao, Lilin Dan, and Hao Chen. On the BER performance of constant envelope OFDM in frequency selective MIMO channels with ML detection. IEEE Communications Letters, 12(8):1354–1358, August 2023.
+
+[24] Shikai Zhang and Jianli Jin. Asymmetric binary frequency shift keying and its frequency attribute. In Proceedings of the 2nd International Conference On Systems Engineering and Modeling (ICSEM-13), Beijing, China, April 2013.
+
+[25] Krishan Kumar Tawari and Giuseppe Caire. A new old idea: Beam-steering reflectarrays for efficient sub-THz multiuser MIMO. December 2023. arXiv:2311.18593v2.

@@ -33,12 +33,17 @@ paper as containing any retraction-worthy issue, regardless of whether it
 matched the specific SPOT annotation?" (B1 has no severity classification,
 so lenient is N/A.)
 
+All 20 papers were processed through the same anonymization pipeline before
+being submitted to the protocol. See `anonymization_analysis/` for the
+before/after comparison documenting why earlier mixed-anonymization numbers
+were superseded.
+
 | Condition | N | Strict pass@1 | Recall (micro) | Precision (micro) | Lenient detection |
 |---|---|---|---|---|---|
-| B1 | 20 | 25.0% (5/20) | 23.81% | 0.87% | n/a |
-| B2 | 20 | 20.0% (4/20) | 23.81% | 1.69% | 70.0% |
-| B3 | 20 | 25.0% (5/20) | 23.81% | 1.97% | 70.0% |
-| GD | 20 | 35.0% (7/20) | 33.33% | 2.52% | 75.0% |
+| B1 | 20 | 20.0% (4/20) | 19.05% | 0.71% | n/a |
+| B2 | 20 | 20.0% (4/20) | 23.81% | 1.74% | 80.0% |
+| B3 | 20 | 20.0% (4/20) | 19.05% | 1.65% | 80.0% |
+| GD | 20 | 30.0% (6/20) | 28.57% | 2.09% | 75.0% |
 
 For external context, SPOT (Son et al., 2025) reports o3 with vision access
 attaining 18.4% pass@1 on the full 83-paper SPOT benchmark (precision 6.1%,
@@ -54,9 +59,10 @@ side may surface in prose).
    SPOT annotation? Look at `raw_outputs/<paper_id>/<COND>.json` and
    `ground_truth/spot_ground_truth.csv`. Document any TPs you think are
    spurious.
-2. **Every B3-vs-GD discordant pair is genuine.** Specifically: there are
-   3 papers where GD detected and B3 did not (and 1 where the reverse).
-   For each of the 3 GD-only detections, is the additional finding real?
+2. **Every B3-vs-GD discordant pair is genuine.** Inspect each paper where
+   GD's detection status differs from B3's. For papers where GD detects but
+   B3 does not, confirm GD's hit is real. For papers where B3 detects but
+   GD does not, note the regression.
 3. **The scoring pipeline reproduces the reported aggregates.**
    `scoring/score_outputs.py` runs without API calls and replays the saved
    judge decisions in `scoring/judge_traces.jsonl`. It must produce
@@ -72,45 +78,36 @@ side may surface in prose).
 
 ## Known asymmetries to investigate
 
-These are flagged for you because they may be confounds. **Investigate
-whether they drive the results.**
+### Anonymization is now uniform — but the route here is documented
+All 20 papers were anonymized before the runs whose outputs are in
+`raw_outputs/`. An earlier pilot ran 10 of the 20 on un-anonymized text
+by accident, which produced a striking-looking 30pp gap between the two
+batches. Re-running those 10 papers under anonymization shrank the gap to
+roughly noise: the originally-unanonymized 10 had pass@1 = 20% (B3 / GD)
+when un-anonymized and 10% (B3 / GD) after anonymization, with two
+specific paper-condition cells flipping from detected to missed.
 
-### Anonymization status is split 10/10
-Of the 20 papers, 10 were processed through a text-anonymizer that strips
-author names, journal headers, dates, and affiliations before model review;
-10 were not. See the `anonymized` column in `config/paper_metadata.csv`.
-The auto-stratification in `scoring/score_outputs.py` reports:
+Full record in `anonymization_analysis/`:
+- `pre_fix_anon_split.csv` and `pre_fix_aggregate.md` — the original
+  mixed-anonymization snapshot
+- `post_fix_results.csv` — current state, all anonymized
+- `per_paper_flips.csv` — which specific papers flipped
+- `anonymization_effect.md` — narrative comparison
 
-```
-B1  | anonymized=yes | n=10 | pass@1 = 40.00%
-B1  | anonymized=no  | n=10 | pass@1 = 10.00%
-B2  | anonymized=yes | n=10 | pass@1 = 30.00%
-B2  | anonymized=no  | n=10 | pass@1 = 10.00%
-B3  | anonymized=yes | n=10 | pass@1 = 30.00%
-B3  | anonymized=no  | n=10 | pass@1 = 20.00%
-GD  | anonymized=yes | n=10 | pass@1 = 50.00%
-GD  | anonymized=no  | n=10 | pass@1 = 20.00%
-```
-
-**All four conditions perform substantially better on the anonymized subset.**
-The anonymized subset and the un-anonymized subset were drawn with different
-random seeds and may differ in paper-category composition. Investigate:
-- Is the difference attributable to paper-category distribution? (compare
-  `paper_category` distributions in the two subsets)
-- Is anonymization itself making detection easier (e.g., by removing
-  distractor text)?
-- Or is it a sampling artifact?
-
-Report your finding. If anonymization is doing real work here, the
-aggregated numbers are confounded and need either (a) re-running all
-20 on consistent input or (b) explicit acknowledgment with disaggregated
-reporting.
+The auditable conclusion: the apparent 30pp anonymization advantage was
+sample-composition luck (the anonymized batch happened to have more
+math/CS/physics equation papers, which models detect more easily), not
+anonymization itself helping. **Verify this by inspecting
+`anonymization_analysis/` rather than re-deriving from the current
+uniform-anonymization data.**
 
 ### Sample size
 n=20 is below the threshold where most paired comparisons reach
-conventional significance. The B3-vs-GD McNemar's exact test gives
-p = 0.625 at this n (3 of 4 discordant pairs favor GD). Aggregate
-differences may not survive expansion to a larger sample.
+conventional significance. Aggregate differences may not survive
+expansion to a larger sample. The 10pp B3-vs-GD gap on aggregate
+pass@1 corresponds to 2 papers; verify whether those 2 papers'
+GD-only detections are genuine matches before placing weight on the
+aggregate gap.
 
 ### Single LLM-as-judge for matching
 TP/FP/FN counts depend on a single GPT-5.4 LLM-as-judge run at

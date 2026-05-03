@@ -2,210 +2,225 @@
   "condition": "B1",
   "paper_id": "2402.10307v2",
   "verdict": "flagged",
-  "confidence": 0.94,
-  "reasoning": "The manuscript is conceptually ambitious and contains some methodological positives, including an explicit signal model, attention to hardware realizability, and numerical illustrations tied to practical spectral masks. However, the methodology is substantially weakened by unsupported equivalence claims, incomplete and internally inconsistent system definitions, lack of a rigorous channel/noise/receiver model, reliance on ad hoc waveform choices without reproducible optimization procedures, and numerical evidence that is too limited to validate the central claims. Several conclusions appear to be based on heuristic arguments rather than controlled comparisons or proofs. As written, the work does not provide a sufficiently rigorous methodological foundation for its strongest performance claims.",
+  "confidence": 0.91,
+  "reasoning": "The manuscript is ambitious and contains some potentially interesting methodological ideas—especially the use of per-antenna narrowband constant-envelope subcarriers, transition shaping to control out-of-band emissions, and FFT-based demodulation. However, the methodology is not yet rigorous enough to support several central claims. Key weaknesses are the absence of a formal system model, incomplete derivations for the claimed combining/link-budget equivalence to transmit beamforming, limited and non-reproducible simulation methodology, and reliance on qualitative hardware arguments without validated impairment models. Several conclusions are asserted under restrictive or unstated assumptions (single-user broadcast, ideal receiver beamforming, flat/known channels, perfect oscillator control, no synchronization penalties), but these assumptions are not clearly isolated from the general claims. As written, the paper overclaims beyond the evidence provided.",
   "findings": [
     {
-      "finding": "Strength: The manuscript attempts a cross-layer methodology, connecting waveform design, RF implementation, receiver processing, and system-level use cases rather than evaluating only one layer in isolation."
+      "finding": "Methodological strength: The manuscript articulates a clear design objective—constant-envelope, multi-antenna multicarrier transmission without transmit beam alignment—and connects waveform design, RF implementation, and receiver processing in a cross-layer manner."
     },
     {
-      "finding": "Strength: A mathematical transmit model is provided in Eqs. (1)–(4), which helps clarify the intended relation between beamforming and the proposed space-time/frequency construction."
+      "finding": "Methodological strength: The transmit construction using T_b = diag(x_b)F_b is a useful unifying framework that places the proposal relative to beamforming and orthogonal transforms."
     },
     {
-      "finding": "Strength: The authors compare alternative receiver strategies (average matched filter vs FFT-based receiver) and report both combining gain and interference levels, which is methodologically better than reporting only a single favorable detector."
+      "finding": "Methodological strength: The idea of data-dependent phase-transition shaping to reduce spectral regrowth is technically relevant and reflects awareness that continuous-time constant-envelope behavior, not just discrete-time constant modulus, is the real RF constraint."
     },
     {
-      "finding": "Strength: Numerical examples are anchored to a concrete engineering target (100 MHz 5G spectral mask), making the evaluation more application-facing than purely abstract."
+      "finding": "Methodological strength: The manuscript compares at least two transition pulse shapes (rectangular and squared-sine with RC filtering), which is a positive step toward design-space exploration."
     },
     {
-      "finding": "Strength: Hardware considerations are explicit: constant-envelope operation, VCO/SILO implementation, and narrowband per-antenna operation are framed as design constraints rather than afterthoughts."
+      "finding": "Methodological strength: The receiver discussion acknowledges inter-carrier/inter-symbol interference and compares average matched filtering with FFT-based receive filtering rather than assuming perfect orthogonality."
     },
     {
-      "finding": "Strength: The manuscript acknowledges trade-offs between out-of-band radiation, pulse shape, transition duration, and intercarrier interference, which is an important methodological attitude."
+      "finding": "Methodological strength: Numerical examples report both spectral behavior and effective combining/interference metrics, which is preferable to showing BER alone."
     },
     {
-      "finding": "Weakness: The central claim of 'no loss in link budget gain compared to spatial beamforming at the transmitter' is not established rigorously. The manuscript gives heuristic combining-gain arguments, but no end-to-end comparison under equal total radiated power, same channel, same receiver aperture, same CSI assumptions, same bandwidth efficiency, and same implementation constraints."
+      "finding": "Major weakness: The paper lacks a complete end-to-end mathematical system model. Continuous-time transmit signals, receive sampling model, channel model, synchronization assumptions, and noise/interference model are only partially specified, making it difficult to verify claims or reproduce results."
     },
     {
-      "finding": "Weakness: The formulation around T, N, Q, and matrix dimensions is inconsistent or unclear. For example, diag(x_b) is described as an N x T diagonal matrix although x_b has N entries; later T is set to non-integer values such as 18.375 despite being used as a matrix dimension and FFT-related parameter. This undermines reproducibility and mathematical correctness."
+      "finding": "Major weakness: Core claims such as 'no loss in link budget gain compared to spatial beamforming at the transmitter' are not rigorously proven. The manuscript shows a temporal combining gain numerically similar to beamforming in selected examples, but does not establish equivalence under general channel, noise, bandwidth, or implementation conditions."
     },
     {
-      "finding": "Weakness: The manuscript shifts between discrete-time, continuous-time, oversampled, and hardware-domain descriptions without a unified formal signal model. Critical objects such as f_{b,n}, f_{b,n}^{(S)}, transition intervals, and receiver windows are not defined precisely enough for replication."
+      "finding": "Major weakness: The analysis conflates several notions of gain—received power gain, SINR gain, matched-filter gain, temporal combining gain, and link-budget gain—without consistently defining them. This obscures whether comparisons to beamforming are fair and physically equivalent."
     },
     {
-      "finding": "Weakness: The proposed data-dependent transition waveforms q_{n,s,d} are said to be optimizable by least squares and normalization, but no actual optimization problem, constraints, objective, initialization, or resulting coefficients are provided. This is a major reproducibility gap because spectral performance depends critically on these choices."
+      "finding": "Major weakness: The manuscript does not provide a fair baseline methodology for comparison against conventional systems. There is no matched comparison to beamforming with realistic PA backoff, digital predistortion, hybrid beamforming, CE-OFDM variants, or single-carrier alternatives under equal EIRP, equal occupied bandwidth, equal hardware constraints, and equal error-rate targets."
     },
     {
-      "finding": "Weakness: The receiver methodology is incomplete. It is claimed that FFT demodulation can outperform average matched filtering, but the exact FFT window, synchronization assumptions, channel estimation method, equalization strategy, and treatment of phase-transition regions are not fully specified."
+      "finding": "Major weakness: Simulation methodology is insufficiently documented. Important details are missing, including oversampling factor, exact PSD estimation method, Monte Carlo length, channel realizations, receive filter/window definitions, timing/frequency offsets, normalization conventions, and whether results are averaged over data and channels."
     },
     {
-      "finding": "Weakness: Most numerical results are interference-only (sometimes explicitly with no Gaussian noise added), yet the manuscript makes broad claims about link budget, SINR, and critical low-SNR operation. Performance in AWGN and fading channels is not systematically evaluated."
+      "finding": "Major weakness: Several reported results are based on interference-only cases ('No Gaussian noise was added'), yet the paper draws broad conclusions about SINR, link budget, and practical performance. Noise-limited and fading-limited regimes are not systematically studied."
     },
     {
-      "finding": "Weakness: There are no BER/BLER/throughput curves versus SNR, Doppler, phase noise, CFO, timing error, oscillator mismatch, quantization, PA nonidealities, or channel selectivity. This is a serious omission given that the proposal is motivated by practical robustness and hardware simplicity."
+      "finding": "Major weakness: There is no BER/BLER/capacity-style performance evaluation over realistic channels. Showing PSD and SIR is not sufficient to validate communication performance, especially when claiming equivalence or superiority over beamforming."
     },
     {
-      "finding": "Weakness: The manuscript repeatedly asserts that wide subcarrier spacing makes the system insensitive to Doppler, but no quantitative Doppler analysis is provided. Sensitivity should be shown relative to symbol duration, subcarrier spacing, oscillator drift, and receiver processing, not merely stated."
+      "finding": "Major weakness: Channel assumptions are unclear and likely favorable. The derivation around hT_b and matched filters appears to assume coherent reception with known channels and implicitly benign propagation. The effects of frequency selectivity, phase noise, oscillator drift, delay spread, and imperfect CSI are not quantified."
     },
     {
-      "finding": "Weakness: The claim that beam alignment is unnecessary is only partially true methodologically, because the proposed receiver section still assumes analog beamforming toward the transmitter. This shifts, rather than eliminates, alignment requirements in many scenarios."
+      "finding": "Major weakness: The receiver architecture assumption is asymmetrical and potentially unrealistic relative to the headline claim of 'no beam alignment.' The text proposes analog beamforming at the receiver toward the transmitter, which still requires directional alignment/CSI at least on the receive side."
     },
     {
-      "finding": "Weakness: The argument that temporal combining fully substitutes for transmit beamforming is not rigorously justified in multipath, multiuser, or mobility settings. Coherent temporal combining generally requires stable channels and synchronization over the combining interval, which are not analyzed."
+      "finding": "Major weakness: The manuscript repeatedly makes hardware-efficiency claims (e.g., VCO/SILO implementation, no DAC need, >80% efficient oscillators, lower RF cost) without a validated impairment model or measured prototype data. Methodologically, these are hypotheses rather than demonstrated results."
     },
     {
-      "finding": "Weakness: Comparisons against transmit beamforming are not fair or complete. The manuscript critiques beamforming using broad qualitative disadvantages, but does not benchmark against modern hybrid/digital beamforming with realistic RF impairments, codebooks, calibration, or multicast formulations."
+      "finding": "Major weakness: The proposal depends critically on precise phase transition control and per-antenna oscillator steering, yet there is no quantitative sensitivity analysis for phase noise, finite tuning resolution, nonlinearity of VCO control law, PLL dynamics, lock time, oscillator coupling, or antenna-to-antenna mismatch."
     },
     {
-      "finding": "Weakness: Several system-level claims are speculative, especially that omni-directional transmission preserves diversity better and that MA-TISK enables linear growth of peak data rate with SNR in far-field via spatial multiplexing. These claims are not supported by channel models, rank analyses, or achievable-rate derivations."
+      "finding": "Major weakness: The assertion that signals are 'constant envelope in continuous time' is not fully established. It depends on specific VCO dynamics and transition shaping, but the manuscript uses oversampled discrete-time approximations instead of a physically validated continuous-time RF model."
     },
     {
-      "finding": "Weakness: Use of Shannon's low-SNR approximation in Eqs. (9)–(10) to argue equivalence between rate loss and beamforming-gain loss is too crude for the manuscript's broader conclusions. The approximation applies only in a narrow regime and does not directly justify the multiuser resource-allocation claims presented."
+      "finding": "Major weakness: The discussion of spectral regrowth and 'almost rectangular spectra' is qualitative. Compliance with spectral masks is shown only in selected examples, without parameter sweeps or worst-case transition analysis. It is unclear how robust mask compliance is across data sequences and hardware tolerances."
     },
     {
-      "finding": "Weakness: The treatment of spectral masks relies on average PSD plots, but compliance usually depends on measurement bandwidth, peak/percentile behavior, implementation variance, and spectral regrowth under modulation patterns. These aspects are not reported."
+      "finding": "Major weakness: The use of non-integer T=18.375 is not well motivated or formalized within the matrix notation where F_b is described as T×T. The dimensional consistency of the model becomes unclear once T is non-integer."
     },
     {
-      "finding": "Weakness: The manuscript does not provide confidence intervals, Monte Carlo settings, number of simulated packets/symbols, or statistical methodology. Reported values such as SIR=18.3 dB or combining gain=12.2 dB appear as point estimates without uncertainty."
+      "finding": "Major weakness: The notation is inconsistent in places (e.g., T versus N versus SN in transition intervals; diag(x_b) dimensions; switching between discrete-time blocks and continuous-time symbol periods), which weakens methodological clarity."
     },
     {
-      "finding": "Weakness: There is no complexity analysis. Since the work positions itself as lower-cost and lower-power than beamforming, it should quantify transmitter/receiver complexity, synchronization burden, number of oscillators, calibration effort, and digital processing load."
+      "finding": "Major weakness: Claims about Doppler robustness are asserted from wide subcarrier spacing alone, without formal analysis of time selectivity, phase tracking, CFO tolerance, or comparison to beamformed systems."
     },
     {
-      "finding": "Weakness: The assumption that each antenna/subcarrier operates over only 1/N of the channel bandwidth is methodologically incomplete because transition dynamics, control signals, and aggregate synchronization can reintroduce broadband requirements elsewhere in the chain."
+      "finding": "Major weakness: The manuscript invokes Shannon's low-SNR approximation to argue rate-link-budget equivalence for multiuser resource splitting, but this is too coarse to justify system-level equivalence claims. It ignores finite constellations, coding gaps, latency, scheduling overhead, and practical receiver losses."
     },
     {
-      "finding": "Weakness: The paper lacks experimental validation or at least circuit-level simulation for the key hardware premise: direct phase injection into VCOs/SILOs with the claimed spectral purity and controllability across many antennas."
+      "finding": "Major weakness: The diversity claims are overstated. Omnidirectional transmission may expose more paths, but whether space/time/frequency diversity is 'fully exploited' depends on coding, interleaving, receiver structure, channel selectivity, and correlation. No diversity-order analysis is provided."
     },
     {
-      "finding": "Weakness: Important practical impairments are omitted: antenna coupling, per-oscillator phase noise, frequency offsets between antennas, startup/settling transients of SILOs/PLLs, mutual synchronization, and sensitivity to analog low-pass tolerances."
+      "finding": "Major weakness: The statement that peak data rate can grow linearly with SNR via spatial multiplexing 'even in far field scenarios' is not established for the proposed architecture. It relies on rich scattering and receiver resources not modeled or simulated in the paper."
     },
     {
-      "finding": "Weakness: The manuscript sometimes overstates conclusions beyond the evidence, e.g., 'no areas with critical electromagnetic compatibility,' 'diversity is fully exploited,' and 'beam alignment obsolete.' These are strong claims that require formal definitions and scenario-dependent validation."
+      "finding": "Major weakness: The argument that beamforming reduces diversity and worsens EMC exposure is presented as generally true, but these are context-dependent system-level claims. No methodology or references are used to quantify these tradeoffs under the paper's operating assumptions."
     },
     {
-      "finding": "Weakness: The presentation appears to contain editorial fragmentation and missing text around key methodological sections, making it difficult to determine the exact procedure used in simulations and design choices."
+      "finding": "Major weakness: The manuscript appears to compare temporal combining gain greater than 12 dB for T>N against 16-antenna beamforming gain of 12 dB without fully accounting for symbol duration, occupied bandwidth, and energy normalization. This raises fairness concerns in the comparison."
     },
     {
-      "finding": "Overall methodological judgment: promising idea generation and useful engineering intuition, but insufficient rigor, reproducibility, and evidentiary support for the manuscript's main performance claims."
+      "finding": "Minor weakness: The literature review is selective and often framed adversarially; methodologically, it does not systematically position the proposal against the closest constant-envelope multicarrier, SC-FDMA, CPM, or hybrid-beamforming approaches using common evaluation criteria."
+    },
+    {
+      "finding": "Minor weakness: The paper lacks ablation studies showing which ingredients are essential: asymmetric phase rotation, direct phase injection, RC filtering, FFT windowing, subcarrier spacing choice, and transition duration."
+    },
+    {
+      "finding": "Minor weakness: There is no complexity analysis quantifying transmitter/receiver power, calibration burden, synchronization overhead, or scalability with antenna count relative to beamforming baselines."
+    },
+    {
+      "finding": "Minor weakness: Some claims are presented as universal despite being validated only for QPSK-centric examples. Extension to other PSK orders and pulse position modulation is asserted but not demonstrated."
+    },
+    {
+      "finding": "Overall methodological assessment: The work contains a novel and potentially valuable concept, but the current evidence base is preliminary. To become methodologically sound, it would need a precise system model, reproducible simulation setup, realistic impairment/channel studies, fair baseline comparisons, and either rigorous proofs or hardware measurements supporting the central equivalence and efficiency claims."
     }
   ],
   "severity_counts": null,
   "raw_review": {
     "verdict": "flagged",
-    "confidence": 0.94,
-    "reasoning": "The manuscript is conceptually ambitious and contains some methodological positives, including an explicit signal model, attention to hardware realizability, and numerical illustrations tied to practical spectral masks. However, the methodology is substantially weakened by unsupported equivalence claims, incomplete and internally inconsistent system definitions, lack of a rigorous channel/noise/receiver model, reliance on ad hoc waveform choices without reproducible optimization procedures, and numerical evidence that is too limited to validate the central claims. Several conclusions appear to be based on heuristic arguments rather than controlled comparisons or proofs. As written, the work does not provide a sufficiently rigorous methodological foundation for its strongest performance claims.",
+    "confidence": 0.91,
+    "reasoning": "The manuscript is ambitious and contains some potentially interesting methodological ideas—especially the use of per-antenna narrowband constant-envelope subcarriers, transition shaping to control out-of-band emissions, and FFT-based demodulation. However, the methodology is not yet rigorous enough to support several central claims. Key weaknesses are the absence of a formal system model, incomplete derivations for the claimed combining/link-budget equivalence to transmit beamforming, limited and non-reproducible simulation methodology, and reliance on qualitative hardware arguments without validated impairment models. Several conclusions are asserted under restrictive or unstated assumptions (single-user broadcast, ideal receiver beamforming, flat/known channels, perfect oscillator control, no synchronization penalties), but these assumptions are not clearly isolated from the general claims. As written, the paper overclaims beyond the evidence provided.",
     "findings": [
       {
-        "finding": "Strength: The manuscript attempts a cross-layer methodology, connecting waveform design, RF implementation, receiver processing, and system-level use cases rather than evaluating only one layer in isolation."
+        "finding": "Methodological strength: The manuscript articulates a clear design objective—constant-envelope, multi-antenna multicarrier transmission without transmit beam alignment—and connects waveform design, RF implementation, and receiver processing in a cross-layer manner."
       },
       {
-        "finding": "Strength: A mathematical transmit model is provided in Eqs. (1)–(4), which helps clarify the intended relation between beamforming and the proposed space-time/frequency construction."
+        "finding": "Methodological strength: The transmit construction using T_b = diag(x_b)F_b is a useful unifying framework that places the proposal relative to beamforming and orthogonal transforms."
       },
       {
-        "finding": "Strength: The authors compare alternative receiver strategies (average matched filter vs FFT-based receiver) and report both combining gain and interference levels, which is methodologically better than reporting only a single favorable detector."
+        "finding": "Methodological strength: The idea of data-dependent phase-transition shaping to reduce spectral regrowth is technically relevant and reflects awareness that continuous-time constant-envelope behavior, not just discrete-time constant modulus, is the real RF constraint."
       },
       {
-        "finding": "Strength: Numerical examples are anchored to a concrete engineering target (100 MHz 5G spectral mask), making the evaluation more application-facing than purely abstract."
+        "finding": "Methodological strength: The manuscript compares at least two transition pulse shapes (rectangular and squared-sine with RC filtering), which is a positive step toward design-space exploration."
       },
       {
-        "finding": "Strength: Hardware considerations are explicit: constant-envelope operation, VCO/SILO implementation, and narrowband per-antenna operation are framed as design constraints rather than afterthoughts."
+        "finding": "Methodological strength: The receiver discussion acknowledges inter-carrier/inter-symbol interference and compares average matched filtering with FFT-based receive filtering rather than assuming perfect orthogonality."
       },
       {
-        "finding": "Strength: The manuscript acknowledges trade-offs between out-of-band radiation, pulse shape, transition duration, and intercarrier interference, which is an important methodological attitude."
+        "finding": "Methodological strength: Numerical examples report both spectral behavior and effective combining/interference metrics, which is preferable to showing BER alone."
       },
       {
-        "finding": "Weakness: The central claim of 'no loss in link budget gain compared to spatial beamforming at the transmitter' is not established rigorously. The manuscript gives heuristic combining-gain arguments, but no end-to-end comparison under equal total radiated power, same channel, same receiver aperture, same CSI assumptions, same bandwidth efficiency, and same implementation constraints."
+        "finding": "Major weakness: The paper lacks a complete end-to-end mathematical system model. Continuous-time transmit signals, receive sampling model, channel model, synchronization assumptions, and noise/interference model are only partially specified, making it difficult to verify claims or reproduce results."
       },
       {
-        "finding": "Weakness: The formulation around T, N, Q, and matrix dimensions is inconsistent or unclear. For example, diag(x_b) is described as an N x T diagonal matrix although x_b has N entries; later T is set to non-integer values such as 18.375 despite being used as a matrix dimension and FFT-related parameter. This undermines reproducibility and mathematical correctness."
+        "finding": "Major weakness: Core claims such as 'no loss in link budget gain compared to spatial beamforming at the transmitter' are not rigorously proven. The manuscript shows a temporal combining gain numerically similar to beamforming in selected examples, but does not establish equivalence under general channel, noise, bandwidth, or implementation conditions."
       },
       {
-        "finding": "Weakness: The manuscript shifts between discrete-time, continuous-time, oversampled, and hardware-domain descriptions without a unified formal signal model. Critical objects such as f_{b,n}, f_{b,n}^{(S)}, transition intervals, and receiver windows are not defined precisely enough for replication."
+        "finding": "Major weakness: The analysis conflates several notions of gain—received power gain, SINR gain, matched-filter gain, temporal combining gain, and link-budget gain—without consistently defining them. This obscures whether comparisons to beamforming are fair and physically equivalent."
       },
       {
-        "finding": "Weakness: The proposed data-dependent transition waveforms q_{n,s,d} are said to be optimizable by least squares and normalization, but no actual optimization problem, constraints, objective, initialization, or resulting coefficients are provided. This is a major reproducibility gap because spectral performance depends critically on these choices."
+        "finding": "Major weakness: The manuscript does not provide a fair baseline methodology for comparison against conventional systems. There is no matched comparison to beamforming with realistic PA backoff, digital predistortion, hybrid beamforming, CE-OFDM variants, or single-carrier alternatives under equal EIRP, equal occupied bandwidth, equal hardware constraints, and equal error-rate targets."
       },
       {
-        "finding": "Weakness: The receiver methodology is incomplete. It is claimed that FFT demodulation can outperform average matched filtering, but the exact FFT window, synchronization assumptions, channel estimation method, equalization strategy, and treatment of phase-transition regions are not fully specified."
+        "finding": "Major weakness: Simulation methodology is insufficiently documented. Important details are missing, including oversampling factor, exact PSD estimation method, Monte Carlo length, channel realizations, receive filter/window definitions, timing/frequency offsets, normalization conventions, and whether results are averaged over data and channels."
       },
       {
-        "finding": "Weakness: Most numerical results are interference-only (sometimes explicitly with no Gaussian noise added), yet the manuscript makes broad claims about link budget, SINR, and critical low-SNR operation. Performance in AWGN and fading channels is not systematically evaluated."
+        "finding": "Major weakness: Several reported results are based on interference-only cases ('No Gaussian noise was added'), yet the paper draws broad conclusions about SINR, link budget, and practical performance. Noise-limited and fading-limited regimes are not systematically studied."
       },
       {
-        "finding": "Weakness: There are no BER/BLER/throughput curves versus SNR, Doppler, phase noise, CFO, timing error, oscillator mismatch, quantization, PA nonidealities, or channel selectivity. This is a serious omission given that the proposal is motivated by practical robustness and hardware simplicity."
+        "finding": "Major weakness: There is no BER/BLER/capacity-style performance evaluation over realistic channels. Showing PSD and SIR is not sufficient to validate communication performance, especially when claiming equivalence or superiority over beamforming."
       },
       {
-        "finding": "Weakness: The manuscript repeatedly asserts that wide subcarrier spacing makes the system insensitive to Doppler, but no quantitative Doppler analysis is provided. Sensitivity should be shown relative to symbol duration, subcarrier spacing, oscillator drift, and receiver processing, not merely stated."
+        "finding": "Major weakness: Channel assumptions are unclear and likely favorable. The derivation around hT_b and matched filters appears to assume coherent reception with known channels and implicitly benign propagation. The effects of frequency selectivity, phase noise, oscillator drift, delay spread, and imperfect CSI are not quantified."
       },
       {
-        "finding": "Weakness: The claim that beam alignment is unnecessary is only partially true methodologically, because the proposed receiver section still assumes analog beamforming toward the transmitter. This shifts, rather than eliminates, alignment requirements in many scenarios."
+        "finding": "Major weakness: The receiver architecture assumption is asymmetrical and potentially unrealistic relative to the headline claim of 'no beam alignment.' The text proposes analog beamforming at the receiver toward the transmitter, which still requires directional alignment/CSI at least on the receive side."
       },
       {
-        "finding": "Weakness: The argument that temporal combining fully substitutes for transmit beamforming is not rigorously justified in multipath, multiuser, or mobility settings. Coherent temporal combining generally requires stable channels and synchronization over the combining interval, which are not analyzed."
+        "finding": "Major weakness: The manuscript repeatedly makes hardware-efficiency claims (e.g., VCO/SILO implementation, no DAC need, >80% efficient oscillators, lower RF cost) without a validated impairment model or measured prototype data. Methodologically, these are hypotheses rather than demonstrated results."
       },
       {
-        "finding": "Weakness: Comparisons against transmit beamforming are not fair or complete. The manuscript critiques beamforming using broad qualitative disadvantages, but does not benchmark against modern hybrid/digital beamforming with realistic RF impairments, codebooks, calibration, or multicast formulations."
+        "finding": "Major weakness: The proposal depends critically on precise phase transition control and per-antenna oscillator steering, yet there is no quantitative sensitivity analysis for phase noise, finite tuning resolution, nonlinearity of VCO control law, PLL dynamics, lock time, oscillator coupling, or antenna-to-antenna mismatch."
       },
       {
-        "finding": "Weakness: Several system-level claims are speculative, especially that omni-directional transmission preserves diversity better and that MA-TISK enables linear growth of peak data rate with SNR in far-field via spatial multiplexing. These claims are not supported by channel models, rank analyses, or achievable-rate derivations."
+        "finding": "Major weakness: The assertion that signals are 'constant envelope in continuous time' is not fully established. It depends on specific VCO dynamics and transition shaping, but the manuscript uses oversampled discrete-time approximations instead of a physically validated continuous-time RF model."
       },
       {
-        "finding": "Weakness: Use of Shannon's low-SNR approximation in Eqs. (9)–(10) to argue equivalence between rate loss and beamforming-gain loss is too crude for the manuscript's broader conclusions. The approximation applies only in a narrow regime and does not directly justify the multiuser resource-allocation claims presented."
+        "finding": "Major weakness: The discussion of spectral regrowth and 'almost rectangular spectra' is qualitative. Compliance with spectral masks is shown only in selected examples, without parameter sweeps or worst-case transition analysis. It is unclear how robust mask compliance is across data sequences and hardware tolerances."
       },
       {
-        "finding": "Weakness: The treatment of spectral masks relies on average PSD plots, but compliance usually depends on measurement bandwidth, peak/percentile behavior, implementation variance, and spectral regrowth under modulation patterns. These aspects are not reported."
+        "finding": "Major weakness: The use of non-integer T=18.375 is not well motivated or formalized within the matrix notation where F_b is described as T×T. The dimensional consistency of the model becomes unclear once T is non-integer."
       },
       {
-        "finding": "Weakness: The manuscript does not provide confidence intervals, Monte Carlo settings, number of simulated packets/symbols, or statistical methodology. Reported values such as SIR=18.3 dB or combining gain=12.2 dB appear as point estimates without uncertainty."
+        "finding": "Major weakness: The notation is inconsistent in places (e.g., T versus N versus SN in transition intervals; diag(x_b) dimensions; switching between discrete-time blocks and continuous-time symbol periods), which weakens methodological clarity."
       },
       {
-        "finding": "Weakness: There is no complexity analysis. Since the work positions itself as lower-cost and lower-power than beamforming, it should quantify transmitter/receiver complexity, synchronization burden, number of oscillators, calibration effort, and digital processing load."
+        "finding": "Major weakness: Claims about Doppler robustness are asserted from wide subcarrier spacing alone, without formal analysis of time selectivity, phase tracking, CFO tolerance, or comparison to beamformed systems."
       },
       {
-        "finding": "Weakness: The assumption that each antenna/subcarrier operates over only 1/N of the channel bandwidth is methodologically incomplete because transition dynamics, control signals, and aggregate synchronization can reintroduce broadband requirements elsewhere in the chain."
+        "finding": "Major weakness: The manuscript invokes Shannon's low-SNR approximation to argue rate-link-budget equivalence for multiuser resource splitting, but this is too coarse to justify system-level equivalence claims. It ignores finite constellations, coding gaps, latency, scheduling overhead, and practical receiver losses."
       },
       {
-        "finding": "Weakness: The paper lacks experimental validation or at least circuit-level simulation for the key hardware premise: direct phase injection into VCOs/SILOs with the claimed spectral purity and controllability across many antennas."
+        "finding": "Major weakness: The diversity claims are overstated. Omnidirectional transmission may expose more paths, but whether space/time/frequency diversity is 'fully exploited' depends on coding, interleaving, receiver structure, channel selectivity, and correlation. No diversity-order analysis is provided."
       },
       {
-        "finding": "Weakness: Important practical impairments are omitted: antenna coupling, per-oscillator phase noise, frequency offsets between antennas, startup/settling transients of SILOs/PLLs, mutual synchronization, and sensitivity to analog low-pass tolerances."
+        "finding": "Major weakness: The statement that peak data rate can grow linearly with SNR via spatial multiplexing 'even in far field scenarios' is not established for the proposed architecture. It relies on rich scattering and receiver resources not modeled or simulated in the paper."
       },
       {
-        "finding": "Weakness: The manuscript sometimes overstates conclusions beyond the evidence, e.g., 'no areas with critical electromagnetic compatibility,' 'diversity is fully exploited,' and 'beam alignment obsolete.' These are strong claims that require formal definitions and scenario-dependent validation."
+        "finding": "Major weakness: The argument that beamforming reduces diversity and worsens EMC exposure is presented as generally true, but these are context-dependent system-level claims. No methodology or references are used to quantify these tradeoffs under the paper's operating assumptions."
       },
       {
-        "finding": "Weakness: The presentation appears to contain editorial fragmentation and missing text around key methodological sections, making it difficult to determine the exact procedure used in simulations and design choices."
+        "finding": "Major weakness: The manuscript appears to compare temporal combining gain greater than 12 dB for T>N against 16-antenna beamforming gain of 12 dB without fully accounting for symbol duration, occupied bandwidth, and energy normalization. This raises fairness concerns in the comparison."
       },
       {
-        "finding": "Overall methodological judgment: promising idea generation and useful engineering intuition, but insufficient rigor, reproducibility, and evidentiary support for the manuscript's main performance claims."
+        "finding": "Minor weakness: The literature review is selective and often framed adversarially; methodologically, it does not systematically position the proposal against the closest constant-envelope multicarrier, SC-FDMA, CPM, or hybrid-beamforming approaches using common evaluation criteria."
+      },
+      {
+        "finding": "Minor weakness: The paper lacks ablation studies showing which ingredients are essential: asymmetric phase rotation, direct phase injection, RC filtering, FFT windowing, subcarrier spacing choice, and transition duration."
+      },
+      {
+        "finding": "Minor weakness: There is no complexity analysis quantifying transmitter/receiver power, calibration burden, synchronization overhead, or scalability with antenna count relative to beamforming baselines."
+      },
+      {
+        "finding": "Minor weakness: Some claims are presented as universal despite being validated only for QPSK-centric examples. Extension to other PSK orders and pulse position modulation is asserted but not demonstrated."
+      },
+      {
+        "finding": "Overall methodological assessment: The work contains a novel and potentially valuable concept, but the current evidence base is preliminary. To become methodologically sound, it would need a precise system model, reproducible simulation setup, realistic impairment/channel studies, fair baseline comparisons, and either rigorous proofs or hardware measurements supporting the central equivalence and efficiency claims."
       }
     ]
   },
   "meta": {
-    "paper_chars": 39184,
-    "duration_s": 32.28,
-    "n_api_calls": 2,
-    "cost_usd": 0.0683,
-    "total_input_tokens": 14810,
-    "total_output_tokens": 3132,
+    "paper_chars": 38801,
+    "duration_s": 36.33,
+    "n_api_calls": 1,
+    "cost_usd": 0.0413,
+    "total_input_tokens": 8891,
+    "total_output_tokens": 1909,
     "calls": [
       {
         "model": "gpt-5.4",
         "provider": "openai",
-        "input_tokens": 5847,
-        "output_tokens": 1531,
-        "cost_usd": 0.0299275,
-        "duration_s": 29.37,
-        "label": "2407.19323v3/b1/review"
-      },
-      {
-        "model": "gpt-5.4",
-        "provider": "openai",
-        "input_tokens": 8963,
-        "output_tokens": 1601,
-        "cost_usd": 0.0384175,
-        "duration_s": 32.28,
+        "input_tokens": 8891,
+        "output_tokens": 1909,
+        "cost_usd": 0.0413175,
+        "duration_s": 36.33,
         "label": "2402.10307v2/b1/review"
       }
     ]

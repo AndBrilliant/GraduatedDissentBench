@@ -3,188 +3,182 @@
   "paper_id": "2407.19323v3",
   "verdict": "flagged",
   "confidence": 0.98,
-  "reasoning": "The manuscript shows some potentially interesting methodological ideas for textureless-region MVS, but it has major methodological integrity and presentation problems that warrant flagging. Most notably, the paper appears to conflate or splice together at least two different methods: MSP-MVS (segmentation-guided deformable patches with Semantic-SAM, anchor equidistribution, and iterative local search) and TSAR-MVS (a post-processing pipeline with confidence filtering, superpixels, RANSAC, WMF, and textureless-aware segmentation). Large sections describe one method while the title, abstract, contributions, ablations, and conclusion describe another. This makes the actual algorithm under evaluation unclear and undermines the validity of the experimental claims. Beyond that, the manuscript provides insufficient methodological detail for reproducibility, relies on external foundation-model priors (Semantic-SAM) without adequately isolating their contribution, and makes broad state-of-the-art/generalization claims without enough evidence in the provided text. Strengths include a relevant problem focus, plausible use of boundary/segmentation cues to constrain adaptive patches, benchmark-based evaluation, and some ablation intent. However, the core weakness is that the manuscript in its current form does not present a coherent, self-consistent method with clearly attributable results.",
+  "reasoning": "The manuscript shows substantial methodological inconsistency and likely text reuse or assembly from multiple different papers. The main claimed method is MSP-MVS with Semantic-SAM-guided deformable patches, anchor equidistribution, and iterative local search. However, large sections instead describe a different method, TSAR-MVS, as a generalized post-processing pipeline involving confidence filtering, superpixels, RANSAC, weighted median filtering, Roberts edge detection, and Hough lines. These are not minor wording errors but incompatible methodological narratives, suggesting the manuscript is internally incoherent. While the MSP-MVS idea has some methodological strengths—clear motivation, plausible edge-aware deformation, and ablation categories—the manuscript does not provide a stable, reproducible, or consistently defined method. Key experimental and implementation details are missing, and dependence on external segmentation priors raises fairness and generalization questions. As written, the work cannot be reliably evaluated scientifically.",
   "findings": [
     {
-      "finding": "Major inconsistency in method identity: the manuscript introduces MSP-MVS in the abstract and conclusion, but the middle sections switch to proposing TSAR-MVS, a different post-processing pipeline with joint hypothesis filtering, RANSAC superpixels, and WMF. This is a critical methodological red flag because the evaluated method is unclear."
+      "finding": "Major internal inconsistency: the paper alternates between describing MSP-MVS and TSAR-MVS as the proposed method. These are distinct methods with different pipelines, assumptions, and contributions."
     },
     {
-      "finding": "The described contributions are internally contradictory. One set of contributions centers on multi-granularity segmentation prior, anchor equidistribution, and iterative local search; another centers on confidence estimation, disparity discontinuity detection, iterative correlation refinement, and textureless-aware segmentation. These are not presented as modules of one coherent pipeline."
+      "finding": "Methodological sections are contradictory. One thread claims a deformable-patch PatchMatch method using multi-granularity segmentation priors, anchor equidistribution, and iterative local search; another thread claims a post-processing method using confidence filtering, superpixels, RANSAC plane fitting, weighted median filtering, and textureless-aware segmentation via Roberts/Hough."
     },
     {
-      "finding": "Because of the above inconsistency, it is impossible to determine whether the reported ETH3D/Tanks & Temples results and ablations correspond to MSP-MVS, TSAR-MVS, or a mixture. This undermines the credibility of the empirical evaluation."
+      "finding": "Because the method identity is unstable, it is impossible to determine what exactly was implemented and benchmarked, which undermines reproducibility and validity of the experimental claims."
     },
     {
-      "finding": "A methodological strength is the paper’s focus on a real and important failure mode in MVS: large textureless regions and depth-edge leakage during patch aggregation/deformation."
+      "finding": "A methodological strength is that the stated problem—patch deformation crossing depth boundaries in textureless regions—is well motivated and relevant for PatchMatch-based MVS."
     },
     {
-      "finding": "Another strength is the intuitive motivation for constraining deformed patches within homogeneous regions using segmentation/depth-edge priors; this is a plausible way to reduce cross-edge contamination and matching ambiguity."
+      "finding": "Another strength is the intuitive design choice of constraining patch deformation within homogeneous regions using segmentation-derived boundaries; this could plausibly reduce depth bleeding across edges."
     },
     {
-      "finding": "Anchor equidistribution is a potentially useful design choice. Enforcing more uniform anchor placement could improve spatial coverage of homogeneous regions and reduce sampling bias in deformable patch methods."
+      "finding": "Anchor equidistribution is a potentially useful idea: encouraging spatially uniform anchor coverage may improve support selection and avoid degenerate sampling concentrated on one side of a textureless region."
     },
     {
-      "finding": "Iterative local search optimization to represent large patches with sparse candidates is also a potentially meaningful efficiency/expressivity tradeoff, if properly specified and validated."
+      "finding": "Iterative local search optimization is also conceptually reasonable if it allows large support regions to be represented by a sparse but informative candidate set, potentially improving efficiency-expressivity tradeoffs."
     },
     {
-      "finding": "Use of standard public benchmarks (ETH3D, Tanks & Temples) is a methodological strength, as these are appropriate datasets for evaluating MVS robustness and generalization."
+      "finding": "The manuscript reports ablation categories for SAM prior, aggregation, edge correction, equidistribution, and ILS, which is a methodological strength in principle because it suggests component-wise validation."
     },
     {
-      "finding": "The manuscript includes ablation-style comparisons (w/o SAM, w/o aggregation, w/o equidistribution, w/o ILS), which is a positive sign of attempted component-wise validation."
+      "finding": "However, the ablation descriptions are too vague to assess rigor: no numerical values, no statistical variation, no dataset split details, and no precise definitions of components such as 'aggregation', 'edge correction', 'sector averaging', or 'anchor clustering' are given."
     },
     {
-      "finding": "However, the ablations are insufficiently described. The metrics, exact benchmark split, statistical variability, and implementation settings for each ablation are not given in the provided text, so the causal contribution of each module cannot be properly assessed."
+      "finding": "Use of Semantic-SAM as a source of 'depth edges' is methodologically questionable without careful validation. Semantic or segmentation boundaries are not equivalent to depth discontinuities, and the paper does not quantify edge precision/recall or failure cases."
     },
     {
-      "finding": "The dependence on Semantic-SAM is a methodological weakness unless carefully controlled. A strong pretrained segmentation/foundation model may contribute substantial external prior knowledge, and the paper does not clearly isolate whether gains come from the proposed MVS design or from Semantic-SAM itself."
+      "finding": "The manuscript acknowledges that image edges and depth edges are mismatched, but then assumes Semantic-SAM boundaries 'may contain potential depth edges' without providing a principled mapping or robustness analysis."
     },
     {
-      "finding": "Relatedly, the term 'multi-granularity depth edges' is conceptually weak as stated: Semantic-SAM provides segmentation masks, not true depth edges. The paper assumes these masks 'may contain potential depth edges,' but does not rigorously justify or quantify the precision/recall of these inferred boundaries for MVS."
+      "finding": "Reliance on a large pretrained foundation model (Semantic-SAM) introduces an external prior that may materially influence performance. The paper does not discuss computational cost, fairness of comparison to baselines that do not use such priors, or sensitivity to segmentation errors."
     },
     {
-      "finding": "The manuscript does not explain how multi-granularity masks are aggregated and corrected in enough detail to reproduce the method. Key design choices, thresholds, conflict resolution rules, and computational costs are missing from the text."
+      "finding": "No training/inference protocol is given for the proposed system. It is unclear whether Semantic-SAM is used off-the-shelf, fine-tuned, or replaced at test time; similarly, no hyperparameters are specified for patch deformation, edge aggregation, or local search."
     },
     {
-      "finding": "There is inadequate methodological detail on anchor equidistribution: how sectors are defined, how reliable pixels are identified, how anchors are clustered/averaged, and how this integrates with PatchMatch hypothesis generation are not specified clearly enough."
+      "finding": "The manuscript lacks enough algorithmic detail to reproduce the core innovations. For example, how multi-granularity edges are fused, how anchors are selected per sector, how candidate costs and variance are combined in ILS, and how the patch support is updated are not defined."
     },
     {
-      "finding": "There is inadequate detail on iterative local search (ILS): candidate generation, objective function, role of variance and cost terms, update schedule, stopping criteria, and complexity are not defined in the manuscript excerpt."
+      "finding": "Comparisons may be unfair or at least insufficiently controlled because runtime and memory costs of the segmentation prior are not transparently included, despite claiming competitive efficiency."
     },
     {
-      "finding": "The manuscript makes efficiency claims ('comparative runtime' and less time-consuming than APD-MVS) but provides no concrete timing, hardware, iteration count, or memory figures in the main text excerpt. Runtime conclusions therefore remain weak."
+      "finding": "Experimental claims of state-of-the-art performance are not verifiable from the text because the actual tables, metrics, and benchmark submissions are not shown, only summarized qualitatively."
     },
     {
-      "finding": "Generalization claims are overstated relative to evidence shown. Evaluation on ETH3D and Tanks & Temples is useful, but claiming 'robust generalization ability' is strong, especially when the method leverages Semantic-SAM, whose pretraining may itself encode broad priors."
+      "finding": "The manuscript claims 'strong generalization capability' based on ETH3D and Tanks & Temples, but both are largely man-made scene benchmarks that align with the paper's planar/homogeneous assumptions; generalization beyond this domain is not demonstrated."
     },
     {
-      "finding": "Comparison fairness is unclear. It is not specified whether all baselines were run under the same preprocessing, view selection, image resolution, geometric consistency filtering, and fusion settings. Without this, state-of-the-art claims are hard to validate."
+      "finding": "The method appears tailored to large man-made textureless planar areas. This is a potential weakness because assumptions of homogeneous areas and reliable segmentation boundaries may fail on curved, organic, reflective, or thin-structure scenes."
     },
     {
-      "finding": "The manuscript criticizes learning-based methods for memory/generalization issues, yet the proposed method imports a large segmentation model (Semantic-SAM). The computational and deployment implications of this dependency are not accounted for in the method comparison."
+      "finding": "There is no discussion of failure modes, e.g., when segmentation misses true depth edges, oversegments textured regions, or merges coplanar but depth-separated surfaces."
     },
     {
-      "finding": "The paper lacks explicit failure-case analysis. Since segmentation-guided patch confinement can fail under incorrect masks, reflective/transparent surfaces, thin structures, or semantically inconsistent boundaries, these limitations should be examined."
+      "finding": "The text contains duplicated and near-duplicated motivation paragraphs about APD-MVS and Semantic-SAM, suggesting careless assembly and raising concerns about manuscript integrity."
     },
     {
-      "finding": "No sensitivity analysis is presented for the segmentation prior quality, granularity choice, number of anchors, or local search settings. Such analyses are important because the method appears highly parameterized."
+      "finding": "Several references and placeholders are incomplete or malformed ([AUTHOR_1], [JOURNAL]), which weakens confidence in scholarly rigor and makes it harder to verify claims."
     },
     {
-      "finding": "The manuscript appears to contain duplicated and partially redundant paragraphs (e.g., repeated explanation of APD-MVS lacking depth edge guidance and use of Semantic-SAM). This weakens confidence in editorial rigor and in the exactness of the method description."
+      "finding": "The literature review contains unsupported broad claims about learning-based methods having limited generalization or unaffordable memory, without nuanced or controlled comparison."
     },
     {
-      "finding": "There are numerous language and grammar issues that directly affect methodological clarity, e.g., ambiguous phrases like 'edge correction', 'aggregation', 'constraint patch deformation', and 'larger patch with sparse representative candidates.' These need formal definitions."
+      "finding": "If the intended contribution is MSP-MVS, then inclusion of TSAR-MVS contributions and detailed pipeline text from a prior 2024 paper suggests probable overlap or text reuse that should be disclosed and clarified."
     },
     {
-      "finding": "A core reproducibility weakness is the absence of algorithmic pseudocode, precise mathematical formulation, and training/inference details. For a method claiming SOTA performance, this level of omission is problematic."
+      "finding": "Overall methodological strength: the paper targets an important failure mode in MVS and proposes components that are individually plausible."
     },
     {
-      "finding": "If the intended contribution is a traditional/non-learning PatchMatch variant, the manuscript should explicitly disentangle which components are learned, pretrained, or hand-crafted. At present, the role of Semantic-SAM blurs this distinction."
-    },
-    {
-      "finding": "Overall methodological strength: the paper is aimed at a significant challenge and proposes boundary-aware patch adaptation that is conceptually sensible. Overall methodological weakness: the current manuscript does not describe a single coherent, reproducible, and consistently evaluated method, making the empirical claims unreliable in its present form."
+      "finding": "Overall methodological weakness: the manuscript is too internally inconsistent and underspecified to support reliable scientific evaluation, regardless of whether the underlying idea may be promising."
     }
   ],
   "severity_counts": null,
   "raw_review": {
     "verdict": "flagged",
     "confidence": 0.98,
-    "reasoning": "The manuscript shows some potentially interesting methodological ideas for textureless-region MVS, but it has major methodological integrity and presentation problems that warrant flagging. Most notably, the paper appears to conflate or splice together at least two different methods: MSP-MVS (segmentation-guided deformable patches with Semantic-SAM, anchor equidistribution, and iterative local search) and TSAR-MVS (a post-processing pipeline with confidence filtering, superpixels, RANSAC, WMF, and textureless-aware segmentation). Large sections describe one method while the title, abstract, contributions, ablations, and conclusion describe another. This makes the actual algorithm under evaluation unclear and undermines the validity of the experimental claims. Beyond that, the manuscript provides insufficient methodological detail for reproducibility, relies on external foundation-model priors (Semantic-SAM) without adequately isolating their contribution, and makes broad state-of-the-art/generalization claims without enough evidence in the provided text. Strengths include a relevant problem focus, plausible use of boundary/segmentation cues to constrain adaptive patches, benchmark-based evaluation, and some ablation intent. However, the core weakness is that the manuscript in its current form does not present a coherent, self-consistent method with clearly attributable results.",
+    "reasoning": "The manuscript shows substantial methodological inconsistency and likely text reuse or assembly from multiple different papers. The main claimed method is MSP-MVS with Semantic-SAM-guided deformable patches, anchor equidistribution, and iterative local search. However, large sections instead describe a different method, TSAR-MVS, as a generalized post-processing pipeline involving confidence filtering, superpixels, RANSAC, weighted median filtering, Roberts edge detection, and Hough lines. These are not minor wording errors but incompatible methodological narratives, suggesting the manuscript is internally incoherent. While the MSP-MVS idea has some methodological strengths—clear motivation, plausible edge-aware deformation, and ablation categories—the manuscript does not provide a stable, reproducible, or consistently defined method. Key experimental and implementation details are missing, and dependence on external segmentation priors raises fairness and generalization questions. As written, the work cannot be reliably evaluated scientifically.",
     "findings": [
       {
-        "finding": "Major inconsistency in method identity: the manuscript introduces MSP-MVS in the abstract and conclusion, but the middle sections switch to proposing TSAR-MVS, a different post-processing pipeline with joint hypothesis filtering, RANSAC superpixels, and WMF. This is a critical methodological red flag because the evaluated method is unclear."
+        "finding": "Major internal inconsistency: the paper alternates between describing MSP-MVS and TSAR-MVS as the proposed method. These are distinct methods with different pipelines, assumptions, and contributions."
       },
       {
-        "finding": "The described contributions are internally contradictory. One set of contributions centers on multi-granularity segmentation prior, anchor equidistribution, and iterative local search; another centers on confidence estimation, disparity discontinuity detection, iterative correlation refinement, and textureless-aware segmentation. These are not presented as modules of one coherent pipeline."
+        "finding": "Methodological sections are contradictory. One thread claims a deformable-patch PatchMatch method using multi-granularity segmentation priors, anchor equidistribution, and iterative local search; another thread claims a post-processing method using confidence filtering, superpixels, RANSAC plane fitting, weighted median filtering, and textureless-aware segmentation via Roberts/Hough."
       },
       {
-        "finding": "Because of the above inconsistency, it is impossible to determine whether the reported ETH3D/Tanks & Temples results and ablations correspond to MSP-MVS, TSAR-MVS, or a mixture. This undermines the credibility of the empirical evaluation."
+        "finding": "Because the method identity is unstable, it is impossible to determine what exactly was implemented and benchmarked, which undermines reproducibility and validity of the experimental claims."
       },
       {
-        "finding": "A methodological strength is the paper’s focus on a real and important failure mode in MVS: large textureless regions and depth-edge leakage during patch aggregation/deformation."
+        "finding": "A methodological strength is that the stated problem—patch deformation crossing depth boundaries in textureless regions—is well motivated and relevant for PatchMatch-based MVS."
       },
       {
-        "finding": "Another strength is the intuitive motivation for constraining deformed patches within homogeneous regions using segmentation/depth-edge priors; this is a plausible way to reduce cross-edge contamination and matching ambiguity."
+        "finding": "Another strength is the intuitive design choice of constraining patch deformation within homogeneous regions using segmentation-derived boundaries; this could plausibly reduce depth bleeding across edges."
       },
       {
-        "finding": "Anchor equidistribution is a potentially useful design choice. Enforcing more uniform anchor placement could improve spatial coverage of homogeneous regions and reduce sampling bias in deformable patch methods."
+        "finding": "Anchor equidistribution is a potentially useful idea: encouraging spatially uniform anchor coverage may improve support selection and avoid degenerate sampling concentrated on one side of a textureless region."
       },
       {
-        "finding": "Iterative local search optimization to represent large patches with sparse candidates is also a potentially meaningful efficiency/expressivity tradeoff, if properly specified and validated."
+        "finding": "Iterative local search optimization is also conceptually reasonable if it allows large support regions to be represented by a sparse but informative candidate set, potentially improving efficiency-expressivity tradeoffs."
       },
       {
-        "finding": "Use of standard public benchmarks (ETH3D, Tanks & Temples) is a methodological strength, as these are appropriate datasets for evaluating MVS robustness and generalization."
+        "finding": "The manuscript reports ablation categories for SAM prior, aggregation, edge correction, equidistribution, and ILS, which is a methodological strength in principle because it suggests component-wise validation."
       },
       {
-        "finding": "The manuscript includes ablation-style comparisons (w/o SAM, w/o aggregation, w/o equidistribution, w/o ILS), which is a positive sign of attempted component-wise validation."
+        "finding": "However, the ablation descriptions are too vague to assess rigor: no numerical values, no statistical variation, no dataset split details, and no precise definitions of components such as 'aggregation', 'edge correction', 'sector averaging', or 'anchor clustering' are given."
       },
       {
-        "finding": "However, the ablations are insufficiently described. The metrics, exact benchmark split, statistical variability, and implementation settings for each ablation are not given in the provided text, so the causal contribution of each module cannot be properly assessed."
+        "finding": "Use of Semantic-SAM as a source of 'depth edges' is methodologically questionable without careful validation. Semantic or segmentation boundaries are not equivalent to depth discontinuities, and the paper does not quantify edge precision/recall or failure cases."
       },
       {
-        "finding": "The dependence on Semantic-SAM is a methodological weakness unless carefully controlled. A strong pretrained segmentation/foundation model may contribute substantial external prior knowledge, and the paper does not clearly isolate whether gains come from the proposed MVS design or from Semantic-SAM itself."
+        "finding": "The manuscript acknowledges that image edges and depth edges are mismatched, but then assumes Semantic-SAM boundaries 'may contain potential depth edges' without providing a principled mapping or robustness analysis."
       },
       {
-        "finding": "Relatedly, the term 'multi-granularity depth edges' is conceptually weak as stated: Semantic-SAM provides segmentation masks, not true depth edges. The paper assumes these masks 'may contain potential depth edges,' but does not rigorously justify or quantify the precision/recall of these inferred boundaries for MVS."
+        "finding": "Reliance on a large pretrained foundation model (Semantic-SAM) introduces an external prior that may materially influence performance. The paper does not discuss computational cost, fairness of comparison to baselines that do not use such priors, or sensitivity to segmentation errors."
       },
       {
-        "finding": "The manuscript does not explain how multi-granularity masks are aggregated and corrected in enough detail to reproduce the method. Key design choices, thresholds, conflict resolution rules, and computational costs are missing from the text."
+        "finding": "No training/inference protocol is given for the proposed system. It is unclear whether Semantic-SAM is used off-the-shelf, fine-tuned, or replaced at test time; similarly, no hyperparameters are specified for patch deformation, edge aggregation, or local search."
       },
       {
-        "finding": "There is inadequate methodological detail on anchor equidistribution: how sectors are defined, how reliable pixels are identified, how anchors are clustered/averaged, and how this integrates with PatchMatch hypothesis generation are not specified clearly enough."
+        "finding": "The manuscript lacks enough algorithmic detail to reproduce the core innovations. For example, how multi-granularity edges are fused, how anchors are selected per sector, how candidate costs and variance are combined in ILS, and how the patch support is updated are not defined."
       },
       {
-        "finding": "There is inadequate detail on iterative local search (ILS): candidate generation, objective function, role of variance and cost terms, update schedule, stopping criteria, and complexity are not defined in the manuscript excerpt."
+        "finding": "Comparisons may be unfair or at least insufficiently controlled because runtime and memory costs of the segmentation prior are not transparently included, despite claiming competitive efficiency."
       },
       {
-        "finding": "The manuscript makes efficiency claims ('comparative runtime' and less time-consuming than APD-MVS) but provides no concrete timing, hardware, iteration count, or memory figures in the main text excerpt. Runtime conclusions therefore remain weak."
+        "finding": "Experimental claims of state-of-the-art performance are not verifiable from the text because the actual tables, metrics, and benchmark submissions are not shown, only summarized qualitatively."
       },
       {
-        "finding": "Generalization claims are overstated relative to evidence shown. Evaluation on ETH3D and Tanks & Temples is useful, but claiming 'robust generalization ability' is strong, especially when the method leverages Semantic-SAM, whose pretraining may itself encode broad priors."
+        "finding": "The manuscript claims 'strong generalization capability' based on ETH3D and Tanks & Temples, but both are largely man-made scene benchmarks that align with the paper's planar/homogeneous assumptions; generalization beyond this domain is not demonstrated."
       },
       {
-        "finding": "Comparison fairness is unclear. It is not specified whether all baselines were run under the same preprocessing, view selection, image resolution, geometric consistency filtering, and fusion settings. Without this, state-of-the-art claims are hard to validate."
+        "finding": "The method appears tailored to large man-made textureless planar areas. This is a potential weakness because assumptions of homogeneous areas and reliable segmentation boundaries may fail on curved, organic, reflective, or thin-structure scenes."
       },
       {
-        "finding": "The manuscript criticizes learning-based methods for memory/generalization issues, yet the proposed method imports a large segmentation model (Semantic-SAM). The computational and deployment implications of this dependency are not accounted for in the method comparison."
+        "finding": "There is no discussion of failure modes, e.g., when segmentation misses true depth edges, oversegments textured regions, or merges coplanar but depth-separated surfaces."
       },
       {
-        "finding": "The paper lacks explicit failure-case analysis. Since segmentation-guided patch confinement can fail under incorrect masks, reflective/transparent surfaces, thin structures, or semantically inconsistent boundaries, these limitations should be examined."
+        "finding": "The text contains duplicated and near-duplicated motivation paragraphs about APD-MVS and Semantic-SAM, suggesting careless assembly and raising concerns about manuscript integrity."
       },
       {
-        "finding": "No sensitivity analysis is presented for the segmentation prior quality, granularity choice, number of anchors, or local search settings. Such analyses are important because the method appears highly parameterized."
+        "finding": "Several references and placeholders are incomplete or malformed ([AUTHOR_1], [JOURNAL]), which weakens confidence in scholarly rigor and makes it harder to verify claims."
       },
       {
-        "finding": "The manuscript appears to contain duplicated and partially redundant paragraphs (e.g., repeated explanation of APD-MVS lacking depth edge guidance and use of Semantic-SAM). This weakens confidence in editorial rigor and in the exactness of the method description."
+        "finding": "The literature review contains unsupported broad claims about learning-based methods having limited generalization or unaffordable memory, without nuanced or controlled comparison."
       },
       {
-        "finding": "There are numerous language and grammar issues that directly affect methodological clarity, e.g., ambiguous phrases like 'edge correction', 'aggregation', 'constraint patch deformation', and 'larger patch with sparse representative candidates.' These need formal definitions."
+        "finding": "If the intended contribution is MSP-MVS, then inclusion of TSAR-MVS contributions and detailed pipeline text from a prior 2024 paper suggests probable overlap or text reuse that should be disclosed and clarified."
       },
       {
-        "finding": "A core reproducibility weakness is the absence of algorithmic pseudocode, precise mathematical formulation, and training/inference details. For a method claiming SOTA performance, this level of omission is problematic."
+        "finding": "Overall methodological strength: the paper targets an important failure mode in MVS and proposes components that are individually plausible."
       },
       {
-        "finding": "If the intended contribution is a traditional/non-learning PatchMatch variant, the manuscript should explicitly disentangle which components are learned, pretrained, or hand-crafted. At present, the role of Semantic-SAM blurs this distinction."
-      },
-      {
-        "finding": "Overall methodological strength: the paper is aimed at a significant challenge and proposes boundary-aware patch adaptation that is conceptually sensible. Overall methodological weakness: the current manuscript does not describe a single coherent, reproducible, and consistently evaluated method, making the empirical claims unreliable in its present form."
+        "finding": "Overall methodological weakness: the manuscript is too internally inconsistent and underspecified to support reliable scientific evaluation, regardless of whether the underlying idea may be promising."
       }
     ]
   },
   "meta": {
-    "paper_chars": 24408,
-    "duration_s": 29.37,
+    "paper_chars": 23966,
+    "duration_s": 31.96,
     "n_api_calls": 1,
-    "cost_usd": 0.0299,
-    "total_input_tokens": 5847,
-    "total_output_tokens": 1531,
+    "cost_usd": 0.0287,
+    "total_input_tokens": 5788,
+    "total_output_tokens": 1420,
     "calls": [
       {
         "model": "gpt-5.4",
         "provider": "openai",
-        "input_tokens": 5847,
-        "output_tokens": 1531,
-        "cost_usd": 0.0299275,
-        "duration_s": 29.37,
+        "input_tokens": 5788,
+        "output_tokens": 1420,
+        "cost_usd": 0.02867,
+        "duration_s": 31.96,
         "label": "2407.19323v3/b1/review"
       }
     ]
