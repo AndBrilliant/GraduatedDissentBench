@@ -13,7 +13,18 @@ to confirm results.
 
 ## What was tested
 
-Four conditions on the same 20 SPOT papers:
+Four conditions on **the complete text-detectable subset of SPOT** with
+parsed content available --- $n = 50$ papers. See
+`spot_subset_audit.md` for the full derivation: of 83 SPOT papers, 27
+have figure-only annotations (excluded by design from a text-only
+pipeline) and 6 have text-detectable annotations but no parsed content
+in the public release (also excluded; listed by title in the audit).
+$n = 50$ is the complete intersection, not a stopping point.
+
+The validation directory captures the **first 20** of those 50 papers
+in `raw_outputs/` (the audited core); the full 50-paper outputs live
+at `data/spot/outputs/full_run/` in the broader repo, with the
+lightweight verification note in `full_run_validation.md`.
 
 | Condition | Description |
 |---|---|
