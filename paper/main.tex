@@ -132,7 +132,25 @@ We test these predictions in \S\ref{sec:results}.
 
 The graduated dissent protocol coordinates two independent prover models, a judge, an optional steelman exchange, and an arbiter. Full architecture details and design rationale appear in the protocol preprint \citep{brilliant2026protocol}; we summarize here the elements load-bearing for the empirical results.
 
-\paragraph{Provers.} Two language models from different families and providers (Prover A: GPT-5.4, OpenAI; Prover B: DeepSeek V3.2) review the manuscript independently under a shared severity rubric (RETRACTION-WORTHY, MAJOR-REVISION, MINOR; the rubric is given in Appendix~\ref{app:rubric}). Both provers receive only the manuscript text---no prior reviewer's findings, no other prover's intermediate output. This implements \emph{context separation between provers} in the sense of \S\ref{sec:theory}.
+\paragraph{Models.} The protocol uses three models from three different model families and providers, with role-specific assignment (Table~\ref{tab:models}). Role-by-model results in the protocol preprint show that the model best suited for adversarial critique produces the worst arbiter performance and vice versa; the configuration below was selected on that basis prior to the benchmark.
+
+\begin{table}[ht]
+\centering
+\caption{Model configuration. All accessed via provider APIs (April 2026), default temperature $1.0$, max-tokens $4096$.}
+\label{tab:models}
+\small
+\begin{tabular}{llll}
+\toprule
+\textbf{Role} & \textbf{Model} & \textbf{API ID} & \textbf{Provider} \\
+\midrule
+Prover A, baselines     & GPT-5.4         & \texttt{gpt-5.4}            & OpenAI \\
+Prover B, judge         & DeepSeek V3.2   & \texttt{deepseek-chat}      & DeepSeek \\
+Arbiter                 & Claude Opus 4.6 & \texttt{claude-opus-4-6}    & Anthropic \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Provers.} Two language models from different families and providers (GPT-5.4 and DeepSeek V3.2) review the manuscript independently under a shared severity rubric (RETRACTION-WORTHY, MAJOR-REVISION, MINOR; the rubric is in Appendix~\ref{app:rubric}). Both provers receive only the manuscript text---no prior reviewer's findings, no other prover's intermediate output. This implements \emph{context separation between provers} in the sense of \S\ref{sec:theory}.
 
 \paragraph{Judge and escalation.} A separate model (DeepSeek V3.2 in our runs) reads both reviews and rates semantic agreement on a $[0, 1]$ scale. With agreement threshold $\theta_{\mathrm{accept}} = 0.90$ and noise floor $\theta_{\mathrm{noise}} = 0.15$, the protocol escalates as: $\mathrm{L0}$ if $\mathrm{agreement} \geq \theta_{\mathrm{accept}}$ (accept); $\mathrm{L1}$ if $\mathrm{SNR} = (1 - \mathrm{agreement}) / \theta_{\mathrm{noise}} < 1$ (accept; disagreement is noise); $\mathrm{L2}$ otherwise (proceed to steelman).
 
@@ -192,15 +210,40 @@ We are expanding this benchmark to $n \geq 20$ retracted papers (target $n = 100
 \subsection{SPOT benchmark}
 \label{sec:bench:spot}
 
-SPOT \citep{son2025spot} provides $91$ human-annotated errors across $83$ peer-reviewed papers with categories spanning equation/proof errors, statistical reporting, experiment setup, reagent identity, figure duplication, and figure-text inconsistencies. We evaluate on the \emph{text-detectable subset}: errors whose category describes problems surfaceable from prose alone (Equation/proof, Statistical reporting, Experiment setup, Reagent identity, Data inconsistency, text-text inconsistency, plus figure-text inconsistencies where the text side is visible). Of $91$ total errors, $53$ are fully text-detectable, $9$ are partially text-detectable (figure-text), and $29$ are figure-only and excluded. Of $83$ papers, $62$ have parsed content available in the SPOT release; of those, $50$ have at least one text-detectable error and constitute our runnable subset.
+SPOT \citep{son2025spot} provides $91$ human-annotated errors across $83$ peer-reviewed papers, with errors cross-validated by independent annotators. Error categories span equation/proof errors, statistical reporting, experiment setup, reagent identity, figure duplication, and figure-text inconsistencies (Table~\ref{tab:spot_subset}). The benchmark's published evaluation uses vision-capable models on the full multimodal paper content; we evaluate on a \emph{text-detectable subset} appropriate for our text-only pipeline.
 
-We report two metric families on SPOT:
+\begin{table}[ht]
+\centering
+\caption{SPOT error categorization by text-detectability. ``Text'' = inferable from prose alone; ``partial'' = figure-text inconsistencies where the text side may surface in prose; ``figure'' = image-only (excluded).}
+\label{tab:spot_subset}
+\small
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Error category} & \textbf{Total} & \textbf{Parsed} & \textbf{Detectability} \\
+\midrule
+Equation / proof                   & 37 & 37 & text \\
+Figure duplication                 & 27 & 12 & figure \\
+Data Inconsistency (figure-text)   &  9 &  6 & partial \\
+Data inconsistency                 &  5 &  2 & text \\
+Statistical reporting              &  4 &  4 & text \\
+Reagent identity                   &  3 &  2 & text \\
+Data Inconsistency (figure-figure) &  2 &  1 & figure \\
+Data Inconsistency (text-text)     &  2 &  2 & text \\
+Experiment setup                   &  2 &  2 & text \\
+\midrule
+\textbf{Total errors}              & \textbf{91} & \textbf{68} & \\
+\textbf{Text-detectable subset}    & \textbf{62} & \textbf{55} & (text + partial) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Of $91$ total errors, $53$ are fully text-detectable, $9$ are partially text-detectable, and $29$ are figure-only. Of $83$ papers, $62$ have parsed content available; of those, $50$ have at least one text-detectable error and constitute our runnable subset. We report two metric families on SPOT:
 \begin{itemize}[nosep]
 \item \textbf{Our binary detection rate}, mirroring the retracted-paper benchmark scoring.
-\item \textbf{SPOT's precision/recall/PPR}, computed by the same LLM-as-judge protocol used in \citet{son2025spot}, so our numbers are directly comparable to the published o3 numbers.
+\item \textbf{SPOT's precision/recall/PPR + pass@$k$}, computed by the same LLM-as-judge protocol used in \citet{son2025spot} so our numbers are directly comparable to their published values.
 \end{itemize}
 
-We are transparent that running on the text-detectable subset is a deliberately constrained comparison: SPOT's published o3 number used a vision-capable model on the full multimodal content, while our protocol uses text-only inputs. This comparison answers the question ``how much can a decorrelated text-only protocol close the gap to a vision-capable single model?''---not ``does graduated dissent beat o3 in absolute terms.'' We also report a single-model GPT-5.4 baseline on the same text-detectable subset (B1), which is the apples-to-apples comparison for the architecture contribution.
+We are transparent that the text-detectable subset is a deliberately constrained comparison: SPOT's published o3 number used a vision-capable model on the full multimodal content, while our protocol uses text-only inputs. This comparison answers the question \emph{``how much can a decorrelated text-only protocol close the gap to a vision-capable single model?''}---not ``does graduated dissent beat o3 in absolute terms.'' We also report a single-model GPT-5.4 baseline on the same text-detectable subset (B1), which is the apples-to-apples comparison for the architecture contribution.
 
 %-------------------------------------------------------------------
 \section{Results}
@@ -322,7 +365,37 @@ A multi-model architecture in which two provers context-separated from each othe
 \section{Severity Rubric}
 \label{app:rubric}
 
-\texttt{[FILL: severity rubric verbatim from prompts/]}
+The same severity rubric is used by all conditions that require severity classification (B2, B3, GD, plus the steelman exchange).
+
+\medskip
+\noindent\textbf{RETRACTION-WORTHY.} The error means the paper's central conclusions \emph{cannot} be supported by the data as presented. Not ``could be improved''---``fundamentally broken.'' Examples: data coding errors that change the primary outcome, impossible statistical values, applying tests that don't match the study design rendering all inferences invalid.
+
+\medskip
+\noindent\textbf{MAJOR-REVISION.} A real methodological concern that could change conclusions if addressed differently, but does \emph{not} definitively invalidate them. Examples: missing controls, underpowered secondary analyses, questionable but defensible statistical choices.
+
+\medskip
+\noindent\textbf{MINOR.} Valid criticism applicable to most published papers. Would not change conclusions. Examples: no robustness checks, limited generalizability, minor reporting gaps.
+
+\medskip
+\noindent\textbf{Key test.} If confirmed, would this need RETRACTION, REVISION, or just NOTING?
+
+\section{Protocol Thresholds}
+\label{app:thresholds}
+
+\paragraph{Agreement threshold} $\theta_{\mathrm{accept}} = 0.90$. If the judge rates semantic agreement between provers at $\geq 0.90$, the protocol accepts without escalation (Level $0$).
+
+\paragraph{Noise floor} $\theta_{\mathrm{noise}} = 0.15$. The minimum disagreement expected from RLHF-trained models reviewing any manuscript. SNR is computed as $(1 - \mathrm{agreement}) / \theta_{\mathrm{noise}}$.
+
+\paragraph{Escalation levels.}
+\begin{itemize}[nosep]
+\item L0: $\mathrm{agreement} \geq 0.90$ → accept without escalation.
+\item L1: $\mathrm{SNR} < 1.0$ → accept (disagreement is below noise floor).
+\item L2: $\mathrm{SNR} \geq 1.0$ → steelman exchange → arbiter.
+\end{itemize}
+
+\paragraph{Arbiter calibration.} The arbiter is instructed: ``When in doubt, MAJOR-REVISION.'' This optimizes for specificity (zero false positives) at the cost of sensitivity. The same architecture supports more permissive calibrations by modifying only the arbiter instructions.
+
+These thresholds were specified in the protocol preprint prior to benchmark evaluation and were not modified based on results.
 
 %-------------------------------------------------------------------
 \bibliographystyle{plainnat}
