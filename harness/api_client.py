@@ -266,7 +266,8 @@ _FENCE_RE = re.compile(r"^```[a-zA-Z]*\s*\n(.*?)\n```\s*$", re.DOTALL)
 
 
 def parse_json(raw: str) -> dict[str, Any]:
-    """Parse JSON from LLM output. Handles ```json fences and stray prose."""
+    """Parse JSON from LLM output. Handles ```json fences, stray prose, and
+    arbiter outputs truncated mid-string (when max_tokens cut off the response)."""
     if raw is None:
         return {"raw": "", "parse_error": True}
     text = raw.strip()
@@ -276,15 +277,91 @@ def parse_json(raw: str) -> dict[str, Any]:
     try:
         return json.loads(text)
     except json.JSONDecodeError:
-        # Try to find the largest balanced {...} substring.
-        start = text.find("{")
-        end = text.rfind("}")
-        if start >= 0 and end > start:
-            try:
-                return json.loads(text[start:end + 1])
-            except json.JSONDecodeError:
-                pass
+        pass
+    # Strip outer fence if present even without the closing ``` line.
+    if text.startswith("```"):
+        first_nl = text.find("\n")
+        if first_nl != -1:
+            text = text[first_nl + 1:].strip()
+        if text.endswith("```"):
+            text = text[:-3].strip()
+    # Try the largest balanced {...} substring.
+    start = text.find("{")
+    if start < 0:
         return {"raw": raw, "parse_error": True}
+    end = text.rfind("}")
+    if end > start:
+        try:
+            return json.loads(text[start:end + 1])
+        except json.JSONDecodeError:
+            pass
+    # Truncated-output recovery: walk forward from the first '{' tracking brace
+    # depth and string state, and prune the JSON to the last complete element.
+    return _recover_truncated(text[start:], raw)
+
+
+def _recover_truncated(text: str, original_raw: str) -> dict[str, Any]:
+    """Best-effort recovery from JSON output truncated mid-token.
+
+    Walks the text tracking brace/bracket depth and string state. Records
+    the position+depth-snapshot every time we just finished a complete
+    element at depth >= 1 (at a top-level comma OR an array-element comma).
+    On failure, tries pruning at the latest such snapshot, then synthesizing
+    the closing tokens to balance braces and brackets.
+    """
+    depth = 0
+    stack: list[str] = []  # '{' or '['
+    in_string = False
+    escape = False
+    last_was_value_close = False
+    # snapshot = (cut_index, stack_at_that_point_as_list)
+    last_snapshot: tuple[int, list[str]] | None = None
+
+    for i, ch in enumerate(text):
+        if in_string:
+            if escape:
+                escape = False
+            elif ch == "\\":
+                escape = True
+            elif ch == '"':
+                in_string = False
+                last_was_value_close = True
+            continue
+        if ch == '"':
+            in_string = True
+            last_was_value_close = False
+            continue
+        if ch in "{[":
+            stack.append(ch)
+            depth += 1
+            last_was_value_close = False
+        elif ch in "}]":
+            if stack:
+                stack.pop()
+            depth -= 1
+            last_was_value_close = True
+        elif ch == ",":
+            if depth >= 1 and last_was_value_close:
+                last_snapshot = (i, list(stack))
+            last_was_value_close = False
+        else:
+            if not ch.isspace():
+                last_was_value_close = False
+
+    if last_snapshot is None:
+        return {"raw": original_raw, "parse_error": True, "truncated": True}
+
+    cut, stack_at_cut = last_snapshot
+    # Drop the comma and any trailing content, then close out balanced.
+    closer = "".join("}" if c == "{" else "]" for c in reversed(stack_at_cut))
+    candidate = text[:cut] + closer
+    try:
+        result = json.loads(candidate)
+        if isinstance(result, dict):
+            result["truncated"] = True
+        return result
+    except json.JSONDecodeError:
+        return {"raw": original_raw, "parse_error": True, "truncated": True}
 
 
 # ── Misc ──────────────────────────────────────────────────────────────
