@@ -146,14 +146,48 @@ The graduated dissent protocol coordinates two independent prover models, a judg
 \section{Benchmark Design}
 \label{sec:benchmarks}
 
-We evaluate on two benchmarks with documented ground truth.
+We evaluate on two benchmarks with documented ground truth: a retracted-paper benchmark we curated for the protocol preprint, and the SPOT benchmark of human-annotated errors in real scientific papers \citep{son2025spot}.
 
 \subsection{Retracted-paper benchmark}
 \label{sec:bench:retracted}
 
-The retracted-paper benchmark consists of $n = 10$ peer-reviewed papers retracted for documented methodological errors (Class A: methodological, not misconduct), each paired with controls: matched controls (same journal, same field), hard-negative controls (controversial but non-retracted), and wildcard controls (unrelated fields). All papers are anonymized: author names, journal names, dates, affiliations, references, and publisher templates removed. Ground truth is encoded as keyword groups derived from the published retraction notices; a model finding is scored as a match if it contains all keywords in any group for that paper. The benchmark and replication harness are released in the project repository \citep{brilliant2026benchmark}.
+\paragraph{Selection criteria.} Papers were selected from the Retraction Watch Database. Inclusion required:
+(1) peer-reviewed and formally retracted (correction or expression-of-concern alone insufficient);
+(2) retraction for methodological errors, not misconduct---papers retracted for plagiarism, fabrication, image manipulation, or where evidence suggested deliberate alteration were excluded;
+(3) text-detectable errors (Class A: clearly inferable from the manuscript text; Class B: signals present but require external information to confirm; Class C: hidden in unpublished code or hardware are excluded);
+(4) ground truth documented in the retraction notice in sufficient detail to score model findings; and
+(5) full text available open access. No papers were excluded on the basis of expected protocol performance.
 
-We are expanding this benchmark to $n \geq 20$ retracted papers (target $n = 100$); preliminary expanded numbers will be substituted into Table~\ref{tab:detection_summary} when complete. The current paper reports primary results at $n = 10$ for direct comparability with the protocol preprint.
+\paragraph{Composition.} The primary benchmark (Table~\ref{tab:dataset_composition}) comprises $n = 10$ retracted papers paired with $19$ probative non-retracted controls---$10$ matched (same journal, same field, similar timeframe) plus $9$ hard-negative (controversial but not retracted)---and $5$ wildcard controls from unrelated fields as a sanity check. With $19$ probative controls and zero false positives observed, the exact (Clopper--Pearson) $95\%$ confidence interval for the false-positive rate is $[0, 0.17]$. Five additional viXra grand-unified-theory papers serve as informal positive controls outside the primary benchmark.
+
+\begin{table}[ht]
+\centering
+\caption{Dataset composition for the retracted-paper benchmark.}
+\label{tab:dataset_composition}
+\small
+\begin{tabular}{llrl}
+\toprule
+\textbf{Category} & \textbf{Label} & $\boldsymbol{n}$ & \textbf{Purpose} \\
+\midrule
+Retracted               & R01--R25  & 10 & Papers with documented fatal errors \\
+Matched controls        & C01--C25  & 10 & Same-field non-retracted papers \\
+Hard-negative controls  & HN02--HN10 & 9 & Controversial but non-retracted \\
+Wildcard controls       & W01--W05  & 5 & Unrelated fields (sanity check) \\
+\midrule
+\textbf{Primary total}  &           & \textbf{34} & \\
+\midrule
+viXra GUT (informal)    & V01--V05  & 5 & Preprint server positive controls \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Anonymization.} All papers were manually anonymized before evaluation: author names, journal names, dates, affiliations, acknowledgments, references, and retraction notices removed; publisher-specific formatting and templates stripped paper-by-paper. Study locations and population descriptions were retained where integral to the methodology. References were removed because self-citations would let a model identify authors and bias its assessment based on author reputation rather than manuscript content.
+
+\paragraph{Ground truth scoring.} Each retracted paper has a documented retraction cause decomposed into \emph{keyword groups}; a model finding is scored as a match if it contains all keywords in any group for that paper. Example keyword groups for one paper retracted for impossible hazard ratios: \texttt{[``HR'', ``0.00'', ``hazard'']}, \texttt{[``missing data'', ``asymptomatic'']}, \texttt{[``denominator'', ``271'', ``0.4'']}. A finding matching any one group counts as detecting the retraction cause. Single-rater scoring by the first author is a real limitation; we discuss it in \S\ref{sec:discussion}.
+
+\paragraph{Memorization control.} Nine of ten retracted papers are post-cutoff: both the retraction and the public commentary identifying the error occurred after the approximate training-data cutoff for all models used ($\sim$April 2024). Detection on post-cutoff papers is not lower than the overall rate, suggesting memorization of retraction status is not the primary driver of detection. We cannot fully exclude memorization of the original manuscripts themselves.
+
+We are expanding this benchmark to $n \geq 20$ retracted papers (target $n = 100$). Preliminary expanded numbers will replace the seed values in Table~\ref{tab:detection_summary} as the expansion completes; the current paper reports primary results at $n = 10$ for direct comparability with the protocol preprint.
 
 \subsection{SPOT benchmark}
 \label{sec:bench:spot}
@@ -204,7 +238,53 @@ We report on $50$ runnable SPOT papers, with both our binary detection rate and 
 
 \subsection{False-positive analysis}
 
-The $3$ false positives produced by single-model+rubric review (B2) on probative controls all involved findings rated RETRACTION-WORTHY despite the underlying methodological choice being defensible (e.g., a deliberate sample-size restriction described in the methods section, flagged as ``data exclusion bias''). In all three cases, when those findings entered the steelman exchange under graduated dissent, the originating prover downgraded its severity to MAJOR-REVISION; in two of the three cases, the arbiter then assigned MINOR. This is the mechanism the protocol predicts: the steelman context perturbation surfaces the strongest defense of the choice, and the originating prover's confidence in the RETRACTION-WORTHY rating does not survive that perturbation.
+The $3$ false positives produced by single-model + rubric review (B2) on probative controls are concentrated on three specific papers (Table~\ref{tab:false_positives}): two matched controls (C04 with $1$ RW finding, C10 with $2$ RW findings) and one hard-negative control (HN10 with $1$ RW finding). The B3 ablation reduces this to one false positive (C04, $2$ RW findings)---model diversity alone provides partial but incomplete filtering. Graduated dissent reduces it to zero on all three.
+
+\begin{table}[ht]
+\centering
+\caption{False positive RW counts on probative controls. Same papers under each condition. The three control papers that B2 (single model + rubric) misclassifies as retraction-worthy are eliminated by the steelman exchange.}
+\label{tab:false_positives}
+\small
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Paper} & \textbf{Category} & \textbf{B2 RW} & \textbf{B3 RW} & \textbf{GD RW} \\
+\midrule
+C04   & Matched control     & 1 & 2 & 0 \\
+C10   & Matched control     & 2 & 0 & 0 \\
+HN10  & Hard-negative       & 1 & 0 & 0 \\
+\midrule
+All other non-retracted (21) & Various & 0 & 0 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The mechanism is visible in the protocol logs. During the steelman exchange, the prover that originated the RW finding was asked to construct the strongest case for the other prover's lower-severity assessment. In all three FP papers, the originating prover downgraded its severity to MAJOR-REVISION on the steelman pass; the arbiter then assigned MINOR (in two of three cases) or MAJOR-REVISION (in one). This is the mechanism the protocol predicts: the steelman context perturbation surfaces the strongest defense of the methodological choice, and the originating prover's confidence in RETRACTION-WORTHY does not survive the perturbation. In single-model review (B2), no such adversarial pressure exists---the model's initial severity rating stands unchallenged.
+
+\subsection{Prompted retraction (does knowing the outcome help?)}
+\label{sec:results:prompted}
+
+As an additional control, we prompted three models (GPT-5.4, DeepSeek V3.2, Opus 4.6) with each retracted paper and the instruction: ``This paper was retracted due to a methodological error. Identify the specific error that caused the retraction.'' This tests whether knowing the retraction status unlocks detection that blind review misses.
+
+\begin{table}[ht]
+\centering
+\caption{Prompted retraction detection: models told the paper was retracted and asked to identify the cause. Both prompted and graduated-dissent conditions are scored on the same metric.}
+\label{tab:prompted}
+\small
+\begin{tabular}{lc}
+\toprule
+\textbf{Condition} & \textbf{Detection} \\
+\midrule
+Prompted: DeepSeek V3.2 & $2/10$ ($20\%$) \\
+Prompted: GPT-5.4       & $2/10$ ($20\%$) \\
+Prompted: Opus 4.6      & $3/10$ ($30\%$) \\
+Prompted: overall       & $7/30$ ($23\%$) \\
+\midrule
+\textbf{Graduated dissent (blind)} & $\mathbf{7/10}$ ($\mathbf{70\%}$) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Knowing that the paper was retracted does not improve detection; prompted models perform \emph{worse} than blind graduated dissent ($23\%$ vs.\ $70\%$). The prompted models generate plausible-sounding retraction causes that are often wrong: they predict what \emph{typically} causes retractions in a given field rather than identifying the \emph{specific} error in the manuscript at hand. This is consistent with the framework's prediction: the discriminative work is being done by the structural decorrelation between provers and arbiter, not by an information advantage.
 
 \subsection{Testing the three theoretical predictions}
 

@@ -169,9 +169,14 @@ def compute_cost(model: str, in_tok: int, out_tok: int) -> float:
 def _call_openai_compatible(model_id: str, prompt: str, *,
                             base_url: str | None,
                             api_key_env: str,
-                            uses_max_completion_tokens: bool) -> tuple[str, int, int]:
+                            uses_max_completion_tokens: bool,
+                            timeout_s: float = 180.0) -> tuple[str, int, int]:
     import openai
-    client_kwargs: dict[str, Any] = {"api_key": os.environ.get(api_key_env, "")}
+    client_kwargs: dict[str, Any] = {
+        "api_key": os.environ.get(api_key_env, ""),
+        "timeout": timeout_s,
+        "max_retries": 2,
+    }
     if base_url:
         client_kwargs["base_url"] = base_url
     client = openai.OpenAI(**client_kwargs)
@@ -191,9 +196,9 @@ def _call_openai_compatible(model_id: str, prompt: str, *,
     return text, in_tok, out_tok
 
 
-def _call_anthropic(model_id: str, prompt: str) -> tuple[str, int, int]:
+def _call_anthropic(model_id: str, prompt: str, timeout_s: float = 240.0) -> tuple[str, int, int]:
     import anthropic
-    client = anthropic.Anthropic()
+    client = anthropic.Anthropic(timeout=timeout_s, max_retries=2)
     message = client.messages.create(
         model=model_id,
         max_tokens=4096,
