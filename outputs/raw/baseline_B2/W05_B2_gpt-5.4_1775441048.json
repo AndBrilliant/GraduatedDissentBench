@@ -1,0 +1,87 @@
+{
+  "verdict": "flagged",
+  "confidence": 0.94,
+  "reasoning": "The manuscript has a plausible overall ecological niche modeling workflow, but several methodological choices materially weaken the validity of the central claims about drivers of human VL distribution and future expansion. The most serious concerns are conceptual/design-level: the study models reported human case locations as if they were species-presence data for a stable biological niche, while using strong anthropogenic variables that likely encode reporting intensity, urban population concentration, and exposure opportunity rather than transmission suitability. In addition, future projections mix changing climate covariates with a fixed human-footprint layer, so the claimed future expansion is not a pure climate projection and may be unstable. These issues do not make the analysis impossible, but they could substantially alter conclusions and require major revision. I do not see a clear, incontrovertible fatal statistical impossibility from the text alone, so I would not classify this as retraction-worthy on the available information.",
+  "findings": [
+    {
+      "finding": "Human VL case addresses were used directly as 'occurrence' points for MaxEnt ecological niche modeling, treating reported human infections as equivalent to species-presence data for transmission suitability.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If confirmed, this is a major design concern because human case locations reflect healthcare access, diagnosis/reporting practices, human mobility, local population density, reservoir/vector presence, and place of residence rather than necessarily place of infection. MaxEnt is most naturally justified for biological occurrences under a sampling framework closer to organism presence. Using human case residences can bias inferred environmental drivers and future suitability maps; conclusions could change if vector, canine, or infection-location data were used instead."
+    },
+    {
+      "finding": "The dominant predictor is Human Footprint (62.6%), a composite anthropogenic index that includes human population density, built environment, roads, lights, and waterways, yet the outcome is reported human cases. This creates a strong risk of circularity/confounding between where people live and where human cases are observed.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If confirmed, the main substantive conclusion that 'anthropic factors drive VL expansion' may be overstated because the predictor partly encodes the opportunity to observe human cases, not only transmission ecology. Since human presence is required for a human case, strong contribution of HFP may largely reflect urban concentration/reporting rather than disease suitability. A different modeling target (incidence, vector presence, canine infection, or population-adjusted risk) could materially change the ranking and interpretation of predictors."
+    },
+    {
+      "finding": "The analysis appears to model presence-only locations of human cases without an offset or denominator for underlying human population at risk, despite making claims about disease distribution and expansion in humans.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If confirmed, this could substantially distort results because areas with more people generate more opportunities for cases even at identical per-capita risk. Presence-only ENM on human case locations cannot distinguish ecological suitability from simple population concentration. Population is mentioned among candidate variables but apparently not retained; that does not solve the denominator problem. Conclusions about spatial risk and expansion could change with population-adjusted incidence modeling."
+    },
+    {
+      "finding": "Future projections combine future climate layers with a fixed present-day Human Footprint layer, while Human Footprint is the most influential predictor in the final model.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If confirmed, the central future-expansion maps are sensitive to an unrealistic assumption that the key anthropogenic driver remains spatially constant through 2021\u20132040 and 2061\u20132080. Because HFP contributes 62.6% of the model, freezing it likely dominates projections and may misrepresent future suitability. This does not automatically invalidate all projections, but it undermines confidence in the magnitude and geography of projected expansion."
+    },
+    {
+      "finding": "Only one global climate model (CNRM-CM6-1) was used for future projections, with no multi-model ensemble or sensitivity analysis.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If confirmed, projected expansion under climate change may depend heavily on idiosyncrasies of a single GCM. This is especially important because the paper draws policy-relevant conclusions about future spread. Using a broader CMIP6 ensemble could materially change the projected 7% and 12% increases."
+    },
+    {
+      "finding": "Background/sampling-bias handling is insufficiently described for MaxEnt given highly biased surveillance data. The manuscript mentions thinning presence points but does not describe a target-group background, bias file, or other correction for uneven detection/reporting effort.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If confirmed, MaxEnt may learn surveillance intensity and urban reporting structure rather than disease-environment relationships. Spatial thinning alone does not correct for geographically uneven case ascertainment. This could change variable importance and suitability maps if appropriate bias correction were applied."
+    },
+    {
+      "finding": "The paper states that thinning 855 geocoded cases at 10 km retained only 84 occurrences, a very large reduction, but gives no sensitivity analysis for thinning distance or evidence that 10 km is epidemiologically justified.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If confirmed, the fitted niche could be highly dependent on an arbitrary thinning parameter. Reducing to 84 points may discard substantial information and alter predictor effects, especially when urban clusters are central to the paper's conclusions. Different thinning distances could produce meaningfully different models."
+    },
+    {
+      "finding": "Variable selection used MaxEnt contribution/jackknife plus pairwise correlation filtering on the same data used for model fitting, which is a data-driven procedure prone to instability and selection bias.",
+      "severity": "MINOR",
+      "justification": "If confirmed, this is a common but suboptimal practice. It can overstate the apparent importance of retained predictors and miss alternative equally plausible variable sets, but it does not by itself render the analysis invalid. More transparent a priori selection or sensitivity analyses would strengthen the results."
+    },
+    {
+      "finding": "Resampling all variables to 30 arc-seconds using nearest-neighbor interpolation is questionable for continuous climate/environmental surfaces.",
+      "severity": "MINOR",
+      "justification": "If confirmed, nearest-neighbor resampling can create blocky artifacts and is generally less appropriate than bilinear/cubic interpolation for continuous rasters. This may modestly affect local suitability estimates but is unlikely alone to overturn the main conclusions."
+    },
+    {
+      "finding": "The manuscript reports using three thresholds to create binary maps but then chooses the 'maximum test sensitivity plus specificity' threshold for final maps in a presence-only context where absence/background interpretation is delicate.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If confirmed, estimated suitable area percentages (18%, 24\u201330%) and the headline expansion amounts depend strongly on threshold choice. In presence-only modeling, sensitivity/specificity-based thresholds can be unstable because 'specificity' is computed against background or pseudoabsence rather than true absence. Different reasonable thresholds could materially change the claimed expansion."
+    },
+    {
+      "finding": "Model selection details are incomplete/ambiguous: 558 candidate models are said to arise from combinations of 9 regularization multipliers, 5 feature classes, and 2 variable sets, but 9\u00d75\u00d72=90 unless feature-class combinations rather than five single classes were used.",
+      "severity": "MINOR",
+      "justification": "If confirmed, this is a reporting inconsistency that limits reproducibility. It does not necessarily invalidate the selected model, but the exact candidate set and tuning process should be clarified."
+    },
+    {
+      "finding": "The manuscript interprets MaxEnt percent contribution values causally ('explained the expansion of VL') even though these are algorithm-dependent heuristics and not causal effect estimates.",
+      "severity": "MINOR",
+      "justification": "If confirmed, this is an overinterpretation issue. It could lead readers to overstate certainty about mechanisms, but the model can still be useful descriptively/predictively if properly framed."
+    },
+    {
+      "finding": "The study claims to analyze 'VL expansion' over time, but the MaxEnt model is calibrated on pooled cases from 2001\u20132018 rather than explicitly modeling temporal dynamics or spread processes.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If confirmed, the conclusions about expansion drivers are only indirectly supported. A pooled spatial niche model identifies correlates of where cases occurred over the period, not the process of temporal expansion. A spatiotemporal analysis could yield different conclusions about expansion mechanisms."
+    },
+    {
+      "finding": "The manuscript states that the current model 'matched with the current presence of VL' but does not report standard discrimination/calibration metrics for the final model beyond significance/omission/AICc-based tuning, nor independent temporal/spatial validation.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If confirmed, confidence in predictive performance is limited. Statistical significance of partial ROC and low omission are not sufficient substitutes for strong external validation, especially for policy-facing future forecasts. More robust validation could materially affect trust in the maps."
+    },
+    {
+      "finding": "Municipality incidence analyses and case mapping are presented descriptively alongside point-process ENM, but the relationship between municipality-level incidence, smoothed rates, and point-level occurrence modeling is not integrated analytically.",
+      "severity": "MINOR",
+      "justification": "If confirmed, this is mainly a coherence/reporting issue. It does not by itself break the MaxEnt analysis, but it weakens interpretation because incidence-based and presence-only frameworks answer different questions."
+    }
+  ],
+  "paper_id": "W05",
+  "model": "gpt-5.4",
+  "baseline": "B2",
+  "timestamp": 1775441048,
+  "rw_count": 0
+}

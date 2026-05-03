@@ -1,0 +1,146 @@
+{
+  "paper_id": "W03",
+  "prover_a": "gpt-5.4",
+  "prover_b": "deepseek",
+  "judge": "deepseek",
+  "arbiter": "opus",
+  "verdict": "flagged",
+  "confidence": 0.91,
+  "reasoning": "Both reviewers independently converge on the same core diagnosis: this manuscript functions as a methods/validation paper for EnzyDock while sheltering under the format of a review, creating a systematic mismatch between the claims made and the evidence provided. No finding rises to retraction-worthy because the paper's central claims (EnzyDock can address TPS docking challenges) are plausible but unvalidated rather than demonstrably false. However, the accumulation of major-revision findings\u2014lack of benchmarking, reliance on user-guided restraints creating confirmation bias risk, absence of quantitative metrics, no reproducibility reporting, and genre confusion\u2014collectively represent a serious evidentiary deficit that requires substantial revision. The steelman exchange reinforced rather than weakened the core findings, with both reviewers converging on severity after reflection.",
+  "findings": [
+    {
+      "finding": "Absence of systematic benchmarking or validation against experimental structures, competing docking methods, or established benchmarks for TPS or enzyme systems. Claims of 'successful use' rest on qualitative agreement in a single case study (CotB2) from the authors' own prior work.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.95,
+      "justification": "Both reviewers identify this as the central evidentiary gap. Without comparative benchmarks, success criteria, quantitative metrics (RMSD distributions, success rates, enrichment), or negative cases, readers cannot assess whether EnzyDock outperforms standard tools or is only effective in hand-curated showcase systems. Both reviewers rated this MAJOR-REVISION and neither downgraded during steelman. Not retraction-worthy because the claims are plausible but undemonstrated, not demonstrably false.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Heavy reliance on user-defined restraints and 'chemical intuition' for pose generation and pathway identification, creating substantial confirmation bias risk. The manuscript acknowledges that without restraints, identifying consensus paths is 'challenging,' meaning the method's apparent success may reflect encoded prior mechanistic knowledge rather than genuine prediction.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.93,
+      "justification": "Both reviewers flag this independently with high severity. The concern is that restraints encoding expected stereochemistry, PP proximity, catalytic waters, and known mechanisms blur the distinction between prediction and reconstruction. Neither reviewer downgraded during steelman; both reinforced the concern. This could materially change how convincing the mechanistic examples are but does not prove results are wrong.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Conflation of review and primary research genres. The manuscript is framed as a review but functions as a promotional methods paper for the authors' own software, including unpublished results, detailed workflow tutorials, and practical claims about capability\u2014without meeting the validation standards expected for a methods paper.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Reviewer B raised this as a distinct major finding. Reviewer A initially did not single it out but explicitly upgraded it to MAJOR-REVISION during the steelman exchange, acknowledging it as a structurally important issue that enables other evidentiary gaps. The genre confusion allows claims to avoid appropriate scrutiny. Requires restructuring to either validate as a methods paper or refocus as a genuine field review.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Absence of quantitative performance metrics throughout. No pose RMSD distributions, success rates across catalytic states, enrichment over random, stereochemical outcome recovery rates, or any numerical performance measures are reported.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.92,
+      "justification": "Reviewer A raised this explicitly; Reviewer B's benchmarking finding subsumes it. Both agree that without metrics, reliability cannot be objectively assessed. Neither downgraded during steelman. For a paper making practical claims about method effectiveness, this is a fundamental reporting gap.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Inadequate description of the core docking algorithm's novelty. The manuscript does not clearly specify what makes EnzyDock's conformational search uniquely effective beyond combining known CHARMM components (MC, MD/SA, restraints, multistate workflows). Independent assessment of algorithmic novelty and reproducibility is impaired.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Reviewer B raised this as a distinct major finding. Reviewer A addressed related concerns across multiple findings but did not foreground it; during steelman, Reviewer A explicitly upgraded this to MAJOR-REVISION. The concern is well-founded: if the contribution is a protocol-level assembly of known tools rather than a true algorithmic advance, the novelty claims need recalibration.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "No reproducibility details on stochastic variability, number of independent runs, convergence criteria, or failure rates, despite the Monte Carlo/simulated annealing nature of the workflow.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.9,
+      "justification": "Reviewer A raised this explicitly; Reviewer B acknowledged it as a new error during steelman. For stochastic sampling methods, reporting variability and convergence is essential for interpreting claimed consensus pathways. Absence of this information directly undermines confidence in reported outcomes.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Workflow vulnerability to path dependence from choice of docking seed and sequential state propagation, with no sensitivity analysis presented for alternative seeds, restraint strengths, sampling settings, or state ordering.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Reviewer A raised this explicitly; Reviewer B identified it as a new error during steelman. The sequential multistate workflow means errors or biases in early states propagate, and without sensitivity analysis, consensus pathways may be artifacts of specific setup choices. Both reviewers converge on this concern.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Scoring and ranking framework insufficiently validated for carbocations and unusual high-energy intermediates. The manuscript acknowledges standard force fields are poor for such species, yet much of the docking search relies on MM/grid scoring before late-stage QM/MM rescoring, potentially causing systematic loss of relevant poses.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Reviewer A raised this explicitly. Reviewer B's transition-state concern partially overlaps. The issue is substantive: if the MM-level search systematically misses or misranks carbocation intermediates, QM/MM rescoring cannot recover them. This could materially affect which pathways are identified. Not retraction-worthy because the problem is a potential limitation rather than a demonstrated failure.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Absence of failure cases, negative controls, or discussion of systems where EnzyDock underperforms. Only successful examples are presented, creating a selective reporting concern.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers identified this during the steelman exchange as a new concern. For a methods paper, selective success reporting without documenting failure modes or limitations is a meaningful methodological concern that affects how readers calibrate confidence in the tool.",
+      "source": "emergent",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Potential circular validation: docked poses may be judged successful partly because downstream QM/MM or free-energy analyses from the same modeling pipeline and assumptions find them plausible, rather than through truly independent validation.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Reviewer A raised this during the steelman exchange. The concern is that if both pose generation and validation rely on the same computational framework and assumptions, the 'validation' may not be independent. This weakens claims of external confirmation but does not prove results are wrong.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Ambiguous/overstated claims about docking 'transition states.' The manuscript does not clarify how transition state structures are defined, generated, constrained, or distinguished from stable intermediates during the docking process.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.82,
+      "justification": "Both reviewers identified this concern. Reviewer A initially rated it MAJOR-REVISION but explicitly downgraded it during steelman, acknowledging it may be primarily a terminology issue if practical examples involve TS-like geometries rather than true saddle points. Reviewer B consistently rated it MINOR. The convergence on MINOR after deliberation is informative.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Use of unpublished results (catalytic water pocket in CotB2) as supporting evidence for methodological claims.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.78,
+      "justification": "Both reviewers noted this. Reviewer A rated MINOR but considered upgrading in context of the broader validation pattern; Reviewer B included it under the genre-conflation finding. Standing alone it is minor\u2014it is weak evidentiary practice but does not alter main conclusions. Its significance is as part of the larger pattern of unvalidated self-supporting evidence, which is captured in other findings.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Conflation of 'biochemically meaningful poses' with evidence for actual in-enzyme reaction pathways. Docking of intermediates provides structural hypotheses, not direct mechanistic proof.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Reviewer A raised this and maintained MINOR severity throughout. It is a common interpretive overreach in computational enzymology and requires softened language but does not invalidate the work.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "No guidance on how results degrade for apo structures, homology models, or AlphaFold models, despite suggesting such uses are possible.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.78,
+      "justification": "Both reviewers noted this. Reviewer A rated MINOR and maintained it; Reviewer B raised it during steelman as a concern about misleading user expectations. It limits practical guidance but does not alter the main demonstrated case study.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Incomplete reporting of software availability, dependencies, version control, example datasets, and validation suite for ensuring correct installation.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.75,
+      "justification": "Reviewer B raised this as MINOR. Reviewer B considered upgrading during steelman but the practical impact remains limited compared to other concerns. Standard for computational method papers but not critical to scientific conclusions.",
+      "source": "prover_b",
+      "survived_steelman": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 10,
+    "MINOR": 5
+  },
+  "protocol": {
+    "level": "L2",
+    "agreement": 0.8,
+    "prover_a_findings": 12,
+    "prover_a_rw": 0,
+    "prover_b_findings": 6,
+    "prover_b_rw": 0
+  },
+  "timestamp": 1775441214
+}

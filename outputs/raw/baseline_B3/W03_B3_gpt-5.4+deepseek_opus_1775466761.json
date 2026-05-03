@@ -1,0 +1,102 @@
+{
+  "paper_id": "W03",
+  "condition": "B3_no_steelman",
+  "prover_a": "gpt-5.4",
+  "prover_b": "deepseek",
+  "arbiter": "opus",
+  "verdict": "flagged",
+  "confidence": 0.87,
+  "reasoning": "Both reviewers independently converge on the same core concerns: the manuscript presents a specialized docking tool (EnzyDock) with strong methodological and performance claims but lacks systematic benchmarking, rigorous validation, and transparent separation of algorithm-driven versus user-guided results. No retraction-worthy errors were identified \u2014 there are no impossible statistics, fabricated data, or fundamentally broken analyses. However, there is a substantial cluster of major-revision-level issues centering on overclaiming without adequate evidence, confirmation bias risk from heavy use of restraints, questionable QM method choices for carbocation chemistry, and insufficient methodological detail for reproducibility. The manuscript, whether framed as a review or a methods paper, requires significant revision to substantiate its claims.",
+  "findings": [
+    {
+      "finding": "No systematic validation or benchmark is provided to support claims that EnzyDock reliably identifies mechanistically meaningful TPS poses and pathways. No blinded benchmarks, success-rate statistics, RMSD comparisons against crystallographic poses across multiple systems, or head-to-head comparisons with alternative docking tools are presented.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.92,
+      "justification": "Both reviewers identify this as the central deficiency. For any tool-description manuscript, quantitative validation is expected. Without it, claims of reliability and general applicability are unsupported. This does not invalidate the tool's existence or utility in principle, but the manuscript's conclusions about performance are not substantiated.",
+      "source": "both"
+    },
+    {
+      "finding": "The workflow relies extensively on user-imposed restraints and 'chemical intuition' to steer docking toward expected mechanisms, creating substantial risk of confirmation bias and circular reasoning. The manuscript does not clearly separate unbiased docking results from knowledge-guided outcomes.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers flag this independently. If the method is validated primarily by poses it was constrained to find, the evidential value of those poses for independent mechanistic inference is severely weakened. This requires transparent reporting of what the algorithm discovers unbiased versus what is imposed by the user.",
+      "source": "both"
+    },
+    {
+      "finding": "The QM/MM scoring stage uses low-level semi-empirical methods (AM1, PM3, HF3c) for carbocation intermediates and restricts the QM region largely to the ligand, while key interactions with pyrophosphate, Mg\u00b2\u207a ions, waters, and active-site residues remain in the MM region. These choices are not justified or validated for TPS carbocation chemistry.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers raise this concern from complementary angles. Semi-empirical methods are known to be unreliable for carbocation energetics, and a ligand-only QM region misses critical charge-transfer and polarization effects. This could systematically misrank poses and alter mechanistic conclusions. The claim of 'multiscale' docking is weakened without acknowledging these limitations.",
+      "source": "both"
+    },
+    {
+      "finding": "The manuscript conflates generation of geometrically plausible poses with evidence for actual catalytic pathways. Docking is a structure-placement tool, not a kinetic/pathway inference method, yet the language implies pathway correctness without stronger dynamic and energetic evidence.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Reviewer A raises this directly, and Reviewer B's concerns about self-referential validation support the same point. The mechanistic language should be tempered to reflect what docking can and cannot establish. Conclusions about pathway correctness may be overstated.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The manuscript is framed as a review but functions predominantly as a methods/software promotion piece for EnzyDock, lacking balanced critical comparison with alternative tools and approaches in the field.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "Both reviewers note this framing issue. If presented as a review, it should critically compare approaches; if as a methods paper, it needs proper benchmarking. The current hybrid framing enables overclaiming without the validation standards expected of either genre.",
+      "source": "both"
+    },
+    {
+      "finding": "The treatment of substrate cleavage states as a PP-allyl cation ion pair with on-the-fly harmonic bond patching is a simplified representation whose validity is not demonstrated for the specific TPS systems discussed.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Reviewer A raises this directly. Given that bonding and charge distribution changes are central to TPS catalysis, this approximation could materially affect mechanistic interpretations. Without validation, conclusions may be sensitive to these modeling assumptions.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Claims of successful prediction are partly supported by unpublished results (e.g., 'subsequent crystallography studies') that cannot be independently assessed.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.83,
+      "justification": "Reviewer A identifies this directly. Unpublished confirmations cannot serve as methodological validation. These claims should be removed, tempered, or replaced by citable data.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "No uncertainty quantification or sensitivity analysis is reported for docking outcomes, pathfinder-selected pathways, or the effects of varying run parameters, seeds, protonation states, water placement, and restraint strengths.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "Reviewer A raises this. Given the heuristic, high-dimensional nature of the workflow, different parameter choices may yield different 'consensus' mechanisms. Without sensitivity analysis, the robustness of conclusions is unknown.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The 'pathfinder' tool is described without sufficient algorithmic detail (geometric matching criteria, clustering methods, handling of combinatorial complexity), limiting reproducibility.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Reviewer B flags this as a reporting gap. While it limits reproducibility, it does not invalidate the conclusions. Sufficient detail or a citation to a dedicated methods paper should be provided.",
+      "source": "prover_b"
+    },
+    {
+      "finding": "The CotB2 'toy system' has an unusually favorable crystal structure with a bound ligand similar to an intermediate, making the example potentially unrepresentative of harder cases.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Reviewer A notes this limits generalizability. It does not falsify the presented example but weakens broad claims about applicability.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The statement that 'natural substrates of TPS are amphiphilic pyrophosphate esters' is an overgeneralization that does not account for Class II terpene synthases.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Reviewer B identifies this as a minor imprecision in the review section. It does not affect the methodological core but reduces scholarly precision.",
+      "source": "prover_b"
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 8,
+    "MINOR": 3
+  },
+  "protocol": {
+    "level": "B3",
+    "prover_a_findings": 14,
+    "prover_a_rw": 0,
+    "prover_b_findings": 6,
+    "prover_b_rw": 0
+  },
+  "timestamp": 1775466761
+}

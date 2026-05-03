@@ -1,0 +1,123 @@
+{
+  "paper_id": "C02",
+  "condition": "B3_no_steelman",
+  "prover_a": "gpt-5.4",
+  "prover_b": "deepseek",
+  "arbiter": "opus",
+  "verdict": "flagged",
+  "confidence": 0.93,
+  "reasoning": "Both reviewers independently identified a convergent set of methodological and inferential problems that, while not rendering the paper unsalvageable, collectively undermine the strength of its central conclusions. The most serious issues are: (1) pseudoreplication in both the abundance GLMMs and the groundcover analyses due to failure to account for repeated measures on the same transects; (2) unsubstantiated causal claims linking grass cover decline to spittlebug feeding in a purely observational design; (3) a potentially misreported statistical implementation (negative-binomial GLMM via lme4::glmer); and (4) inappropriate use of independent-samples tests (Wilcoxon-Mann-Whitney) on paired/repeated-measures groundcover data. None of these issues alone is retraction-worthy because the core descriptive patterns (seasonal and elevational variation in abundance) are visually apparent and likely robust. However, the inferential statistics and causal interpretations require substantial revision. Several additional concerns (omitted interaction terms, compositional data issues, few random-effect levels, overstated host-plant records, post-hoc elevation grouping) reinforce the need for major revision.",
+  "findings": [
+    {
+      "finding": "Pseudoreplication in abundance GLMMs: permanent transects were sampled monthly for ~5 years, but transect is not included as a random effect and no temporal autocorrelation structure is modeled. Only ranch (4 levels) and year (5 levels) are included as random effects.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.92,
+      "justification": "Both reviewers flagged this. If transect-level repeated measures are unaccounted for, standard errors and P-values for fixed effects (season, elevation) are likely anti-conservative. The descriptive seasonal/elevational patterns are visually clear and probably real, so this does not invalidate all findings, but it materially weakens the inferential statistics. The low number of random-effect levels (4 ranches, 5 years) compounds the concern about variance estimation.",
+      "source": "both"
+    },
+    {
+      "finding": "Inappropriate statistical test for groundcover change: Wilcoxon-Mann-Whitney tests compare 2018 vs. 2022 grass cover as if these are independent samples, but they are repeated measurements from the same transects/quadrats. Intermediate years are also discarded.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.93,
+      "justification": "Both reviewers identified this. Treating paired/longitudinal data as independent inflates Type I error. The reported P-values (e.g., W = 1749, P = 0.0004) cannot be taken at face value. A mixed-effects or paired repeated-measures framework is required. The true effect may still exist but the statistical evidence as presented is flawed.",
+      "source": "both"
+    },
+    {
+      "finding": "Unsubstantiated causal claims: the paper attributes grass cover decline and landscape transformation to P. bicincta feeding, but the study is purely observational with no exclusion experiments, controls, or quantitative models linking local pest abundance to cover change while accounting for drought, grazing, and other confounders.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.92,
+      "justification": "Both reviewers flagged this as a central interpretive flaw. The association between high-infestation areas and cover change is suggestive but does not establish causation, especially given acknowledged drought variation. This affects the paper's most impactful ecological conclusions but does not invalidate the descriptive abundance data.",
+      "source": "both"
+    },
+    {
+      "finding": "Potentially misreported statistical software/model: the manuscript states negative-binomial GLMMs were fit using lme4::glmer, but standard glmer does not support negative-binomial families (glmer.nb or glmmTMB would be needed).",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "If the analysis was actually conducted with a different function than reported, reproducibility is compromised and the actual distributional assumptions are unknown. If the wrong function was used (e.g., Poisson instead of negative-binomial), overdispersion may be unaccounted for and all inferential statistics could be affected. This requires clarification and potentially reanalysis.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Omission of season \u00d7 elevation interaction in the GLMM despite the results and discussion emphasizing elevation-specific seasonal timing and magnitude differences.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "A main-effects-only model cannot capture the differential seasonal patterns across elevations that form a key interpretive thread of the paper. If the interaction is significant, the main-effects estimates are incomplete; if not, the narrative should be revised. This is a substantive model specification issue.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Compositional dependence in cover data: grass, forb, shrub, and bare ground sum to ~100%, but each is analyzed separately without accounting for compositional constraints.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "Mechanical trade-offs between cover types mean that univariate comparisons can overstate ecological shifts. A compositional or multivariate analysis would be more defensible. This could change how strongly the vegetation-shift conclusions are supported, but probably does not reverse the qualitative direction of change.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Seasonal classification uses long-term climatological means rather than actual rainfall during the study period, despite discussion of interannual drought variability.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "Misclassification of wet/dry conditions in anomalous years could bias seasonal effect estimates and weaken phenological conclusions. Using actual precipitation data as a continuous covariate would be more defensible.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Inadequate reporting of likelihood-ratio test results: single chi-square values with df=1 are reported for models with multiple predictors and a 3-level elevation factor, making it unclear which model comparison each statistic represents.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Readers cannot evaluate or reproduce the hypothesis tests. If the tests are misapplied or misreported, the statistical evidence for season and elevation effects may be different from what is claimed.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Overstated plant association/host-use claims: 20 'new associations' are reported from nymphal presence on plants, but the authors acknowledge spittle masses can contact multiple plants and early instars may be transient. These are occurrence records, not confirmed host-plant relationships.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers flagged this. The distinction between field occurrence and functional host status matters for the novelty claims but does not affect the core abundance and seasonality findings. Terminology should be corrected.",
+      "source": "both"
+    },
+    {
+      "finding": "Post-hoc and potentially arbitrary elevation grouping based on 'observed heterogeneity in habitats and climate conditions' rather than a priori bioclimatic criteria.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Data-driven categorization can inflate Type I error, but the elevational patterns are visually clear. Treating elevation as continuous or justifying cutpoints independently would strengthen the analysis.",
+      "source": "prover_b"
+    },
+    {
+      "finding": "Normality testing to justify nonparametric tests is conceptually muddled; percent cover data are better handled with generalized models than rank-based tests.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "A statistical-reasoning weakness that does not by itself overturn conclusions but signals an underdeveloped analytical strategy.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The conclusion of '2 generations per year' is inferred from two abundance peaks without cohort tracking, stage-structured modeling, or local developmental data.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "A plausible ecological interpretation that should be framed more cautiously as inference rather than established fact. Does not affect core descriptive findings.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "No sampling offset or effort adjustment described for abundance models despite unequal survey numbers across years and possible missing transect-month observations.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.75,
+      "justification": "Mainly a reporting/robustness concern. If within-visit effort was consistent, this may be acceptable, but unequal temporal coverage complicates year summaries.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Figures and narrative average abundances across all years, elevations, and ranches despite unbalanced sampling, potentially creating misleading marginal means.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.75,
+      "justification": "A presentation concern that would not reverse core findings but could be addressed with model-based marginal means.",
+      "source": "prover_a"
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 8,
+    "MINOR": 6
+  },
+  "protocol": {
+    "level": "B3",
+    "prover_a_findings": 15,
+    "prover_a_rw": 0,
+    "prover_b_findings": 5,
+    "prover_b_rw": 0
+  },
+  "timestamp": 1775465175
+}

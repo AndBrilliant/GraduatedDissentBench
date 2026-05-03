@@ -1,0 +1,109 @@
+{
+  "paper_id": "W04",
+  "condition": "B3_no_steelman",
+  "prover_a": "gpt-5.4",
+  "prover_b": "deepseek",
+  "arbiter": "opus",
+  "verdict": "flagged",
+  "confidence": 0.95,
+  "reasoning": "Both reviewers independently flagged this narrative review article for multiple methodological and conceptual problems. The manuscript does not present original experimental data, so the standard for retraction-worthy errors is different from a primary research paper\u2014the question is whether the review materially misleads readers about the state of the field. While no single error is retraction-worthy, the accumulation of major issues\u2014particularly the mischaracterization of validation procedures, the conflation of unsupervised learning with prediction, the systematic omission of critical methodological safeguards (external validation, leakage, calibration, class imbalance), and the uncritical presentation of inflated performance claims\u2014collectively undermine the review's reliability as a scientific guide. These warrant substantial revision but do not fundamentally invalidate the entire review's existence or its broad descriptive content.",
+  "findings": [
+    {
+      "finding": "The review describes an internally inconsistent and methodologically problematic validation procedure for the blood pressure prediction study: shuffling temporal trajectories and then splitting into ten parts with 'one part for training and the remaining nine for 10-fold cross-validation.' This is not how 10-fold CV works (the ratio is inverted), and shuffling time-series data before splitting introduces data leakage. The review presents this without any critique.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.95,
+      "justification": "Both reviewers independently identified this as a serious error. If the description is accurate, the cited study's reported performance may be substantially inflated, and the review misleads readers by presenting a flawed method approvingly. However, this pertains to the description of one cited study within a broader review, so it does not invalidate the entire paper.",
+      "source": "both"
+    },
+    {
+      "finding": "The review attributes direct predictive power for clinical outcomes (e.g., diabetes, heart disease) to unsupervised learning methods without clarifying that unsupervised learning alone cannot perform supervised prediction tasks. It conflates pattern discovery (clustering) with predictive modeling of labeled outcomes.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.9,
+      "justification": "This is a fundamental conceptual mischaracterization of a core ML paradigm. A reader using this review as a methodological guide could adopt invalid study designs. While the broader review still contains valid descriptive content, this error undermines its educational and scientific value.",
+      "source": "both"
+    },
+    {
+      "finding": "The review systematically treats high internal accuracy/AUC from cited ML studies as evidence of robust clinical utility without discussing external validation, prospective validation, subject-wise data splitting, temporal validation, domain shift, or regulatory-grade evaluation requirements.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.92,
+      "justification": "This omission is pervasive throughout the review and materially affects how readers would interpret the maturity and reliability of wearable ML systems. Both reviewers noted this gap. It could lead to overly optimistic conclusions about field readiness, though it does not prove the broad conclusions are false.",
+      "source": "both"
+    },
+    {
+      "finding": "The review does not address common data leakage pathways in wearable-sensor ML studies, such as random window-level splitting instead of participant-level splitting, mixing repeated measures from the same person across train/test sets, and preprocessing before data splitting.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "These are central methodological concerns in the wearable ML literature. A review positioning itself as a roadmap for the field should explicitly address these risks. Their omission could lead readers to overinterpret reported accuracies from cited studies.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The review presents k-means clustering as a 'classification' tool for mask-position recognition without clarifying whether labels were assigned post hoc, how cluster-to-class mapping was performed, or whether supervised alternatives were used for actual evaluation.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Calling unsupervised clustering results 'classification accuracy' without explanation is misleading and could cause readers to misinterpret the methodological rigor and actual performance of the cited system.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The review conflates prediction of proxies or correlated measures with direct disease detection/diagnosis, and does not discuss calibration, uncertainty estimation, class imbalance, or clinically relevant metrics (sensitivity/specificity at thresholds, PPV/NPV, Bland-Altman limits) despite emphasizing clinical-grade applications.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "For a review emphasizing clinical deployment of wearable ML, omitting these evaluation considerations substantially weakens the scientific guidance provided. Poor calibration and ignored class imbalance can make seemingly accurate models clinically unsafe or misleading.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Inadequate critical treatment of sample size limitations and repeated-measures structure in highlighted examples. Small-N, controlled-setting studies are summarized as demonstrating general wearable ML capability.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "Small-N, repeated-trial studies routinely produce inflated accuracy estimates. Presenting these without caveat could materially temper the strength of conclusions about field readiness if properly addressed.",
+      "source": "both"
+    },
+    {
+      "finding": "Table 1 contains multiple oversimplifications and debatable claims about ML algorithms (e.g., KNN 'no training phase,' SVMs 'robust to overfitting' without caveats, blanket statements about neural network requirements) presented as factual comparisons.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "While the table is educationally coarse and potentially misleading to novices, such simplifications are common in review papers and are not central to the paper's core conclusions.",
+      "source": "both"
+    },
+    {
+      "finding": "The review implies cloud AI inherently provides 'more accurate results' due to larger datasets and more sophisticated algorithms, without acknowledging that accuracy depends on model design, data governance, latency, and personalization tradeoffs.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.88,
+      "justification": "This is an oversimplification rather than a core methodological error. It should be qualified but would not alter the review's main message.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The article does not describe any systematic review methodology (no search strategy, inclusion/exclusion criteria, evidence grading, or risk-of-bias assessment) despite making broad claims about the state of the field.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "For a narrative review this is common practice and not inherently invalid, but it limits methodological transparency and raises concern about selective citation.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Pervasive conflation of 'AI,' 'ML,' and 'statistical models' throughout the text, reducing conceptual clarity in what is positioned as a technical review.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "This is imprecise language common in interdisciplinary reviews. It does not lead to concrete methodological errors in interpretation but reduces the review's rigor.",
+      "source": "prover_b"
+    },
+    {
+      "finding": "The review makes strong claims that ML can 'identify and correct errors' in wearable sensor data without distinguishing between denoising, artifact rejection, calibration, imputation, and true error correction, nor discussing failure modes.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "This is an overgeneralization and conceptual imprecision rather than a fatal methodological flaw. It weakens scientific rigor but would not change overall conclusions.",
+      "source": "prover_a"
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 7,
+    "MINOR": 5
+  },
+  "protocol": {
+    "level": "B3",
+    "prover_a_findings": 12,
+    "prover_a_rw": 0,
+    "prover_b_findings": 5,
+    "prover_b_rw": 0
+  },
+  "timestamp": 1775466854
+}

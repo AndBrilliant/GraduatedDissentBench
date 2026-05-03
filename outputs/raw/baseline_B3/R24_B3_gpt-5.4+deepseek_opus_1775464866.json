@@ -1,0 +1,102 @@
+{
+  "paper_id": "R24",
+  "condition": "B3_no_steelman",
+  "prover_a": "gpt-5.4",
+  "prover_b": "deepseek",
+  "arbiter": "opus",
+  "verdict": "flagged",
+  "confidence": 0.94,
+  "reasoning": "Both reviewers independently converge on the same core concerns: (1) severely underpowered/overfit regression with a tiny depression subgroup driving key conclusions, (2) ~42% non-response with no sensitivity analysis, (3) highly variable follow-up treated as a single time point, and (4) unit-of-analysis issues from bilateral procedures. None of these individually constitute a retraction-worthy fatal flaw \u2014 the descriptive finding that responders improved after fasciotomy is not rendered impossible \u2014 but collectively they substantially undermine the paper's central claims about independent predictors of outcome. The predictive conclusions (especially regarding depression) are unreliable as presented and require major methodological revision. An additional analytic error (Mann-Whitney U for paired data) is noted but unlikely to overturn the large observed pre/post differences. The paper needs substantial revision but not retraction.",
+  "findings": [
+    {
+      "finding": "Multivariable regression is severely underpowered and overfit: 61\u201365 observations with 6 predictors across 3 outcome models, and only 5 patients with depression. The depression coefficient (e.g., B=39.39 for SANE) is statistically unstable and likely driven by individual extreme observations. This violates standard sample-size-to-predictor guidelines.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.95,
+      "justification": "Both reviewers flag this as the most consequential analytic problem. The claimed independent predictors \u2014 especially depression \u2014 could easily be artifacts of overfitting and sparse data. However, the descriptive pre/post improvement is not rendered impossible by this flaw; only the predictor-identification inference is unreliable. Penalized regression, reduced predictor sets, or explicit acknowledgment of instability is needed.",
+      "source": "both"
+    },
+    {
+      "finding": "Severe non-response/attrition bias: 42% of eligible patients did not respond. No comparison of responders vs. non-responders on baseline characteristics is provided, and no sensitivity analysis for potential attrition bias was conducted.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.93,
+      "justification": "Both reviewers identify this as a major threat. If non-responders had worse outcomes, both the effectiveness estimates and predictor associations could be materially distorted. The study effectively reports outcomes among a self-selected subset, but conclusions are framed as generalizable. This requires sensitivity analysis or explicit reframing.",
+      "source": "both"
+    },
+    {
+      "finding": "Highly variable follow-up duration (12\u2013115 months) treated as a single postoperative time point with no adjustment in regression models.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers note that combining outcomes measured at 1 year with those at nearly 10 years post-surgery introduces substantial heterogeneity. If follow-up duration correlates with covariates (age, activity level), predictor estimates may be biased. At minimum, follow-up time should be included as a covariate or outcomes should be stratified.",
+      "source": "both"
+    },
+    {
+      "finding": "Unit-of-analysis error: 65 procedures from 61 patients (including bilateral cases) are treated as independent observations in standard regression, ignoring within-patient correlation.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Correlated outcomes from two procedures in the same patient violate the independence assumption, potentially underestimating standard errors and inflating significance. Mixed models, clustered standard errors, or patient-level analysis would be more appropriate. The magnitude of impact depends on the correlation structure but could change which predictors reach significance.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Use of change scores as outcomes without adjustment for baseline values, risking regression-to-the-mean artifacts and confounding by initial severity.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Modeling delta scores without conditioning on baseline can create spurious associations between predictors and improvement that merely reflect differences in starting severity or ceiling/floor effects. This is a well-established methodological concern that could alter which predictors appear significant.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Incorrect statistical test for paired pre/post comparisons: Mann-Whitney U (independent samples) was used instead of Wilcoxon signed-rank (paired samples).",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "This is a clear analytic error. However, given the large observed effect sizes, significance would very likely persist with the correct paired test. Thus this is a real error requiring correction but is unlikely to overturn the descriptive improvement finding.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Data-driven variable selection (univariate screening plus 'clinical experience') with no prespecified causal framework and no handling of potential confounders (sport type, bilateral disease, procedure type).",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "In a small sample, data-driven selection amplifies overfitting risk and omitted variable bias. Combined with the overfitting concern, this further undermines confidence in the reported predictors.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "No adjustment for multiple comparisons across three correlated regression models (FAAM-Sports, SANE, VAS).",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Running three separate models on correlated outcomes inflates the family-wise error rate. For example, the deep posterior compartment predictor for FAAM-Sports at P=0.045 may be a type I error. This is a common oversight that weakens but does not definitively invalidate the findings.",
+      "source": "prover_b"
+    },
+    {
+      "finding": "Overstatement of conclusions: the abstract/conclusion highlight depression as a key predictor despite it being non-significant for the primary outcome (FAAM-Sports, P=0.15), and claim fasciotomy is 'effective' based on an uncontrolled case series with high attrition.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers note this inferential overstatement. It is misleading but represents a framing/reporting issue rather than a fundamental methodological flaw. For a level-4 study, cautious language would be appropriate.",
+      "source": "both"
+    },
+    {
+      "finding": "Insufficient reporting of regression model specification, assumptions, residual diagnostics, and handling of bounded 0\u2013100 outcomes.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Poor reporting limits reproducibility and prevents assessment of whether model assumptions were violated. This is a transparency issue common in surgical literature and does not by itself invalidate conclusions.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Inconsistent diagnostic criteria: superficial posterior compartment not routinely tested, yet some patients received 4-compartment fasciotomy, creating treatment heterogeneity.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "This introduces variability in the intervention that should be discussed as a limitation. It does not fundamentally invalidate the analysis since compartment involvement was included as a predictor.",
+      "source": "prover_b"
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 7,
+    "MINOR": 4
+  },
+  "protocol": {
+    "level": "B3",
+    "prover_a_findings": 12,
+    "prover_a_rw": 0,
+    "prover_b_findings": 6,
+    "prover_b_rw": 0
+  },
+  "timestamp": 1775464866
+}

@@ -1,0 +1,123 @@
+{
+  "paper_id": "W05",
+  "condition": "B3_no_steelman",
+  "prover_a": "gpt-5.4",
+  "prover_b": "deepseek",
+  "arbiter": "opus",
+  "verdict": "flagged",
+  "confidence": 0.9,
+  "reasoning": "Both reviewers converge on the same core concerns: (1) using human VL case locations as ecological niche occurrences conflates epidemiological outcome with environmental suitability, (2) the dominant predictor (Human Footprint Index) is partially tautological when the response variable is human case presence, (3) future projections hold this dominant predictor static while only varying weaker climate predictors, and (4) aggressive spatial thinning and single-GCM projections limit robustness. None of these issues individually render the paper's conclusions impossible or fabricated\u2014the spatial correlations reported likely contain real signal\u2014but collectively they mean the central quantitative claims (HFP explains 62.6% of VL distribution; 7\u201312% future expansion) could change substantially under defensible alternative analytical choices. This warrants major revision, not retraction.",
+  "findings": [
+    {
+      "finding": "Human VL case locations used as ecological niche occurrences conflate disease reporting with environmental suitability. Case presence is jointly determined by vector/reservoir ecology, human population density, healthcare access, and surveillance intensity, yet the model treats these points as if they reflect environmental suitability alone.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.92,
+      "justification": "Both reviewers identify this as the central conceptual problem. The model's 'suitable areas' likely reflect a composite of transmission ecology, human settlement, and reporting patterns. This does not prove all conclusions are wrong\u2014correlative risk mapping retains some utility\u2014but it undermines causal and ecological-niche interpretations and could substantially change variable importance and projected risk surfaces if addressed with bias-corrected or vector/reservoir-based modeling.",
+      "source": "both"
+    },
+    {
+      "finding": "Human Footprint Index (HFP) as the dominant predictor (~62.6% contribution) is partially endogenous/circular: HFP encodes population density, built environment, and infrastructure\u2014factors that directly determine where human cases are detected and reported. The headline finding that anthropogenic pressure drives VL distribution may be partly tautological.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.9,
+      "justification": "Reviewer A highlights this explicitly; Reviewer B raises it within the broader niche-mismatch concern. If the dominant predictor's contribution is inflated by this circularity, the relative importance of climatic versus anthropogenic factors\u2014a key paper claim\u2014could shift materially. Alternative analyses (e.g., excluding HFP or using vector occurrence data) could yield qualitatively different conclusions.",
+      "source": "both"
+    },
+    {
+      "finding": "Future projections hold the dominant predictor (HFP, ~63% contribution) static while varying only climate layers, yet conclusions about future VL expansion are drawn from these projections. The reported 7\u201312% expansion figures reflect only partial scenario changes.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers flag this. Because the model's primary driver is frozen, projected changes are driven entirely by secondary climate variables, making expansion estimates incomplete and potentially misleading for policy guidance. This does not invalidate the exercise but requires either dynamic HFP scenarios or much stronger caveats.",
+      "source": "both"
+    },
+    {
+      "finding": "Only a single global climate model (CNRM-CM6-1) was used for future projections, with no ensemble or inter-model uncertainty assessment.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "Regional climate projections vary substantially across GCMs. A single model cannot capture structural uncertainty, and precipitation-sensitive results in particular could change direction with alternative GCMs. This is a standard but material limitation that weakens confidence in the quantitative expansion figures.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Extreme spatial thinning (855 \u2192 84 points, ~90% reduction) at a 10-km distance without sensitivity analysis or ecological justification for the chosen threshold.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.83,
+      "justification": "Both reviewers note this. With only 84 retained occurrences, the model may inadequately represent the environmental space of VL in the basin. Different thinning distances could yield materially different variable importance and suitability surfaces. Sensitivity analyses are needed to demonstrate robustness.",
+      "source": "both"
+    },
+    {
+      "finding": "No bias-correction or structured background selection strategy for presence-only MaxEnt modeling of passively collected surveillance data. Spatial thinning alone does not address spatially uneven reporting effort.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Presence-only models with biased occurrence data can produce distorted suitability maps and variable contributions unless sampling bias is explicitly addressed (e.g., target-group background, bias surface). This is a well-known issue in ecological niche modeling that could materially alter results.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Predictor selection appears partly based on MaxEnt jackknife/contribution metrics before final modeling, risking circular variable selection with only 84 occurrences.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "Data-driven preselection using the same modeling framework and data that produce the final results can inflate apparent variable importance and model fit. With limited sample size, this risk is heightened. External validation or alternative selection methods would strengthen confidence.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Claims of VL 'expansion' over time are based on descriptive municipal incidence maps without a formal spatiotemporal model to distinguish true epidemiological spread from changes in surveillance, population, or diagnostics.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "The descriptive increase in affected municipalities is suggestive but not definitive. Without controlling for temporal changes in surveillance effort and population growth, the expansion narrative may be overstated.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Binary suitability threshold choice ('maximum test sensitivity plus specificity') is problematic in presence-background settings, and sensitivity to threshold choice is not assessed. Reported area expansion percentages depend on this choice.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "This affects the precision of quantitative area estimates but not the qualitative directional finding. It is a common issue in presence-only modeling.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "MaxEnt percent contribution values are interpreted as causal importance rankings, but these are algorithm- and path-dependent and unstable with correlated predictors.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.82,
+      "justification": "This is an overinterpretation issue common in the literature. It affects the strength of specific predictor claims but does not invalidate the broad correlative patterns.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Spatial resolution mismatch among data sources (global ~1 km climate, municipal socioeconomic data, variable-precision geocoded cases) not discussed; potential modifiable areal unit problem.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.78,
+      "justification": "A common limitation in multi-source ecological niche modeling. Adds noise but is unlikely to fundamentally alter broad spatial patterns.",
+      "source": "prover_b"
+    },
+    {
+      "finding": "Framing as an 'ecological niche model' is conceptually mismatched to modeling a multi-component zoonotic disease outcome; would be more accurately described as an epidemiological risk model.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Primarily an interpretation and framing issue. Re-framing conclusions as correlative risk mapping rather than ecological niche characterization would improve accuracy without requiring new analyses.",
+      "source": "both"
+    },
+    {
+      "finding": "No independent temporal or spatial validation of model predictive performance; evaluation relies on internal metrics from the same occurrence dataset.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.75,
+      "justification": "Weakens confidence in generalizability but is standard practice in ecological niche modeling and does not by itself invalidate conclusions.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Use of clamping in extrapolation for future projections stated but not justified; relevant for interpreting projections into novel climate space.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.72,
+      "justification": "A minor reporting gap. Clamping is a defensible technical choice but should be briefly justified given its implications for novel-environment projections.",
+      "source": "prover_b"
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 8,
+    "MINOR": 6
+  },
+  "protocol": {
+    "level": "B3",
+    "prover_a_findings": 12,
+    "prover_a_rw": 0,
+    "prover_b_findings": 6,
+    "prover_b_rw": 0
+  },
+  "timestamp": 1775466955
+}

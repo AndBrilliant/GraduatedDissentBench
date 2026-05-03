@@ -1,0 +1,87 @@
+{
+  "verdict": "flagged",
+  "confidence": 0.97,
+  "reasoning": "This is a narrative review, so the key methodological standard is whether it accurately and fairly represents the methods and evidentiary strength of the cited primary studies. I do not see a single fatal quantitative error that would by itself warrant retraction of the review, but I do see multiple substantial methodological misstatements and overclaims. The most serious issue is that the review repeatedly treats weak, preliminary, or methodologically problematic results from cited studies as validated clinical capability, and in at least one case appears to inaccurately describe the cross-validation/training scheme in a way that suggests a basic methodological misunderstanding. There are also several places where unsupervised methods are described as if they were classification models, where predictive performance is presented without critical discussion of leakage/generalization limitations, and where broad claims about 'clinical-grade', 'improved accuracy', or 'real-time reliable' performance are unsupported by systematic evidence synthesis. For a review article, these problems are important because they can materially distort readers\u2019 understanding of the field, but they do not clearly make the article unrecoverable if corrected through major revision.",
+  "findings": [
+    {
+      "finding": "The manuscript is presented as a broad Review but gives no reproducible review methodology: no search strategy, databases searched, date ranges, inclusion/exclusion criteria, study selection process, or framework for weighing evidence quality.",
+      "severity": "MAJOR-REVISION",
+      "justification": "For a review article, absence of review methods means readers cannot assess completeness, selection bias, or whether the cited studies are representative. This does not automatically invalidate every statement, but it substantially weakens the paper\u2019s conclusions and would require revision if the article is meant to guide the field."
+    },
+    {
+      "finding": "The review repeatedly makes strong field-level claims such as 'clinical-grade information', 'improved accuracy', 'more reliable and effective', and 'revolutionizing' without systematic evidence synthesis, quantitative benchmarking, or discussion of study quality and external validation.",
+      "severity": "MAJOR-REVISION",
+      "justification": "These claims imply robust, generalizable evidence across wearable ML, but the manuscript mainly offers anecdotal examples from heterogeneous studies. If corrected, the conclusions may need to be substantially toned down, but the paper is not fundamentally impossible to salvage."
+    },
+    {
+      "finding": "The description of the blood pressure study\u2019s validation scheme is methodologically suspect and likely inaccurate: it states that after randomizing the original time trajectories into ten parts, 'one part' was used for training and the remaining nine for '10-fold cross-validation analysis.' This is internally inconsistent and suggests misunderstanding or misreporting of model validation.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If the review misdescribes the study\u2019s validation protocol, readers may be misled about the strength of evidence. For time-series physiological prediction, whether data were randomly shuffled versus split by subject/time critically affects validity because leakage can inflate accuracy. This concern could alter the interpretation of one of the review\u2019s showcase examples, but does not force retraction of the review as a whole."
+    },
+    {
+      "finding": "Relatedly, the review endorses random shuffling of temporally ordered blood pressure data as helping 'avoid overfitting' without critically discussing that shuffling time-series physiological data can create leakage and overoptimistic estimates when adjacent windows from the same subject/episode appear in both train and test folds.",
+      "severity": "MAJOR-REVISION",
+      "justification": "For wearable time-series prediction, preserving temporal and subject independence is often crucial. Failure to note this can materially misrepresent evidentiary strength. If confirmed, conclusions about the claimed grade-A wearable BP performance may weaken substantially, but the entire review need not be retracted."
+    },
+    {
+      "finding": "The review treats k-means clustering in the mask-position example as a 'classification model' producing test-set predictions, without addressing that k-means is an unsupervised clustering method and requires an additional label-assignment/evaluation step. The presentation conflates clustering with supervised classification.",
+      "severity": "MAJOR-REVISION",
+      "justification": "This is a real methodological mischaracterization. It may not change the underlying cited study, but it misinforms readers about what the method does and the level of supervision involved. The review would need correction, though not retraction."
+    },
+    {
+      "finding": "The manuscript frequently conflates pattern discovery with validated clinical prediction. Example studies are described as enabling diagnosis, prognosis, or treatment optimization without consistent discussion of sample sizes, independent external validation, calibration, class imbalance, subgroup performance, or clinical utility.",
+      "severity": "MAJOR-REVISION",
+      "justification": "This is a substantive interpretive flaw in a review intended to provide a roadmap for the field. If corrected, many claims would need to be reframed as preliminary feasibility rather than established capability. It does not make the review irredeemable."
+    },
+    {
+      "finding": "Performance metrics are reported selectively and sometimes inadequately for the claims made. For example, AUC and P-values are highlighted for COVID-19 detection, but there is no discussion of prevalence, confidence intervals, calibration, decision thresholds, prospective validation, or whether the comparison is person-independent.",
+      "severity": "MINOR",
+      "justification": "This is a common but important reporting weakness in narrative reviews. It limits interpretability but likely would not change the manuscript\u2019s broad conclusions if addressed."
+    },
+    {
+      "finding": "The review does not critically assess generalizability and domain shift, despite discussing wearable ML. Many cited studies likely involve small, controlled, single-site, or device-specific datasets, yet the narrative extrapolates to broad real-world deployment.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Generalization across users, devices, settings, and time is central in wearable ML. Omitting this caveat may materially overstate readiness for practice. This warrants revision, not retraction."
+    },
+    {
+      "finding": "No formal distinction is made between within-subject, cross-subject, temporal holdout, and external validation paradigms, even though these distinctions are crucial for evaluating wearable-sensor ML studies.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Because many wearable studies perform best under within-subject or random-window splits, failing to separate validation paradigms can substantially distort how readers interpret reported performance. This is a consequential methodological omission for a review paper."
+    },
+    {
+      "finding": "Claims about edge AI versus cloud AI imply that cloud AI 'can provide more accurate results' because of larger datasets and more sophisticated algorithms, but this is asserted without evidence and ignores scenarios where on-device adaptation or reduced latency can improve effective performance.",
+      "severity": "MINOR",
+      "justification": "This is an oversimplified, potentially misleading generalization, but it is not central enough to invalidate the review."
+    },
+    {
+      "finding": "The paper frames supervised and unsupervised learning as the two 'prominently used AI approaches' and gives simplistic use-case mappings, omitting reinforcement learning, self-supervised learning, transfer learning, foundation-model style pretraining, and hybrid pipelines except in scattered examples. This can distort the methodological landscape the review claims to summarize.",
+      "severity": "MINOR",
+      "justification": "This is primarily a scope/organization issue. It may mislead somewhat but is unlikely to overturn the paper\u2019s main narrative."
+    },
+    {
+      "finding": "The review often attributes causally strong effects to ML integration, e.g., that ML 'improves accuracy and reliability' or 'identifies and corrects errors,' without distinguishing between demonstrated empirical gains in specific studies and aspirational possibilities.",
+      "severity": "MAJOR-REVISION",
+      "justification": "For a review, causal overstatement can materially misrepresent the state of evidence. Correcting this would likely require extensive rewriting of claims and conclusions, but not retraction."
+    },
+    {
+      "finding": "There is no risk-of-bias discussion for the cited studies, despite obvious concerns relevant to wearable ML such as overfitting, leakage, user overlap between train/test sets, label quality, missing data, confounding by activity/context, and demographic imbalance.",
+      "severity": "MAJOR-REVISION",
+      "justification": "A review intended as a roadmap should assess study reliability, not just summarize positive findings. Without this, the synthesis is methodologically weak and potentially biased toward optimistic conclusions."
+    },
+    {
+      "finding": "Sex-stratified mask-position results (92.8% for male vs 77.5% for female subjects) are reported without any discussion of fairness, subgroup disparity, sample size, or whether model performance differs systematically across demographics.",
+      "severity": "MINOR",
+      "justification": "This is an important omission but not one that would likely alter the manuscript\u2019s broad conclusions."
+    },
+    {
+      "finding": "The manuscript uses promotional language throughout ('transformative', 'revolutionizing', 'tremendously improved', 'significantly improved accuracy') that is not matched by critical appraisal of evidence levels.",
+      "severity": "MINOR",
+      "justification": "This is largely a tone and inference problem rather than a direct methodological error, but it contributes to overstating the evidence base."
+    }
+  ],
+  "paper_id": "W04",
+  "model": "gpt-5.4",
+  "baseline": "B2",
+  "timestamp": 1775441008,
+  "rw_count": 0
+}

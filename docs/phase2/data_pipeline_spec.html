@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Pipeline Tool Spec — Phase 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --bg: #f5f1e8;
+  --bg-offset: #ebe6d8;
+  --bg-deep: #e1dccc;
+  --text: #1a1a1a;
+  --muted: #6b6b6b;
+  --accent: #8b2e1f;
+  --accent-bright: #c84b31;
+  --secondary: #2c5f5d;
+  --rule: #d4cfc0;
+  --display-font: 'JetBrains Mono', ui-monospace, monospace;
+  --body-font: 'Lora', Georgia, serif;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body-font);
+  font-size: 16px;
+  line-height: 1.65;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 64px 48px 140px;
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(139,46,31,0.025) 0%, transparent 45%),
+    radial-gradient(circle at 85% 75%, rgba(44,95,93,0.025) 0%, transparent 45%);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: multiply;
+}
+
+main { position: relative; z-index: 2; }
+
+/* ============ HEADER ============ */
+
+header {
+  border-bottom: 2px solid var(--text);
+  padding-bottom: 32px;
+  margin-bottom: 56px;
+}
+
+.eyebrow {
+  font-family: var(--display-font);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  color: var(--accent);
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.eyebrow::before {
+  content: '■  ';
+  color: var(--accent);
+}
+
+h1 {
+  font-family: var(--display-font);
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1.05;
+  margin: 0 0 24px;
+  letter-spacing: -0.02em;
+}
+
+h1 .accent {
+  color: var(--accent);
+  font-weight: 400;
+}
+
+.subtitle {
+  font-size: 19px;
+  font-style: italic;
+  color: var(--muted);
+  max-width: 660px;
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+.authors {
+  font-family: var(--display-font);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  color: var(--text);
+  margin: 0 0 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px dashed var(--rule);
+}
+
+.authors::before {
+  content: 'AUTHORS / ';
+  color: var(--accent);
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+.meta {
+  font-family: var(--display-font);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 1.8px;
+  color: var(--muted);
+  display: flex;
+  gap: 36px;
+  flex-wrap: wrap;
+}
+
+.meta span::before {
+  content: '→ ';
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ============ TYPOGRAPHY ============ */
+
+h2 {
+  font-family: var(--display-font);
+  font-size: 22px;
+  font-weight: 700;
+  margin: 72px 0 20px;
+  letter-spacing: -0.01em;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--text);
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+
+h2::before {
+  content: attr(data-num);
+  color: var(--accent);
+  font-weight: 400;
+  font-size: 14px;
+}
+
+h3 {
+  font-family: var(--display-font);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin: 40px 0 14px;
+  color: var(--accent);
+}
+
+p { margin: 0 0 18px; }
+
+strong { font-weight: 600; color: var(--text); }
+
+code, .mono {
+  font-family: var(--display-font);
+  font-size: 13px;
+  background: var(--bg-offset);
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+
+/* ============ LISTS ============ */
+
+ul, ol {
+  padding-left: 0;
+  list-style: none;
+  margin: 0 0 20px;
+}
+
+ul li, ol li {
+  position: relative;
+  padding-left: 32px;
+  margin-bottom: 12px;
+}
+
+ul li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  top: -1px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+ol { counter-reset: item; }
+ol li { counter-increment: item; }
+ol li::before {
+  content: counter(item, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 1px;
+  color: var(--accent);
+  font-family: var(--display-font);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ============ STAGE CARDS ============ */
+
+.stages {
+  margin-top: 24px;
+}
+
+.stage {
+  background: var(--bg-offset);
+  padding: 28px 32px;
+  margin-bottom: 16px;
+  position: relative;
+  border-left: 3px solid var(--accent);
+  transition: border-color 0.2s;
+}
+
+.stage:hover {
+  border-left-color: var(--accent-bright);
+}
+
+.stage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.stage-id {
+  font-family: var(--display-font);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 1.5px;
+  margin-bottom: 4px;
+}
+
+.stage-title {
+  font-family: var(--display-font);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  max-width: 520px;
+}
+
+.stage-tag {
+  font-family: var(--display-font);
+  font-size: 9.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 5px 10px;
+  border: 1.5px solid var(--text);
+  white-space: nowrap;
+}
+
+.tag-human { background: var(--bg); color: var(--text); }
+.tag-llm { background: var(--secondary); color: var(--bg); border-color: var(--secondary); }
+.tag-auto { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+.stage-detail {
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+.stage-detail dl {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 6px 20px;
+  margin: 0;
+}
+
+.stage-detail dt {
+  font-family: var(--display-font);
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 1.3px;
+  color: var(--muted);
+  padding-top: 4px;
+  font-weight: 500;
+}
+
+.stage-detail dd {
+  margin: 0;
+  padding-bottom: 4px;
+}
+
+/* ============ DIAGRAMS ============ */
+
+.diagram-wrap {
+  margin: 36px 0;
+  padding: 40px 32px 28px;
+  background: var(--bg-offset);
+  border: 1px solid var(--rule);
+  overflow-x: auto;
+}
+
+.diagram-wrap .mermaid {
+  text-align: center;
+  min-width: 500px;
+}
+
+.diagram-caption {
+  font-family: var(--display-font);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--rule);
+  text-align: center;
+}
+
+.diagram-caption::before { content: 'FIG — '; color: var(--accent); font-weight: 600; }
+
+/* ============ DATA MODEL ============ */
+
+.data-model {
+  font-family: var(--display-font);
+  font-size: 12.5px;
+  background: var(--bg-offset);
+  padding: 28px 32px;
+  margin: 20px 0;
+  border-left: 3px solid var(--secondary);
+  line-height: 1.7;
+}
+
+.data-model .entity {
+  margin-bottom: 14px;
+}
+
+.data-model .entity:last-child { margin-bottom: 0; }
+
+.data-model .entity-name {
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-size: 11.5px;
+}
+
+.data-model .fields {
+  color: var(--muted);
+  padding-left: 0;
+  font-size: 11.5px;
+  margin-top: 2px;
+}
+
+/* ============ LEGEND ============ */
+
+.legend {
+  display: flex;
+  gap: 24px;
+  margin: 20px 0 8px;
+  font-family: var(--display-font);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.3px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.legend-item { display: flex; align-items: center; gap: 8px; }
+.legend-swatch {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--text);
+}
+.sw-human { background: var(--bg); }
+.sw-mixed { background: var(--secondary); border-color: var(--secondary); }
+.sw-auto { background: var(--accent); border-color: var(--accent); }
+
+/* ============ CALLOUT ============ */
+
+.callout {
+  border-left: 3px solid var(--secondary);
+  padding: 18px 28px;
+  margin: 28px 0;
+  background: rgba(44,95,93,0.06);
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.callout::before {
+  content: '§';
+  font-family: var(--display-font);
+  font-style: normal;
+  font-size: 20px;
+  color: var(--secondary);
+  font-weight: 700;
+  margin-right: 12px;
+  vertical-align: -2px;
+}
+
+/* ============ PHASE CARDS ============ */
+
+.phases {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.phase {
+  padding: 24px 22px;
+  background: var(--bg-offset);
+  border-top: 3px solid var(--accent);
+}
+
+.phase-num {
+  font-family: var(--display-font);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1.5px;
+  margin-bottom: 6px;
+}
+
+.phase-name {
+  font-family: var(--display-font);
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.phase-scope {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.phase.current {
+  border-top-color: var(--accent-bright);
+  background: var(--bg-deep);
+  box-shadow: 0 0 0 1px var(--accent-bright);
+}
+
+.phase.current .phase-num::after {
+  content: ' / current';
+  color: var(--accent);
+}
+
+/* ============ FOOTER ============ */
+
+footer {
+  margin-top: 96px;
+  padding-top: 28px;
+  border-top: 2px solid var(--text);
+  font-family: var(--display-font);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 1.8px;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+footer .accent { color: var(--accent); }
+
+/* ============ RESPONSIVE ============ */
+
+@media (max-width: 760px) {
+  body { padding: 40px 24px 80px; }
+  h1 { font-size: 32px; }
+  h2 { font-size: 19px; }
+  .stage { padding: 22px 20px; }
+  .stage-detail dl { grid-template-columns: 1fr; gap: 2px; }
+  .stage-detail dt { padding-top: 10px; }
+  .phases { grid-template-columns: 1fr; }
+  .meta { gap: 20px; }
+}
+
+@media print {
+  body { background: white; max-width: none; padding: 20px; }
+  body::before { display: none; }
+  .stage, .diagram-wrap, .data-model, .callout, .phase { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <div class="eyebrow">Internal Spec · Phase 2 Initial Build</div>
+  <h1>Graduated Dissent Benchmark<br><span class="accent">Data Pipeline Tool</span></h1>
+  <p class="subtitle">A single tool that handles every stage of the benchmark pipeline from candidate extraction through inter-rater scoring, architected for two people now and contributors later.</p>
+  <div class="authors">Andrew Brilliant &nbsp;·&nbsp; Joe Reid</div>
+  <div class="meta">
+    <span>Phase 2</span>
+    <span>Local deployment</span>
+    <span>Target n = 25–50</span>
+  </div>
+</header>
+
+<h2 data-num="01">Goals &amp; Non-Goals</h2>
+
+<h3>What this tool does</h3>
+<p>Grows the benchmark from n=10 to n=50 as a matter of steady workflow execution rather than ad-hoc scripting. Enforces a locked schema so every contribution has consistent structure. Creates an audit trail for every decision that can be reconstructed later. Designed for two users now, architected so adding contributors in phase 3 does not require a rewrite.</p>
+
+<h3>What this tool does not do</h3>
+<ul>
+  <li>Not a real-time collaboration platform — one user at a time is fine for phase 2</li>
+  <li>Not a general retraction database — only tracks what is in the benchmark</li>
+  <li>Not a model serving platform — calls external APIs, does not host models</li>
+  <li>Not a replacement for git — git still holds the canonical dataset and history</li>
+  <li>Never stores API keys on the server, under any circumstances</li>
+</ul>
+
+<h2 data-num="02">Pipeline Overview</h2>
+
+<p>Ten stages take a candidate from the Retraction Watch CSV to a fully scored benchmark entry. The color coding below shows where human judgment is required, where LLM assistance is used with human verification, and where the work is fully automated.</p>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-swatch sw-human"></div>Human judgment</div>
+  <div class="legend-item"><div class="legend-swatch sw-mixed"></div>LLM + human verify</div>
+  <div class="legend-item"><div class="legend-swatch sw-auto"></div>Fully automated</div>
+</div>
+
+<div class="diagram-wrap">
+<div class="mermaid">
+flowchart TD
+  start([Retraction Watch CSV<br/>Crossref mirror]):::terminal
+  start --> s1
+  s1[01 · Candidate Ingestion]:::auto
+  s1 --> s2
+  s2[02 · Notice Enrichment]:::mixed
+  s2 --> s3
+  s3{03 · Triage<br/>Class A / B / C}:::human
+  s3 -->|Class A or B| s4
+  s3 -->|Class C or excluded| excluded([Excluded<br/>with reason]):::terminal
+  s4[04 · Domain Routing<br/>&amp; Expert Review]:::human
+  s4 --> s5
+  s5[05 · Anonymization]:::mixed
+  s5 --> s6
+  s6[06 · Control Matching]:::mixed
+  s6 --> s7
+  s7[07 · Ground Truth<br/>Keyword Extraction]:::human
+  s7 --> s8
+  s8[08 · Protocol Execution]:::auto
+  s8 --> s9
+  s9[09 · Automated Scoring]:::mixed
+  s9 --> s10
+  s10[10 · Inter-rater Check]:::human
+  s10 --> done([Added to benchmark<br/>with full audit trail]):::terminal
+
+  classDef auto fill:#c84b31,stroke:#1a1a1a,stroke-width:1.5px,color:#f5f1e8
+  classDef mixed fill:#2c5f5d,stroke:#1a1a1a,stroke-width:1.5px,color:#f5f1e8
+  classDef human fill:#ebe6d8,stroke:#1a1a1a,stroke-width:1.5px,color:#1a1a1a
+  classDef terminal fill:#f5f1e8,stroke:#8b2e1f,stroke-width:2px,color:#1a1a1a
+</div>
+<div class="diagram-caption">End-to-end pipeline with human, mixed, and automated stages</div>
+</div>
+
+<div class="callout">The meta-rule for the tool: anywhere the temptation is to use an LLM because it would be faster, ask whether a wrong answer would be detectable. If yes, automate with LLM assistance. If no, humans only. The default bias should be humans, with LLMs used where their output is self-verifying.</div>
+
+<h2 data-num="03">Users &amp; Roles</h2>
+
+<h3>Phase 2 roles</h3>
+<ul>
+  <li><strong>Maintainer</strong> (Drew) — full access, can lock schemas and ground truth, can override any automated decision</li>
+  <li><strong>Contributor</strong> (Joe) — full access within assigned domains, can propose changes to locked items for maintainer approval</li>
+</ul>
+
+<h3>Added in phase 3</h3>
+<ul>
+  <li><strong>External contributor</strong> — write access only to their own submissions pending maintainer review; read access to the full benchmark</li>
+</ul>
+
+<h2 data-num="04">Data Model</h2>
+
+<p>Every entity has standard audit fields: <code>created_at</code>, <code>created_by</code>, <code>updated_at</code>, <code>updated_by</code>. The schema is locked at the start of phase 2 so all contributions share the same structure.</p>
+
+<div class="data-model">
+  <div class="entity">
+    <div class="entity-name">Paper</div>
+    <div class="fields">record_id · retraction_watch_id · title_hash · pub_date · retraction_date · reason_raw · reason_structured · class (A/B/C) · status · exclusion_reason</div>
+  </div>
+  <div class="entity">
+    <div class="entity-name">RetractionNotice</div>
+    <div class="fields">paper_id · notice_text · notice_url · parsed_fields (JSON)</div>
+  </div>
+  <div class="entity">
+    <div class="entity-name">Control</div>
+    <div class="fields">control_id · paired_paper_id · journal · topic · pub_date · verification_notes</div>
+  </div>
+  <div class="entity">
+    <div class="entity-name">GroundTruthKeywords</div>
+    <div class="fields">paper_id · keyword_groups (JSON) · locked (bool) · locked_by · locked_at</div>
+  </div>
+  <div class="entity">
+    <div class="entity-name">AnonymizedManuscript</div>
+    <div class="fields">paper_id · file_path · anonymization_log</div>
+  </div>
+  <div class="entity">
+    <div class="entity-name">ProtocolRun</div>
+    <div class="fields">run_id · paper_id · config_snapshot · model_versions · timestamp</div>
+  </div>
+  <div class="entity">
+    <div class="entity-name">Finding</div>
+    <div class="fields">run_id · stage · severity · text · source_model</div>
+  </div>
+  <div class="entity">
+    <div class="entity-name">ScoringResult</div>
+    <div class="fields">run_id · paper_id · gt_match · matched_findings · overrides</div>
+  </div>
+  <div class="entity">
+    <div class="entity-name">Contributor</div>
+    <div class="fields">user_id · name · domains · papers_added · inter_rater_subset</div>
+  </div>
+</div>
+
+<h2 data-num="05">Stage Detail</h2>
+
+<p>Each stage describes its trigger, what the system does, what the user sees and does, and what gets stored.</p>
+
+<div class="stages">
+
+  <div class="stage">
+    <div class="stage-header">
+      <div>
+        <div class="stage-id">STAGE 01</div>
+        <div class="stage-title">Candidate Ingestion from Retraction Watch</div>
+      </div>
+      <div class="stage-tag tag-auto">Automated</div>
+    </div>
+    <div class="stage-detail">
+      <dl>
+        <dt>Trigger</dt><dd>Maintainer clicks "Update candidates"</dd>
+        <dt>System</dt><dd>Pulls latest CSV from Crossref mirror via <code>git pull</code>, diffs against existing records, applies pre-filter (post-cutoff, excludes misconduct categories, excludes paper mills)</dd>
+        <dt>User sees</dt><dd>Table of new candidates with filters for date, journal, and reason category</dd>
+        <dt>User does</dt><dd>Selects candidates to add to the pool or accepts the pre-filter default</dd>
+        <dt>Stored</dt><dd>Paper records with status=candidate, linked to Retraction Watch ID</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="stage-header">
+      <div>
+        <div class="stage-id">STAGE 02</div>
+        <div class="stage-title">Notice Enrichment</div>
+      </div>
+      <div class="stage-tag tag-llm">LLM + Verify</div>
+    </div>
+    <div class="stage-detail">
+      <dl>
+        <dt>Trigger</dt><dd>Automatic after new candidates are added</dd>
+        <dt>System</dt><dd>Fetches retraction notice text and full-text availability via Unpaywall API; LLM parses notice into structured fields</dd>
+        <dt>User sees</dt><dd>List of parsed results with confidence markers; low-confidence parses highlighted</dd>
+        <dt>User does</dt><dd>Spot-checks a sample (default 20%, minimum 5); approves, edits, or flags</dd>
+        <dt>Stored</dt><dd>RetractionNotice records with parsed_fields and audit trail of verified entries</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="stage-header">
+      <div>
+        <div class="stage-id">STAGE 03</div>
+        <div class="stage-title">Triage (Class A / B / C)</div>
+      </div>
+      <div class="stage-tag tag-human">Human</div>
+    </div>
+    <div class="stage-detail">
+      <dl>
+        <dt>Trigger</dt><dd>User opens triage queue</dd>
+        <dt>System</dt><dd>Shows unreviewed candidates with notice text, LLM-suggested class, and pre-specified criteria reminder</dd>
+        <dt>User does</dt><dd>Reads notice, assigns class, records decision reasoning as free text</dd>
+        <dt>Stored</dt><dd>Class decision, reasoning, LLM suggestion (kept for drift analysis), human-LLM agreement flag</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="stage-header">
+      <div>
+        <div class="stage-id">STAGE 04</div>
+        <div class="stage-title">Domain Routing &amp; Expert Review</div>
+      </div>
+      <div class="stage-tag tag-human">Human Expert</div>
+    </div>
+    <div class="stage-detail">
+      <dl>
+        <dt>Trigger</dt><dd>Triage assigns a paper to a domain outside the maintainer's expertise</dd>
+        <dt>System</dt><dd>Routes to contributor whose declared domains match, or to queue if no match</dd>
+        <dt>Contributor sees</dt><dd>Notice, abstract, methodology section, relevant figures</dd>
+        <dt>Contributor does</dt><dd>Confirms the error is text-detectable and matches the notice, or rejects with reason</dd>
+        <dt>Stored</dt><dd>Verification record with contributor ID and reasoning</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="stage-header">
+      <div>
+        <div class="stage-id">STAGE 05</div>
+        <div class="stage-title">Anonymization</div>
+      </div>
+      <div class="stage-tag tag-llm">Script + LLM</div>
+    </div>
+    <div class="stage-detail">
+      <dl>
+        <dt>Trigger</dt><dd>Paper reaches accepted status</dd>
+        <dt>System</dt><dd>Runs anonymization script (strips author names, affiliations, journal, dates, acknowledgments, references); LLM scans for remaining identifying markers</dd>
+        <dt>User sees</dt><dd>Before/after diff plus LLM-flagged items</dd>
+        <dt>User does</dt><dd>Approves each flag or marks as false positive</dd>
+        <dt>Stored</dt><dd>AnonymizedManuscript file plus full anonymization log</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="stage-header">
+      <div>
+        <div class="stage-id">STAGE 06</div>
+        <div class="stage-title">Control Matching</div>
+      </div>
+      <div class="stage-tag tag-llm">LLM + Verify</div>
+    </div>
+    <div class="stage-detail">
+      <dl>
+        <dt>Trigger</dt><dd>User opens control matching interface for a paper</dd>
+        <dt>System</dt><dd>Suggests candidate controls from same journal, similar date, topic overlap; LLM ranks by similarity</dd>
+        <dt>User does</dt><dd>Reviews top 5 candidates, selects a match or rejects all and requests new suggestions</dd>
+        <dt>Stored</dt><dd>Control record paired to retracted paper with verification notes</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="stage-header">
+      <div>
+        <div class="stage-id">STAGE 07</div>
+        <div class="stage-title">Ground Truth Keyword Extraction</div>
+      </div>
+      <div class="stage-tag tag-human">Human Lock</div>
+    </div>
+    <div class="stage-detail">
+      <dl>
+        <dt>Trigger</dt><dd>User opens ground truth editor for a paper</dd>
+        <dt>System</dt><dd>Shows notice text and current keyword groups (may be empty or LLM-suggested)</dd>
+        <dt>User does</dt><dd>Edits groups, adds, removes, then clicks "Lock" when satisfied</dd>
+        <dt>Stored</dt><dd>Keyword groups as JSON, lock status, lock timestamp; post-lock changes require explicit unlock with audit reason</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="stage-header">
+      <div>
+        <div class="stage-id">STAGE 08</div>
+        <div class="stage-title">Protocol Execution</div>
+      </div>
+      <div class="stage-tag tag-auto">Automated</div>
+    </div>
+    <div class="stage-detail">
+      <dl>
+        <dt>Trigger</dt><dd>User selects paper(s) and clicks "Run protocol"</dd>
+        <dt>System</dt><dd>Prompts for API keys (session-scoped, never stored); runs provers, judge, steelman, arbiter; saves all outputs</dd>
+        <dt>User sees</dt><dd>Progress indicator with cancel option, final output with all stage artifacts</dd>
+        <dt>Stored</dt><dd>ProtocolRun record, Finding records, raw output files</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="stage-header">
+      <div>
+        <div class="stage-id">STAGE 09</div>
+        <div class="stage-title">Automated Scoring</div>
+      </div>
+      <div class="stage-tag tag-llm">Auto + Audit</div>
+    </div>
+    <div class="stage-detail">
+      <dl>
+        <dt>Trigger</dt><dd>Automatic after protocol run</dd>
+        <dt>System</dt><dd>Runs keyword matching against locked ground truth; produces audit table</dd>
+        <dt>User sees</dt><dd>Paper-by-paper matches with finding text and which keyword group matched or did not</dd>
+        <dt>User does</dt><dd>Reviews audit, optionally overrides with reason</dd>
+        <dt>Stored</dt><dd>ScoringResult record and complete override log</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="stage-header">
+      <div>
+        <div class="stage-id">STAGE 10</div>
+        <div class="stage-title">Inter-rater Check</div>
+      </div>
+      <div class="stage-tag tag-human">Human Only</div>
+    </div>
+    <div class="stage-detail">
+      <dl>
+        <dt>Trigger</dt><dd>Second user opens an already-scored paper</dd>
+        <dt>System</dt><dd>Hides first user's decisions, shows only findings</dd>
+        <dt>Second user does</dt><dd>Scores independently</dd>
+        <dt>System then</dt><dd>Compares, computes agreement metric, surfaces discrepancies for discussion</dd>
+        <dt>Stored</dt><dd>Second rater decisions, agreement stats, discrepancy log</dd>
+      </dl>
+    </div>
+  </div>
+
+</div>
+
+<h2 data-num="06">Technical Architecture</h2>
+
+<h3>Stack</h3>
+<ul>
+  <li><strong>Backend</strong> — Python with FastAPI, single process, SQLite database file; SQL with a thin helper layer rather than a full ORM (readable for someone learning Python)</li>
+  <li><strong>Frontend</strong> — Server-rendered HTML with htmx for interactivity; no build step, no JavaScript framework</li>
+  <li><strong>File storage</strong> — Local filesystem, organized by paper record_id, directory layout mirrored in git so the full dataset is versioned</li>
+  <li><strong>LLM integration</strong> — Single interface wrapping provider APIs; keys provided at runtime and never logged, stored, or sent to the backend beyond the scope of the request</li>
+  <li><strong>Auth</strong> — None in phase 2 (single-user local); password-hashed accounts in phase 3; OAuth optional for phase 4</li>
+  <li><strong>Deployment</strong> — <code>python -m benchmark_tool</code> locally or inside a Docker container; SQLite file committed to repo each session; hosted on a modest VPS in phase 3</li>
+</ul>
+
+<h2 data-num="07">Phase Boundaries</h2>
+
+<div class="phases">
+  <div class="phase current">
+    <div class="phase-num">PHASE 2</div>
+    <div class="phase-name">Pilot Tool</div>
+    <div class="phase-scope">Drew &amp; Joe, local deployment. Grow benchmark to n=25–50 with the tool handling the pipeline. Prove the workflow works before scaling.</div>
+  </div>
+  <div class="phase">
+    <div class="phase-num">PHASE 3</div>
+    <div class="phase-name">Small Group</div>
+    <div class="phase-scope">5–10 contributors, hosted deployment, password auth, review queue for external submissions. Same data model, bigger user base.</div>
+  </div>
+  <div class="phase">
+    <div class="phase-num">PHASE 4</div>
+    <div class="phase-name">Open Contribution</div>
+    <div class="phase-scope">Open contribution model with rate limiting, moderation, and attribution on each release. Conditional on phase 3 traction.</div>
+  </div>
+</div>
+
+<h2 data-num="08">Build Order</h2>
+
+<h3>Minimum viable for phase 2</h3>
+<ol>
+  <li><strong>Stage 01</strong> (candidate ingestion from CSV) — highest leverage because it unlocks the whole pipeline and replaces the LLM-guessing selection method that produced only 10 papers last time</li>
+  <li><strong>Stage 03</strong> (triage UI) — where human judgment gets applied consistently</li>
+  <li><strong>Stage 07</strong> (ground truth editor) — must exist before scoring can be trusted</li>
+  <li><strong>Stage 09</strong> (automated scoring integration) — already mostly works as a script, needs to live in the tool so the audit table is first-class data</li>
+</ol>
+
+<p>Stages 02, 05, 06, 08, and 10 can remain scripted or manual in the short term and get wrapped into the tool as they become bottlenecks.</p>
+
+<h3>Suggested division of labor</h3>
+<ul>
+  <li><strong>Drew</strong> — database schema, Stage 09 integration, overall architecture decisions, spec enforcement</li>
+  <li><strong>Joe</strong> — Stages 01, 03, and 07 user interfaces (SQL, FastAPI basics, git integration, API clients, simple prompt engineering, htmx); gives real ownership of meaningful pieces rather than fetch-tasks, matches the AI/IT pivot</li>
+  <li><strong>Both</strong> — Stage 04 workflow because domain routing affects everyone</li>
+</ul>
+
+<h2 data-num="09">Open Questions</h2>
+
+<p>Things to decide Friday rather than tonight.</p>
+
+<ul>
+  <li><strong>Database migration path</strong> — SQLite is right for phase 2, but the phase 3 Postgres path should be checked early so SQL stays portable</li>
+  <li><strong>Git auto-commit</strong> — should the tool auto-commit changes to the dataset, or should the user commit manually? Auto-commit is safer but noisier</li>
+  <li><strong>LLM provider abstraction</strong> — support one provider initially or multiple from the start? Multiple adds complexity but matches the multi-model philosophy of the paper</li>
+  <li><strong>Anonymization automation boundary</strong> — how much can be scripted reliably? Requires a small test set to evaluate</li>
+</ul>
+
+<footer>
+  <span>Graduated Dissent Benchmark / Data Pipeline Tool</span>
+  <span class="accent">Phase 2 Spec / Draft for Friday</span>
+</footer>
+
+</main>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'base',
+  themeVariables: {
+    primaryColor: '#ebe6d8',
+    primaryTextColor: '#1a1a1a',
+    primaryBorderColor: '#1a1a1a',
+    lineColor: '#1a1a1a',
+    secondaryColor: '#2c5f5d',
+    tertiaryColor: '#f5f1e8',
+    fontFamily: '"JetBrains Mono", monospace',
+    fontSize: '13px'
+  },
+  flowchart: {
+    curve: 'linear',
+    nodeSpacing: 45,
+    rankSpacing: 55,
+    padding: 15
+  },
+  securityLevel: 'loose'
+});
+</script>
+</body>
+</html>
