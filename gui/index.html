@@ -1,0 +1,1639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Graduated Dissent Bench</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'SF Mono', 'Consolas', 'Monaco', monospace; background: #0a0a0a; color: #d4d4d4; min-height: 100vh; }
+a { color: #7aa2f7; }
+
+.header { background: #1a1a2e; border-bottom: 1px solid #333; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; }
+.header h1 { font-size: 16px; color: #7aa2f7; font-weight: 600; }
+.tabs { display: flex; gap: 4px; }
+.tab { padding: 6px 16px; background: transparent; border: 1px solid #333; color: #888; cursor: pointer; font-family: inherit; font-size: 12px; border-radius: 4px; }
+.tab.active { background: #7aa2f7; color: #0a0a0a; border-color: #7aa2f7; }
+.main { max-width: 960px; margin: 0 auto; padding: 24px; }
+
+/* Mode toggle */
+.mode-bar { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; padding: 12px; background: #141414; border: 1px solid #282828; border-radius: 6px; }
+.mode-bar label { font-size: 12px; }
+.mode-bar input[type="radio"] { accent-color: #7aa2f7; }
+.mode-label { font-size: 13px; cursor: pointer; color: #888; }
+.mode-label.active { color: #7aa2f7; font-weight: 600; }
+
+/* Steps bar */
+.steps-bar { display: flex; gap: 2px; margin-bottom: 24px; overflow-x: auto; }
+.step-pill { padding: 4px 10px; font-size: 11px; border-radius: 3px; background: #1a1a1a; border: 1px solid #282828; color: #555; white-space: nowrap; cursor: pointer; }
+.step-pill:hover { border-color: #444; }
+.step-pill.active { background: #7aa2f7; color: #0a0a0a; border-color: #7aa2f7; }
+.step-pill.done { background: #1a3a1a; color: #4ade80; border-color: #2d5a2d; }
+.step-pill.skipped { background: #1a1a1a; color: #444; border-color: #222; text-decoration: line-through; }
+
+/* Step panels */
+.step-panel { display: none; }
+.step-panel.visible { display: block; }
+.step-title { font-size: 15px; color: #e4e4e4; margin-bottom: 16px; font-weight: 600; }
+.step-desc { font-size: 12px; color: #888; margin-bottom: 16px; line-height: 1.5; }
+
+/* Form elements */
+textarea, input[type="text"], input[type="password"], input[type="number"], select {
+  width: 100%; padding: 10px; background: #141414; border: 1px solid #333;
+  color: #d4d4d4; font-family: inherit; font-size: 13px; border-radius: 4px; resize: vertical;
+}
+textarea:focus, input:focus, select:focus { outline: none; border-color: #7aa2f7; }
+textarea.manuscript { min-height: 200px; }
+textarea.prompt-display { min-height: 100px; font-size: 11px; color: #aaa; background: #0d0d0d; }
+textarea.raw-paste { min-height: 80px; font-size: 11px; }
+
+label.field-label { display: block; font-size: 12px; color: #888; margin-bottom: 4px; margin-top: 12px; }
+.field-row { display: flex; gap: 12px; }
+.field-row > div { flex: 1; }
+.inline-field { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+.inline-field label { font-size: 12px; color: #888; min-width: 110px; flex-shrink: 0; }
+.inline-field input, .inline-field select { flex: 1; }
+
+/* Radio groups */
+.radio-group { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+.radio-option { display: flex; align-items: flex-start; gap: 8px; padding: 10px; background: #141414; border: 1px solid #282828; border-radius: 4px; cursor: pointer; }
+.radio-option:hover { border-color: #444; }
+.radio-option.selected { border-color: #7aa2f7; background: #141428; }
+.radio-option input { margin-top: 2px; accent-color: #7aa2f7; }
+.ro-title { font-size: 13px; font-weight: 600; color: #d4d4d4; }
+.ro-desc { font-size: 11px; color: #777; margin-top: 2px; }
+.ro-badge { font-size: 10px; background: #4ade80; color: #0a0a0a; padding: 1px 6px; border-radius: 3px; margin-left: 6px; font-weight: 700; }
+
+/* Buttons */
+.btn { padding: 8px 20px; font-family: inherit; font-size: 13px; border-radius: 4px; cursor: pointer; border: 1px solid transparent; font-weight: 600; }
+.btn-primary { background: #7aa2f7; color: #0a0a0a; }
+.btn-primary:hover { background: #5b8af0; }
+.btn-primary:disabled { background: #333; color: #666; cursor: not-allowed; }
+.btn-secondary { background: transparent; border-color: #444; color: #aaa; }
+.btn-secondary:hover { border-color: #7aa2f7; color: #7aa2f7; }
+.btn-danger { background: #f7768e; color: #0a0a0a; }
+.btn-small { padding: 4px 10px; font-size: 11px; }
+.btn-row { display: flex; gap: 8px; margin-top: 16px; }
+
+/* Execution areas */
+.exec-area { margin-top: 16px; padding: 16px; background: #111; border: 1px solid #282828; border-radius: 6px; }
+.exec-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.exec-header h3 { font-size: 13px; color: #d4d4d4; }
+.exec-status { font-size: 11px; padding: 2px 8px; border-radius: 3px; }
+.exec-status.waiting { background: #282828; color: #888; }
+.exec-status.running { background: #1a1a3a; color: #7aa2f7; }
+.exec-status.done { background: #1a3a1a; color: #4ade80; }
+.exec-status.error { background: #3a1a1a; color: #f7768e; }
+.exec-status.editing { background: #3a3a1a; color: #e0af68; }
+
+.exec-stats { display: flex; gap: 16px; margin: 8px 0; font-size: 11px; color: #666; flex-wrap: wrap; }
+.exec-stats span { display: flex; align-items: center; gap: 4px; }
+.exec-stats .val { color: #aaa; font-weight: 600; }
+
+.collapsible { cursor: pointer; user-select: none; font-size: 12px; color: #888; padding: 4px 0; }
+.collapsible::before { content: '\25B6 '; font-size: 10px; color: #555; }
+.collapsible.open::before { content: '\25BC '; }
+.collapse-body { display: none; margin-top: 8px; }
+.collapse-body.open { display: block; }
+
+/* Escalation */
+.escalation-box { margin: 16px 0; padding: 12px; border-radius: 6px; font-size: 12px; }
+.escalation-box.no-escalate { background: #1a3a1a; border: 1px solid #2d5a2d; color: #4ade80; }
+.escalation-box.escalate { background: #3a2a1a; border: 1px solid #5a4a2d; color: #e0af68; }
+.esc-title { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+
+/* Findings form */
+.finding-form { padding: 12px; margin: 8px 0; border: 1px solid #282828; border-radius: 4px; background: #0d0d0d; position: relative; }
+.finding-form .finding-num { font-size: 11px; color: #7aa2f7; font-weight: 600; margin-bottom: 8px; }
+.finding-remove { position: absolute; top: 8px; right: 8px; background: none; border: none; color: #f7768e; cursor: pointer; font-size: 14px; font-family: inherit; }
+.finding-remove:hover { color: #ff99a8; }
+.add-finding-btn { margin-top: 8px; padding: 6px 12px; background: #1a1a2e; border: 1px dashed #444; color: #7aa2f7; cursor: pointer; border-radius: 4px; font-family: inherit; font-size: 12px; width: 100%; }
+.add-finding-btn:hover { border-color: #7aa2f7; }
+
+/* Results */
+.result-card { padding: 16px; background: #141414; border: 1px solid #282828; border-radius: 6px; margin-bottom: 12px; }
+.result-verdict { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.result-verdict.flagged { color: #f7768e; }
+.result-verdict.not_flagged { color: #4ade80; }
+.finding-card { padding: 10px; margin: 8px 0; border-left: 3px solid #444; background: #111; border-radius: 0 4px 4px 0; }
+.finding-card.rw { border-left-color: #f7768e; }
+.finding-card.mr { border-left-color: #e0af68; }
+.finding-card.minor-sev { border-left-color: #4ade80; }
+.finding-sev { font-size: 11px; font-weight: 700; margin-bottom: 4px; }
+.finding-sev.rw { color: #f7768e; }
+.finding-sev.mr { color: #e0af68; }
+.finding-sev.minor-sev { color: #4ade80; }
+.finding-text { font-size: 12px; color: #bbb; line-height: 1.5; }
+
+/* Spinner */
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #333; border-top-color: #7aa2f7; border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Viewer */
+.viewer-item { padding: 10px; background: #141414; border: 1px solid #282828; border-radius: 4px; margin-bottom: 6px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.viewer-item:hover { border-color: #444; }
+.vi-id { font-weight: 600; color: #d4d4d4; }
+.vi-meta { font-size: 11px; color: #666; }
+.json-tree { font-size: 12px; line-height: 1.6; }
+.json-tree .jt-key { color: #7aa2f7; }
+.json-tree .jt-str { color: #9ece6a; }
+.json-tree .jt-num { color: #e0af68; }
+.json-tree .jt-bool { color: #bb9af7; }
+.json-tree .jt-null { color: #666; }
+.json-tree .jt-toggle { cursor: pointer; user-select: none; color: #555; }
+.json-tree .jt-toggle:hover { color: #7aa2f7; }
+.json-tree .jt-hidden { display: none; }
+.json-tree ul { list-style: none; padding-left: 20px; }
+
+/* API keys */
+.api-keys { margin: 12px 0; }
+.key-field { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.key-field label { font-size: 12px; color: #888; min-width: 100px; }
+.key-field input { flex: 1; }
+
+/* Invalidated step overlay */
+.exec-area.invalidated { opacity: 0.4; position: relative; }
+.exec-area.invalidated::after { content: 'Invalidated — re-run needed'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #282828; padding: 4px 12px; border-radius: 4px; font-size: 11px; color: #e0af68; }
+
+/* Toast */
+.toast { position: fixed; bottom: 24px; right: 24px; padding: 10px 20px; background: #1a3a1a; border: 1px solid #2d5a2d; color: #4ade80; border-radius: 6px; font-size: 12px; z-index: 100; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.toast.show { opacity: 1; }
+.toast.error { background: #3a1a1a; border-color: #5a2d2d; color: #f7768e; }
+
+.hidden { display: none !important; }
+
+/* Manual form sections */
+.manual-form { margin-top: 12px; padding: 12px; background: #0d0d0d; border: 1px solid #282828; border-radius: 6px; }
+.manual-form h4 { font-size: 12px; color: #e0af68; margin-bottom: 12px; font-weight: 600; }
+.manual-form .sep { border-top: 1px solid #1a1a1a; margin: 12px 0; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Graduated Dissent Bench</h1>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('wizard')">Wizard</button>
+    <button class="tab" onclick="showTab('viewer')">Run Viewer</button>
+  </div>
+</div>
+
+<!-- ==================== WIZARD TAB ==================== -->
+<div id="tab-wizard" class="main">
+
+  <div class="mode-bar">
+    <label style="font-weight:600; color:#d4d4d4; margin-right:8px;">Mode:</label>
+    <label class="mode-label active" id="ml-api">
+      <input type="radio" name="mode" value="api" checked onchange="setMode('api')"> API (automatic)
+    </label>
+    <label class="mode-label" id="ml-manual">
+      <input type="radio" name="mode" value="manual" onchange="setMode('manual')"> Manual (copy/paste)
+    </label>
+  </div>
+
+  <div class="steps-bar" id="steps-bar"></div>
+
+  <!-- Step 0: Manuscript -->
+  <div class="step-panel visible" id="step-0">
+    <div class="step-title">1. Paste Manuscript</div>
+    <div class="step-desc">Paste the anonymized manuscript text. Remove author names, journal names, dates, affiliations, and references for best results.</div>
+    <label class="field-label">Paper ID (e.g. R01, C05, HN03)</label>
+    <input type="text" id="paper-id" placeholder="R01" style="max-width:200px;">
+    <label class="field-label">Manuscript Text</label>
+    <textarea class="manuscript" id="paper-text" placeholder="Paste the full manuscript text here..."></textarea>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="loadDemoPaper()">Load Demo Paper</button>
+      <button class="btn btn-primary" onclick="goStep(1)">Next</button>
+    </div>
+  </div>
+
+  <!-- Step 1: Condition -->
+  <div class="step-panel" id="step-1">
+    <div class="step-title">2. Select Condition</div>
+    <div class="step-desc">Choose which experimental condition to run.</div>
+    <div class="radio-group" id="condition-group">
+      <label class="radio-option selected" onclick="selectCondition('graduated_dissent')">
+        <input type="radio" name="condition" value="graduated_dissent" checked>
+        <div><div class="ro-title">Graduated Dissent <span class="ro-badge">BEST</span></div>
+        <div class="ro-desc">Full adversarial protocol: 2 provers + judge + steelman exchange + arbiter. 70% detection, 0% FP.</div></div>
+      </label>
+      <label class="radio-option" onclick="selectCondition('B3')">
+        <input type="radio" name="condition" value="B3">
+        <div><div class="ro-title">B3: Multi-model, no steelman</div>
+        <div class="ro-desc">2 provers pooled to arbiter, no steelman exchange. 30% detection, 5% FP.</div></div>
+      </label>
+      <label class="radio-option" onclick="selectCondition('B2')">
+        <input type="radio" name="condition" value="B2">
+        <div><div class="ro-title">B2: Single model + severity rubric</div>
+        <div class="ro-desc">One model with severity classification. 40% detection, 16% FP.</div></div>
+      </label>
+      <label class="radio-option" onclick="selectCondition('B1')">
+        <input type="radio" name="condition" value="B1">
+        <div><div class="ro-title">B1: Single model, no rubric</div>
+        <div class="ro-desc">Minimal prompt, no severity classification. 30% detection.</div></div>
+      </label>
+      <label class="radio-option" onclick="selectCondition('prompted')">
+        <input type="radio" name="condition" value="prompted">
+        <div><div class="ro-title">Prompted Retraction</div>
+        <div class="ro-desc">Model told paper is retracted, asked to identify error. For retracted papers only.</div></div>
+      </label>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(0)">Back</button>
+      <button class="btn btn-primary" onclick="goStep(2)">Next</button>
+    </div>
+  </div>
+
+  <!-- Step 2: Configuration -->
+  <div class="step-panel" id="step-2">
+    <div class="step-title">3. Configuration</div>
+    <div class="step-desc">Select models for each role. In manual mode, model selection labels your steps but you run the model yourself.</div>
+    <div id="model-config">
+      <div class="field-row">
+        <div id="cfg-prover-a">
+          <label class="field-label">Prover A</label>
+          <select id="model-prover-a">
+            <option value="gpt-5.4" selected>GPT-5.4 (OpenAI)</option>
+            <option value="gpt-4.1">GPT-4.1 (OpenAI)</option>
+            <option value="o4-mini">o4-mini (OpenAI)</option>
+            <option value="deepseek-chat">DeepSeek V3.2</option>
+            <option value="claude-opus-4-6">Claude Opus 4.6</option>
+            <option value="claude-sonnet-4-6">Claude Sonnet 4.6</option>
+          </select>
+        </div>
+        <div id="cfg-prover-b">
+          <label class="field-label">Prover B</label>
+          <select id="model-prover-b">
+            <option value="deepseek-chat" selected>DeepSeek V3.2</option>
+            <option value="deepseek-reasoner">DeepSeek Reasoner</option>
+            <option value="gpt-5.4">GPT-5.4 (OpenAI)</option>
+            <option value="gpt-4.1">GPT-4.1 (OpenAI)</option>
+            <option value="claude-opus-4-6">Claude Opus 4.6</option>
+            <option value="claude-sonnet-4-6">Claude Sonnet 4.6</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div id="cfg-judge">
+          <label class="field-label">Judge</label>
+          <select id="model-judge">
+            <option value="deepseek-chat" selected>DeepSeek V3.2</option>
+            <option value="deepseek-reasoner">DeepSeek Reasoner</option>
+            <option value="gpt-5.4">GPT-5.4 (OpenAI)</option>
+            <option value="claude-opus-4-6">Claude Opus 4.6</option>
+            <option value="claude-sonnet-4-6">Claude Sonnet 4.6</option>
+          </select>
+        </div>
+        <div id="cfg-arbiter">
+          <label class="field-label">Arbiter</label>
+          <select id="model-arbiter">
+            <option value="claude-opus-4-6" selected>Claude Opus 4.6</option>
+            <option value="claude-sonnet-4-6">Claude Sonnet 4.6</option>
+            <option value="gpt-5.4">GPT-5.4 (OpenAI)</option>
+            <option value="deepseek-chat">DeepSeek V3.2</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div id="api-keys-section">
+      <label class="field-label" style="margin-top:20px; font-weight:600; color:#d4d4d4;">API Keys</label>
+      <div id="keys-server-status" class="hidden" style="margin:8px 0;padding:8px 12px;background:#1a3a1a;border:1px solid #2d5a2d;border-radius:4px;font-size:12px;color:#4ade80;"></div>
+      <div class="step-desc" id="keys-desc">Keys stay in your browser and are sent only to the local server proxy on localhost.</div>
+      <details style="margin:8px 0;font-size:11px;color:#666;">
+        <summary style="cursor:pointer;color:#888;">How to save keys permanently (so you never enter them again)</summary>
+        <div style="margin-top:8px;padding:10px;background:#111;border:1px solid #282828;border-radius:4px;line-height:1.8;">
+          Create files in <code style="color:#7aa2f7;">~/.keys/</code> — one key per file, no newlines:<br>
+          <code style="color:#9ece6a;">mkdir -p ~/.keys && chmod 700 ~/.keys</code><br>
+          <code style="color:#9ece6a;">echo -n "sk-your-openai-key" > ~/.keys/openai</code><br>
+          <code style="color:#9ece6a;">echo -n "sk-your-deepseek-key" > ~/.keys/deepseek</code><br>
+          <code style="color:#9ece6a;">echo -n "sk-ant-your-anthropic-key" > ~/.keys/anthropic</code><br>
+          <code style="color:#9ece6a;">chmod 600 ~/.keys/*</code><br>
+          <span style="color:#888;">Restart the server after adding keys. They load automatically on startup.</span>
+        </div>
+      </details>
+      <div class="api-keys">
+        <div class="key-field" id="key-openai-row"><label>OpenAI</label><input type="password" id="key-openai" placeholder="sk-..."></div>
+        <div class="key-field" id="key-deepseek-row"><label>DeepSeek</label><input type="password" id="key-deepseek" placeholder="sk-..."></div>
+        <div class="key-field" id="key-anthropic-row"><label>Anthropic</label><input type="password" id="key-anthropic" placeholder="sk-ant-..."></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(1)">Back</button>
+      <button class="btn btn-primary" onclick="startExecution()">Run</button>
+    </div>
+  </div>
+
+  <!-- Step 3: Execution -->
+  <div class="step-panel" id="step-3">
+    <div class="step-title">4. Execution</div>
+    <div class="step-desc" id="exec-instructions"></div>
+    <div id="exec-container"></div>
+    <div id="exec-nav" class="btn-row hidden">
+      <button class="btn btn-secondary" onclick="goStep(2)">Back to Config</button>
+      <button class="btn btn-primary" onclick="finalizeAndShowResults()">View Results</button>
+    </div>
+  </div>
+
+  <!-- Step 4: Results -->
+  <div class="step-panel" id="step-4">
+    <div class="step-title">5. Results</div>
+    <div id="results-container"></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(3)">Back to Execution</button>
+      <button class="btn btn-secondary" onclick="downloadRun()">Download JSON</button>
+      <button class="btn btn-secondary" onclick="showTranscript()">Full Transcript</button>
+      <button class="btn btn-primary" onclick="resetWizard()">New Run</button>
+    </div>
+    <div id="transcript-area" class="hidden" style="margin-top:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div class="step-title" style="margin:0;">Complete Transcript</div>
+        <button class="btn btn-secondary btn-small" onclick="copyText(document.getElementById('transcript-text').value)">Copy All</button>
+      </div>
+      <textarea id="transcript-text" readonly style="width:100%;min-height:500px;font-size:11px;background:#0d0d0d;color:#ccc;border:1px solid #282828;padding:12px;border-radius:6px;white-space:pre-wrap;"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== VIEWER TAB ==================== -->
+<div id="tab-viewer" class="main hidden">
+  <div class="step-title">Saved Runs</div>
+  <div class="btn-row" style="margin-bottom:16px;">
+    <button class="btn btn-secondary btn-small" onclick="loadRunList()">Refresh</button>
+    <label class="btn btn-secondary btn-small" style="cursor:pointer;">
+      Load JSON file <input type="file" accept=".json" style="display:none" onchange="loadLocalJSON(event)">
+    </label>
+  </div>
+  <div id="viewer-list"></div>
+  <div id="viewer-detail" class="hidden">
+    <div class="btn-row" style="margin-bottom:12px;">
+      <button class="btn btn-secondary btn-small" onclick="closeViewer()">Back to list</button>
+      <button class="btn btn-secondary btn-small" onclick="downloadViewedRun()">Download</button>
+    </div>
+    <div id="viewer-summary"></div>
+    <div id="viewer-json" class="json-tree" style="margin-top:16px;"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// PROMPT TEMPLATES
+// ============================================================
+const PROMPTS = {
+prover: `You are an independent scientific reviewer. Review this manuscript for
+methodological correctness. For each error or concern, classify its severity.
+
+SEVERITY CLASSIFICATION (required for every finding):
+
+RETRACTION-WORTHY: The error means the paper's central conclusions CANNOT be
+supported by the data as presented. Not "could be improved" — "fundamentally broken."
+Examples: data coding errors that change the primary outcome, impossible statistical
+values, applying tests that don't match the study design rendering all inferences invalid.
+
+MAJOR-REVISION: A real methodological concern that could change conclusions if
+addressed differently, but does NOT definitively invalidate them.
+Examples: missing controls, underpowered secondary analyses, questionable but
+defensible statistical choices.
+
+MINOR: Valid criticism applicable to most published papers. Would not change conclusions.
+Examples: no robustness checks, limited generalizability, minor reporting gaps.
+
+KEY TEST: If confirmed, would this need RETRACTION, REVISION, or just NOTING?
+
+Manuscript:
+{paper_text}
+
+Respond in JSON:
+{"verdict": "flagged"|"not_flagged",
+  "confidence": 0.0-1.0,
+  "reasoning": "overall assessment",
+  "findings": [
+    {"finding": "description",
+      "severity": "RETRACTION-WORTHY|MAJOR-REVISION|MINOR",
+      "justification": "what breaks if confirmed?"}
+  ]}`,
+
+judge: `Compare two independent reviews of the same manuscript.
+
+REVIEW A:
+{review_a}
+
+REVIEW B:
+{review_b}
+
+Rate semantic agreement 0.0-1.0. Identify where they disagree on severity.
+
+Respond in JSON:
+{"agreement_score": 0.0-1.0,
+  "severity_agreement": "do they agree on which findings are retraction-worthy?",
+  "shared_findings": ["findings both identify"],
+  "severity_disputes": ["findings where severity differs"],
+  "unique_to_a": ["only in A"],
+  "unique_to_b": ["only in B"]}`,
+
+steelman: `You previously reviewed a manuscript.
+
+YOUR REVIEW:
+{own_review}
+
+A DIFFERENT REVIEWER reached different conclusions:
+{other_review}
+
+TASKS:
+1. Build the STRONGEST CASE for the other reviewer's position, especially on severity.
+2. For findings you rated RETRACTION-WORTHY: could they be MAJOR-REVISION instead?
+3. Which of your severity ratings might be wrong?
+
+SEVERITY CLASSIFICATION (required for every finding):
+
+RETRACTION-WORTHY: The error means the paper's central conclusions CANNOT be
+supported by the data as presented. Not "could be improved" — "fundamentally broken."
+
+MAJOR-REVISION: A real methodological concern that could change conclusions if
+addressed differently, but does NOT definitively invalidate them.
+
+MINOR: Valid criticism applicable to most published papers. Would not change conclusions.
+
+KEY TEST: If confirmed, would this need RETRACTION, REVISION, or just NOTING?
+
+Respond in JSON:
+{"steelman_for_other": "strongest case for their position",
+  "severity_i_now_upgrade": ["findings I think are MORE severe"],
+  "severity_i_now_downgrade": ["findings I think are LESS severe"],
+  "findings_i_still_defend": ["findings + severity I stand by"],
+  "new_errors_noticed": ["errors from fresh perspective"]}`,
+
+arbiter: `You are the Arbiter. You have the complete deliberation.
+
+SEVERITY CLASSIFICATION (required for every finding):
+
+RETRACTION-WORTHY: The error means the paper's central conclusions CANNOT be
+supported by the data as presented. Not "could be improved" — "fundamentally broken."
+
+MAJOR-REVISION: A real methodological concern that could change conclusions if
+addressed differently, but does NOT definitively invalidate them.
+
+MINOR: Valid criticism applicable to most published papers. Would not change conclusions.
+
+KEY TEST: If confirmed, would this need RETRACTION, REVISION, or just NOTING?
+
+REVIEW A:
+{review_a}
+
+REVIEW B:
+{review_b}
+
+JUDGE:
+{judge_analysis}
+
+STEELMAN EXCHANGE:
+A's steelman of B: {steelman_a}
+B's steelman of A: {steelman_b}
+
+TASK: Final severity-ranked assessment.
+- Findings surviving steelman with consistent severity = high confidence
+- Findings where a prover downgraded own severity = probably overstated
+- ONLY classify as RETRACTION-WORTHY if fundamentally broken.
+  When in doubt, MAJOR-REVISION.
+
+Respond in JSON:
+{"verdict": "flagged"|"not_flagged",
+  "confidence": 0.0-1.0,
+  "reasoning": "synthesis",
+  "findings": [
+    {"finding": "description",
+      "severity": "RETRACTION-WORTHY|MAJOR-REVISION|MINOR",
+      "confidence_in_severity": 0.0-1.0,
+      "justification": "why this level",
+      "source": "both|prover_a|prover_b|emergent",
+      "survived_steelman": true|false}
+  ]}`,
+
+arbiter_b3: `You are the Arbiter. Two independent reviewers evaluated this manuscript.
+
+SEVERITY CLASSIFICATION (required for every finding):
+
+RETRACTION-WORTHY: The error means the paper's central conclusions CANNOT be
+supported by the data as presented. Not "could be improved" — "fundamentally broken."
+
+MAJOR-REVISION: A real methodological concern that could change conclusions if
+addressed differently, but does NOT definitively invalidate them.
+
+MINOR: Valid criticism applicable to most published papers. Would not change conclusions.
+
+KEY TEST: If confirmed, would this need RETRACTION, REVISION, or just NOTING?
+
+REVIEW A:
+{review_a}
+
+REVIEW B:
+{review_b}
+
+TASK: Final severity-ranked assessment.
+- Consider both reviews and produce a unified assessment.
+- ONLY classify as RETRACTION-WORTHY if fundamentally broken.
+  When in doubt, MAJOR-REVISION.
+
+Respond in JSON:
+{"verdict": "flagged"|"not_flagged",
+  "confidence": 0.0-1.0,
+  "reasoning": "synthesis",
+  "findings": [
+    {"finding": "description",
+      "severity": "RETRACTION-WORTHY|MAJOR-REVISION|MINOR",
+      "confidence_in_severity": 0.0-1.0,
+      "justification": "why this level",
+      "source": "both|prover_a|prover_b"}
+  ]}`,
+
+baseline_b1: `Review this manuscript. Identify methodological strengths and weaknesses.
+
+Manuscript:
+{paper_text}
+
+Respond in JSON:
+{"verdict": "flagged"|"not_flagged",
+  "confidence": 0.0-1.0,
+  "reasoning": "overall assessment",
+  "findings": [
+    {"finding": "description"}
+  ]}`,
+
+baseline_b2: `Review this manuscript for methodological correctness. For each error or concern, classify its severity.
+
+SEVERITY CLASSIFICATION (required for every finding):
+
+RETRACTION-WORTHY: The error means the paper's central conclusions CANNOT be
+supported by the data as presented. Not "could be improved" — "fundamentally broken."
+
+MAJOR-REVISION: A real methodological concern that could change conclusions if
+addressed differently, but does NOT definitively invalidate them.
+
+MINOR: Valid criticism applicable to most published papers. Would not change conclusions.
+
+KEY TEST: If confirmed, would this need RETRACTION, REVISION, or just NOTING?
+
+Manuscript:
+{paper_text}
+
+Respond in JSON:
+{"verdict": "flagged"|"not_flagged",
+  "confidence": 0.0-1.0,
+  "reasoning": "overall assessment",
+  "findings": [
+    {"finding": "description",
+      "severity": "RETRACTION-WORTHY|MAJOR-REVISION|MINOR",
+      "justification": "what breaks if confirmed?"}
+  ]}`,
+
+prompted_retraction: `This paper was retracted due to a methodological error. Your task is to
+identify the specific error that caused the retraction.
+
+Read the manuscript carefully and identify:
+1. The specific methodological, statistical, or conceptual error
+2. Why this error invalidates the paper's conclusions
+3. What the correct approach should have been
+
+Manuscript:
+{paper_text}
+
+Respond in JSON:
+{"identified_error": "description of the specific error you believe caused retraction",
+  "why_fatal": "why this error invalidates the conclusions",
+  "correct_approach": "what should have been done instead",
+  "confidence": 0.0-1.0,
+  "additional_errors": ["list of other methodological concerns"]}`
+};
+
+// ============================================================
+// PROTOCOL THRESHOLDS
+// ============================================================
+const THETA_ACCEPT = 0.90;
+const THETA_NOISE = 0.15;
+
+// ============================================================
+// STATE
+// ============================================================
+let S = {
+  mode: 'api',
+  condition: 'graduated_dissent',
+  paperId: '',
+  paperText: '',
+  models: { prover_a: 'gpt-5.4', prover_b: 'deepseek-chat', judge: 'deepseek-chat', arbiter: 'claude-opus-4-6' },
+  keys: { openai: '', deepseek: '', anthropic: '' },
+  serverKeys: { openai: false, deepseek: false, anthropic: false },
+  currentStep: 0,
+  run: null,
+  execSteps: [],
+  stepResults: {},
+  escalated: null,
+  currentExecStep: -1,
+};
+let viewerData = null;
+
+// ============================================================
+// STEP DEFINITIONS PER CONDITION
+// ============================================================
+function getStepsForCondition(cond) {
+  switch (cond) {
+    case 'B1': return [
+      { id: 'review', label: 'Review', role: 'prover_a', prompt: 'baseline_b1', formType: 'b1' }
+    ];
+    case 'B2': return [
+      { id: 'review', label: 'Review', role: 'prover_a', prompt: 'baseline_b2', formType: 'prover' }
+    ];
+    case 'B3': return [
+      { id: 'prover_a', label: 'Prover A', role: 'prover_a', prompt: 'prover', formType: 'prover' },
+      { id: 'prover_b', label: 'Prover B', role: 'prover_b', prompt: 'prover', formType: 'prover' },
+      { id: 'arbiter', label: 'Arbiter', role: 'arbiter', prompt: 'arbiter_b3', formType: 'arbiter' },
+    ];
+    case 'graduated_dissent': return [
+      { id: 'prover_a', label: 'Prover A', role: 'prover_a', prompt: 'prover', formType: 'prover' },
+      { id: 'prover_b', label: 'Prover B', role: 'prover_b', prompt: 'prover', formType: 'prover' },
+      { id: 'judge', label: 'Judge', role: 'judge', prompt: 'judge', formType: 'judge' },
+      { id: 'escalation_check', label: 'Escalation Check', role: null, prompt: null, formType: null },
+      { id: 'steelman_a', label: 'Steelman A', role: 'prover_a', prompt: 'steelman', formType: 'steelman', conditional: true },
+      { id: 'steelman_b', label: 'Steelman B', role: 'prover_b', prompt: 'steelman', formType: 'steelman', conditional: true },
+      { id: 'arbiter', label: 'Arbiter', role: 'arbiter', prompt: 'arbiter', formType: 'arbiter', conditional: true },
+    ];
+    case 'prompted': return [
+      { id: 'prompted', label: 'Prompted Retraction', role: 'prover_a', prompt: 'prompted_retraction', formType: 'prompted' }
+    ];
+  }
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function getModelForRole(role) { return S.models[role] || 'gpt-5.4'; }
+function getProviderForModel(m) {
+  if (m.startsWith('gpt') || m.startsWith('o4')) return 'openai';
+  if (m.startsWith('deepseek')) return 'deepseek';
+  if (m.startsWith('claude')) return 'anthropic';
+  return 'openai';
+}
+function getKeyForModel(m) { return S.keys[getProviderForModel(m)] || ''; }
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function toast(msg, err) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (err ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 3000);
+}
+function copyText(text) { navigator.clipboard.writeText(text).then(() => toast('Copied to clipboard')); }
+function toggleCollapse(el) { el.classList.toggle('open'); el.nextElementSibling?.classList.toggle('open'); }
+
+// ============================================================
+// TAB / MODE / CONDITION
+// ============================================================
+function showTab(tab) {
+  document.getElementById('tab-wizard').classList.toggle('hidden', tab !== 'wizard');
+  document.getElementById('tab-viewer').classList.toggle('hidden', tab !== 'viewer');
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.tab[onclick="showTab('${tab}')"]`).classList.add('active');
+  if (tab === 'viewer') loadRunList();
+}
+
+function setMode(mode) {
+  S.mode = mode;
+  document.getElementById('ml-api').classList.toggle('active', mode === 'api');
+  document.getElementById('ml-manual').classList.toggle('active', mode === 'manual');
+  document.getElementById('api-keys-section').classList.toggle('hidden', mode === 'manual');
+}
+
+function selectCondition(cond) {
+  S.condition = cond;
+  document.querySelectorAll('#condition-group .radio-option').forEach(el =>
+    el.classList.toggle('selected', el.querySelector('input').value === cond));
+}
+
+// ============================================================
+// WIZARD NAVIGATION
+// ============================================================
+const WIZARD_STEPS = ['Manuscript', 'Condition', 'Config', 'Execution', 'Results'];
+
+function renderStepsBar() {
+  document.getElementById('steps-bar').innerHTML = WIZARD_STEPS.map((name, i) =>
+    `<div class="step-pill${i === S.currentStep ? ' active' : i < S.currentStep ? ' done' : ''}"
+          onclick="navToWizardStep(${i})">${i + 1}. ${name}</div>`
+  ).join('');
+}
+
+function navToWizardStep(n) {
+  // Can always go back; going forward requires passing through
+  if (n > S.currentStep) return;
+  goStep(n);
+}
+
+function goStep(n) {
+  if (n === 1 && !document.getElementById('paper-text').value.trim()) {
+    toast('Paste a manuscript first', true); return;
+  }
+  if (n >= 1) {
+    S.paperId = document.getElementById('paper-id').value.trim() || 'UNKNOWN';
+    S.paperText = document.getElementById('paper-text').value.trim();
+  }
+  S.currentStep = n;
+  document.querySelectorAll('.step-panel').forEach((p, i) => p.classList.toggle('visible', i === n));
+  renderStepsBar();
+  updateConfigUI();
+}
+
+function updateConfigUI() {
+  const c = S.condition;
+  const hide = (id, h) => { const el = document.getElementById(id); if (el) el.classList.toggle('hidden', h); };
+  hide('cfg-prover-a', false);
+  hide('cfg-prover-b', c === 'B1' || c === 'B2' || c === 'prompted');
+  hide('cfg-judge', c !== 'graduated_dissent');
+  hide('cfg-arbiter', c === 'B1' || c === 'B2' || c === 'prompted');
+}
+
+// ============================================================
+// PROMPT BUILDING
+// ============================================================
+function buildPrompt(step) {
+  const r = S.stepResults;
+  switch (step.prompt) {
+    case 'prover': case 'baseline_b1': case 'baseline_b2': case 'prompted_retraction':
+      return PROMPTS[step.prompt].replace('{paper_text}', S.paperText);
+    case 'judge':
+      return PROMPTS.judge
+        .replace('{review_a}', JSON.stringify(r.prover_a?.parsed || {}, null, 2))
+        .replace('{review_b}', JSON.stringify(r.prover_b?.parsed || {}, null, 2));
+    case 'steelman':
+      if (step.id === 'steelman_a')
+        return PROMPTS.steelman
+          .replace('{own_review}', JSON.stringify(r.prover_a?.parsed || {}, null, 2))
+          .replace('{other_review}', JSON.stringify(r.prover_b?.parsed || {}, null, 2));
+      else
+        return PROMPTS.steelman
+          .replace('{own_review}', JSON.stringify(r.prover_b?.parsed || {}, null, 2))
+          .replace('{other_review}', JSON.stringify(r.prover_a?.parsed || {}, null, 2));
+    case 'arbiter':
+      return PROMPTS.arbiter
+        .replace('{review_a}', JSON.stringify(r.prover_a?.parsed || {}, null, 2))
+        .replace('{review_b}', JSON.stringify(r.prover_b?.parsed || {}, null, 2))
+        .replace('{judge_analysis}', JSON.stringify(r.judge?.parsed || {}, null, 2))
+        .replace('{steelman_a}', JSON.stringify(r.steelman_a?.parsed || {}, null, 2))
+        .replace('{steelman_b}', JSON.stringify(r.steelman_b?.parsed || {}, null, 2));
+    case 'arbiter_b3':
+      return PROMPTS.arbiter_b3
+        .replace('{review_a}', JSON.stringify(r.prover_a?.parsed || {}, null, 2))
+        .replace('{review_b}', JSON.stringify(r.prover_b?.parsed || {}, null, 2));
+    default: return '';
+  }
+}
+
+// ============================================================
+// JSON PARSE FROM MODEL RESPONSE
+// ============================================================
+function parseModelJSON(text) {
+  let c = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '');
+  const s = c.indexOf('{'), e = c.lastIndexOf('}');
+  if (s !== -1 && e !== -1) c = c.substring(s, e + 1);
+  return JSON.parse(c);
+}
+
+// ============================================================
+// MANUAL MODE: PASTE & AUTO-PARSE
+// ============================================================
+// The prompts already ask the model to respond in JSON.
+// User copies the full model response (may include markdown fences,
+// surrounding text, etc.), pastes it here, JS extracts the JSON,
+// shows a preview, and the user confirms.
+
+let findingCounters = {};
+
+function buildManualForm(stepDef, containerId) {
+  const c = document.getElementById(containerId);
+  if (!c) return;
+  const sid = stepDef.id;
+  c.innerHTML = `<div class="manual-form" id="form-${sid}">
+    <h4>Paste the model's full response below (the prompt asks for JSON — just paste everything the model replied with):</h4>
+    <textarea id="paste-${sid}" rows="10" style="min-height:150px;font-size:12px;"
+      placeholder="Paste the model's entire response here. It can include markdown fences, surrounding text, etc. — the JSON will be extracted automatically."></textarea>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="parseAndPreview('${sid}')">Parse Response</button>
+    </div>
+    <div id="preview-${sid}" class="hidden" style="margin-top:12px;">
+      <div style="font-size:12px;color:#4ade80;font-weight:600;margin-bottom:8px;">Parsed successfully — review below, then confirm:</div>
+      <pre id="preview-json-${sid}" style="font-size:11px;color:#9ece6a;white-space:pre-wrap;max-height:400px;overflow:auto;background:#0a0a14;padding:12px;border-radius:4px;border:1px solid #2d5a2d;"></pre>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="confirmManualParse('${sid}')">Confirm &amp; Continue</button>
+        <button class="btn btn-secondary" onclick="editManualParse('${sid}')">Edit JSON</button>
+      </div>
+    </div>
+    <div id="edit-area-${sid}" class="hidden" style="margin-top:12px;">
+      <div style="font-size:12px;color:#e0af68;font-weight:600;margin-bottom:8px;">Edit the parsed JSON if needed:</div>
+      <textarea id="edit-json-${sid}" rows="12" style="min-height:200px;font-size:11px;color:#9ece6a;background:#0a0a14;"></textarea>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="confirmEditedJSON('${sid}')">Confirm Edited JSON &amp; Continue</button>
+      </div>
+    </div>
+    <div id="parse-error-${sid}" class="hidden" style="margin-top:8px;padding:8px;background:#3a1a1a;border:1px solid #5a2d2d;border-radius:4px;font-size:12px;color:#f7768e;"></div>
+  </div>`;
+}
+
+function parseAndPreview(sid) {
+  const raw = document.getElementById(`paste-${sid}`).value.trim();
+  if (!raw) { toast('Paste the model response first', true); return; }
+
+  try {
+    const parsed = parseModelJSON(raw);
+    // Store temporarily
+    document.getElementById(`preview-json-${sid}`).textContent = JSON.stringify(parsed, null, 2);
+    document.getElementById(`preview-${sid}`).dataset.parsed = JSON.stringify(parsed);
+    document.getElementById(`preview-${sid}`).classList.remove('hidden');
+    document.getElementById(`edit-area-${sid}`).classList.add('hidden');
+    document.getElementById(`parse-error-${sid}`).classList.add('hidden');
+    toast('JSON parsed successfully');
+  } catch (err) {
+    document.getElementById(`preview-${sid}`).classList.add('hidden');
+    const errEl = document.getElementById(`parse-error-${sid}`);
+    errEl.classList.remove('hidden');
+    errEl.innerHTML = `<b>Could not extract JSON:</b> ${esc(err.message)}<br><br>
+      <span style="color:#e0af68;">Tip: Make sure the model's response contains a JSON object ({ ... }).
+      If it didn't respond in JSON, re-send the prompt and ask it to respond in JSON format.
+      You can also edit the JSON manually below.</span>`;
+    // Show edit area so they can manually construct/fix it
+    const editArea = document.getElementById(`edit-area-${sid}`);
+    editArea.classList.remove('hidden');
+    document.getElementById(`edit-json-${sid}`).value = raw;
+  }
+}
+
+function editManualParse(sid) {
+  const parsed = document.getElementById(`preview-${sid}`).dataset.parsed;
+  document.getElementById(`edit-json-${sid}`).value = parsed ? JSON.stringify(JSON.parse(parsed), null, 2) : '';
+  document.getElementById(`edit-area-${sid}`).classList.remove('hidden');
+  document.getElementById(`preview-${sid}`).classList.add('hidden');
+}
+
+function confirmEditedJSON(sid) {
+  const raw = document.getElementById(`edit-json-${sid}`).value.trim();
+  try {
+    const parsed = JSON.parse(raw);
+    document.getElementById(`preview-${sid}`).dataset.parsed = JSON.stringify(parsed);
+    finishManualSubmit(sid);
+  } catch (err) {
+    toast('Invalid JSON: ' + err.message, true);
+  }
+}
+
+function confirmManualParse(sid) {
+  finishManualSubmit(sid);
+}
+
+function finishManualSubmit(sid) {
+  const stepIdx = S.execSteps.findIndex(s => s.id === sid);
+  const step = S.execSteps[stepIdx];
+  const rawText = document.getElementById(`paste-${sid}`)?.value || '';
+  const parsed = JSON.parse(document.getElementById(`preview-${sid}`).dataset.parsed);
+
+  S.stepResults[sid] = { raw: rawText, parsed, api: null };
+
+  const prompt = buildPrompt(step);
+  const log = {
+    step_id: sid, step_label: step.label,
+    model: getModelForRole(step.role), provider: getProviderForModel(getModelForRole(step.role)),
+    mode: 'manual', prompt_sent: prompt, prompt_length: prompt.length,
+    raw_response: rawText, raw_response_length: rawText.length,
+    parsed_response: parsed, timestamp: new Date().toISOString(),
+    usage: null, tokens_per_second: null, duration_ms: null,
+  };
+  S.run.steps = S.run.steps.filter(s => s.step_id !== sid);
+  S.run.steps.push(log);
+
+  // Hide form, show response
+  document.getElementById(`form-section-${sid}`).innerHTML = '';
+  setStatus(sid, 'done');
+  showResponse(sid, rawText || '(manual entry)', parsed);
+  showRerunButton(sid, stepIdx);
+
+  S.currentExecStep = stepIdx;
+  runNextExecStep();
+}
+
+// ============================================================
+// EXECUTION
+// ============================================================
+function startExecution() {
+  // Read config — use optional chaining since inputs may be replaced by server-key status
+  const val = (id) => document.getElementById(id)?.value?.trim() || '';
+  S.models.prover_a = val('model-prover-a') || 'gpt-5.4';
+  S.models.prover_b = val('model-prover-b') || 'deepseek-chat';
+  S.models.judge = val('model-judge') || 'deepseek-chat';
+  S.models.arbiter = val('model-arbiter') || 'claude-opus-4-6';
+  S.keys.openai = val('key-openai');
+  S.keys.deepseek = val('key-deepseek');
+  S.keys.anthropic = val('key-anthropic');
+
+  // Init run
+  const runId = `${S.paperId}_${S.condition}_${Date.now()}`;
+  S.run = {
+    run_id: runId, paper_id: S.paperId, condition: S.condition, mode: S.mode,
+    started_at: new Date().toISOString(), completed_at: null,
+    paper_text: S.paperText, paper_text_length: S.paperText.length,
+    models: { ...S.models }, thresholds: { theta_accept: THETA_ACCEPT, theta_noise: THETA_NOISE },
+    steps: [], escalation: null, final_result: null,
+  };
+
+  S.execSteps = getStepsForCondition(S.condition);
+  S.stepResults = {};
+  S.escalated = null;
+  S.currentExecStep = -1;
+  findingCounters = {};
+
+  goStep(3);
+
+  const inst = document.getElementById('exec-instructions');
+  inst.textContent = S.mode === 'api'
+    ? 'Running each step via API. You can go back to re-run any step after completion.'
+    : 'For each step: copy the prompt, run it in the model, then fill in the structured form below with the model\'s response.';
+
+  renderAllExecSteps();
+  runNextExecStep();
+}
+
+function renderAllExecSteps() {
+  const container = document.getElementById('exec-container');
+  container.innerHTML = '';
+  document.getElementById('exec-nav').classList.add('hidden');
+
+  S.execSteps.forEach((step, i) => {
+    const div = document.createElement('div');
+    div.className = 'exec-area';
+    div.id = `exec-${step.id}`;
+    div.style.opacity = '0.4';
+
+    const model = step.role ? getModelForRole(step.role) : '';
+    const provider = step.role ? getProviderForModel(model) : '';
+    const modelLabel = step.role ? `${model} (${provider})` : '';
+
+    div.innerHTML = `
+      <div class="exec-header">
+        <h3>${step.label} <span style="color:#666;font-weight:400;font-size:11px;">${modelLabel}</span></h3>
+        <div>
+          <span class="exec-status waiting" id="status-${step.id}">waiting</span>
+        </div>
+      </div>
+      <div class="exec-stats" id="stats-${step.id}"></div>
+      <div id="prompt-section-${step.id}"></div>
+      <div id="response-section-${step.id}"></div>
+      <div id="form-section-${step.id}"></div>
+      <div id="actions-${step.id}" class="hidden"></div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+async function runExecStep(idx) {
+  const step = S.execSteps[idx];
+  const el = document.getElementById(`exec-${step.id}`);
+  el.style.opacity = '1';
+
+  // Invalidate later steps
+  for (let j = idx + 1; j < S.execSteps.length; j++) {
+    const later = S.execSteps[j];
+    delete S.stepResults[later.id];
+    const laterEl = document.getElementById(`exec-${later.id}`);
+    if (laterEl) {
+      laterEl.style.opacity = '0.4';
+      laterEl.classList.remove('invalidated');
+      setStatus(later.id, 'waiting', 'waiting');
+      document.getElementById(`stats-${later.id}`).innerHTML = '';
+      document.getElementById(`prompt-section-${later.id}`).innerHTML = '';
+      document.getElementById(`response-section-${later.id}`).innerHTML = '';
+      document.getElementById(`form-section-${later.id}`).innerHTML = '';
+      document.getElementById(`actions-${later.id}`).innerHTML = '';
+      document.getElementById(`actions-${later.id}`).classList.add('hidden');
+    }
+  }
+  S.escalated = null; // Reset if re-running
+  document.getElementById('exec-nav').classList.add('hidden');
+
+  // Skip conditional steps if not escalated
+  if (step.conditional && S.escalated === false) {
+    setStatus(step.id, 'waiting', 'skipped');
+    el.style.opacity = '0.4';
+    // Remove old log for this step
+    S.run.steps = S.run.steps.filter(s => s.step_id !== step.id);
+    S.run.steps.push({ step_id: step.id, step_label: step.label, skipped: true, reason: 'No escalation' });
+    S.currentExecStep = idx;
+    runNextExecStep();
+    return;
+  }
+
+  // Escalation check (pure JS)
+  if (step.id === 'escalation_check') {
+    const judgeResult = S.stepResults.judge?.parsed;
+    const agreement = judgeResult?.agreement_score ?? 0;
+    const snr = Math.round(((1.0 - agreement) / THETA_NOISE) * 100) / 100;
+    let level;
+    if (agreement >= THETA_ACCEPT) { level = 'L0'; S.escalated = false; }
+    else if (snr < 1.0) { level = 'L1'; S.escalated = false; }
+    else { level = 'L2'; S.escalated = true; }
+
+    S.run.escalation = { agreement_score: agreement, snr, level, escalated: S.escalated };
+
+    // Render
+    const rs = document.getElementById(`response-section-${step.id}`);
+    rs.innerHTML = `<div class="escalation-box ${S.escalated ? 'escalate' : 'no-escalate'}">
+      <div class="esc-title">${S.escalated ? 'ESCALATION TRIGGERED' : 'NO ESCALATION'} (${level})</div>
+      <div>Agreement: ${agreement.toFixed(3)} | SNR: ${snr.toFixed(2)} | Threshold: ${THETA_ACCEPT}</div>
+      <div style="margin-top:4px;">${
+        level === 'L0' ? 'Agreement >= 0.90 — provers agree, accepting without escalation.' :
+        level === 'L1' ? 'SNR < 1.0 — disagreement below noise floor, accepting.' :
+        'SNR >= 1.0 — significant disagreement, proceeding to steelman exchange.'
+      }</div>
+    </div>`;
+    setStatus(step.id, 'done');
+    el.style.opacity = '1';
+
+    S.run.steps = S.run.steps.filter(s => s.step_id !== step.id);
+    S.run.steps.push({ step_id: 'escalation_check', step_label: 'Escalation Check', ...S.run.escalation, timestamp: new Date().toISOString() });
+
+    S.currentExecStep = idx;
+    runNextExecStep();
+    return;
+  }
+
+  // Build prompt
+  const prompt = buildPrompt(step);
+  const model = getModelForRole(step.role);
+  const provider = getProviderForModel(model);
+
+  // Show prompt — open by default in manual mode, collapsed in API mode
+  const ps = document.getElementById(`prompt-section-${step.id}`);
+  const promptOpen = S.mode === 'manual';
+  ps.innerHTML = `
+    <div style="${promptOpen ? 'padding:10px;background:#0f1020;border:1px solid #3a3a6a;border-radius:6px;margin-bottom:8px;' : ''}">
+      ${promptOpen ? '<div style="font-size:12px;color:#7aa2f7;font-weight:600;margin-bottom:8px;">COPY THIS PROMPT INTO THE MODEL:</div>' : ''}
+      <div class="collapsible${promptOpen ? ' open' : ''}" onclick="toggleCollapse(this)">Prompt to send (${prompt.length.toLocaleString()} chars)</div>
+      <div class="collapse-body${promptOpen ? ' open' : ''}">
+        <textarea class="prompt-display" readonly style="${promptOpen ? 'min-height:200px;font-size:12px;color:#d4d4d4;background:#0a0a14;' : ''}">${esc(prompt)}</textarea>
+        <button class="btn btn-primary btn-small" style="margin-top:8px;" onclick="copyText(document.getElementById('prompt-section-${step.id}').querySelector('textarea').value)">Copy Prompt to Clipboard</button>
+      </div>
+    </div>`;
+
+  if (S.mode === 'api') {
+    // API mode — server uses its own key if available, otherwise use client-provided
+    const key = getKeyForModel(model);
+    const serverHasKey = S.serverKeys[provider];
+    if (!key && !serverHasKey) {
+      setStatus(step.id, 'error', `No ${provider} API key`);
+      toast(`Missing ${provider} API key — add to ~/.keys/${provider} or enter in Config`, true);
+      return;
+    }
+    setStatus(step.id, 'running');
+    try {
+      const startTime = Date.now();
+      const resp = await fetch('/api/call', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model, prompt, api_key: key || '', max_tokens: 4096 }),
+      });
+      const result = await resp.json();
+      if (result.error) throw new Error(result.error);
+      const parsed = parseModelJSON(result.content);
+      S.stepResults[step.id] = { raw: result.content, parsed, api: result };
+
+      const log = {
+        step_id: step.id, step_label: step.label, model, provider,
+        prompt_sent: prompt, prompt_length: prompt.length,
+        raw_response: result.content, raw_response_length: result.content.length,
+        parsed_response: parsed,
+        started_at: new Date(startTime).toISOString(), completed_at: new Date().toISOString(),
+        duration_ms: result.duration_ms, usage: result.usage,
+        tokens_per_second: result.tokens_per_second,
+        raw_api_response: result.raw_api_response,
+      };
+      S.run.steps = S.run.steps.filter(s => s.step_id !== step.id);
+      S.run.steps.push(log);
+
+      setStatus(step.id, 'done');
+      showStats(step.id, log);
+      showResponse(step.id, result.content, parsed);
+      showRerunButton(step.id, idx);
+
+      S.currentExecStep = idx;
+      runNextExecStep();
+    } catch (err) {
+      setStatus(step.id, 'error', err.message);
+      S.run.steps.push({ step_id: step.id, step_label: step.label, model, provider, prompt_sent: prompt, error: err.message, timestamp: new Date().toISOString() });
+      toast(`${step.label} failed: ${err.message}`, true);
+      showRetryButton(step.id, idx);
+    }
+
+  } else {
+    // Manual mode — show paste & parse form
+    setStatus(step.id, 'editing', 'Paste model response below');
+    buildManualForm(step, `form-section-${step.id}`);
+  }
+}
+
+
+function runNextExecStep() {
+  const next = S.currentExecStep + 1;
+  if (next >= S.execSteps.length) {
+    // All done
+    document.getElementById('exec-nav').classList.remove('hidden');
+    return;
+  }
+  runExecStep(next);
+}
+
+// ============================================================
+// EXEC UI HELPERS
+// ============================================================
+function setStatus(sid, cls, text) {
+  const el = document.getElementById(`status-${sid}`);
+  if (!el) return;
+  el.className = `exec-status ${cls}`;
+  if (cls === 'running') el.innerHTML = '<span class="spinner"></span>running';
+  else if (cls === 'error') el.textContent = text ? `error: ${text}` : 'error';
+  else if (cls === 'editing') el.textContent = text || 'editing';
+  else el.textContent = text || cls;
+}
+
+function showStats(sid, log) {
+  const el = document.getElementById(`stats-${sid}`);
+  const parts = [];
+  if (log.duration_ms != null) parts.push(`<span>Time: <span class="val">${(log.duration_ms / 1000).toFixed(1)}s</span></span>`);
+  if (log.usage) {
+    if (log.usage.input_tokens) parts.push(`<span>In: <span class="val">${log.usage.input_tokens.toLocaleString()}</span> tok</span>`);
+    if (log.usage.output_tokens) parts.push(`<span>Out: <span class="val">${log.usage.output_tokens.toLocaleString()}</span> tok</span>`);
+  }
+  if (log.tokens_per_second) parts.push(`<span>Speed: <span class="val">${log.tokens_per_second}</span> tok/s</span>`);
+  el.innerHTML = parts.join('');
+}
+
+function showResponse(sid, raw, parsed) {
+  const el = document.getElementById(`response-section-${sid}`);
+  el.innerHTML = `
+    <div class="collapsible" onclick="toggleCollapse(this)">Raw response (${raw.length.toLocaleString()} chars)</div>
+    <div class="collapse-body"><textarea class="prompt-display" readonly>${esc(raw)}</textarea></div>
+    <div class="collapsible open" onclick="toggleCollapse(this)" style="margin-top:8px;">Parsed JSON</div>
+    <div class="collapse-body open"><pre style="font-size:11px;color:#9ece6a;white-space:pre-wrap;max-height:300px;overflow:auto;">${esc(JSON.stringify(parsed, null, 2))}</pre></div>
+  `;
+}
+
+function showRerunButton(sid, idx) {
+  const el = document.getElementById(`actions-${sid}`);
+  el.classList.remove('hidden');
+  el.innerHTML = `<button class="btn btn-secondary btn-small" onclick="rerunFromStep(${idx})" style="margin-top:8px;">Re-run from this step</button>`;
+}
+
+function showRetryButton(sid, idx) {
+  const el = document.getElementById(`actions-${sid}`);
+  el.classList.remove('hidden');
+  el.innerHTML = `<button class="btn btn-primary btn-small" onclick="rerunFromStep(${idx})" style="margin-top:8px;">Retry</button>`;
+}
+
+function rerunFromStep(idx) {
+  S.currentExecStep = idx - 1;
+  runExecStep(idx);
+}
+
+// ============================================================
+// FINALIZE & RESULTS
+// ============================================================
+function finalizeAndShowResults() {
+  // Find final result
+  const lastStep = [...S.run.steps].reverse().find(s => s.parsed_response && !s.skipped);
+  if (lastStep) S.run.final_result = lastStep.parsed_response;
+
+  // If no escalation, use prover_a as final
+  if (S.condition === 'graduated_dissent' && !S.escalated && !S.run.final_result?.verdict) {
+    S.run.final_result = S.stepResults.prover_a?.parsed || {};
+  }
+
+  S.run.completed_at = new Date().toISOString();
+  S.run.total_duration_ms = new Date(S.run.completed_at) - new Date(S.run.started_at);
+
+  if (S.run.final_result?.findings) {
+    const counts = { 'RETRACTION-WORTHY': 0, 'MAJOR-REVISION': 0, 'MINOR': 0 };
+    S.run.final_result.findings.forEach(f => { if (f.severity && counts[f.severity] !== undefined) counts[f.severity]++; });
+    S.run.severity_counts = counts;
+  }
+
+  // Save
+  fetch('/api/save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(S.run),
+  }).then(() => toast('Run saved')).catch(e => toast('Save failed: ' + e.message, true));
+
+  renderResults();
+  goStep(4);
+}
+
+function renderResults() {
+  const r = S.run;
+  if (!r) return;
+  const fr = r.final_result || {};
+  const container = document.getElementById('results-container');
+
+  let h = `<div class="result-card">`;
+  h += `<div class="result-verdict ${fr.verdict || ''}">${(fr.verdict || 'N/A').toUpperCase()}</div>`;
+  if (fr.confidence != null) h += `<div style="font-size:13px;color:#888;margin-bottom:8px;">Confidence: ${fr.confidence}</div>`;
+  if (fr.reasoning) h += `<div style="font-size:12px;color:#bbb;line-height:1.6;margin-bottom:12px;">${esc(fr.reasoning)}</div>`;
+
+  if (r.severity_counts) {
+    h += `<div style="display:flex;gap:16px;margin-bottom:12px;">`;
+    h += `<span style="color:#f7768e;font-size:13px;font-weight:600;">RW: ${r.severity_counts['RETRACTION-WORTHY']}</span>`;
+    h += `<span style="color:#e0af68;font-size:13px;font-weight:600;">MR: ${r.severity_counts['MAJOR-REVISION']}</span>`;
+    h += `<span style="color:#4ade80;font-size:13px;font-weight:600;">Minor: ${r.severity_counts['MINOR']}</span>`;
+    h += `</div>`;
+  }
+
+  if (fr.findings) {
+    h += `<div style="font-size:13px;font-weight:600;margin-bottom:8px;">Findings (${fr.findings.length})</div>`;
+    fr.findings.forEach((f, i) => {
+      const sev = (f.severity || '').toLowerCase();
+      const sc = sev.includes('retraction') ? 'rw' : sev.includes('major') ? 'mr' : 'minor-sev';
+      h += `<div class="finding-card ${sc}">`;
+      h += `<div class="finding-sev ${sc}">#${i + 1} ${f.severity || ''}`;
+      if (f.confidence_in_severity != null) h += ` (conf: ${f.confidence_in_severity})`;
+      if (f.source) h += ` | source: ${f.source}`;
+      if (f.survived_steelman != null) h += ` | steelman: ${f.survived_steelman ? 'survived' : 'did not survive'}`;
+      h += `</div>`;
+      h += `<div class="finding-text">${esc(f.finding || f.description || '')}</div>`;
+      if (f.justification) h += `<div class="finding-text" style="margin-top:4px;color:#888;font-style:italic;">${esc(f.justification)}</div>`;
+      h += `</div>`;
+    });
+  }
+
+  if (fr.identified_error) {
+    h += `<div style="font-size:13px;font-weight:600;margin:12px 0 8px;">Identified Error</div>`;
+    h += `<div class="finding-card rw"><div class="finding-text">${esc(fr.identified_error)}</div></div>`;
+    if (fr.why_fatal) h += `<div style="font-size:12px;color:#f7768e;margin:4px 0;"><b>Why fatal:</b> ${esc(fr.why_fatal)}</div>`;
+    if (fr.correct_approach) h += `<div style="font-size:12px;color:#4ade80;margin:4px 0;"><b>Correct approach:</b> ${esc(fr.correct_approach)}</div>`;
+  }
+
+  if (r.escalation) {
+    h += `<div style="margin-top:12px;font-size:12px;color:#888;">Escalation: ${r.escalation.level} | Agreement: ${r.escalation.agreement_score} | SNR: ${r.escalation.snr}</div>`;
+  }
+
+  h += `<div style="margin-top:16px;padding-top:12px;border-top:1px solid #282828;font-size:11px;color:#555;">`;
+  h += `Run: ${r.run_id}<br>Condition: ${r.condition} | Mode: ${r.mode}<br>`;
+  h += `Started: ${r.started_at}<br>Completed: ${r.completed_at}<br>`;
+  if (r.total_duration_ms) h += `Total: ${(r.total_duration_ms / 1000).toFixed(1)}s<br>`;
+  h += `Models: ${JSON.stringify(r.models)}<br>Steps: ${r.steps.length}`;
+  h += `</div></div>`;
+
+  container.innerHTML = h;
+}
+
+function downloadRun() {
+  if (!S.run) return;
+  const blob = new Blob([JSON.stringify(S.run, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `${S.run.run_id}.json`; a.click();
+}
+
+function showTranscript() {
+  const area = document.getElementById('transcript-area');
+  area.classList.toggle('hidden');
+  if (!area.classList.contains('hidden')) {
+    document.getElementById('transcript-text').value = generateTranscript(S.run);
+  }
+}
+
+function generateTranscript(r) {
+  if (!r) return '';
+  const line = (s) => s + '\n';
+  const divider = '='.repeat(80) + '\n';
+  const subdiv = '-'.repeat(60) + '\n';
+  let t = '';
+
+  t += divider;
+  t += line('GRADUATED DISSENT BENCH — FULL RUN TRANSCRIPT');
+  t += divider;
+  t += line(`Run ID:      ${r.run_id}`);
+  t += line(`Paper ID:    ${r.paper_id}`);
+  t += line(`Condition:   ${r.condition}`);
+  t += line(`Mode:        ${r.mode}`);
+  t += line(`Started:     ${r.started_at}`);
+  t += line(`Completed:   ${r.completed_at}`);
+  if (r.total_duration_ms) t += line(`Total Time:  ${(r.total_duration_ms / 1000).toFixed(1)}s`);
+  t += line(`Models:`);
+  Object.entries(r.models).forEach(([role, model]) => {
+    t += line(`  ${role}: ${model}`);
+  });
+  t += line(`Thresholds:  agreement=${r.thresholds?.theta_accept}, noise=${r.thresholds?.theta_noise}`);
+  t += '\n';
+
+  // Manuscript
+  t += divider;
+  t += line('MANUSCRIPT INPUT');
+  t += divider;
+  t += line(`Length: ${r.paper_text_length} characters`);
+  t += '\n';
+  t += line(r.paper_text);
+  t += '\n';
+
+  // Each step
+  if (r.steps?.length) {
+    r.steps.forEach((step, i) => {
+      t += divider;
+      t += line(`STEP ${i + 1}: ${step.step_label?.toUpperCase()}`);
+      t += divider;
+
+      if (step.skipped) {
+        t += line(`STATUS: SKIPPED — ${step.reason || 'no escalation needed'}`);
+        t += '\n';
+        return;
+      }
+
+      if (step.step_id === 'escalation_check') {
+        t += line(`STATUS: ${step.escalated ? 'ESCALATED' : 'NOT ESCALATED'}`);
+        t += line(`Level:           ${step.level}`);
+        t += line(`Agreement Score: ${step.agreement_score}`);
+        t += line(`SNR:             ${step.snr}`);
+        t += line(`Escalated:       ${step.escalated}`);
+        t += '\n';
+        return;
+      }
+
+      t += line(`Model:    ${step.model || '-'} (${step.provider || '-'})`);
+      t += line(`Mode:     ${step.mode || r.mode}`);
+      if (step.duration_ms != null) t += line(`Duration: ${(step.duration_ms / 1000).toFixed(1)}s`);
+      if (step.usage) {
+        t += line(`Tokens:   ${step.usage.input_tokens || '?'} in / ${step.usage.output_tokens || '?'} out`);
+      }
+      if (step.tokens_per_second) t += line(`Speed:    ${step.tokens_per_second} tok/s`);
+      t += '\n';
+
+      // Prompt
+      t += subdiv;
+      t += line('PROMPT SENT:');
+      t += subdiv;
+      t += line(step.prompt_sent || '(not recorded)');
+      t += '\n';
+
+      // Raw response
+      t += subdiv;
+      t += line('RAW RESPONSE:');
+      t += subdiv;
+      t += line(step.raw_response || '(entered via form)');
+      t += '\n';
+
+      // Parsed
+      t += subdiv;
+      t += line('PARSED RESPONSE:');
+      t += subdiv;
+      t += line(JSON.stringify(step.parsed_response, null, 2));
+      t += '\n';
+    });
+  }
+
+  // Escalation summary
+  if (r.escalation) {
+    t += divider;
+    t += line('ESCALATION SUMMARY');
+    t += divider;
+    t += line(`Level:     ${r.escalation.level}`);
+    t += line(`Agreement: ${r.escalation.agreement_score}`);
+    t += line(`SNR:       ${r.escalation.snr}`);
+    t += line(`Escalated: ${r.escalation.escalated}`);
+    t += '\n';
+  }
+
+  // Final result
+  t += divider;
+  t += line('FINAL RESULT');
+  t += divider;
+  const fr = r.final_result || {};
+
+  if (fr.verdict) t += line(`Verdict:    ${fr.verdict.toUpperCase()}`);
+  if (fr.confidence != null) t += line(`Confidence: ${fr.confidence}`);
+  if (fr.reasoning) { t += line(`Reasoning:`); t += line(fr.reasoning); t += '\n'; }
+
+  if (r.severity_counts) {
+    t += line(`Severity Counts:`);
+    t += line(`  RETRACTION-WORTHY: ${r.severity_counts['RETRACTION-WORTHY']}`);
+    t += line(`  MAJOR-REVISION:    ${r.severity_counts['MAJOR-REVISION']}`);
+    t += line(`  MINOR:             ${r.severity_counts['MINOR']}`);
+    t += '\n';
+  }
+
+  if (fr.findings?.length) {
+    t += line(`Findings (${fr.findings.length}):`);
+    t += '\n';
+    fr.findings.forEach((f, i) => {
+      t += subdiv;
+      t += line(`Finding #${i + 1}`);
+      if (f.severity) t += line(`  Severity:      ${f.severity}`);
+      if (f.confidence_in_severity != null) t += line(`  Confidence:    ${f.confidence_in_severity}`);
+      if (f.source) t += line(`  Source:        ${f.source}`);
+      if (f.survived_steelman != null) t += line(`  Steelman:      ${f.survived_steelman ? 'survived' : 'did not survive'}`);
+      t += line(`  Description:`);
+      t += line(`  ${f.finding || f.description || ''}`);
+      if (f.justification) { t += line(`  Justification:`); t += line(`  ${f.justification}`); }
+      t += '\n';
+    });
+  }
+
+  // Prompted retraction format
+  if (fr.identified_error) {
+    t += line(`Identified Error: ${fr.identified_error}`);
+    if (fr.why_fatal) t += line(`Why Fatal: ${fr.why_fatal}`);
+    if (fr.correct_approach) t += line(`Correct Approach: ${fr.correct_approach}`);
+    if (fr.additional_errors?.length) {
+      t += line(`Additional Errors:`);
+      fr.additional_errors.forEach(e => t += line(`  - ${e}`));
+    }
+    t += '\n';
+  }
+
+  t += divider;
+  t += line('END OF TRANSCRIPT');
+  t += divider;
+  return t;
+}
+
+function resetWizard() {
+  S.currentStep = 0; S.run = null; S.stepResults = {};
+  S.currentExecStep = -1; S.escalated = null; findingCounters = {};
+  document.getElementById('exec-container').innerHTML = '';
+  document.getElementById('exec-nav').classList.add('hidden');
+  document.getElementById('results-container').innerHTML = '';
+  document.getElementById('transcript-area').classList.add('hidden');
+  goStep(0);
+}
+
+// ============================================================
+// VIEWER TAB
+// ============================================================
+async function loadRunList() {
+  try {
+    const resp = await fetch('/api/runs');
+    const runs = await resp.json();
+    const c = document.getElementById('viewer-list');
+    if (!runs.length) { c.innerHTML = '<div style="color:#555;font-size:13px;">No saved runs yet.</div>'; return; }
+    c.innerHTML = runs.map(r => `
+      <div class="viewer-item" onclick="loadRun('${r.filename}')">
+        <div><span class="vi-id">${r.paper_id || '?'}</span>
+        <span class="vi-meta" style="margin-left:8px;">${r.condition || '?'}</span>
+        <span class="vi-meta" style="margin-left:8px;">${r.verdict || '?'}</span></div>
+        <div class="vi-meta">${r.started_at || r.filename}</div>
+      </div>`).join('');
+  } catch (e) { toast('Failed to load runs', true); }
+}
+
+async function loadRun(filename) {
+  try {
+    viewerData = await (await fetch(`/api/run/${filename}`)).json();
+    showRunDetail(viewerData);
+  } catch (e) { toast('Failed to load run', true); }
+}
+
+function loadLocalJSON(event) {
+  const file = event.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try { viewerData = JSON.parse(e.target.result); showRunDetail(viewerData); }
+    catch { toast('Invalid JSON', true); }
+  };
+  reader.readAsText(file);
+}
+
+function showRunDetail(data) {
+  document.getElementById('viewer-list').classList.add('hidden');
+  document.getElementById('viewer-detail').classList.remove('hidden');
+  const fr = data.final_result || {};
+  let s = `<div class="result-card">`;
+  s += `<div style="display:flex;justify-content:space-between;align-items:center;">`;
+  s += `<div class="result-verdict ${fr.verdict || ''}">${(fr.verdict || 'N/A').toUpperCase()}</div>`;
+  s += `<div style="font-size:11px;color:#666;">${data.paper_id} | ${data.condition} | ${data.mode}</div></div>`;
+  if (data.total_duration_ms) s += `<div style="font-size:12px;color:#888;margin-top:4px;">Total: ${(data.total_duration_ms / 1000).toFixed(1)}s</div>`;
+
+  if (data.steps?.length) {
+    s += `<table style="width:100%;margin-top:12px;font-size:11px;border-collapse:collapse;">`;
+    s += `<tr style="color:#666;text-align:left;"><th style="padding:4px;">Step</th><th>Model</th><th>Time</th><th>In</th><th>Out</th><th>tok/s</th></tr>`;
+    data.steps.forEach(st => {
+      if (st.skipped) {
+        s += `<tr style="color:#444;"><td style="padding:4px;">${st.step_label}</td><td colspan="5">skipped</td></tr>`;
+      } else if (st.step_id === 'escalation_check') {
+        s += `<tr style="color:#e0af68;"><td style="padding:4px;">${st.step_label}</td><td colspan="5">${st.level} (agr: ${st.agreement_score?.toFixed(3)}, SNR: ${st.snr?.toFixed(2)})</td></tr>`;
+      } else {
+        s += `<tr><td style="padding:4px;color:#7aa2f7;">${st.step_label}</td>`;
+        s += `<td style="padding:4px;">${st.model || '-'}</td>`;
+        s += `<td style="padding:4px;">${st.duration_ms != null ? (st.duration_ms / 1000).toFixed(1) + 's' : '-'}</td>`;
+        s += `<td style="padding:4px;">${st.usage?.input_tokens?.toLocaleString() || '-'}</td>`;
+        s += `<td style="padding:4px;">${st.usage?.output_tokens?.toLocaleString() || '-'}</td>`;
+        s += `<td style="padding:4px;">${st.tokens_per_second || '-'}</td></tr>`;
+      }
+    });
+    s += `</table>`;
+  }
+  s += `</div>`;
+  document.getElementById('viewer-summary').innerHTML = s;
+  document.getElementById('viewer-json').innerHTML = renderJSONTree(data);
+}
+
+function closeViewer() {
+  document.getElementById('viewer-list').classList.remove('hidden');
+  document.getElementById('viewer-detail').classList.add('hidden');
+  viewerData = null;
+}
+
+function downloadViewedRun() {
+  if (!viewerData) return;
+  const blob = new Blob([JSON.stringify(viewerData, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `${viewerData.run_id || 'run'}.json`; a.click();
+}
+
+// ============================================================
+// JSON TREE
+// ============================================================
+function renderJSONTree(obj, depth = 0) {
+  if (obj === null) return '<span class="jt-null">null</span>';
+  if (typeof obj === 'boolean') return `<span class="jt-bool">${obj}</span>`;
+  if (typeof obj === 'number') return `<span class="jt-num">${obj}</span>`;
+  if (typeof obj === 'string') {
+    if (obj.length > 300) {
+      const id = 'jt-' + Math.random().toString(36).slice(2);
+      return `<span class="jt-str">"${esc(obj.slice(0, 200))}<span class="jt-toggle" onclick="document.getElementById('${id}').classList.toggle('jt-hidden');this.textContent=this.textContent==='...'?'(collapse)':'...'">...</span><span id="${id}" class="jt-hidden">${esc(obj.slice(200))}</span>"</span>`;
+    }
+    return `<span class="jt-str">"${esc(obj)}"</span>`;
+  }
+  const isArr = Array.isArray(obj);
+  const entries = isArr ? obj.map((v, i) => [i, v]) : Object.entries(obj);
+  if (!entries.length) return isArr ? '[]' : '{}';
+  const collapsed = depth > 2;
+  const id = 'jt-' + Math.random().toString(36).slice(2);
+  let h = `<span class="jt-toggle" onclick="document.getElementById('${id}').classList.toggle('jt-hidden');this.textContent=this.textContent[0]==='\\u25B6'?'\\u25BC':'\\u25B6'">${collapsed ? '\u25B6' : '\u25BC'}</span>`;
+  h += isArr ? '[' : '{';
+  h += `<ul id="${id}" class="${collapsed ? 'jt-hidden' : ''}">`;
+  entries.forEach(([k, v], i) => {
+    h += `<li>`;
+    if (!isArr) h += `<span class="jt-key">"${esc(String(k))}"</span>: `;
+    h += renderJSONTree(v, depth + 1);
+    if (i < entries.length - 1) h += ',';
+    h += `</li>`;
+  });
+  h += `</ul>${isArr ? ']' : '}'}`;
+  return h;
+}
+
+// ============================================================
+// DEMO PAPER
+// ============================================================
+async function loadDemoPaper() {
+  try {
+    const resp = await fetch('/api/demo-paper');
+    const data = await resp.json();
+    if (data.error) { toast(data.error, true); return; }
+    document.getElementById('paper-id').value = data.paper_id;
+    document.getElementById('paper-text').value = data.text;
+    toast(`Demo paper loaded (${data.text.length.toLocaleString()} chars)`);
+  } catch (e) {
+    toast('Failed to load demo paper: ' + e.message, true);
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+renderStepsBar();
+
+// Check for server-side API keys on load
+(async function checkServerKeys() {
+  try {
+    const resp = await fetch('/api/keys');
+    const data = await resp.json();
+    let loaded = 0;
+    const statusParts = [];
+    for (const [provider, info] of Object.entries(data.providers)) {
+      S.serverKeys[provider] = info.loaded;
+      if (info.loaded) {
+        loaded++;
+        statusParts.push(`${provider} (${info.hint})`);
+        // Hide the manual key field for this provider
+        const row = document.getElementById(`key-${provider}-row`);
+        if (row) row.innerHTML = `<label>${provider}</label><span style="color:#4ade80;font-size:12px;">loaded from server</span>`;
+      }
+    }
+    if (loaded > 0) {
+      const statusEl = document.getElementById('keys-server-status');
+      statusEl.classList.remove('hidden');
+      statusEl.innerHTML = `${loaded}/3 keys auto-loaded from <code style="color:#7aa2f7;">${data.keys_dir}/</code>: ${statusParts.join(', ')}`;
+      if (loaded === 3) {
+        document.getElementById('keys-desc').textContent = 'All keys loaded from server. No manual entry needed.';
+      } else {
+        document.getElementById('keys-desc').textContent = 'Enter keys below for any providers not auto-loaded. Keys are sent only to the local server on localhost.';
+      }
+    }
+  } catch (e) {
+    // Server may not support /api/keys yet, ignore
+  }
+})();
+</script>
+</body>
+</html>

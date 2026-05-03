@@ -1,0 +1,894 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{natbib}
+\geometry{margin=1in}
+
+% Theorem environments
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{principle}{Principle}
+
+\title{Limits of Self-Correction in LLMs:\\
+\large An Information-Theoretic Analysis of Correlated Errors}
+
+\date{April 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Recent empirical work shows that large language models struggle to self-correct reasoning without external feedback~\citep{huang2024selfcorrect}. We propose a possible explanation: correlated error between generator and evaluator. When both components share failure modes, self-evaluation may provide weak evidence of correctness, and repeated self-critique may amplify subjective confidence without adding objective information. We formalize this with two information-theoretic bounds, both stated as conditional results: under explicit independence assumptions about a latent shared-failure variable, the selector's contribution to identifying correctness is bounded, and under a high false-acceptance regime, acceptance contributes only a small log-likelihood ratio. We then describe a practical architecture pairing high-entropy proposal generation with low-entropy context-separated evaluation, and illustrate the predicted mechanism with a small paired ablation drawn from a companion benchmark paper. The architecture does not replace human judgment; it provides a filter that surfaces candidates surviving external scrutiny for human review.
+
+\medskip
+
+\noindent\textbf{Scope and contribution type.} This paper contributes (i) a theoretical framework with conditional information-theoretic bounds, (ii) an interpretation of prior empirical results from the LLM self-correction literature, and (iii) a design proposal and hypotheses for context-separated evaluation. A small illustrative observation from a companion benchmark paper is included to show what the predicted mechanism looks like in practice; rigorous empirical evaluation at larger sample size is reported separately~\citep{brilliant2026benchmark}.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Recent work demonstrates that large language models cannot reliably self-correct their reasoning~\citep{huang2024selfcorrect}. \citet{tsui2025selfcorrection} provides further evidence that this failure is not a knowledge deficit. LLMs can correct identical errors when presented as external input but fail to correct those same errors in their own outputs, a phenomenon termed the \textbf{Self-Correction Blind Spot}, measured at an average 64.5\% failure rate across 14 models. We argue this is consistent with a structural property of certain evaluation configurations: when generator and evaluator share failure modes, self-evaluation may provide weak evidence of correctness. A derivation may be elegant, internally consistent, and convincingly presented, yet contain a subtle error that the model does not detect in its own output.
+
+This failure is not primarily about compute or scale. It is about validation. Reliable workflows require a mechanism that separates signal from noise, correct outputs from plausible-but-wrong ones. The question is: what properties must a validation mechanism have to be reliable?
+
+\subsection{Scope of the Paper}
+
+To avoid the scope confusion that easily arises in this area, we state explicitly what this paper is and is not:
+
+\begin{itemize}
+\item This paper provides \textbf{conditional theoretical results}: information-theoretic bounds that hold under stated independence assumptions about a latent shared-failure variable. The theorems are mathematical statements about what follows from the assumptions, not empirical claims that the assumptions hold for any particular LLM.
+\item This paper offers an \textbf{interpretation} of prior empirical results~\citep{huang2024selfcorrect, tsui2025selfcorrection} as consistent with the formal framework. We do not claim the framework is the only possible interpretation.
+\item This paper proposes a \textbf{practical architecture} and a set of testable hypotheses about context-separated evaluation. We do not claim to have empirically validated the architecture in this paper.
+\item A small \textbf{illustrative observation} from a companion benchmark paper~\citep{brilliant2026benchmark} is included in Section~\ref{sec:illustration} to show what the predicted mechanism looks like in practice. It is presented as directionally consistent evidence, not as validation. Rigorous empirical evaluation at larger sample size is the subject of the companion paper.
+\end{itemize}
+
+When the paper says ``self-evaluation may provide weak evidence,'' it means: \emph{under the conditions stated in the theorem}, the bound holds. When it says ``context separation may help,'' it means: this is a hypothesis the framework predicts and that future empirical work should test.
+
+\subsection{The Core Problem}
+
+Consider a system that generates a hypothesis and then evaluates whether that hypothesis is correct. Under what conditions does self-evaluation provide useful information?
+
+We argue that the answer depends on error correlation. When the evaluator makes errors on the same inputs where the generator makes errors, self-evaluation can be non-identifying \emph{in the formal sense made precise in Section~\ref{sec:when}}: under conditional independence given a shared latent failure variable, agreement between generator and evaluator provides bounded evidence of correctness. This echoes phenomena documented in human reasoning: confirmation bias, the curse of knowledge, and why peer review and second opinions exist at all. The difference with LLMs is that context can be deleted. A fresh instance has no memory of the reasoning it might defend.
+
+This is not a claim about any specific model's limitations. It is a structural observation about a class of evaluation systems. \citet{tsui2025selfcorrection} offers empirical support consistent with this structural view: models that successfully correct errors in externally-presented solutions fail on their own identical errors at substantially higher rates, suggesting that the knowledge to detect errors exists but is not activated during self-evaluation.
+
+\subsection{The Deep Context Challenge}
+
+This problem may become acute as context windows expand. Modern LLMs support large context windows, enabling extended reasoning: complex derivations, multi-step analyses, and long research sessions.
+
+But large context is plausibly where correlated error accumulation is most severe. Each reasoning step inherits context from previous steps. Errors can compound: an error at one step may cascade through subsequent steps, propagating through sequential reasoning~\citep{tyen2024llmsstepbystep}. The longer the reasoning chain, the more opportunity for self-reinforcing mistakes that become invisible within the context that produced them.
+
+Self-evaluation within a deep context may struggle to catch these errors, because the evaluation inherits the same drift that produced the mistake. This creates a tension: the contexts where rigorous evaluation matters most may be the contexts where self-evaluation is least reliable.
+
+Context-separated evaluation may help address this tension. By evaluating outputs in fresh context, without the reasoning trace that produced them, we may reduce the inheritance of correlated error---to the extent that the correlation in question is induced by the trace itself rather than by the underlying model parameters. (We return to this distinction in Section~\ref{sec:multi}, where we note that fresh context does not eliminate correlation rooted in shared weights.)
+
+A complementary explanation comes from training data composition. \citet{tsui2025selfcorrection} observes that standard training corpora consist overwhelmingly of human demonstrations of correct reasoning, with few examples of a reasoner identifying and correcting their own errors mid-stream. Models may thus lack the behavioral templates for self-correction. They have learned to produce solutions, not to interrupt and revise them. This training gap may compound the context-inheritance problem.
+
+\subsection{External Selection}
+
+If correlated error is the problem, then evaluation in a modified or fresh context (where the original reasoning trace is absent) may provide more independent signal. We call this external selection. Note that ``external'' here refers to \textit{context}, not necessarily to different models. A fresh instance of the same model, without access to the reasoning chain that produced the candidate, may provide more independent critique because the error-producing context is absent. Whether and to what extent this holds is a hypothesis the framework predicts; the companion benchmark paper~\citep{brilliant2026benchmark} reports an empirical test consistent with it.
+
+Multi-agent systems may succeed when they introduce external selection channels~\citep{du2023debate}: formal proof checkers, executable tests, numerical invariants, independently-trained critics, or even the same model under fresh context. The common element is reducing correlation between generator and evaluator failure modes.
+
+This motivates a practical architecture that separates:
+\begin{itemize}
+    \item \textbf{Generation}: High-entropy exploration of the hypothesis space
+    \item \textbf{Selection}: Low-entropy evaluation under external constraints
+    \item \textbf{Feedback}: Updating generation based on what survives selection
+\end{itemize}
+
+\subsection{Contributions}
+
+\begin{enumerate}
+    \item \textbf{Conditional information-theoretic bounds}: Two theorems formalizing the conditions under which self-evaluation provides weak evidence about correctness, with assumptions stated explicitly.
+    \item \textbf{Interpretive connections to prior work}: A possible structural reading of empirical results in self-correction and multi-agent debate.
+    \item \textbf{Practical architecture}: A framework for generate-then-judge workflows, including same-model implementations via context separation.
+    \item \textbf{Illustrative observation}: A small paired ablation drawn from the companion benchmark, included to show what the predicted mechanism looks like in practice.
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Problem Formalization}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Basic Variables and Setup}
+
+Let the input space be $\mathcal{X}$ and hypothesis space $\mathcal{H}$. For an input $X \sim \mathcal{D}$, we define:
+
+\begin{definition}[Generator and Selector]
+Let $H^\star: \mathcal{X} \to 2^{\mathcal{H}}$ denote a target \emph{acceptability set}: $H^\star(x) \subseteq \mathcal{H}$ is the set of hypotheses we are willing to call correct on input $x$. A \textbf{generator} produces candidate hypotheses via a conditional distribution $G \sim p(g \mid x)$. A \textbf{selector} produces an evaluation score via $S \sim p(s \mid x, g)$. The \textbf{acceptance decision} is a deterministic threshold:
+\begin{equation}
+A := \mathbb{I}\{S \geq \tau\}
+\end{equation}
+\end{definition}
+
+\begin{remark}[Why an acceptability set]
+We use an acceptability set $H^\star(x)$ rather than a single target hypothesis because in many application domains (manuscript review, scientific argumentation, proof construction, open-ended reasoning) there is no unique ``correct'' hypothesis but rather an equivalence class of acceptable answers. Fixing a single target via $H^\star: \mathcal{X} \to \mathcal{H}$ (as in the original formulation) is the special case $|H^\star(x)| = 1$. The theorems below go through unchanged under either formulation.
+\end{remark}
+
+\begin{definition}[Correctness Indicator]
+We define the \textbf{correctness indicator}:
+\begin{equation}
+T := \mathbb{I}\{G \in H^\star(X)\}
+\end{equation}
+Thus $T = 1$ when the generator output lies in the acceptability set, and $T = 0$ otherwise.
+\end{definition}
+
+\begin{definition}[Error Events]
+The \textbf{generator error event} is $E_G := \{T = 0\}$. The \textbf{selector error event} is:
+\begin{equation}
+E_S := \{A \neq T\}
+\end{equation}
+That is, $E_S$ occurs when the selector accepts an incorrect hypothesis ($A=1, T=0$) or rejects a correct one ($A=0, T=1$).
+\end{definition}
+
+\begin{definition}[False-Acceptance Coupling]
+The \textbf{false-acceptance coupling} is:
+\begin{equation}
+\kappa := \Pr(A = 1 \mid T = 0)
+\end{equation}
+This is the probability that the selector accepts given that the generator is wrong. Strong coupling ($\kappa \approx 1$) indicates that the selector fails to detect generator errors. Note that this quantity captures one direction of selector failure (false acceptance) and is the relevant one for the analysis that follows; the other direction (false rejection of correct outputs) is treated separately where relevant. We use the symbol $\kappa$ to refer specifically to the false-acceptance coupling throughout, without conflating it with $\Pr(E_S \mid E_G)$ in the symmetric sense.
+\end{definition}
+
+\subsection{Shared Blind Spots}
+
+To model one mechanism by which errors might correlate, we introduce a latent variable capturing shared failure modes.
+
+\begin{definition}[Blind Spot Variable]
+Let $Z \in \mathcal{Z}$ be a latent variable indexing input regions where a model family systematically struggles. We say generator and selector \textbf{share blind spots} indexed by $Z$ if there exists a set $\mathcal{Z}_{\mathrm{bad}} \subset \mathcal{Z}$ such that:
+\begin{align}
+\Pr(T = 0 \mid Z \in \mathcal{Z}_{\mathrm{bad}}) &\geq \alpha_G \gg \Pr(T = 0) \\
+\Pr(A = 1 \mid T = 0, Z \in \mathcal{Z}_{\mathrm{bad}}) &\geq \alpha_S \gg \Pr(A = 1 \mid T = 0)
+\end{align}
+while both failure rates are low on $\mathcal{Z} \setminus \mathcal{Z}_{\mathrm{bad}}$.
+\end{definition}
+
+\begin{remark}[$Z$ as a modeling construct]
+$Z$ is introduced as a modeling device, analogous to an unobserved confounder in causal inference. We do not claim $Z$ is directly observable or that it can be estimated from the kinds of data typically available for LLM evaluation. Its role is to organize the conditional independence structure used in Theorem~\ref{thm:info_bound}; the theorem is a statement about what follows \emph{if} such a $Z$ exists with the stated properties. Whether real LLMs admit such a decomposition for any given task distribution is an empirical question we do not resolve here.
+\end{remark}
+
+Shared blind spots are plausible when generator and selector share training data, architecture, or context. The variable $Z$ is intended to index the specific failure modes (e.g., particular reasoning patterns, domain gaps, or edge cases) where both components fail together. The Self-Correction Blind Spot measured by \citet{tsui2025selfcorrection} is consistent with high $\alpha_S$ in the self-evaluation setting: the selector (same model, same context) fails on the inputs where the generator failed.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{When Self-Evaluation Fails: Conditional Bounds}
+\label{sec:when}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Main Result, Stated Conditionally}
+
+The central claim is straightforward: \emph{under the assumptions stated below}, reliable validation requires evaluation criteria whose error is not strongly correlated with the generator. When evaluator error is coupled with generator error in the conditional-independence sense formalized below, self-evaluation becomes non-identifying within the framework: agreement provides bounded evidence of correctness.
+
+We formalize this through two theorems: an information-theoretic bound and an evidence bound. Both are conditional results. They tell us what happens \emph{if} the assumptions hold; they do not establish that the assumptions hold for any particular real system.
+
+\subsection{Information-Theoretic Formulation}
+
+The central quantity is $I(T; S \mid G)$: the information that the selector provides about correctness, given that we already observe the generator output.
+
+\begin{theorem}[Information Bound via Shared Blind Spots]
+\label{thm:info_bound}
+Let $Z$ be a latent variable. \textbf{Assume the conditional independence $S \perp T \mid (G, Z)$.} Then:
+\begin{equation}
+I(T; S \mid G) \leq I(T; Z \mid G)
+\end{equation}
+In particular, if $T \perp Z \mid G$, then $I(T; S \mid G) = 0$.
+\end{theorem}
+
+\begin{proof}
+By the chain rule for conditional mutual information:
+\begin{equation}
+I(T; S, Z \mid G) = I(T; Z \mid G) + I(T; S \mid G, Z)
+\end{equation}
+Under $S \perp T \mid (G, Z)$, we have $I(T; S \mid G, Z) = 0$, hence:
+\begin{equation}
+I(T; S, Z \mid G) = I(T; Z \mid G)
+\end{equation}
+Also by the chain rule:
+\begin{equation}
+I(T; S, Z \mid G) = I(T; S \mid G) + I(T; Z \mid G, S) \geq I(T; S \mid G)
+\end{equation}
+since mutual information is nonnegative. Combining yields $I(T; S \mid G) \leq I(T; Z \mid G)$. If additionally $T \perp Z \mid G$, then $I(T; Z \mid G) = 0$ and the result follows. \qed
+\end{proof}
+
+\textbf{Interpretation, with caution.} \emph{Within the framework's assumptions}, the information the selector provides about correctness is bounded by how much the blind spot variable $Z$ ``knows'' about correctness beyond what the generator output already reveals. When $Z$ is a pure nuisance variable (encoding only \textit{how} the system fails, not \textit{whether} it fails), self-evaluation provides zero additional information \emph{in this conditional sense}. The theorem does not establish that real LLM evaluators satisfy the assumed conditional independence; it states what follows if they do.
+
+\begin{lemma}[Post-Processing Cannot Increase Evidence]
+\label{lem:post_processing}
+For any deterministic acceptance rule $A = \mathsf{acc}(S)$:
+\begin{equation}
+I(T; A \mid G) \leq I(T; S \mid G)
+\end{equation}
+\end{lemma}
+
+This follows directly from the data processing inequality. The acceptance decision cannot contain more information than the selector score from which it derives.
+
+\subsection{Evidence Bound Formulation}
+
+\begin{theorem}[Bounded Evidence from Acceptance under High False Acceptance]
+\label{thm:evidence_bound}
+\textbf{Assume the selector has high false acceptance rate:}
+\begin{equation}
+\Pr(A = 1 \mid T = 0) \geq 1 - \varepsilon
+\end{equation}
+and $\Pr(A = 1 \mid T = 1) \leq 1$. Then the log-likelihood ratio contributed by observing $A = 1$ satisfies:
+\begin{equation}
+\log_2 \frac{\Pr(A = 1 \mid T = 1)}{\Pr(A = 1 \mid T = 0)} \leq \log_2 \frac{1}{1 - \varepsilon}
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+We have $\Pr(A = 1 \mid T = 1) \leq 1$ and $\Pr(A = 1 \mid T = 0) \geq 1 - \varepsilon$, so:
+\begin{equation}
+\frac{\Pr(A = 1 \mid T = 1)}{\Pr(A = 1 \mid T = 0)} \leq \frac{1}{1 - \varepsilon}
+\end{equation}
+Taking $\log_2$ gives the result. \qed
+\end{proof}
+
+\begin{corollary}[Degenerate Evidence for Small $\varepsilon$]
+For small $\varepsilon$:
+\begin{equation}
+\log_2 \frac{1}{1 - \varepsilon} \approx \frac{\varepsilon}{\ln 2} \approx 1.44\varepsilon \text{ bits}
+\end{equation}
+For $\varepsilon = 0.01$ (selector accepts 99\% of incorrect hypotheses), acceptance provides at most $0.014$ bits of evidence in this regime.
+\end{corollary}
+
+\textbf{Important caveat on what this bound shows.} Theorem~\ref{thm:evidence_bound} establishes that \emph{in the high-false-acceptance regime}, acceptance contributes only a small log-likelihood ratio. It does \emph{not} establish that self-evaluation is generally non-identifying, nor that agreement always provides negligible evidence. Outside this regime---in particular when the selector accesses information not contained in $(G, Z)$---the bound is not informative and self-evaluation can provide substantial information. Many successful LLM applications operate outside the regime by incorporating external feedback channels (execution, formal verification, retrieval). The negative results in this section apply specifically to the regime where: (1) systematic generator failures exist with nontrivial probability, (2) the selector shares the generator's blind spots in the conditional-independence sense of Theorem~\ref{thm:info_bound}, and (3) the false acceptance rate is high. We do not claim all self-evaluation fails, only that it may fail under these stated conditions.
+
+\subsection{The Confidence Amplification Observation}
+
+A heuristic consequence of the information-theoretic result, presented as an illustrative observation rather than a formal result about subjective belief states.
+
+\begin{lemma}[Repeated Self-Critique Bound]
+\label{lem:repeated}
+Consider $k$ selector outputs $S_1, \ldots, S_k$ with acceptance decisions $A_i = \mathbb{I}\{S_i \geq \tau\}$. \textbf{Assume the joint conditional independence $(S_1, \ldots, S_k) \perp T \mid (G, Z)$.} Then:
+\begin{equation}
+I(T; A_{1:k} \mid G) \leq I(T; Z \mid G)
+\end{equation}
+That is, $k$ critiques provide no more information about correctness than the single blind spot variable $Z$.
+\end{lemma}
+
+\begin{remark}[Why joint, not just per-$i$]
+Pairwise conditional independence $S_i \perp T \mid (G, Z)$ for each $i$ does \emph{not} in general imply the joint statement $(S_1, \ldots, S_k) \perp T \mid (G, Z)$. The lemma requires the joint version, which is the substantively interesting condition: the entire critique vector contains no information about correctness beyond what $(G, Z)$ already carries. The joint condition is the natural formalization of the heuristic claim that ``$k$ correlated critiques are really one critique.'' In the self-evaluation setting where all $S_i$ are produced by the same model from the same $(G, Z)$, the joint condition is more plausible than in settings where the $S_i$ are produced by independent processes; whether it holds for any particular real system is, as elsewhere in this paper, an empirical question we do not resolve.
+\end{remark}
+
+\begin{proof}
+By the joint conditional independence assumption, $(S_1, \ldots, S_k) \perp T \mid (G, Z)$. Since each $A_i$ is a deterministic function of $S_i$, the data processing inequality gives $A_{1:k} \perp T \mid (G, Z)$, hence $I(T; A_{1:k} \mid G, Z) = 0$. The chain rule then yields:
+\begin{equation}
+I(T; A_{1:k}, Z \mid G) = I(T; Z \mid G) + I(T; A_{1:k} \mid G, Z) = I(T; Z \mid G).
+\end{equation}
+Also by the chain rule, $I(T; A_{1:k}, Z \mid G) = I(T; A_{1:k} \mid G) + I(T; Z \mid G, A_{1:k}) \geq I(T; A_{1:k} \mid G)$ since mutual information is nonnegative. Combining yields $I(T; A_{1:k} \mid G) \leq I(T; Z \mid G)$. \qed
+\end{proof}
+
+\paragraph{Illustrative remark on subjective confidence.} The lemma above is an objective statement about mutual information. We note, informally, that a system (or user) updating beliefs by treating $k$ correlated acceptances as if they were independent evidence would experience apparent confirmation that does not correspond to additional objective information. This is not a formal result---we have not modeled subjective belief states within the framework---but it is a plausible heuristic concern when interpreting repeated self-critique as evidence of correctness. Concretely, if a naive observer treats $k$ acceptances as independent and computes
+\begin{equation}
+\Pr(T = 1 \mid A_1, \ldots, A_k) \propto \Pr(T = 1) \prod_{i=1}^{k} \frac{\Pr(A_i \mid T = 1)}{\Pr(A_i \mid T = 0)},
+\end{equation}
+the multiplicative update may dramatically overstate the evidence relative to what the lemma actually licenses. This may contribute to a failure mode informally observed in extended LLM reasoning: increasing apparent confidence in coherent, well-argued, wrong conclusions.
+
+\subsection{When External Selection May Help}
+
+The results above identify conditions under which self-evaluation provides weak evidence \emph{within the framework}. The contrapositive suggests when external selection may help:
+
+\begin{corollary}[External Selection Criterion]
+Within the framework, evaluation provides substantial information about correctness when:
+\begin{enumerate}
+\item The selector accesses information not contained in $(G, Z)$, breaking the conditional independence $S \perp T \mid (G, Z)$;
+\item The selector's blind spots $\mathcal{Z}'_{\mathrm{bad}}$ have low overlap with the generator's $\mathcal{Z}_{\mathrm{bad}}$;
+\item The false acceptance rate satisfies $\Pr(A = 1 \mid T = 0) \ll 1$.
+\end{enumerate}
+\end{corollary}
+
+External selection channels that may satisfy these criteria include: formal verification (mathematical ground truth), executable tests (computational ground truth), different model families (different $\mathcal{Z}_{\mathrm{bad}}$), and fresh-context evaluation (which may partially reset $Z$). The empirical results of \citet{tsui2025selfcorrection} are consistent with this analysis: the ``Wait'' intervention, which injects a correction marker (``Wait, I think there might be an error'') into the model's reasoning trace, reduced the blind spot rate by 89.3\% without changing the model's weights. This suggests that even minimal context perturbation may partially break the conditional independence $S \perp T \mid (G, Z)$, consistent with the corollary's prediction that accessing information outside $(G, Z)$ enables more effective evaluation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Selection Pressure Across Domains: Intuition}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\textbf{This section is intuition, not formal evidence.} The analogies below are offered to build conceptual context for the framework. They do not constitute methodological support and the formal results in Section~\ref{sec:when} do not depend on them.
+
+\subsection{Self-Reference Limitations}
+
+Gödel's incompleteness theorems establish that sufficiently powerful formal systems cannot prove their own consistency~\citep{godel1931}. The structural parallel to our setting is suggestive but informal: self-reference creates blind spots. \citet{tsui2025selfcorrection} draws an analogous parallel to cognitive science, connecting the LLM self-correction blind spot to the bias blind spot documented by \citet{pronin2002bias}. Humans reliably identify cognitive biases in others while failing to detect the same biases in themselves.
+
+This mirrors a familiar experience in software engineering: developers cannot effectively QA their own code. The problem is not laziness or lack of intelligence. It is that the developer knows how the code is \textit{supposed} to work and cannot clear that context when testing. The same cognitive patterns that produced the bug prevent recognizing it as a bug. We offer this as an analogy, not as evidence.
+
+\subsection{Selection Pressure Across Domains}
+
+Selection pressure provides an external criterion that distinguishes signal from noise. We observe a similar structural pattern across engineering, scientific, and reasoning domains:
+
+\begin{table}[ht]
+\centering
+\caption{Selection pressure across domains (analogical, not evidential).}
+\small
+\begin{tabular}{llll}
+\toprule
+\textbf{System} & \textbf{Perturbation} & \textbf{Selection Criterion} & \textbf{Amplification} \\
+\midrule
+\multicolumn{4}{l}{\textit{Engineering}} \\
+Fuzzer & Random mutation & No crash & Bug-free path found \\
+Monte Carlo & Stochastic proposal & Satisfies constraints & Solution region mapped \\
+Genetic alg. & Crossover/mutation & Fitness improves & Optimized design \\
+\midrule
+\multicolumn{4}{l}{\textit{Scientific}} \\
+Hypothesis & Conjecture & Persists under test & Theory in literature \\
+\midrule
+\multicolumn{4}{l}{\textit{Human Reasoning}} \\
+Draft & Initial attempt & Survives fresh review & Revised manuscript \\
+\midrule
+\multicolumn{4}{l}{\textit{LLM (proposed)}} \\
+High temp. & Random token & Survives fresh context & Validated output \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The pattern across these cases: perturbation generates variation, selection determines what persists, and surviving configurations amplify. We are not claiming a deep underlying principle here; we are noting that this structural pattern is widespread and that it might be one useful lens for thinking about LLM evaluation architectures.
+
+\subsection{External Selection in Practice: Formal Verification}
+
+A concrete instantiation worth mentioning. The Prover Agent framework~\citep{baba2025prover} coordinates an informal reasoning LLM with the Lean proof assistant, where Lean provides external verification. Using relatively small language models, the system achieved 88.1\% accuracy on the MiniF2F benchmark, outperforming approaches using larger models without external verification.
+
+The mechanism aligns with the analysis in Section~\ref{sec:when}. The LLM generates candidate proofs (high-entropy generation). Lean verifies whether the proof compiles, a criterion external to the LLM's training and biases (external selection). Errors detected by Lean feed back to the LLM for refinement. Lean's verification depends on mathematical truth, not on patterns in training data, so it is plausible that it satisfies the external selection criterion in the corollary above.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Multi-Agent Verification}
+\label{sec:multi}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+If self-evaluation may fail under correlated error, how can multi-agent systems succeed? The framework predicts that they succeed when they introduce selectors whose error is less correlated with the generator.
+
+\subsection{Breaking Correlation}
+
+\begin{definition}[External criterion]
+An external criterion is a selection mechanism depending on information not fully controlled by the generator.
+\end{definition}
+
+The key mechanism is diversity of failure modes. A selector trained on different data, using different architecture, or implementing formal verification will plausibly fail on different inputs than the generator. When the joint failure probability is lower than individual failure---
+\begin{equation}
+\Pr(E_{S_1} \cap E_{S_2} \mid E_G) < \Pr(E_{S_1} \mid E_G)
+\end{equation}
+---even partially independent selectors compound evidence. This is consistent with the empirical observation that diverse multi-agent panels often outperform single-agent self-evaluation~\citep{du2023debate, liang2023debate}.
+
+\subsection{External Selection Channels}
+
+Effective external selection channels include:
+
+\paragraph{Formal verification.} Proof assistants (Lean, Coq, Isabelle) and type checkers provide selection under mathematical ground truth. A proof that compiles is verified by mathematics itself, not by a correlated neural network.
+
+\paragraph{Executable verification.} Unit tests, property-based tests, and simulation checks provide selection under computational ground truth. Code that passes tests satisfies constraints external to the generator. This may help explain why LLMs have become effective at coding tasks: the code interpreter provides built-in external selection. The interpreter does not care how confident the model was; the code runs or it throws an error.
+
+\paragraph{Fresh context evaluation.} The same model under fresh context, without the reasoning chain that produced the candidate, may provide meaningful critique. When the error originates in the reasoning trace itself, the error-producing context is absent in the fresh instance, so the evaluator does not inherit the trace-level blind spot (though shared-weights blind spots may remain). \citet{tsui2025selfcorrection} demonstrates that even partial context separation can be effective: the ``Wait'' intervention reduced the Self-Correction Blind Spot by 89.3\% without changing model weights.
+
+\begin{definition}[Context separation]
+\label{def:context_sep}
+Two evaluation contexts are \emph{separated} if the evaluating context has no access to: (1) the generation trace (intermediate reasoning steps), (2) the prompt scaffolding (instructions that shaped generation), or (3) hidden state from the generation process.
+\end{definition}
+
+\paragraph{Limitations of same-model context separation.} Fresh context can only address correlation introduced \emph{during generation}. It removes the generator's intermediate reasoning trace and local prompt scaffolding, but it does not remove correlated failure modes that originate in the model's parameters or training distribution. Same weights means shared inductive biases remain. Context separation is therefore a partial intervention: it breaks correlation introduced during generation, but not correlation baked into the model itself. For maximum independence, context separation should be combined with model diversity or external tools.
+
+\paragraph{Numerical invariants.} Dimensional analysis, conservation laws, symmetry constraints, and sanity bounds provide selection under physical ground truth.
+
+\paragraph{Retrieval-grounded checking.} Citation verification against a fixed corpus, exact quote attribution, and fact-checking against authoritative sources provide selection under documentary ground truth.
+
+\paragraph{Independent critics.} Models with different training data, different architectures, or different optimization objectives have partially independent failure modes.
+
+\subsection{Persona-Based Diversity (Hypothesis)}
+
+A speculative strategy for achieving decorrelated evaluation within a single model: cast the evaluator as different expert types. When prompted as ``a rigorous mathematician checking for proof gaps,'' the model may produce different output than when prompted as ``a skeptical physicist checking dimensional consistency'' or ``a journal referee looking for reasons to reject.''
+
+Each persona may correspond to a different conditional distribution over critique behavior, with different priorities, different blind spots, and different failure modes. An error that survives one persona may not survive another. We present this as a hypothesis the framework suggests rather than as a validated technique. Implementation details (specific persona prompts, aggregation logic, consensus mechanisms) are left to future work.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{A Context-Separated Architecture}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+We now present a practical architecture that operationalizes the framework's prediction: separate generation from evaluation using context separation, and use the surviving findings as input for human review.
+
+\subsection{Design Goals}
+
+\begin{enumerate}
+    \item \textbf{Maximize exploration}: Generate diverse candidates without premature filtering
+    \item \textbf{Ensure rigor}: Select only candidates surviving external validation
+    \item \textbf{Enable iteration}: Feed selection results back to improve generation
+    \item \textbf{Preserve human judgment}: Surface candidates for human review, don't replace human decision-making
+\end{enumerate}
+
+\subsection{Architecture Components}
+
+\begin{definition}[Generator]
+The generator component $\mathcal{G}$ produces candidate hypotheses at high entropy, exploring the space of possibilities without prejudice.
+\end{definition}
+
+\begin{definition}[Selector]
+The selector component $\mathcal{S}$ evaluates candidates against external criteria at low entropy, selecting configurations that survive validation.
+\end{definition}
+
+\begin{definition}[Feedback]
+The Feedback component $\mathcal{B}$ updates generation context based on selection outcomes, biasing future proposals toward surviving structures.
+\end{definition}
+
+\begin{equation}
+\boxed{
+\begin{aligned}
+\mathcal{G}&: C \to \{h_1, \ldots, h_k\} && \text{(High-entropy generation)} \\
+\mathcal{S}&: (h_i, C) \to (s_i, r_i) && \text{(External selection + rationale)} \\
+\mathcal{B}&: \{(h_i, s_i, r_i)\} \to C' && \text{(Context update)}
+\end{aligned}
+}
+\end{equation}
+
+\subsection{High-Entropy Generation}
+
+The generator component should:
+\begin{itemize}
+    \item Operate at high temperature or use explicit diversity objectives
+    \item Generate candidates spanning the hypothesis space, including edge cases
+    \item Avoid premature self-filtering that would narrow the search
+    \item Include alternative assumptions and boundary conditions
+\end{itemize}
+
+\subsection{External Selection}
+
+The selector component should:
+\begin{itemize}
+    \item Operate at low temperature for consistency
+    \item Apply explicit checklists and external tools
+    \item Produce structured verdicts with rationales
+    \item Flag uncertainty rather than forcing binary decisions
+\end{itemize}
+
+Selection criteria hierarchy:
+\begin{enumerate}
+    \item \textbf{Formal}: Does it compile/prove/type-check?
+    \item \textbf{Executable}: Does it pass tests?
+    \item \textbf{Numerical}: Does it satisfy invariants?
+    \item \textbf{Grounded}: Do citations check out?
+    \item \textbf{Adversarial}: Does it survive independent critique?
+\end{enumerate}
+
+\subsection{Distinguishing from Related Architectures}
+
+\begin{table}[h]
+\centering
+\caption{Comparison with related architectures}
+\begin{tabular}{llll}
+\toprule
+\textbf{Architecture} & \textbf{Selection criterion} & \textbf{Goal} & \textbf{External?} \\
+\midrule
+GAN & Discriminator fooled & Realism & No (co-trained) \\
+RLHF & Human preference & Alignment & Partially \\
+Self-consistency & Agreement across samples & Confidence & No (correlated) \\
+Context-separated & External validation & Truth & Yes \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The key distinction: context-separated evaluation uses persistence under external criteria as the selection signal, not realism (GAN), preference (RLHF), or self-agreement (self-consistency).
+
+\subsection{Same-Model Implementation via Context Separation}
+
+The architecture does not require multiple models. The same model under fresh context, without the reasoning chain that produced the candidate, can serve as the selector. The key is context separation, not model separation. A worked sketch:
+
+\begin{verbatim}
+CONTEXT_SEPARATED_EVALUATION(problem):
+    # Context A: Generation
+    context_a = fresh_context()
+    response_a = model(context_a,
+        "First predict your answer, then solve: " + problem)
+
+    # Context B: Steelman AND attack (fresh, no shared state)
+    context_b = fresh_context()
+    critique = model(context_b,
+        "Here is a proposed solution. Provide both:
+         1) Steelman: the strongest case FOR this solution
+         2) Attack: the strongest case AGAINST this solution
+         Solution: " + response_a.answer_only)
+
+    # Context C: Independent adjudication (fresh, no shared state)
+    # Note: deliberately NOT context_a, to avoid reintroducing the
+    # generation context the architecture aims to separate from.
+    context_c = fresh_context()
+    judgment = model(context_c,
+        "A solution and a critique are below. Decide which arguments
+         are most coherent with the problem structure.
+         Solution: " + response_a.answer_only +
+         "Steelman: " + critique.steelman +
+         "Attack: " + critique.attack)
+
+    return judgment
+\end{verbatim}
+
+This implementation has several properties worth noting:
+\begin{itemize}
+    \item \textbf{Reduced trace correlation}: Contexts B and C cannot see Context A's reasoning trace, only the output. To the extent the relevant blind spots are induced by the trace itself, those blind spots should be reduced in B and C; correlation rooted in shared model parameters and training data is not addressed by this intervention.
+    \item \textbf{Simultaneous opposition}: Requesting both steelman and attack forces engagement with both sides rather than anchoring on one.
+    \item \textbf{Temperature control}: High temperature in generation (exploration), low temperature in critique and adjudication (precision).
+    \item \textbf{Cost note}: Three fresh-context calls cost more than a single forward pass on the original prompt, but are typically cheaper than extending a single long-context chain-of-thought to comparable depth, because each call discards prior conversation history. We do not claim this implementation is free; we claim it is comparable or favorable to long-context CoT in cost while providing broken trace correlation.
+\end{itemize}
+
+\textbf{An earlier version of this pseudocode delegated final adjudication back to Context A, which would have partially reintroduced the generation context the architecture is designed to separate from.} The version above uses a fresh Context C for adjudication; this is the version we recommend.
+
+\subsection{Illustrative Observation: Paired Ablation on Retracted Papers}
+\label{sec:illustration}
+
+We include here a small empirical observation that illustrates what the predicted mechanism looks like in practice. \textbf{This is not validation. It is a snapshot from a companion benchmark paper~\citep{brilliant2026benchmark} included as a directionally consistent illustration.} Full methodology, larger-$n$ evaluation, and community-extensible benchmark infrastructure are reported separately.
+
+\paragraph{Setup.} A multi-stage adversarial review protocol (``graduated dissent'') was applied to a set of 10 retracted scientific papers with documented retraction-causing methodological errors, paired with 19 probative non-retracted controls (matched same-journal and hard-negative). All papers post-date the training cutoffs of the models used. Two configurations were compared on the same papers, holding everything constant except whether an adversarial steelman exchange was included between independent prover instances:
+
+\begin{itemize}
+\item \textbf{B3 (no steelman)}: Two prover instances (different model families) review the paper in separated contexts. Their findings are pooled and sent directly to a third arbiter instance, which assigns severity classifications. No adversarial exchange.
+\item \textbf{Graduated dissent (with steelman)}: Identical to B3, except that before findings reach the arbiter, each prover must construct the strongest case against the other's severity ratings. The arbiter receives the original findings and the steelman exchange.
+\end{itemize}
+
+The structural difference between conditions is whether the steelman exchange occurs. This is a paired ablation: the same papers, the same models, the same arbiter, the same prompts.
+
+\paragraph{Observation.}
+
+\begin{table}[h]
+\centering
+\caption{Paired ablation on the same 10 retracted papers and 19 controls. Reported from \citet{brilliant2026benchmark}.}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Outcome} & \textbf{B3 (no steelman)} & \textbf{Graduated dissent} \\
+\midrule
+Ground-truth detection (retracted) & 3/10 (30\%) & 7/10 (70\%) \\
+False retraction-worthy on controls & 1/19 (5\%) & 0/19 (0\%) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+On the 10 retracted papers, the two conditions disagreed on 4 papers, all in the same direction: graduated dissent detected the documented retraction-causing error in 4 papers that B3 missed; B3 detected zero papers that graduated dissent missed. On the 19 controls, the steelman exchange eliminated the single false-positive that B3 had produced. McNemar's exact test (two-tailed) on the 4 discordant pairs gives $p = 0.125$.
+
+\paragraph{Why this is illustrative of the framework.} The framework suggests that under correlated error in the conditional-independence sense, naive ensembling of selectors that share the generator's blind spots should not by itself break the correlation: a second instance may corroborate rather than calibrate. The framework further suggests that adversarial pressure forcing each instance to argue against its own severity claims may produce downward calibration on overstated findings, because it asks the model to access the conditional distribution of \emph{counterarguments} rather than simply the conditional distribution of supportive critiques. Both are heuristic implications of the framework, not theorems.
+
+The observation is consistent with both heuristics:
+\begin{itemize}
+\item B3 (multi-model, no adversarial exchange) achieves no better detection than the single-model baseline and produces a false positive that is in fact \emph{amplified} by the second model (1 RW finding under single-model, 2 RW findings under B3 on the same control paper). Corroboration without calibration.
+\item Adding the steelman exchange eliminates the false positive and adds detections, with the same intervention responsible for both. The protocol logs show the mechanism: provers downgrade overstated severities under counterargument pressure, and the arbiter sees the downgraded material.
+\end{itemize}
+
+\paragraph{Limits of this illustration.} Four discordant pairs at $n = 10$ cannot establish anything statistically. The ablation tests one specific pair of provers and one specific arbiter; the result may not generalize to other model configurations. Single-rater scoring and single-run-per-configuration are real limitations. We report this as a directionally consistent observation that the predicted mechanism is visible in protocol logs, not as evidence that the mechanism operates at any particular rate or in any particular setting. The companion benchmark paper~\citep{brilliant2026benchmark} discusses these limitations in detail and describes the larger-$n$ extension currently in progress.
+
+We include the observation here because it shows what one instantiation of the framework's central concern looks like in practice: forcing decorrelated evaluation through context separation and adversarial exchange produces visibly different outcomes than naive ensembling, in a direction consistent with the framework's heuristic implications. We emphasize that this is one small observation, not a test of the theory.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Threat Model and Mitigations}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+To clarify the architecture's robustness, we enumerate failure modes and mitigations.
+
+\subsection{Attack Surfaces}
+
+\paragraph{Correlated critics.} If critic models share training data, architecture, or optimization objectives with the generator, error correlation persists despite apparent multi-agent structure. This is the primary failure mode the architecture addresses.
+
+\paragraph{Prompt injection on selection.} Adversarial inputs could manipulate critic behavior, causing systematic acceptance of flawed candidates.
+
+\paragraph{Spoofable external checks.} If ``external'' verification tools can be fooled (e.g., tests that don't actually test the claimed property), the selection signal degrades.
+
+\paragraph{Human confirmation bias.} The human operator may preferentially accept candidates that confirm prior beliefs, reintroducing correlated error at the final selection stage.
+
+\paragraph{Feedback gaming.} If the feedback mechanism is predictable, generators could learn to produce candidates that pass selection without satisfying underlying criteria.
+
+\subsection{Mitigations}
+
+\begin{table}[h]
+\centering
+\caption{Threat mitigations}
+\begin{tabular}{ll}
+\toprule
+\textbf{Threat} & \textbf{Mitigation} \\
+\midrule
+Correlated critics & Model diversity (different families, training data, architectures) \\
+Prompt injection & Structured verdict formats, input sanitization, separate contexts \\
+Spoofable checks & Hard external criteria (formal proofs, physical measurements) \\
+Human bias & Adversarial critics, blind review protocols, explicit checklists \\
+Feedback gaming & Diverse selection criteria, periodic architecture audits \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+No mitigation is complete. The goal is defense in depth: multiple independent failure modes such that exploiting one does not compromise the entire system.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Discussion and Implications}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{For AI-Assisted Workflows}
+
+If the framework's central prediction holds---that correlated error limits the value of self-evaluation in generate-then-judge workflows---then scaling single models alone may be insufficient for reliable validation. The bottleneck would be validation under external constraints, not generation capability. Investment in external selection infrastructure (formal verification tools, test generation, invariant libraries, diverse critic ensembles) may yield returns complementary to larger single models.
+
+\subsection{For Reduced Human Oversight}
+
+Workflows with reduced human oversight require selection mechanisms with low correlation to generator error. To the extent the framework's assumptions apply, current approaches using self-critique or same-family judge models may not satisfy this requirement. Reducing human oversight while maintaining reliability may require:
+\begin{itemize}
+    \item Formal verification covering the relevant claim space
+    \item Executable tests providing ground truth
+    \item Evaluation architectures with independent failure modes
+\end{itemize}
+
+In settings where these mechanisms are unavailable, human review remains an important external criterion.
+
+\subsection{For Human-AI Collaboration}
+
+The architecture's goal is not to replace human judgment but to concentrate it. By filtering candidates through external selection, the system surfaces hypotheses worthy of human attention. This addresses the scalability bottleneck: humans cannot evaluate 200 hypotheses, but they can evaluate 2--3 survivors of rigorous automated filtering.
+
+\subsection{A Note on Default Optimization Targets}
+
+We previously included a section speculating about specific commercial-LLM mechanisms (system prompts, RLHF artifacts, format-consistency predictions) as a putative explanation for correlated error. On reflection, those claims went beyond what the framework requires and beyond what we can support with citations or controlled study. We have removed them from the main analysis.
+
+The narrower observation we are willing to defend is the following: \citet{sharma2024sycophancy} demonstrate that RLHF-trained models exhibit sycophancy under measurable conditions, and \citet{zheng2023helpful} show that the ``helpful assistant'' framing common to commercial deployments produces measurably different behavior than alternative framings. \citet{sclar2024formatting} and \citet{kong2023roleplay} document substantial prompt-sensitivity effects. Taken together, these results are consistent with the hypothesis that default deployment configurations may produce somewhat correlated evaluator behavior even across superficially independent calls---but we are not aware of direct evidence quantifying this for the specific case of self-evaluation under context separation, and we treat it as a hypothesis to be tested rather than a mechanism we can assert. Researchers needing rigorous adversarial evaluation may benefit from deployments with full prompt control, where the evaluation framing can be made explicit.
+
+\subsection{Open Questions}
+
+\begin{enumerate}
+    \item Can formal verification scale to cover more scientific domains?
+    \item What is the minimum diversity required for effective multi-agent selection?
+    \item Can selection criteria themselves be learned without introducing correlation?
+    \item How does the framework's information-theoretic bound translate to practical selection metrics like calibration and ranking quality?
+    \item Can commercial API constraints on system prompts be overcome through prompt engineering, or is local deployment necessary for full external selection effectiveness?
+\end{enumerate}
+
+\subsection{Future Work}
+
+The companion benchmark paper~\citep{brilliant2026benchmark} reports the empirical evaluation of one architectural instantiation of the framework on a small sample of retracted papers. That paper is the entry point for empirical work, and the benchmark it releases is designed to grow through community contribution. Specific extensions worth pursuing include:
+\begin{itemize}
+    \item Larger-$n$ paired ablations isolating other protocol components
+    \item Variance characterization across temperatures and prompt variations
+    \item Direct measurement of error correlation between model instances under different context-separation protocols
+    \item Comparison of context separation, persona-based diversity, and multi-model configurations on the same benchmark
+    \item Operationalization of the latent variable $Z$ via measurable proxies of shared failure modes
+\end{itemize}
+
+The contribution of the present paper is the theoretical framework and architectural proposal; rigorous empirical evaluation is the subject of the companion paper and of community contributions to it.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Related Work}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\paragraph{LLM self-correction: the empirical foundation.} \citet{huang2024selfcorrect} established empirically that ``large language models cannot self-correct reasoning yet,'' showing that without external feedback, self-correction attempts often fail or degrade performance. Our work offers one possible theoretical lens: \emph{under stated assumptions about correlated error}, self-evaluation can be non-identifying. Where Huang et al.\ documented the phenomenon, we provide a formal framework that is consistent with it. Their finding that multi-agent critique with same-model copies performed ``no better than self-consistency'' is consistent with the framework: identical models share error distributions, so adding copies should not break correlation in the relevant sense. The framework predicts a fix: context separation or genuinely independent evaluation channels.
+
+\paragraph{The Self-Correction Blind Spot.} \citet{tsui2025selfcorrection} provides empirical results that map closely onto our formal setting. The study demonstrates that LLMs can correct identical errors when presented as external input but fail to correct those same errors in their own outputs (the Self-Correction Blind Spot). An average 64.5\% failure rate is measured across 14 models on three purpose-built benchmarks (SCLI5, GSM8K-SC, PRM800K-SC). The ``Wait'' intervention, which injects correction markers (``Wait,'' ``But,'' ``However'') into the model's reasoning trace, reduced the blind spot by 89.3\%. These findings are consistent with our framework: the blind spot corresponds to high false-acceptance coupling $\kappa$, the external-vs-self correction gap operationalizes the shared blind spot variable $Z$, and the ``Wait'' intervention is consistent with a minimal mechanism for breaking the conditional independence $S \perp T \mid (G, Z)$ that the bounds identify as the source of weak self-evaluation. Where we provide conditional theoretical bounds, Tsui provides empirical measurement of how severely the failure occurs in practice and a minimal intervention for partial remediation.
+
+\paragraph{Self-consistency and majority voting.} \citet{wang2023selfconsistency} demonstrated that sampling multiple reasoning paths and taking the majority answer improves accuracy. This works when errors are uncorrelated across samples. Our framework clarifies the limitation: if all samples share the same systematic bias, majority voting does not break the relevant correlation. The gains from self-consistency should diminish as correlation increases, which is consistent with the technique working better for some tasks than others.
+
+\paragraph{Multi-agent debate and verification.} Multi-agent systems including AutoGen~\citep{wu2023autogen}, CAMEL~\citep{li2023camel}, MetaGPT~\citep{hong2023metagpt}, and debate frameworks~\citep{du2023debate, liang2023debate} explore collaborative reasoning. \citet{chen2024reconcile} found that model \textit{diversity} among agents was important for performance gains, consistent with the framework's emphasis on breaking error correlation. We attempt to provide a formal lens for why multi-agent verification can help (decorrelated failure modes) and to suggest that context separation within a single model may achieve some of the same benefits.
+
+\paragraph{Process supervision.} \citet{lightman2023process} showed that supervising each reasoning step (process supervision) significantly outperforms supervising only final answers (outcome supervision). This is consistent with the framework: per-step external feedback breaks the model's solo-reasoning context, preventing error accumulation within a single correlated context. Process supervision is one instance of external selection applied during training.
+
+\paragraph{External verification and tool use.} Training separate verifier models~\citep{cobbe2021verifier} achieved large gains on math problems. Integration with formal provers~\citep{yang2023leandojo, polu2020generative, baba2025prover} provides external selection via mathematical ground truth. The CRITIC framework~\citep{gou2023critic} showed that tool-interactive critiquing improves self-correction. These results are consistent with the framework's prediction that ``external'' can mean different models, formal tools, or execution environments.
+
+\paragraph{Apparent counterexamples.} Some work reports successful self-correction: Self-Refine~\citep{madaan2023selfrefine}, Reflexion~\citep{shinn2023reflexion}, and Constitutional AI~\citep{bai2022constitutional}. We reconcile these with the framework by noting they typically address (a) style and format rather than deep reasoning, (b) cases where oracle feedback is implicitly available, or (c) safety constraints well-represented in training data. When \citet{huang2024selfcorrect} removed oracle feedback from self-correction setups, improvements vanished, suggesting that apparent self-correction may often rely on hidden external signals.
+
+\paragraph{LLM-as-a-Judge biases.} \citet{panickssery2024selfpreference} found significant self-preference bias: LLMs assign higher scores to outputs with lower perplexity. \citet{li2024llmjudgebias} identified 12 major latent biases in LLM-as-a-Judge systems. These empirical findings are consistent with the framework's prediction that evaluation sharing the generator's distribution will exhibit correlated error.
+
+\paragraph{Ensemble diversity and error decorrelation.} The insight that independent errors enable reliable aggregation is foundational in ensemble learning~\citep{krogh1995ensemble}. We apply this insight to LLM self-evaluation. The connection to information theory~\citep{cover2006elements}---conditional mutual information $I(T; S \mid G)$ approaching zero under high correlation in the conditional-independence sense---is what the framework formalizes.
+
+\paragraph{AI for science.} AlphaFold~\citep{alphafold} demonstrates AI solving well-defined scientific problems with clear evaluation criteria. Our focus is the less-structured setting of hypothesis generation and validation, where ground truth is not known in advance and external selection must be actively constructed.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Limitations}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+We summarize the principal limitations of this paper.
+
+\paragraph{The bounds are conditional.} Theorems~\ref{thm:info_bound} and~\ref{thm:evidence_bound} are conditional results. They tell us what follows from the assumptions; they do not establish that real LLM evaluators satisfy the assumptions. Whether the conditional independence $S \perp T \mid (G, Z)$ or the high-false-acceptance regime apply to any particular model on any particular task distribution is an empirical question.
+
+\paragraph{$Z$ is a modeling construct, not an estimated quantity.} The latent variable $Z$ organizes the framework's conditional structure but is not directly observable. The framework does not provide an operational procedure for estimating $Z$ or for testing whether a given LLM-and-task pair exhibits a $Z$ with the assumed properties. Operationalizing $Z$ via measurable proxies of shared failure modes is left to future work.
+
+\paragraph{Information-theoretic measures are not the only relevant metrics.} The framework uses $I(T; S \mid G)$ as the primary measure of evaluator usefulness. In practice, selection quality also depends on calibration, ranking, thresholding, and utility-sensitive tradeoffs. We treat conditional mutual information as one useful lens, not the only one.
+
+\paragraph{The illustrative observation is small.} The paired ablation reported in Section~\ref{sec:illustration} comes from a benchmark of $n = 10$ retracted papers and 19 controls, with single-rater scoring and one run per configuration. McNemar's exact $p = 0.125$ on 4 discordant pairs is directionally consistent with the framework's prediction but cannot establish the effect at conventional significance levels. Larger-$n$ evaluation is the subject of the companion paper~\citep{brilliant2026benchmark}.
+
+\paragraph{The architecture is one instantiation among many.} The context-separated implementation in Section 5.6 is a worked sketch, not a benchmarked product. Other instantiations of the framework's principles (different model role assignments, different aggregation rules, different escalation logic) may perform differently.
+
+\paragraph{Same-model context separation has structural limits.} Fresh context can only address correlation introduced by the reasoning trace and prompt scaffolding. Correlation rooted in shared model parameters and training data is not addressed by this intervention. For maximum independence, context separation should be combined with model diversity or external tools.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+This paper provides a conditional theoretical framework for thinking about when self-evaluation in generate-then-judge LLM workflows may provide weak evidence. The framework is information-theoretic. Under explicit assumptions about a latent shared-failure variable, we show that the selector's contribution to identifying correctness is bounded; under a high false-acceptance regime, we show that acceptance contributes only a small log-likelihood ratio. Both results are conditional. They do not establish that real LLMs satisfy the assumptions; they establish what follows if they do.
+
+Recent empirical work~\citep{tsui2025selfcorrection} is consistent with the practical relevance of the framework: across 14 models, self-correction fails 64.5\% of the time on average, even when models demonstrably possess the knowledge to correct the same errors in external input. The ``Wait'' intervention reduces this blind spot by 89.3\%, consistent with the prediction that disrupting the generation context partially breaks the conditional independence the bounds identify.
+
+The framework predicts that evaluation channels with independent failure modes---formal verification, executable tests, numerical invariants, diverse critics, fresh-context evaluation---should be more informative than self-evaluation in the regime where the assumptions apply. We propose a practical architecture instantiating context separation, and include a small illustrative observation from a companion benchmark paper~\citep{brilliant2026benchmark} showing the predicted mechanism in action: in a paired ablation isolating an adversarial steelman exchange, all 4 detection changes between conditions favored the addition of the exchange, and the same intervention eliminated the only false positive on the controls. McNemar's exact $p = 0.125$ on 4 discordant pairs is directionally consistent, not conclusive.
+
+The architecture does not replace human judgment. It provides a filter that concentrates human attention on candidates surviving external scrutiny. In workflows where AI generates many candidates, the bottleneck is often reliable validation rather than generation capability. To the extent the framework's assumptions apply, external selection channels can help address this bottleneck.
+
+Empirical validation at larger sample size, across additional model configurations and task domains, is the subject of the companion benchmark paper and of community contributions to it. We invite readers to engage with both.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Use of AI Tools}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+AI tools assisted with drafting and editing. All ideas, methodology, theorems, and technical content are the author's own work.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Acknowledgments}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The author thanks anonymous reviewers and the contributors to the companion benchmark paper for helpful feedback.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Declarations}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\textbf{Funding:} This research received no external funding.
+
+\textbf{Conflicts of Interest:} The author declares no conflicts of interest.
+
+\bibliographystyle{plainnat}
+\begin{thebibliography}{99}
+
+\bibitem[Baba et al.(2025)]{baba2025prover}
+Kaito Baba, Chaoran Liu, Shuhei Kurita, and Akiyoshi Sannai.
+\newblock Prover Agent: An agent-based framework for formal mathematical proofs.
+\newblock \emph{arXiv preprint arXiv:2506.19923}, 2025.
+
+\bibitem[Bai et al.(2022)]{bai2022constitutional}
+Yuntao Bai et al.
+\newblock Constitutional {AI}: Harmlessness from {AI} feedback.
+\newblock \emph{arXiv preprint arXiv:2212.08073}, 2022.
+
+\bibitem[Brilliant(2026)]{brilliant2026benchmark}
+Andrew Michael Brilliant.
+\newblock The Graduated Dissent Benchmark: A paired-ablation resource for multi-model manuscript review.
+\newblock Companion paper, in preparation, 2026.
+
+\bibitem[Chen et al.(2024)]{chen2024reconcile}
+Justin Chih-Yao Chen, Swarnadeep Saha, and Mohit Bansal.
+\newblock ReConcile: Round-table conference improves reasoning via consensus among diverse {LLMs}.
+\newblock \emph{Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (ACL)}, 2024.
+
+\bibitem[Cobbe et al.(2021)]{cobbe2021verifier}
+Karl Cobbe et al.
+\newblock Training verifiers to solve math word problems.
+\newblock \emph{arXiv preprint arXiv:2110.14168}, 2021.
+
+\bibitem[Cover and Thomas(2006)]{cover2006elements}
+Thomas M.\ Cover and Joy A.\ Thomas.
+\newblock \emph{Elements of Information Theory}.
+\newblock Wiley-Interscience, 2nd edition, 2006.
+
+\bibitem[Du et al.(2024)]{du2023debate}
+Yilun Du, Shuang Li, Antonio Torralba, Joshua B.\ Tenenbaum, and Igor Mordatch.
+\newblock Improving factuality and reasoning in language models through multiagent debate.
+\newblock \emph{Proceedings of the 41st International Conference on Machine Learning (ICML)}, 2024.
+
+\bibitem[Gödel(1931)]{godel1931}
+Kurt Gödel.
+\newblock Über formal unentscheidbare Sätze der Principia Mathematica und verwandter Systeme I.
+\newblock \emph{Monatshefte für Mathematik und Physik}, 38:173--198, 1931.
+
+\bibitem[Gou et al.(2023)]{gou2023critic}
+Zhibin Gou et al.
+\newblock {CRITIC}: Large language models can self-correct with tool-interactive critiquing.
+\newblock \emph{arXiv preprint arXiv:2305.11738}, 2023.
+
+\bibitem[Hong et al.(2023)]{hong2023metagpt}
+Sirui Hong et al.
+\newblock MetaGPT: Meta programming for a multi-agent collaborative framework.
+\newblock \emph{arXiv preprint arXiv:2308.00352}, 2023.
+
+\bibitem[Huang et al.(2024)]{huang2024selfcorrect}
+Jie Huang, Xinyun Chen, Swaroop Mishra, Huaixiu Steven Zheng, Adams Wei Yu, Xinying Song, and Denny Zhou.
+\newblock Large language models cannot self-correct reasoning yet.
+\newblock \emph{Proceedings of the Twelfth International Conference on Learning Representations (ICLR)}, 2024.
+
+\bibitem[Jumper et al.(2021)]{alphafold}
+John Jumper et al.
+\newblock Highly accurate protein structure prediction with AlphaFold.
+\newblock \emph{Nature}, 596:583--589, 2021.
+
+\bibitem[Kong et al.(2023)]{kong2023roleplay}
+Aobo Kong, Shiwan Zhao, Hao Chen, Qicheng Li, Yong Qin, Ruiqi Sun, and Xin Zhou.
+\newblock Better Zero-Shot Reasoning with Role-Play Prompting.
+\newblock \emph{Proceedings of the 2024 Conference of the North American Chapter of the Association for Computational Linguistics (NAACL)}, 2024.
+
+\bibitem[Krogh and Vedelsby(1995)]{krogh1995ensemble}
+Anders Krogh and Jesper Vedelsby.
+\newblock Neural network ensembles, cross validation, and active learning.
+\newblock \emph{Advances in Neural Information Processing Systems (NIPS)}, 1995.
+
+\bibitem[Li et al.(2024)]{li2024llmjudgebias}
+Jiayi Li et al.
+\newblock Justice or prejudice? Quantifying biases in LLM-as-a-Judge.
+\newblock \emph{arXiv preprint arXiv:2410.02736}, 2024.
+
+\bibitem[Li et al.(2023)]{li2023camel}
+Guohao Li et al.
+\newblock CAMEL: Communicative agents for ``mind'' exploration of large language model society.
+\newblock \emph{Advances in Neural Information Processing Systems}, 36, 2023.
+
+\bibitem[Liang et al.(2023)]{liang2023debate}
+Tian Liang et al.
+\newblock Encouraging divergent thinking in large language models through multi-agent debate.
+\newblock \emph{arXiv preprint arXiv:2305.19118}, 2023.
+
+\bibitem[Lightman et al.(2023)]{lightman2023process}
+Hunter Lightman et al.
+\newblock Let's verify step by step.
+\newblock \emph{arXiv preprint arXiv:2305.20050}, 2023.
+
+\bibitem[Madaan et al.(2023)]{madaan2023selfrefine}
+Aman Madaan et al.
+\newblock Self-Refine: Iterative refinement with self-feedback.
+\newblock \emph{Advances in Neural Information Processing Systems (NeurIPS)}, 2023.
+
+\bibitem[Panickssery et al.(2024)]{panickssery2024selfpreference}
+Arjun Panickssery et al.
+\newblock Self-preference bias in LLM-as-a-Judge.
+\newblock \emph{arXiv preprint arXiv:2410.21819}, 2024.
+
+\bibitem[Polu and Sutskever(2020)]{polu2020generative}
+Stanislas Polu and Ilya Sutskever.
+\newblock Generative language modeling for automated theorem proving.
+\newblock \emph{arXiv preprint arXiv:2009.03393}, 2020.
+
+\bibitem[Pronin et~al.(2002)]{pronin2002bias}
+Emily Pronin, Daniel~Y. Lin, and Lee Ross.
+\newblock The bias blind spot: Perceptions of bias in self versus others.
+\newblock \emph{Personality and Social Psychology Bulletin}, 28(3):369--381, 2002.
+
+\bibitem[Sclar et al.(2024)]{sclar2024formatting}
+Melanie Sclar, Yejin Choi, Yulia Tsvetkov, and Alane Suhr.
+\newblock Quantifying Language Models' Sensitivity to Spurious Features in Prompt Design.
+\newblock \emph{Proceedings of the Twelfth International Conference on Learning Representations (ICLR)}, 2024.
+
+\bibitem[Sharma et al.(2024)]{sharma2024sycophancy}
+Mrinank Sharma, Meg Tong, Tomasz Korbak, David Duvenaud, Amanda Askell, Samuel~R. Bowman, and Ethan Perez.
+\newblock Towards Understanding Sycophancy in Language Models.
+\newblock \emph{Proceedings of the Twelfth International Conference on Learning Representations (ICLR)}, 2024.
+
+\bibitem[Shinn et al.(2023)]{shinn2023reflexion}
+Noah Shinn, Federico Cassano, Ashwin Gopinath, Karthik Narasimhan, and Shunyu Yao.
+\newblock Reflexion: Language agents with verbal reinforcement learning.
+\newblock \emph{Advances in Neural Information Processing Systems (NeurIPS)}, 2023.
+
+\bibitem[Tsui(2025)]{tsui2025selfcorrection}
+Ken Tsui.
+\newblock Self-Correction Bench: Uncovering and Addressing the Self-Correction Blind Spot in Large Language Models.
+\newblock \emph{arXiv preprint arXiv:2507.02778}, 2025.
+
+\bibitem[Tyen et al.(2024)]{tyen2024llmsstepbystep}
+Gladys Tyen, Hassan Mansoor, Victor Carbune, Peter Chen, and Tony Mak.
+\newblock LLMs Cannot Find Reasoning Errors, but Can Correct Them Given the Error Location.
+\newblock \emph{Findings of the Association for Computational Linguistics: ACL 2024}, pages 13894--13908, 2024.
+
+\bibitem[Wang et al.(2023)]{wang2023selfconsistency}
+Xuezhi Wang et al.
+\newblock Self-consistency improves chain of thought reasoning in language models.
+\newblock \emph{Proceedings of the Eleventh International Conference on Learning Representations (ICLR)}, 2023.
+
+\bibitem[Wu et al.(2023)]{wu2023autogen}
+Qingyun Wu et al.
+\newblock AutoGen: Enabling next-gen LLM applications via multi-agent conversation.
+\newblock \emph{arXiv preprint arXiv:2308.08155}, 2023.
+
+\bibitem[Yang et al.(2023)]{yang2023leandojo}
+Kaiyu Yang et al.
+\newblock LeanDojo: Theorem proving with retrieval-augmented language models.
+\newblock \emph{Advances in Neural Information Processing Systems}, 36, 2023.
+
+\bibitem[Zheng et al.(2023)]{zheng2023helpful}
+Mingqian Zheng, Jiaxin Pei, and David Jurgens.
+\newblock Is ``A Helpful Assistant'' the Best Role for Large Language Models?
+\newblock \emph{arXiv preprint arXiv:2311.10054}, 2023.
+
+\end{thebibliography}
+
+\end{document}
+
