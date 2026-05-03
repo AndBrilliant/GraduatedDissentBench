@@ -1,0 +1,221 @@
+In the era of LLMs, ICL has become a popular prompting strategy to elicit the power of LLMs on a wide range of tasks. In ICL, a few demonstrations are given in the input context during inference while not involving parameter tuning (Dong et al., 2022; Min et al., 2022).
+
+As a major natural language processing (NLP) task, there have been several works exploring in-context example selection strategy for MT. Agrawal et al. (2023) propose R-BM25 on the basis of BM25 (Robertson et al., 1994) to enhance word overlap. M et al. (2023) propose CTQScorer combining multiple features. Zhang et al. (2023) conduct a comprehensive study on prompting LLMs for MT and claim that templates, number of examples, features and the quality of example databases all matter for ICL on MT.
+
+In previous studies, for both statistical MT and neural MT, syntax plays an important role to improve model performance (Williams and Koehn, 2014; Wu et al., 2017). However, in case of in-context example selection for MT, previous works focus on superficial word-level matching (like BM25 and R-BM25) or combining multiple straightforward features (like CTQScorer). To the best of our knowledge, no research dig out syntax-level features for ICL demonstrations. To this end, we propose a syntax-based in-context example selection strategy for MT, which selects examples most similar to the test source in syntax based on similarity of dependency trees. In addition, word-level and syntax-level features complement each other and combining both would further elicit LLMs’ power on MT. Therefore, we propose an ensemble strategy, concatenating examples selected by BM25 and our syntax-based strategy.
+
+In-context learning (ICL) is the trending prompting strategy in the era of large language models (LLMs), where a few examples are demonstrated to evoke LLMs’ power for a given task. How to select informative examples remains an open issue. Previous works on in-context example selection for machine translation (MT) focus on superficial word-level features while ignoring deep syntax-level knowledge. In this paper, we propose a syntax-based in-context example selection method for MT, by computing the syntactic similarity between dependency trees using Polynomial Distance. In addition, we propose an ensemble strategy combining examples selected by both word-level and syntax-level criteria. Experimental results between English and 6 common languages indicate that syntax can effectively enhancing ICL for MT, obtaining the highest COMET scores on 11 out of 12 translation directions.
+
+Experimental results between English and 6 common languages indicate that syntax helps find better in-context examples and thus improves LLMs’ ability in MT. Comparing with various baselines, our proposed methods obtain the highest COMET scores on 11 out of 12 translation directions.
+
+Our contributions can be summarized as follows:
+
+National Key Laboratory for Multimedia Information Processing, Peking University
+MOE Key Laboratory of Computational Linguistics, Peking University
+School of Computer Science, Peking University
+{tangchenming@stu, ekko@stu, wuyf@}pku.edu.cn
+
+1. Generally, the syntactic structures of sentences are represented by syntax trees, and thus it is natural to measure the syntactic similarity based on similarity or distance between syntax trees. Tree similarity can be measured by Edit Distance (de Castro Reis et al., 2004), Polynomial Distance (Liu et al., 2022), Tree Kernel (Collins and Duffy, 2002; Vishwanathan et al., 2004; Moschitti, 2006), etc.
+
+2. Compared to other algorithms mentioned above, Polynomial Distance (Liu et al., 2022) is convenient to implement and relatively time-saving to run. So, in this work, we adopt Polynomial Distance between dependency trees to measure the syntactic similarity.
+
+3. Concretely, given d as the number of dependency labels, which indicate the grammatical relations between dependents and their heads, we transform dependency trees into polynomials recursively based on two variable sets: X = {x₁, x₂, ... x_d} and Y = {y₁, y₂, ... y_d}. Considering a node with Label l as nˡ, its corresponding polynomial is represented as:
+
+4. 
+$$
+P(n^l) =
+\begin{cases}
+x_l, & n^l \text{ is leaf,} \\
+y_l + \prod_{i=1}^k P(n_i), & n^l \text{ is non-leaf,}
+\end{cases}
+$$
+
+5. where n₁, ..., nₖ are all child nodes of nˡ if it is non-leaf. Then, given a root node r, we obtain the polynomial representing the whole tree by computing P(r). A detailed demonstration from Liu et al. (2022) can be found in Appendix A.
+
+6. Next, we compute the distance between polynomials. Note that the polynomial representing a dependency tree can be described term by term. For each term $c x_1^{e_{x1}} x_2^{e_{x2}} ... x_d^{e_{xd}} y_1^{e_{y1}} y_2^{e_{y2}} ... y_d^{e_{yd}}$ in the polynomial, where e_{xi}, e_{yi} and c are the exponent of variable xᵢ, yᵢ and the coefficient of the term respectively, we denote it as a term vector:
+
+7. 
+$$
+t = [e_{x1}, e_{x2}, ..., e_{xd}, e_{y1}, e_{y2}, ..., e_{yd}, c]
+$$
+
+8. In this way, a polynomial P can be written as a set of term vectors V_P. Then, we compute the distance between two polynomials (P and Q) as:
+
+9. 
+$$
+d(P, Q) = \frac{\sum_{s \in V_P} \min_{t \in V_Q} \| s - t \|_1 + \sum_{t \in V_Q} \min_{s \in V_P} \| s - t \|_1}{|V_P| + |V_Q|}
+$$
+
+10. where ∥s − t∥₁ is the Manhattan distance (Craw, 2017) between term vector s and t.
+
+11. In recent years, ICL has been proved effective for improving LLMs' performance on various tasks without training or finetuning (Brown et al., 2020; Von Oswald et al., 2023).
+
+12. To design instructions for MT, we first inform the language pair and the template of presenting the result. Then, we provide several in-context examples selected using our proposed strategy. Last, the source sentence of the test sample is concatenated at the end. An example of our prompt is shown in Figure 1, and we draw inspiration from the work of Agrawal et al. (2023).
+
+13. We parse all our datasets with spaCy (Honnibal et al., 2020) to get dependency trees. Appendix B lists spaCy models we use for different languages.
+
+14. For each test sample, we compute its Polynomial Distance from each instance of the example database on the source side, and then select the top-k most similar examples. The selected examples serve as demonstrations for ICL, as shown in Figure 1.
+
+15. We hypothesize that a combination of word-level closeness and syntax-level similarity would make the LLM generate results good on both counts. So we propose an ensemble strategy, where examples selected by different selection strategies are concatenated. In this work, we explore the ensemble of BM25 and Polynomial Distance, where half of the final examples are from BM25 and the other half are from Polynomial Distance.
+
+16. Following Agrawal et al. (2023), we adopt XGLM₇.₅ᴮ (Lin et al., 2022) for all our experi-
+
+ments, which is a decoder-only multilingual generative language model supporting 30 languages. XGLM₇․₅B has 32 layers, a hidden dimension of 4096 and 7.5B parameters in total.
+
+The first 4 examples are the top-4 from BM25 and the rest 4 are the top-4 from Polynomial. Polynomial + BM25: The first 4 are from Polynomial and the rest 4 are from BM25.
+
+---
+
+Example Database  We adopt WikiMatrix v1 (Schwenk et al., 2021) as our example database, which has 135M parallel sentences for 1620 language pairs. Detailed statistics of WikiMatrix for each language can be found in Appendix C.
+
+---
+
+Test Set  We perform our evaluation on the devtest set of FLORES+ ¹ (Costa-jussà et al., 2022), which has 1012 sentences for around 200 languages. We experiment between English and 6 common languages including German, Spanish, French, Japanese, Russian and Chinese.
+
+---
+
+Experimental results on all 6 languages (into and out of English) are shown in Table 1, where the number of in-context examples is set to 8.
+
+---
+
+Without the help of word-level closeness, Polynomial itself cannot reach perfection in many cases. However, it performs competitively on DE-EN translation, outperforming Random by 1.58 points and BM25 by 3.53 points.
+
+---
+
+With a combination of word-level closeness and syntax-level similarity, our ensemble strategies take the lead in most cases, outperforming Random by around 1 point on average.
+
+---
+
+To sum up, the highest scores of 11 out of 12 translation directions are achieved by our proposed methods, which indicates the effectiveness of syntax in in-context example selection for MT.
+
+---
+
+Evaluation Metrics  We report COMET (Rei et al., 2020) from wmt20-comet-da, which is considered a superior metric for MT nowadays (Kocmi et al., 2021). As a complement, we report BLEU from sacreBLEU (Post, 2018) in Appendix D.
+
+---
+
+Surprisingly, the performance of R-BM25 is poor under our experimental settings. This might be due to differences in example database, data preprocessing and the design of prompt templates. We leave exploration of the cause to future work.
+
+---
+
+Cleaning  We remove sentences longer than 100 or shorter than 4 tokens and those cannot be identified as their corresponding languages by Langid.py ⁵. Sentence pairs with a source/target length ratio exceeding 1.5 are also removed. We have around 85% sentences remaining after preprocessing for all languages except Japanese, of which the percentage is 67%. See Appendix C for detailed statistics.
+
+---
+
+We also compare with CTQScorer (M et al., 2023) in Table 2, where the number of examples is set to 4 and we focus on only 3 language pairs, to be in line with their work. Our proposed methods secure all the highest scores on all 6 translation directions. Note that M et al. (2023) use Europarl (Koehn, 2005) and ParaCrawl (Bañón et al., 2020) as example database, and experiment on FLORES-101, which is an earlier version of FLORES+. These factors may lead to an unequal comparison.
+
+---
+
+Tokenization  We tokenize Chinese with Jieba ², Japanese with Mecab ³ and other languages with Sacremoses ⁴.
+
+---
+
+Random: We report the average result of 3 different random seeds. BM25: The BM25 scores are computed using Rank-BM25 (Brown, 2020). R-BM25: We evaluate R-BM25 ⁶ (Agrawal et al., 2023) on our datasets.
+
+---
+
+Polynomial: Our syntax-based selection method with Polynomial Distance. BM25 + Polynomial:
+
+---
+
+We carry out experiments under different numbers of in-context examples. The average COMET scores of our ensemble strategy and other baselines on all 12 translation directions under different numbers of examples are shown in Figure 2. Please refer to Appendix E for our full results. Our proposed ensemble strategy constantly outperforms baselines under different numbers of examples.
+
+In this work, we investigate whether syntactic information can help find better in-context examples for MT. We propose selecting examples based on similarity of dependency trees, and present a simple but effective ensemble method by selecting examples from both word-overlap-based and syntax-similarity-based selection. Our proposed methods obtain the highest COMET scores on 11 out of 12 translation directions, indicating that injecting syntax information during in-context example selection is helpful for MT. We call on the NLP community to pay more attention to syntactic knowledge for syntax-rich tasks like MT.
+
+We give an instance to compare the examples selected by different strategies, as shown in Table 3. BM25 selects sentences with more word overlapping ("cannot be purchased") while Polynomial selects sentences with the similar syntactic structure (perfect tense, "that" clause, negative sentence, passive voice). For closely related language pairs like EN-DE, when the source sentences share similar syntax or patterns, it is likely that the target sentences also share these features. See Appendix F for an instance of model outputs.
+
+Table 3: Top-1 examples of EN-DE translation selected by BM25 and Polynomial.
+
+First, due to limited time and computational resources, we have not evaluated our methods on low-resource languages and other LLMs. Second, in our ensemble strategy, we have only explored combining word-level selection and syntax-level selection. Other types of selection strategies (e.g., selection based on semantics) are not explored in the ensemble. Third, we have not explored methods based on constituent trees and other algorithms of tree similarity besides Polynomial distance. Last, our selection is based on the similarity on the source side. However, similarity on the target side or between two sides is also worth trying.
+
+Computational Budget  We run pre-processing and in-context example selection on Intel® Xeon® Gold 5218 CPU and the LLM's inference on NVIDIA A40. Table 4 shows the average computation time.
+
+Reproducibility  All the experiments are completely reproducible since our selection methods are deterministic and sampling is disabled during LLM generation.
+
+Scientific Artifacts  We cite all the creators of scientific artifacts we use in this paper. Licenses of these scientific artifacts are shown in Table 5.
+
+Sweta Agrawal, Chunting Zhou, Mike Lewis, Luke Zettlemoyer, and Marjan Ghazvininejad. 2023. In-context examples selection for machine translation. In Findings of the Association for Computational Linguistics: ACL 2023, pages 8857–8873, Toronto, Canada. Association for Computational Linguistics.
+
+Marta Bañón, Pinzhen Chen, Barry Haddow, Kenneth Heafield, Hieu Hoang, Miquel Esplà-Gomis, Mikel L. Forcada, Amir Kamran, Faheem Kirefu, Philipp Koehn, Sergio Ortiz Rojas, Leopoldo Pla Sempere, Gema Ramírez-Sánchez, Elsa Sarrías, Marek Strelec, Brian Thompson, William Waites, Dion Wiggins, and Jaume Zaragoza. 2020. ParaCrawl: Web-scale acquisition of parallel corpora. In Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics, pages 4555–4567, Online. Association for Computational Linguistics.
+
+Dorian Brown. 2020. Rank-BM25: A Collection of BM25 Algorithms in Python.
+
+Tom Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared D Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, Sandhini Agarwal, Ariel Herbert-Voss, Gretchen Krueger, Tom Henighan, Rewon Child, Aditya Ramesh, Daniel Ziegler, Jeffrey Wu, Clemens Winter, Chris Hesse, Mark Chen, Eric Sigler, Mateusz Litwin, Scott Gray, Benjamin Chess, Jack Clark, Christopher Berner, Sam McCandlish, Alec Radford, Ilya Sutskever, and Dario Amodei. 2020. Language models are few-shot learners. In Advances in Neural Information Processing Systems, volume 33, pages 1877–1901. Curran Associates, Inc.
+
+Michael Collins and Nigel Duffy. 2002. New ranking algorithms for parsing and tagging: Kernels over discrete structures, and the voted perceptron. In Proceedings of the 40th Annual Meeting of the Association for Computational Linguistics, pages 263–270, Philadelphia, Pennsylvania, USA. Association for Computational Linguistics.
+
+Marta R Costa-jussà, James Cross, Onur Çelebi, Maha Elbayad, Kenneth Heafield, Kevin Heffernan, Elahe Kalbassi, Janice Lam, Daniel Licht, Jean Maillard, et al. 2022. No language left behind: Scaling human-centered machine translation. arXiv preprint arXiv:2207.04672.
+
+Susan Craw. 2017. Manhattan distance. Encyclopedia of Machine Learning and Data Mining, pages 790–791.
+
+Davi de Castro Reis, Paulo Braz Golgher, Altigran Soares da Silva, and Alberto H. F. Laender. 2004. Automatic web news extraction using tree edit distance. In The Web Conference.
+
+Qingxiu Dong, Lei Li, Damai Dai, Ce Zheng, Zhiyong Wu, Baobao Chang, Xu Sun, Jingjing Xu, and Zhifang Sui. 2022. A survey for in-context learning. arXiv preprint arXiv:2301.00234.
+
+Matthew Honnibal, Ines Montani, Sofie Van Landeghem, and Adriane Boyd. 2020. spaCy: Industrial-strength Natural Language Processing in Python.
+
+Tom Kocmi, Christian Federmann, Roman Grundkiewicz, Marcin Junczys-Dowmunt, Hitokazu Matsushita, and Arul Menezes. 2021. To ship or not to ship: An extensive evaluation of automatic metrics for machine translation. In Proceedings of the Sixth Conference on Machine Translation, pages 478–494, Online. Association for Computational Linguistics.
+
+Philipp Koehn. 2005. Europarl: A parallel corpus for statistical machine translation. In Proceedings of Machine Translation Summit X: Papers, pages 79–86, Phuket, Thailand.
+
+Xi Victoria Lin, Todor Mihaylov, Mikel Artetxe, Tianlu Wang, Shuohui Chen, Daniel Simig, Myle Ott, Naman Goyal, Shruti Bhosale, Jingfei Du, Ramakanth Pasunuru, Sam Shleifer, Punit Singh Koura, Vishrav Chaudhary, Brian O'Horo, Jeff Wang, Luke Zettlemoyer, Zornitsa Kozareva, Mona Diab, Veselin Stoyanov, and Xian Li. 2022. Few-shot learning with multilingual generative language models. In Proceedings of the 2022 Conference on Empirical Methods in Natural Language Processing, pages 9019–9052, Abu Dhabi, United Arab Emirates. Association for Computational Linguistics.
+
+Pengyu Liu, Tinghao Feng, and Rui Liu. 2022. Quantifying syntax similarity with a polynomial representation of dependency trees. arXiv preprint arXiv:2211.07005.
+
+Aswanth M, Ratish Puduppully, Raj Dabre, and Anoop Kunchukuttan. 2023. CTQScorer: Combining multiple features for in-context example selection for machine translation. In Findings of the Association for Computational Linguistics: EMNLP 2023, pages 7736–7752, Singapore. Association for Computational Linguistics.
+
+Sewon Min, Xinxi Lyu, Ari Holtzman, Mikel Artetxe, Mike Lewis, Hannaneh Hajishirzi, and Luke Zettlemoyer. 2022. Rethinking the role of demonstrations: What makes in-context learning work? arXiv preprint arXiv:2202.12837.
+
+Alessandro Moschitti. 2006. Efficient convolution kernels for dependency and constituent syntactic trees. In Machine Learning: ECML 2006, pages 318–329, Berlin, Heidelberg. Springer Berlin Heidelberg.
+
+Matt Post. 2018. A call for clarity in reporting BLEU scores. In Proceedings of the Third Conference on Machine Translation: Research Papers, pages 186–191, Brussels, Belgium. Association for Computational Linguistics.
+
+Ricardo Rei, Craig Stewart, Ana C Farinha, and Alon Lavie. 2020. Unbabel’s participation in the WMT20 metrics shared task. In Proceedings of the Fifth Conference on Machine Translation, pages 911–920, Online. Association for Computational Linguistics.
+
+Stephen E. Robertson, Steve Walker, Susan Jones, Micheline Hancock-Beaulieu, and Mike Gatford. 1994. Okapi at trec-3. In Text Retrieval Conference.
+
+Holger Schwenk, Vishrav Chaudhary, Shuo Sun, Hongyu Gong, and Francisco Guzmán. 2021. WikiMatrix: Mining 135M parallel sentences in 1620 language pairs from Wikipedia. In Proceedings of the 16th Conference of the European Chapter of the Association for Computational Linguistics: Main Volume, pages 1351–1361, Online. Association for Computational Linguistics.
+
+SVN Vishwanathan, Alexander Johannes Smola, et al. 2004. Fast kernels for string and tree matching. Kernel methods in computational biology, 15(113–130):1.
+
+Johannes Von Oswald, Eyvind Niklasson, Ettore Randazzo, João Sacramento, Alexander Mordvintsev, Andrey Zhmoginov, and Max Vladymyrov. 2023. Transformers learn in-context by gradient descent. In International Conference on Machine Learning, pages 35151–35174. PMLR.
+
+Philip Williams and Philipp Koehn. 2014. Syntax-based statistical machine translation. In Proceedings of the 2014 Conference on Empirical Methods in Natural Language Processing: Tutorial Abstracts, Doha, Qatar. Association for Computational Linguistics.
+
+Shuangzhi Wu, M. Zhou, and Dongdong Zhang. 2017. Improved neural machine translation with source syntax. In International Joint Conference on Artificial Intelligence.
+
+Biao Zhang, Barry Haddow, and Alexandra Birch. 2023. Prompting large language model for machine translation: A case study. In Proceedings of the 40th International Conference on Machine Learning, volume 202 of Proceedings of Machine Learning Research, pages 41092–41110. PMLR.
+
+## A Demonstration of Polynomial Distance
+
+The original demonstration of converting dependency trees to polynomials taken from Liu et al. (2022) is shown in Figure 3.
+
+## B The spaCy Models We Use for Parsing
+
+The spaCy models we use for dependency parsing are listed in Table 6.
+
+## C Data Statistics
+
+Statistics on the size of WikiMatrix for each language are shown in Table 7.
+
+## D BLEU Results
+
+BLEU scores of translation with 8 in-context examples are shown in Table 8.
+
+COMET scores of translation with 2, 4, and 16 in-context examples are shown in Table 9, 10 and 11, respectively. Note that when there are 16 in-context examples, the context sometimes exceeds the LLM’s maximum length, which may hurt the precision of the result.
+
+case shown in Table 12, BM25 omits a constituent (“de plus” in the source sentence) while Polynomial translates not accurately enough. With the help of both word-level and syntax-level demonstrations, our ensemble strategy “BM25 + Polynomial” produces a relatively high-quality translation. This indicates that both word-level closeness and syntax-level similarity matters in in-context example selection for MT.
+
+In addition to Section 5.3, we display an example output with different selection strategies. In the
+
+Table 7: Size of WikiMatrix before and after pre-processing and the percentage of reserved sentences after pre-processing for 6 languages. Each entry refers to the data between English and the corresponding language.
+
+| Strategy          | Output                                                                                                       |
+| ----------------- | ------------------------------------------------------------------------------------------------------------ |
+| Source (FR)       | De plus, le Centre d'alerte des tsunamis dans le Pacifique a déclaré qu'il n'y avait aucun signe de tsunami. |
+| Reference (EN)    | Also the Pacific Tsunami Warning Center said that there was no Tsunami indication.                           |
+| BM25              | The Pacific Tsunami Warning Center said there was no sign of a tsunami.                                      |
+| Polynomial        | In addition, the Pacific Tsunami Warning Center has declared there is no sign of a tsunami.                  |
+| BM25 + Polynomial | In addition, the Pacific Tsunami Warning Center said there was no sign of a tsunami.                         |
+
+Table 12: Outputs of FR-EN translation under different selection strategies.

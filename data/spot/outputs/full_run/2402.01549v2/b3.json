@@ -1,0 +1,330 @@
+{
+  "condition": "B3",
+  "paper_id": "2402.01549v2",
+  "verdict": "flagged",
+  "confidence": 0.95,
+  "reasoning": "Both reviewers independently identify the same core issue: Proposition 1 (G ⊠ H = G ∨ H) is mathematically false for general graphs. This proposition is foundational to the paper's theoretical framework, including the sandwiching argument in Theorem 3 and the derivation of quantum-vs-classical separations. Both reviewers also flag serious problems in the quantum protocol proof (Lemma 4), where the mixed-to-pure state mapping is not properly justified, threatening the quantum rate characterization in Theorem 4. Additionally, the graph-complement identities used in the central C₅ example (Section VI) are incorrect, invalidating the showcased quantitative separation. The combination of a false foundational proposition, a flawed converse proof for the quantum rate, and invalid identities in the main example means the paper's central conclusions are not supported by the presented arguments. While the underlying ideas might be salvageable with a completely different proof strategy, the manuscript as written contains fundamental mathematical errors in its core claims.",
+  "findings": [
+    {
+      "finding": "Proposition 1 claims G ⊠ H = G ∨ H (strong product equals OR/disjunctive product) for simple graphs, which is false in general.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.95,
+      "justification": "The strong product and OR (disjunctive) product are well-known to be distinct graph products (see Imrich & Klavžar, 'Product Graphs'). In the strong product, vertices differing in both coordinates are adjacent only if BOTH coordinate pairs are adjacent; in the OR product, adjacency holds if AT LEAST ONE coordinate pair is adjacent. These edge sets differ for most nontrivial graphs. This proposition is foundational: Theorem 3's sandwiching argument, the Lovász theta multiplicativity claims, and the quantum-classical separation all depend on it. Both reviewers independently identified this error. The proof is relegated to a missing appendix, making it unverifiable, but the claim itself is contradicted by standard graph theory. If this equality is used substantively in proofs (not just as a notational convention for a nonstandard definition), the paper's central conclusions collapse.",
+      "source": "both"
+    },
+    {
+      "finding": "The converse direction of Lemma 4 incorrectly derives an orthogonal representation from a zero-error quantum protocol by selecting an arbitrary eigenvector from each mixed state.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.85,
+      "justification": "Zero-error distinguishability requires orthogonal supports only for confusable pairs (edges of G^(m)), not for all edges of the complement graph as claimed. Furthermore, extracting a single eigenvector from each mixed state does not preserve the pairwise orthogonality structure needed for an orthogonal representation. This gap invalidates the converse of Lemma 4, which is the basis for the quantum rate characterization R_quantum = inf_m (1/m) log ξ(G^(m)) in Theorem 4. Reviewer A provides detailed technical justification; Reviewer B concurs there is a gap. While there might exist a correct proof via a different argument (e.g., Nayak-type arguments or purification), the proof as written is invalid.",
+      "source": "both"
+    },
+    {
+      "finding": "Section VI contains invalid graph-complement identities: claims C₅^{∨m} = C̄₅^{⊠m} = C₅^{⊠m}, conflating complement of product with product itself.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.9,
+      "justification": "For self-complementary G, one has complement(G ∨ H) ≅ Ḡ ⊠ H̄ ≅ G ⊠ H (using self-complementarity), but this gives complement(G^{∨m}) ≅ G^{⊠m}, NOT G^{∨m} = G^{⊠m}. The paper equates a graph with its complement, which for nontrivial graphs is false. The claimed exact value R_quantum(g) = ½ log₂ 5 for the C₅ example depends on these identities. Since this is the paper's central showcase of quantum advantage, the quantitative separation is unestablished.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Internal contradiction between G and Ḡ in Definition 4, Lemma 4, and Theorem 4 regarding which graph's orthogonal representation characterizes quantum coding.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "The zero-error condition requires ρ_x ⊥ ρ_{x'} for confusable pairs (edges of G^(m)), which corresponds to an orthogonal representation of G^(m), not Ḡ^(m). Yet the proof of Lemma 4 works with Ḡ^(m), and the claimed rates use ξ(G^(m)). Swapping G and Ḡ changes ξ substantially. This confusion propagates through the quantum rate results but might be repairable with consistent notation, so it is classified as major revision rather than retraction-worthy on its own.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The OR product definition (Definition 3) as stated in the manuscript appears to coincide with or be very close to the strong product definition, not the standard disjunctive product.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "The casewise definition (same first coordinate → check second; same second → check first; both differ → check either) is actually the standard definition of the strong product, not the OR product. If the authors have inadvertently defined the strong product twice under two names, then Proposition 1 becomes a tautology but the entire framework of distinguishing the two products (which is the paper's main structural contribution) collapses. This definitional ambiguity makes it impossible to determine what the paper is actually claiming without the missing appendices.",
+      "source": "prover_b"
+    },
+    {
+      "finding": "Missing Appendices A–F containing all referenced proofs.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "The proofs of Propositions 1–3, 5, Theorems 1–2, multiple Lemmas and Claims are all in missing appendices. This makes the manuscript incomplete and unverifiable. Given that the main text contains multiple mathematical errors, the unavailability of the proofs is particularly damaging—it is impossible to determine whether the errors are superficial notation issues or fundamental logical flaws.",
+      "source": "both"
+    },
+    {
+      "finding": "Theorem 3 claims ϑ(G^(m)) = ϑ(G)^m but the proof relies on the incorrect Proposition 1 and unverified Lemma 2.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "The multiplicativity of ϑ under strong product is known (Lovász 1979), and multiplicativity under OR product also holds. However, the paper needs this for G^(m) which is neither product in general. The sandwiching argument G^{⊠m} ⊆ G^(m) ⊆ G^{∨m} is conceptually sound, but the conclusion ϑ(G^(m)) = ϑ(G)^m requires ϑ of the two bounding products to be equal, which depends on Proposition 1 or a more nuanced argument. Since the underlying Lovász theta result is known to be true in many settings, this may be salvageable, hence major revision.",
+      "source": "both"
+    },
+    {
+      "finding": "Tables I–III and Figure 1 are referenced but not provided in the extracted text.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.7,
+      "justification": "The central examples demonstrating different m-instance confusion graphs depend on these tables. Without them, the examples cannot be verified. This may be an extraction artifact rather than a manuscript error, but it prevents evaluation of the claimed C₅ examples.",
+      "source": "prover_b"
+    },
+    {
+      "finding": "Subadditivity argument in Theorem 4 proof has reversed explanatory logic.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.65,
+      "justification": "The stated justification ('a protocol for (m+n)-instance case can be obtained...') actually supports the correct inequality direction ξ(G^(m+n)) ≤ ξ(G^(m))·ξ(G^(n)), so the Fekete lemma application could be valid. However, given the surrounding errors with G vs Ḡ, the correctness of this step remains uncertain.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Typographical error: Proposition 2 proof uses H₁ ∪ H₁ instead of H₁ ∪ H₂.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.95,
+      "justification": "Clearly a typo that would not affect conclusions if corrected.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Product notation is inconsistent throughout (G^(m), G^{⊠m}, G^{∨m} used interchangeably).",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Primarily a presentation issue, but it compounds the difficulty of verifying claims given the other errors.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "References have incomplete journal names and missing DOIs.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.95,
+      "justification": "Standard bibliographic issue that does not affect scientific validity.",
+      "source": "prover_b"
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 3,
+    "MAJOR-REVISION": 6,
+    "MINOR": 3
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.98,
+    "reasoning": "The manuscript contains at least one clear methodological/mathematical error in a central proposition about graph products, plus a likely invalid converse proof for the quantum rate characterization. These issues affect core structural claims and the derivation of the claimed quantum-vs-classical separations. There are also substantial internal inconsistencies and notation errors that make some arguments unverifiable from the text provided.",
+    "findings": [
+      {
+        "finding": "Proposition 1 states `G \\boxtimes H = G \\lor H`, i.e. strong product equals OR product for simple graphs.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This is false in general. In the strong product, two vertices differing in both coordinates are adjacent only if both coordinate pairs are adjacent; in the OR/disjunctive product, adjacency holds if at least one coordinate pair is adjacent. Example: if `(u1,u2)∈E(G)` and `(v1,v2)∉E(H)` with both coordinates different, the pair is adjacent in `G∨H` but not in `G\\boxtimes H`. Because the paper’s main contribution explicitly hinges on sandwiching `G^(m)` between strong and OR products and contrasting cases where equality is attained with one or the other, a basic misidentification of these graph products undermines the central theoretical framework. If this is not just a typo but used in proofs, the main conclusions are unsupported."
+      },
+      {
+        "finding": "The converse direction of Lemma 4 incorrectly derives an orthogonal representation of the complement graph from a zero-error quantum protocol by selecting an arbitrary eigenvector from each mixed state.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "For a graph `\\bar G^{(m)}`, an orthogonal representation must assign orthogonal vectors to nonadjacent pairs in `\\bar G^{(m)}`, i.e. adjacent pairs in `G^{(m)}` under the manuscript’s convention. The proof claims that whenever `(x,x')∈E(\\bar G^{(m)})`, zero error implies `ρ_x ⟂ ρ_{x'}`. That implication is generally false: if `(x,x')` are both compatible with the same side information `y` and yield the same function value `z`, Bob need not distinguish them at all, so their states need not be orthogonal. Zero-error only forces orthogonality for pairs that Bob must distinguish (confusable pairs in `G^{(m)}`), not for all edges of the complement. Moreover, even when density operators are pairwise distinguishable in relevant cases, choosing an arbitrary eigenvector from each mixed state does not preserve the necessary pairwise orthogonality structure globally unless supports are orthogonal for every required pair. Since Lemma 4 is the basis for Theorem 4 (`R_quantum = inf_m (1/m) log ξ(G^(m))`), this threatens the central quantum-rate characterization."
+      },
+      {
+        "finding": "Internal contradiction between Definition 4 and Lemma 4/Theorem 4 regarding whether quantum coding is characterized by `\\xi(G^(m))` or `\\xi(\\bar G^(m))`.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Definition 4 defines orthogonal representations so that nonadjacent vertices are orthogonal. Earlier text says the protocol is zero-error iff `(x,x')∈G^(m)` implies `ρ_x ⟂ ρ_{x'}`, which would naturally correspond to an orthogonal representation of the complement graph under that convention. Yet Lemma 4 states the optimal rate is `(1/m) log_2 ξ(G^(m))` while its proof explicitly starts from an orthogonal representation of `\\bar G^(m)`. This is not a superficial typo: using `G` versus `\\bar G` changes `\\xi` substantially and can change the claimed rates. The claimed example `\\xi(\\overline{C_5}) = \\chi(C_5)=3` further suggests confusion about which graph parameter is being used where. This inconsistency could materially alter the quantum advantage conclusions."
+      },
+      {
+        "finding": "Section VI contains invalid graph-complement identities, e.g. `C_5^{\\vee m} = \\overline{C_5^{\\boxtimes m}} = C_5^{\\boxtimes m}` and in particular `C_5^{\\vee 2} = C_5^{\\boxtimes 2}`.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "For standard graph products, the complement of the strong product is not the strong product itself, and `C_5` being self-complementary does not imply `C_5^{\\vee m}=C_5^{\\boxtimes m}`. In fact, for self-complementary `G`, one has `\\overline{G∨H}=\\bar G \\boxtimes \\bar H`, so self-complementarity gives `\\overline{C_5^{∨m}} \\cong C_5^{\\boxtimes m}`, not equality between the two products themselves. The claimed upper bounds on `\\xi(C_5^{∨m})` and the resulting exact value `R_quantum(g)=\\tfrac12\\log_2 5` rely on these identities. If those identities are false, the quantitative separation argument for the showcased example is not established."
+      },
+      {
+        "finding": "The proof of Theorem 4 cites the wrong subadditivity relation: it says `\\xi(G^{(m+n)}) \\le \\xi(G^{(m)})\\xi(G^{(n)})` 'since a protocol for the `(m+n)`-instance case can be obtained by putting together the `m`-instance and `n`-instance protocols'.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The construction described yields a protocol for length `m+n` from protocols for lengths `m` and `n`, so the direction can be valid, but the explanatory sentence is backwards ('a protocol for the `(m+n)`-instance case can be obtained...' rather than deriving a bound on `(m+n)` from smaller blocks). Given the broader confusion about `G` vs `\\bar G` and product identities, this weakens confidence that the Fekete-lemma step has been applied to the correct sequence. If repaired carefully this may still go through, so this is major revision rather than definitive invalidation by itself."
+      },
+      {
+        "finding": "The product notation is inconsistent and sometimes impossible: the abstract and contributions alternate between `G^(m)`, `G^{\\boxtimes m}`, and `G^{\\lor n}` when referring to the same `m`-instance object.",
+        "severity": "MINOR",
+        "justification": "This is primarily a reporting/notation problem, but it materially impairs verification of the claims. By itself it would not invalidate conclusions if the underlying proofs were sound."
+      },
+      {
+        "finding": "The OR-product definition is malformed/incomplete in prose and then followed by propositions that assume standard properties; this creates ambiguity about what graph product is actually being used.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The stated OR-product definition is written casewise with equality conditions in a nonstandard way, and combined with Proposition 1 it is unclear whether the authors intended the standard disjunctive product or some variant. Since their main theorem distinguishes `G^{\\boxtimes m}` from `G^{\\lor m}`, the exact product definition is essential. Ambiguity here could change the content of the main structural results."
+      },
+      {
+        "finding": "The proof of Proposition 2 is misstated as `G \\boxtimes (H_1 \\cup H_1) = G \\boxtimes H_1 \\cup G \\boxtimes H_1`, suggesting a duplicated graph rather than two different graphs.",
+        "severity": "MINOR",
+        "justification": "This appears to be a typographical error (`H_1 \\cup H_2` likely intended), but it contributes to the difficulty of trusting downstream derivations. Alone it would not alter the paper’s substantive conclusions."
+      },
+      {
+        "finding": "Several displayed inequalities and references in Section VI are out of order or refer to undefined claims/equations, making the core example proof not reproducible from the manuscript text as provided.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The main separation result depends on a chain of inequalities involving `\\xi`, `\\vartheta`, Cayley/Hamming graphs, and self-complementarity. In the current form, equations (2)–(6), Claim 3, and propositions are interleaved inconsistently, and some implications rely on earlier false identities. This prevents independent verification of the central example and could hide additional mathematical errors."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.9,
+    "reasoning": "The manuscript contains a critical mathematical error in the core theoretical claim (Proposition 1: G ⊠ H = G ∨ H). This is false for nontrivial graphs, and the entire subsequent analysis—including the claimed sandwiching in Theorem 3 and the quantum-classical comparison—depends on this incorrect equality. The central conclusion of a strict quantum advantage in the multiple-instance case is therefore unsupported. The manuscript also has major reporting gaps (unclear tables, broken references, incomplete proofs in extracted text) that prevent independent verification. These issues together demand retraction-level correction or major revision with complete re-derivation.",
+    "findings": [
+      {
+        "finding": "Claim that G ⊠ H = G ∨ H (Proposition 1) is mathematically false for nontrivial graphs.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The strong product G ⊠ H and the OR product G ∨ H are not equal in general. For example, for G = H = C_5 (a 5-cycle), the strong product has edges between (0,0) and (1,1) because (0,1) is an edge in G and (0,1) is an edge in H, but in the OR product, (0,0) and (1,1) are not adjacent (since u1 ≠ u2, v1 ≠ v2, and neither (0,1) ∈ E(G) nor (0,1) ∈ E(H) because in C_5, 0 and 1 are adjacent? Actually, in C_5, 0-1 is an edge, so both conditions hold. Let's take a clearer counterexample: Let G = H = C_4 (4-cycle). Then (0,0) and (2,2): In G ⊠ H, (0,2) is not an edge in G? In C_4, 0 and 2 are not adjacent. Similarly (0,2) not an edge in H. So (0,0) and (2,2) are not adjacent in G ⊠ H. In G ∨ H, since u1≠u2, v1≠v2, we need (u1,u2)∈E(G) OR (v1,v2)∈E(H). But (0,2) is not an edge in either, so (0,0) and (2,2) are not adjacent in G ∨ H either. Another example: Take G = H = a graph with an isolated vertex and an edge. The two products can differ. But the strongest proof: Known counterexample: C_5 ⊠ C_5 ≠ C_5 ∨ C_5 (they have different Lovász numbers? Actually, Lovász showed ϑ(C_5 ⊠ C_5) = 5, but ϑ(C_5 ∨ C_5) = 5 as well? There are known differences in orthogonal rank. However, formally, these two products are defined differently: strong product adds edges if either coordinate has an edge or both have edges; OR product adds edges if either coordinate has an edge or both have edges when coordinates differ? The definition in the manuscript for OR product is non-standard. Typically, G ∨ H is defined as (Ḡ ⊠ H̄) complement, or via adjacency if u1≠u2 and (u1,u2)∈E(G) or v1≠v2 and (v1,v2)∈E(H). The manuscript's definition appears to be the standard disjunctive product. But the strong product includes edges when both coordinates are the same? Actually, the strong product includes edges when one coordinate same and other adjacent OR both adjacent. The OR product (disjunctive product) includes edges when at least one coordinate is adjacent (including when both same? This differs). Standard reference: Imrich, Klavžar, Product Graphs; G ⊠ H and G ∨ H are not equal. The manuscript's Proposition 1 is a claim without proof (said 'proved in Appendix A' but appendix not provided). Given the central role of this equality in Theorem 3, the entire paper collapses if Proposition 1 is false. The most likely explanation is a misunderstanding: the authors may have intended to define some variant, but as written, the statement is incorrect and unsupported."
+      },
+      {
+        "finding": "Tables I–III referenced but not provided; key examples f, g, h are undefined in extracted text.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The manuscript's central demonstration of different m-instance confusion graphs and quantum advantage relies entirely on these missing tables. Without them, the examples cannot be verified, and the claimed distinction between C1 and C2 non-adjacencies cannot be confirmed. This is a major reporting gap that fundamentally obstructs evaluation. The authors must include the tables and explicitly verify that the one-instance graphs are all C5 and that the different conditions hold."
+      },
+      {
+        "finding": "Definition of OR product (Definition 3) appears non-standard and inconsistent with later usage.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The OR product definition given has three cases: (v1,v2)∈E(H) if u1=u2; (u1,u2)∈E(G) if v1=v2; (u1,u2)∈E(G) or (v1,v2)∈E(H) if both coordinates differ. This is actually the definition of the strong product G ⊠ H, not the OR product. The standard OR product (disjunctive product) has edge ((u1,v1),(u2,v2)) iff (u1,u2)∈E(G) or (v1,v2)∈E(H), regardless of coordinate equality. The manuscript's definition would make the edge set larger, and could lead to confusion with the strong product. This suggests a fundamental definitional error that would propagate through all product-related claims."
+      },
+      {
+        "finding": "Theorem 3 claims ϑ(G^(m)) = ϑ(G)^m, but proof relies on Lemma 2 and the incorrect G ⊠ H = G ∨ H.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "Lemma 2 states ϑ(G∨H) = ϑ(G⊠H) = ϑ(G)ϑ(H). The first equality is claimed but not proven in the text (appendix missing). Even if this equality holds for some graphs, the manuscript's Theorem 3 needs G^(m) to be sandwiched between strong and OR products such that their ϑ are equal. If G^(m) is neither strong nor OR (as is the case for the 'h' example and generically), the theorem does not apply. Additionally, the equality ϑ(G∨H) = ϑ(G)ϑ(H) is known for the standard OR product, but if the manuscript's definition differs, this may not hold. The proof is incomplete and relies on unverified assumptions."
+      },
+      {
+        "finding": "The quantum protocol proof in Lemma 4 has a gap: mixed state to pure state mapping is not justified.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The proof claims that mixed states with spectral decomposition can be replaced by a single pure state from the support. However, if the protocol uses mixed states that are not pure, the condition 'ρ_x ⟂ ρ_x'' for all (x,x')∈E(Ḡ)' requires full orthogonal supports. Choosing an arbitrary eigenvector from each mixed state might not preserve orthogonality across all pairs, because different eigenvectors from different mixed states may not be orthogonal. The mapping to an orthogonal representation must be done carefully. This is a subtle gap that could affect the rate characterization."
+      },
+      {
+        "finding": "Missing Appendices A–F: All proofs referenced are unavailable.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The manuscript repeatedly references appendices for proofs of Proposition 1, 2, 3, 5, Theorem 1, Theorem 2, Lemmas, Claims, etc. Without these appendices, the paper is not self-contained and cannot be verified. This is a critical reporting omission that makes the manuscript incomplete."
+      },
+      {
+        "finding": "Assumption 1 is not justified and may be inconsistent with zero-probability rows.",
+        "severity": "MINOR",
+        "justification": "Assumption 1 states every x has some y with positive joint probability. In the constructed examples for Theorem 2(a), the function f has Y = E(G) and p>0 only if x incident with edge y. For a vertex with degree 0 (isolated vertex), there is no y with positive probability, violating Assumption 1. This could be fixed by adding a dummy y, but it's a gap in the construction."
+      },
+      {
+        "finding": "Figure 1 referenced but not provided.",
+        "severity": "MINOR",
+        "justification": "The pentagon confusion graph is described but the figure is missing. This is minor as the graph is explicitly defined."
+      },
+      {
+        "finding": "References [10]–[21] have incomplete journal names and missing DOIs.",
+        "severity": "MINOR",
+        "justification": "Many references have placeholder [JOURNAL] or missing pages/volume numbers. This does not affect scientific validity but makes verification harder."
+      }
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "Both reviewers independently identify the same core issue: Proposition 1 (G ⊠ H = G ∨ H) is mathematically false for general graphs. This proposition is foundational to the paper's theoretical framework, including the sandwiching argument in Theorem 3 and the derivation of quantum-vs-classical separations. Both reviewers also flag serious problems in the quantum protocol proof (Lemma 4), where the mixed-to-pure state mapping is not properly justified, threatening the quantum rate characterization in Theorem 4. Additionally, the graph-complement identities used in the central C₅ example (Section VI) are incorrect, invalidating the showcased quantitative separation. The combination of a false foundational proposition, a flawed converse proof for the quantum rate, and invalid identities in the main example means the paper's central conclusions are not supported by the presented arguments. While the underlying ideas might be salvageable with a completely different proof strategy, the manuscript as written contains fundamental mathematical errors in its core claims.",
+    "findings": [
+      {
+        "finding": "Proposition 1 claims G ⊠ H = G ∨ H (strong product equals OR/disjunctive product) for simple graphs, which is false in general.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.95,
+        "justification": "The strong product and OR (disjunctive) product are well-known to be distinct graph products (see Imrich & Klavžar, 'Product Graphs'). In the strong product, vertices differing in both coordinates are adjacent only if BOTH coordinate pairs are adjacent; in the OR product, adjacency holds if AT LEAST ONE coordinate pair is adjacent. These edge sets differ for most nontrivial graphs. This proposition is foundational: Theorem 3's sandwiching argument, the Lovász theta multiplicativity claims, and the quantum-classical separation all depend on it. Both reviewers independently identified this error. The proof is relegated to a missing appendix, making it unverifiable, but the claim itself is contradicted by standard graph theory. If this equality is used substantively in proofs (not just as a notational convention for a nonstandard definition), the paper's central conclusions collapse.",
+        "source": "both"
+      },
+      {
+        "finding": "The converse direction of Lemma 4 incorrectly derives an orthogonal representation from a zero-error quantum protocol by selecting an arbitrary eigenvector from each mixed state.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.85,
+        "justification": "Zero-error distinguishability requires orthogonal supports only for confusable pairs (edges of G^(m)), not for all edges of the complement graph as claimed. Furthermore, extracting a single eigenvector from each mixed state does not preserve the pairwise orthogonality structure needed for an orthogonal representation. This gap invalidates the converse of Lemma 4, which is the basis for the quantum rate characterization R_quantum = inf_m (1/m) log ξ(G^(m)) in Theorem 4. Reviewer A provides detailed technical justification; Reviewer B concurs there is a gap. While there might exist a correct proof via a different argument (e.g., Nayak-type arguments or purification), the proof as written is invalid.",
+        "source": "both"
+      },
+      {
+        "finding": "Section VI contains invalid graph-complement identities: claims C₅^{∨m} = C̄₅^{⊠m} = C₅^{⊠m}, conflating complement of product with product itself.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.9,
+        "justification": "For self-complementary G, one has complement(G ∨ H) ≅ Ḡ ⊠ H̄ ≅ G ⊠ H (using self-complementarity), but this gives complement(G^{∨m}) ≅ G^{⊠m}, NOT G^{∨m} = G^{⊠m}. The paper equates a graph with its complement, which for nontrivial graphs is false. The claimed exact value R_quantum(g) = ½ log₂ 5 for the C₅ example depends on these identities. Since this is the paper's central showcase of quantum advantage, the quantitative separation is unestablished.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Internal contradiction between G and Ḡ in Definition 4, Lemma 4, and Theorem 4 regarding which graph's orthogonal representation characterizes quantum coding.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "The zero-error condition requires ρ_x ⊥ ρ_{x'} for confusable pairs (edges of G^(m)), which corresponds to an orthogonal representation of G^(m), not Ḡ^(m). Yet the proof of Lemma 4 works with Ḡ^(m), and the claimed rates use ξ(G^(m)). Swapping G and Ḡ changes ξ substantially. This confusion propagates through the quantum rate results but might be repairable with consistent notation, so it is classified as major revision rather than retraction-worthy on its own.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "The OR product definition (Definition 3) as stated in the manuscript appears to coincide with or be very close to the strong product definition, not the standard disjunctive product.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "The casewise definition (same first coordinate → check second; same second → check first; both differ → check either) is actually the standard definition of the strong product, not the OR product. If the authors have inadvertently defined the strong product twice under two names, then Proposition 1 becomes a tautology but the entire framework of distinguishing the two products (which is the paper's main structural contribution) collapses. This definitional ambiguity makes it impossible to determine what the paper is actually claiming without the missing appendices.",
+        "source": "prover_b"
+      },
+      {
+        "finding": "Missing Appendices A–F containing all referenced proofs.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "The proofs of Propositions 1–3, 5, Theorems 1–2, multiple Lemmas and Claims are all in missing appendices. This makes the manuscript incomplete and unverifiable. Given that the main text contains multiple mathematical errors, the unavailability of the proofs is particularly damaging—it is impossible to determine whether the errors are superficial notation issues or fundamental logical flaws.",
+        "source": "both"
+      },
+      {
+        "finding": "Theorem 3 claims ϑ(G^(m)) = ϑ(G)^m but the proof relies on the incorrect Proposition 1 and unverified Lemma 2.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "The multiplicativity of ϑ under strong product is known (Lovász 1979), and multiplicativity under OR product also holds. However, the paper needs this for G^(m) which is neither product in general. The sandwiching argument G^{⊠m} ⊆ G^(m) ⊆ G^{∨m} is conceptually sound, but the conclusion ϑ(G^(m)) = ϑ(G)^m requires ϑ of the two bounding products to be equal, which depends on Proposition 1 or a more nuanced argument. Since the underlying Lovász theta result is known to be true in many settings, this may be salvageable, hence major revision.",
+        "source": "both"
+      },
+      {
+        "finding": "Tables I–III and Figure 1 are referenced but not provided in the extracted text.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.7,
+        "justification": "The central examples demonstrating different m-instance confusion graphs depend on these tables. Without them, the examples cannot be verified. This may be an extraction artifact rather than a manuscript error, but it prevents evaluation of the claimed C₅ examples.",
+        "source": "prover_b"
+      },
+      {
+        "finding": "Subadditivity argument in Theorem 4 proof has reversed explanatory logic.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.65,
+        "justification": "The stated justification ('a protocol for (m+n)-instance case can be obtained...') actually supports the correct inequality direction ξ(G^(m+n)) ≤ ξ(G^(m))·ξ(G^(n)), so the Fekete lemma application could be valid. However, given the surrounding errors with G vs Ḡ, the correctness of this step remains uncertain.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Typographical error: Proposition 2 proof uses H₁ ∪ H₁ instead of H₁ ∪ H₂.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.95,
+        "justification": "Clearly a typo that would not affect conclusions if corrected.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Product notation is inconsistent throughout (G^(m), G^{⊠m}, G^{∨m} used interchangeably).",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Primarily a presentation issue, but it compounds the difficulty of verifying claims given the other errors.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "References have incomplete journal names and missing DOIs.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.95,
+        "justification": "Standard bibliographic issue that does not affect scientific validity.",
+        "source": "prover_b"
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 41350,
+    "duration_s": 113.13,
+    "n_api_calls": 3,
+    "cost_usd": 0.3293,
+    "total_input_tokens": 33760,
+    "total_output_tokens": 6452,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 14870,
+        "output_tokens": 1826,
+        "cost_usd": 0.055435,
+        "duration_s": 33.53,
+        "label": "2402.01549v2/b3/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 13883,
+        "output_tokens": 2056,
+        "cost_usd": 0.0060100100000000005,
+        "duration_s": 27.93,
+        "label": "2402.01549v2/b3/prover_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 5007,
+        "output_tokens": 2570,
+        "cost_usd": 0.267855,
+        "duration_s": 51.68,
+        "label": "2402.01549v2/b3/arbiter"
+      }
+    ]
+  }
+}

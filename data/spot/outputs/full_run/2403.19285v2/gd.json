@@ -1,0 +1,610 @@
+{
+  "condition": "GD",
+  "paper_id": "2403.19285v2",
+  "verdict": "flagged",
+  "confidence": 0.93,
+  "reasoning": "Both reviewers independently converge on several serious methodological concerns that collectively undermine the paper's central claims. The most critical issues are: (1) complete absence of statistical significance testing for the headline claim of best performance on 11/12 directions, with tiny COMET margins over ~1012 test items; (2) unaddressed train/test contamination risk given WikiMatrix and FLORES+ both derive from Wikipedia content; (3) the unfair comparison to CTQScorer acknowledged by the authors themselves; and (4) unvalidated parser quality across languages, which threatens the construct validity of 'syntax' as the causal mechanism. While Reviewer B considered upgrading some findings to RETRACTION-WORTHY during steelmanning, no single finding definitively proves the results are fabricated or impossible — the concerns are about insufficient evidence, uncontrolled confounds, and overclaiming rather than demonstrated fatal errors. The paper requires substantial revision before its conclusions can be considered reliable.",
+  "findings": [
+    {
+      "finding": "No statistical significance testing or uncertainty quantification for the central claim of best performance on 11/12 translation directions, with COMET differences of ~1 point over only 1012 test sentences.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.92,
+      "justification": "Both reviewers identify this as a critical gap. The headline claim could collapse entirely if paired bootstrap or significance tests showed non-significant differences. Reviewer B considered upgrading to RETRACTION-WORTHY but the absence of tests does not prove the results are false — it proves they are unsubstantiated. The claim is overclaimed rather than definitively wrong, which places this at high-end MAJOR-REVISION.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Potential train/test contamination: WikiMatrix (example database) and FLORES+ (test set) both derive from Wikipedia content, and no deduplication or near-duplicate filtering is reported.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers flag this. Reviewer B considered upgrading to RETRACTION-WORTHY. This is a serious validity threat because retrieval-based methods could select near-duplicates of test sentences, inflating scores artifactually. However, without evidence that such overlap actually exists, this remains a plausible but unconfirmed threat. If contamination were demonstrated, it would be RETRACTION-WORTHY; as an unaddressed risk, it is high-end MAJOR-REVISION.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The comparison to CTQScorer is explicitly not like-for-like: different example databases (WikiMatrix vs. Europarl/ParaCrawl) and different test sets (FLORES+ vs. FLORES-101) are used.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.95,
+      "justification": "Both reviewers agree this invalidates the comparative superiority claim over CTQScorer. The authors themselves acknowledge the difference. This does not invalidate internal comparisons but renders the external state-of-the-art claim unsupported. Clear MAJOR-REVISION with very high confidence.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "No validation of parser accuracy across the six languages, despite syntax being the core proposed signal. spaCy parser quality varies substantially across languages and no error analysis or robustness check is provided.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Identified by Reviewer A and acknowledged as important by Reviewer B during steelmanning. If parsers are unreliable for some languages, the 'syntax' signal is meaningless for those translation directions, undermining direction-specific claims. This is a construct validity issue central to the paper's thesis.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The causal claim that 'syntax helps' is not disentangled from confounds: sentence length, parse depth, branching factor, and example diversity could all explain the observed gains equally well.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "Both reviewers raise versions of this concern. Reviewer A initially rated multiple related findings as MAJOR-REVISION but acknowledged during steelmanning that some are more about mechanism interpretation than outcome validity. The paper's central interpretive claim (syntax is responsible) is unsupported without ablations, but the empirical observation of improved scores may still hold. MAJOR-REVISION is appropriate for the interpretive overclaim.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The Polynomial Distance is assumed to capture MT-relevant syntactic similarity but this assumption is never empirically validated (e.g., no correlation with human syntactic similarity judgments, no verification that selected examples actually differ from baselines in the intended syntactic dimension).",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Both reviewers flag this. It overlaps with parser quality and confound issues but is independently important: the entire method rests on an untested operationalization of syntax. Reviewer B acknowledged this overlaps with other findings but maintained MAJOR-REVISION.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Unexplained poor performance of R-BM25 baseline, with the authors stating they 'leave exploration of the cause to future work.' This raises questions about implementation correctness or configuration mismatch.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.72,
+      "justification": "Identified by Reviewer B. Reviewer B later downgraded this somewhat during steelmanning, noting R-BM25 is not the main baseline. However, if a previously published method fails unexpectedly, it suggests potential implementation issues that could affect other baselines too. Borderline MAJOR-REVISION/MINOR; retaining MAJOR-REVISION with moderate confidence.",
+      "source": "prover_b",
+      "survived_steelman": false
+    },
+    {
+      "finding": "The ensemble strategy (BM25 + Polynomial) does not control for demonstration order effects or diversity-driven gains independent of syntax.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.75,
+      "justification": "Reviewer A initially rated this MAJOR-REVISION but downgraded during steelmanning, acknowledging this is more of an ablation/interpretability gap than a conclusion-threatening flaw. The paper defines both orderings, suggesting awareness, but doesn't formally control for it. This is a valid concern but unlikely to overturn the core empirical observation.",
+      "source": "prover_a",
+      "survived_steelman": false
+    },
+    {
+      "finding": "No check for duplicate or near-duplicate demonstrations within the retrieval set for a single test instance.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.7,
+      "justification": "Reviewer A initially rated MAJOR-REVISION but acknowledged during steelmanning that within-prompt duplication is probably minor unless shown to be frequent. The more serious part (overlap with test set) is captured by the contamination finding above.",
+      "source": "prover_a",
+      "survived_steelman": false
+    },
+    {
+      "finding": "Only one LLM (XGLM-7.5B) is used, limiting robustness and generalizability of the findings.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers agree this is MINOR. It limits external validity but does not invalidate the reported experiments.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Only six relatively common languages tested; no low-resource settings despite general claims about MT and syntax-aware selection.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers agree. Standard external validity limitation.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "BLEU scores relegated to appendix with no discussion of alignment with COMET trends; no human evaluation provided.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers agree this is MINOR. COMET is a well-regarded metric, but triangulation would strengthen claims, especially given small effect sizes.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Only three random seeds for the Random baseline, providing a weak variance estimate.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers agree. Affects precision of the baseline estimate but not fatal.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "16-example prompts sometimes exceed model context length; no controlled truncation analysis provided.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers agree. Concerns secondary analysis rather than the main 8-shot claim.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Insufficient reporting of generation settings (max tokens, stopping criteria, beam/greedy details) reduces reproducibility.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers agree. A reporting gap, not a methodological flaw.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Main text highlights 8-example setting; results for 2, 4, and 16 examples only in appendix/figures, potentially cherry-picking the most favorable condition.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.78,
+      "justification": "Identified by Reviewer B. Common presentation choice that slightly reduces transparency but does not invalidate results.",
+      "source": "prover_b",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Averaging over 12 directions without describing macro/micro weighting rationale or accounting for differing baseline difficulties.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers agree. Common practice that could be improved but unlikely to change conclusions.",
+      "source": "both",
+      "survived_steelman": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 7,
+    "MINOR": 10
+  },
+  "protocol": {
+    "level": "L2",
+    "agreement": 0.82,
+    "snr": 1.2000000000000004,
+    "theta_accept": 0.9,
+    "theta_noise": 0.15
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.92,
+    "reasoning": "The paper’s core claim is that syntax-based example selection improves MT ICL and achieves best COMET on 11/12 directions. However, the manuscript provides no statistical significance testing, no variance estimates for the main deterministic comparisons, and appears to rely on tiny absolute COMET differences averaged over only 1012 test items. More importantly, the evaluation design has several unresolved threats to validity: the example database is mined parallel data from WikiMatrix with unclear overlap/deduplication against FLORES+, the parser quality differs greatly across languages yet is central to the method, and the main comparison to CTQScorer is explicitly acknowledged as not comparable due to different datasets/settings. These issues do not prove the conclusions are false, but they materially weaken the causal claim that syntax itself is responsible for the gains. I do not see a clear retraction-level internal inconsistency or impossible statistic from the text alone, but substantial methodological revisions are needed before the headline claims are reliable.",
+    "findings": [
+      {
+        "finding": "No statistical significance testing or uncertainty quantification is reported for the main claim of best performance on 11/12 translation directions.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The central conclusion depends on comparing COMET scores across methods, but the manuscript gives no confidence intervals, paired significance tests, bootstrap tests, or run-to-run variability for the non-random methods. If many wins are within metric noise, the headline claim may disappear or weaken substantially. This does not automatically invalidate all results, but it could change the paper’s main conclusion."
+      },
+      {
+        "finding": "Potential train/test contamination or retrieval leakage is not addressed: the example database is WikiMatrix, but the manuscript does not report any deduplication or near-duplicate filtering against FLORES+ test sentences.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Because the method retrieves nearest in-context examples from a very large parallel corpus, performance gains could come from memorization-like overlap or near-duplicate retrieval rather than better syntactic selection. If test or close paraphrase instances exist in WikiMatrix, the measured gains would not reflect general example selection quality. This is a major validity threat to the central claim."
+      },
+      {
+        "finding": "The core method depends on dependency parses from spaCy across six very different languages, but no parser accuracy validation, error analysis, or robustness check is reported.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The purported signal is syntactic similarity. If parser quality is weak or inconsistent for some languages/domains, the method may not actually measure syntax reliably, and observed effects could be incidental. Since cross-lingual parser quality can vary substantially, this omission could alter conclusions about syntax being the cause of improvement."
+      },
+      {
+        "finding": "The comparison to CTQScorer is explicitly not like-for-like because the paper uses different example databases and a different test benchmark than the cited work.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The manuscript claims superiority over CTQScorer while acknowledging unequal comparison settings. Such a comparison cannot support a strong state-of-the-art claim. This does not invalidate the method itself, but it does undermine comparative conclusions and should be reframed or rerun under matched conditions."
+      },
+      {
+        "finding": "The ensemble strategy concatenates examples from BM25 and Polynomial without controlling for demonstration order effects.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The manuscript defines both 'BM25 + Polynomial' and 'Polynomial + BM25', implying order may matter, but does not isolate whether gains come from syntax, order, or simply diversity/heterogeneity of examples. In ICL, position effects can be substantial. Without a proper ablation controlling order and mixed-selection diversity, the conclusion that syntax is the causal factor is weakened."
+      },
+      {
+        "finding": "The claimed effect of 'syntax' is not disentangled from confounds introduced by tree distance, such as sentence length, parse depth, branching factor, or dependency-label distribution.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Polynomial distance may correlate with simple structural proxies unrelated to meaningful syntax transfer. Without ablations against length-matched baselines or structure-only controls, the paper cannot strongly attribute gains specifically to syntactic similarity. This could materially change interpretation of the results."
+      },
+      {
+        "finding": "No ablation is reported to test whether improvements arise merely from selecting more diverse examples rather than syntax-aware examples.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The ensemble method mixes two retrieval criteria, which may improve coverage/diversity irrespective of syntactic content. A fair control would compare against other diversity-promoting or hybrid retrieval methods. Without this, the conclusion that syntax contributes uniquely is not well identified."
+      },
+      {
+        "finding": "The use of only one LLM (XGLM-7.5B) limits internal robustness of the main claim.",
+        "severity": "MINOR",
+        "justification": "Results may be model-specific. This weakens generalizability but does not by itself invalidate the reported findings for XGLM-7.5B."
+      },
+      {
+        "finding": "The study evaluates only six relatively common languages and does not test low-resource settings despite making general claims about MT and syntax-aware selection.",
+        "severity": "MINOR",
+        "justification": "This limits external validity, especially because syntax-based retrieval may behave differently in low-resource or parser-poor languages. It does not directly break the reported experiments."
+      },
+      {
+        "finding": "The manuscript reports averaging over 12 directions in some analyses, but does not describe any macro/micro weighting rationale or whether language directions with very different baseline difficulties are directly comparable.",
+        "severity": "MINOR",
+        "justification": "Averaging across directions is common, but interpretability would improve with clearer reporting. This is unlikely to overturn the main result by itself."
+      },
+      {
+        "finding": "For the Random baseline, only three seeds are used, which provides a weak estimate of the baseline variance.",
+        "severity": "MINOR",
+        "justification": "A larger number of random seeds would better characterize baseline uncertainty. However, this affects precision more than validity."
+      },
+      {
+        "finding": "The paper notes that 16-example prompts sometimes exceed the model’s maximum context length, yet still discusses these results without a fully controlled truncation analysis.",
+        "severity": "MINOR",
+        "justification": "This can confound comparisons at higher shot counts, but it concerns a secondary analysis rather than the main 8-shot claim."
+      },
+      {
+        "finding": "Insufficient reporting of generation settings beyond 'sampling is disabled' (e.g., max new tokens, stopping criteria, beam/greedy details, handling of truncation) reduces reproducibility.",
+        "severity": "MINOR",
+        "justification": "This is a reporting deficiency rather than a fatal methodological flaw, but complete decoding settings are needed for exact replication."
+      },
+      {
+        "finding": "The paper does not report whether retrieved demonstrations are prevented from duplicating one another or from being exact/near matches to the test source within the same retrieval pool.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If demonstration sets contain duplicates or near-duplicates, improvements may stem from retrieval artifacts rather than the proposed selection principle. This can materially affect the estimated benefit of the method."
+      },
+      {
+        "finding": "The central claim relies mainly on COMET, while BLEU is relegated to the appendix and no human evaluation is provided.",
+        "severity": "MINOR",
+        "justification": "COMET is a strong MT metric, so this is not inherently problematic, but stronger triangulation would bolster confidence in small differences."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "The manuscript describes a method for in-context example selection for machine translation based on syntactic similarity (Polynomial Distance) and an ensemble with BM25. While the overall methodological approach is plausible, there are critical reporting gaps and a potentially flawed evaluation comparison that, if confirmed, could undermine the central conclusions.",
+    "findings": [
+      {
+        "finding": "The comparison with CTQScorer (Table 2) is explicitly stated to be potentially unequal due to different example databases (WikiMatrix vs. Europarl/ParaCrawl) and different test sets (FLORES+ vs. FLORES-101). The paper claims 'Our proposed methods secure all the highest scores on all 6 translation directions' without controlling for these confounding factors. This comparison is not a fair or valid evaluation of the proposed method's superiority.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the comparison is indeed confounded by different data sources and test sets, the claim that the proposed method outperforms CTQScorer is not supported by the presented data. This does not invalidate the main method's internal validity, but it does invalidate a key external comparison that the authors use to assert superiority."
+      },
+      {
+        "finding": "The manuscript lacks any statistical significance testing (e.g., bootstrap resampling, confidence intervals) for the COMET score comparisons. The differences reported (e.g., ~1 point COMET) may be within the noise/uncertainty of the metric, especially given the relatively small test set (1012 sentences). Without such tests, the claim that the proposed method 'effectively enhances ICL' is not statistically grounded.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the observed improvements are not statistically significant, the central conclusion that syntax helps ICL for MT is unsupported. A retraction would not be required because the effect might still be real, but the evidence as presented is insufficient."
+      },
+      {
+        "finding": "The manuscript reports BLEU scores only in an appendix (Appendix D) but does not discuss whether BLEU trends align with COMET trends, nor does it report any BLEU significance tests. COMET is known to sometimes disagree with BLEU, and selective reporting of only the metric that favors the proposed method is a potential reporting bias.",
+        "severity": "MINOR",
+        "justification": "This is a common practice but weakens the overall robustness of the evaluation. It would not change conclusions if the main metric is well-justified, but it is a reporting gap that should be addressed."
+      },
+      {
+        "finding": "The method relies on the Polynomial Distance defined by Liu et al. (2022), but the manuscript does not validate that this distance measure is indeed a good proxy for syntactic similarity in the context of MT. No human evaluation or syntactic similarity validation (e.g., correlation with human judgments of syntactic similarity) is provided. The method assumes that sentences with similar dependency tree structure are good translation examples, but this is not empirically tested.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the Polynomial Distance does not actually capture syntactic similarity relevant to MT (e.g., it might be capturing superficial tree shape rather than functional syntactic similarity), then the entire rationale for the method is weakened. This does not necessarily invalidate the empirical results, but it means the paper's central claim ('syntax helps') is based on an untested operationalization of syntax."
+      },
+      {
+        "finding": "The R-BM25 baseline is reported to perform poorly under the authors' settings, and the authors state they 'leave exploration of the cause to future work'. This unexplained failure of a well-known baseline (from Agrawal et al., 2023) raises questions about the reproducibility of the experimental setup or the comparability of settings. Without understanding why R-BM25 fails, it is unclear whether the proposed method's gains are genuine or artifacts of implementation differences.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If R-BM25's poor performance is due to an implementation error or a misconfiguration (e.g., different tokenization, parameters), then the baseline comparisons that show the proposed method outperforming R-BM25 are meaningless. This does not invalidate the main method, but it casts doubt on the fairness and validity of the baseline comparisons."
+      },
+      {
+        "finding": "The manuscript reports results for 8 in-context examples in the main table, and shows an average over 12 directions in Figure 2 for other numbers of examples. However, the exact COMET scores for each direction under 2, 4, and 16 examples are only in the appendix. The main text primarily highlights the 8-example case, which may be cherry-picked to show the largest gains.",
+        "severity": "MINOR",
+        "justification": "This is a typical reporting choice and does not invalidate the results, but it slightly reduces transparency."
+      }
+    ]
+  },
+  "judge": {
+    "agreement_score": 0.82,
+    "severity_agreement": "Both reviews agree that no finding is retraction-worthy; the most severe findings are MAJOR-REVISION. They are in full agreement on this point.",
+    "shared_findings": [
+      "Lack of statistical significance testing / confidence intervals for COMET scores (A: finding 1, B: finding 2)",
+      "Unfair or non-comparable evaluation against CTQScorer due to different datasets/test sets (A: finding 4, B: finding 1)",
+      "Lack of validation that the Polynomial Distance meaningfully captures syntactic similarity relevant to MT (A: finding 6 & 7, B: finding 4)",
+      "Selective or non-robust metric reporting (COMET focus, BLEU in appendix) (A: finding 15, B: finding 3)",
+      "Lack of ablation for confounds like diversity vs. syntax (A: finding 7, B: finding 4 relates indirectly)"
+    ],
+    "severity_disputes": [
+      "A rates 'Potential train/test contamination / retrieval leakage' as MAJOR-REVISION, while B does not identify this specific issue at all.",
+      "A rates 'Uncontrolled demonstration order effects' as MAJOR-REVISION, while B does not identify this specific issue.",
+      "A rates 'Lack of parser quality validation across languages' as MAJOR-REVISION, while B does not identify this issue.",
+      "B rates 'Unexplained failure of R-BM25 baseline' as MAJOR-REVISION, while A does not mention this issue.",
+      "A rates 'Duplicate or near-duplicate demonstrations not prevented' as MAJOR-REVISION; B does not identify this."
+    ],
+    "unique_to_a": [
+      "Potential train/test contamination or retrieval leakage (WikiMatrix vs. FLORES+ overlap)",
+      "No parser accuracy validation/error analysis across six languages",
+      "Uncontrolled demonstration order effects in ensemble (BM25+Polynomial vs. Polynomial+BM25)",
+      "Syntax confounded with length, depth, branching factor - no ablation for these",
+      "No ablation to test if improvements come from diversity rather than syntax-awareness",
+      "Only one LLM used (XGLM-7.5B) limits robustness",
+      "Only six relatively common languages tested, not low-resource settings",
+      "Unclear macro/micro weighting rationale for averaging over 12 directions",
+      "Only three random seeds for Random baseline",
+      "Context length truncation issue for 16-example prompts not fully controlled",
+      "Insufficient reporting of generation settings (max tokens, stopping criteria, etc.)",
+      "Duplicate/near-duplicate demonstrations in retrieval pool not prevented"
+    ],
+    "unique_to_b": [
+      "BLEU scores reported only in appendix with no discussion of alignment with COMET trends (potential reporting bias)",
+      "Unexplained failure of R-BM25 baseline under authors' settings raises questions about reproducibility",
+      "Main text highlights 8-example case which may be cherry-picked for largest gains (less transparent reporting)"
+    ]
+  },
+  "steelman_a": {
+    "steelman_for_other": "The strongest case for the other reviewer is that most of the manuscript’s problems, while serious, are still revision-level rather than retraction-level because they concern unsupported claims, unfair comparisons, and missing validation—not demonstrated fatal errors in the reported experiments. In particular: (1) the CTQScorer comparison is clearly not like-for-like by the authors’ own admission, so any superiority claim over CTQScorer is not evidentially valid; however, this only invalidates that comparative claim, not the internal comparison among the paper’s own retrieval methods. That is squarely MAJOR-REVISION, not retraction. (2) The lack of significance testing is severe because the headline result rests on small COMET differences across only ~1k test sentences; if uncertainty were added, many of the 11/12 ‘wins’ could collapse. But this still does not prove the observed ranking is false, only unsubstantiated, so MAJOR-REVISION is the right top severity. (3) The paper operationalizes ‘syntax’ through Polynomial Distance without validating that this measure captures MT-relevant syntactic similarity. If that proxy is poor, the empirical gains might still be real, but the causal interpretation ‘syntax helps’ would be overstated. Again, this weakens interpretation rather than proving the numeric results wrong, which supports MAJOR-REVISION. (4) The unexplained underperformance of R-BM25 can be read as a serious baseline-validity issue: if a known baseline fails unexpectedly and the authors cannot explain whether this is due to implementation, tokenization, indexing, or setting mismatch, then claims of outperformance over that baseline are not reliable. But unless there is evidence of an actual implementation bug, that still does not meet the bar for retraction. Overall, the other reviewer’s severity logic is strongest when framed as: the paper overclaims on the basis of incomplete validation and confounded comparisons, yet there is no clear textual evidence of fabricated, impossible, or definitively invalid results. Therefore the manuscript is best treated as needing substantial methodological revision rather than being fundamentally broken.",
+    "severity_i_now_upgrade": [],
+    "severity_i_now_downgrade": [
+      "The ensemble strategy concatenates examples from BM25 and Polynomial without controlling for demonstration order effects. I would now lean MINOR rather than MAJOR-REVISION: order effects are real in ICL, but this seems more like an ablation/interpretability gap than a flaw likely to overturn the core empirical claim that the hybrid method can help.",
+      "No ablation is reported to test whether improvements arise merely from selecting more diverse examples rather than syntax-aware examples. I would consider downgrading from MAJOR-REVISION to MINOR or borderline MAJOR-REVISION. It weakens the causal claim about syntax, but many papers do not fully disentangle diversity from relevance; this is more a mechanism-identification issue than a direct validity threat to the reported gains.",
+      "The claimed effect of 'syntax' is not disentangled from confounds introduced by tree distance, such as sentence length, parse depth, branching factor, or dependency-label distribution. I still think this matters, but I could see MINOR/MAJOR-REVISION borderline. It mainly threatens the interpretation that syntax per se is responsible, not necessarily the observed performance ranking.",
+      "The paper does not report whether retrieved demonstrations are prevented from duplicating one another or from being exact/near matches to the test source within the same retrieval pool. I would split this: within-prompt duplicate demonstrations is probably MINOR unless shown frequent; exact/near matches to the test source is the serious part and overlaps with the train/test contamination concern. As written, I may have made this too broad at MAJOR-REVISION severity."
+    ],
+    "findings_i_still_defend": [
+      "No statistical significance testing or uncertainty quantification is reported for the main claim of best performance on 11/12 translation directions — MAJOR-REVISION. This remains one of the clearest threats to the headline claim because tiny COMET margins can easily be unstable without paired tests or CIs.",
+      "Potential train/test contamination or retrieval leakage is not addressed: the example database is WikiMatrix, but the manuscript does not report any deduplication or near-duplicate filtering against FLORES+ test sentences — MAJOR-REVISION. Retrieval-based evaluation is especially vulnerable to overlap artifacts, and if overlap exists it could materially inflate the method’s apparent benefit.",
+      "The core method depends on dependency parses from spaCy across six very different languages, but no parser accuracy validation, error analysis, or robustness check is reported — MAJOR-REVISION. Since syntax is the proposed signal, unvalidated parser quality directly affects construct validity.",
+      "The comparison to CTQScorer is explicitly not like-for-like because the paper uses different example databases and a different test benchmark than the cited work — MAJOR-REVISION. I strongly stand by this: the comparison cannot support a superiority claim as written.",
+      "The use of only one LLM (XGLM-7.5B) limits internal robustness of the main claim — MINOR. This is a standard external-validity limitation, not a fatal flaw.",
+      "The study evaluates only six relatively common languages and does not test low-resource settings despite making general claims about MT and syntax-aware selection — MINOR. Valid but not conclusion-changing for the reported setting.",
+      "The manuscript reports averaging over 12 directions in some analyses, but does not describe any macro/micro weighting rationale or whether language directions with very different baseline difficulties are directly comparable — MINOR.",
+      "For the Random baseline, only three seeds are used, which provides a weak estimate of the baseline variance — MINOR.",
+      "The paper notes that 16-example prompts sometimes exceed the model’s maximum context length, yet still discusses these results without a fully controlled truncation analysis — MINOR.",
+      "Insufficient reporting of generation settings beyond 'sampling is disabled' (e.g., max new tokens, stopping criteria, beam/greedy details, handling of truncation) reduces reproducibility — MINOR.",
+      "The central claim relies mainly on COMET, while BLEU is relegated to the appendix and no human evaluation is provided — MINOR."
+    ],
+    "new_errors_noticed": [
+      "The other reviewer usefully highlights the unexplained poor performance of R-BM25 as a separate issue. I did not explicitly call this out. If a previously published baseline underperforms badly and the authors cannot account for it, that is at least MINOR and plausibly MAJOR-REVISION if the comparison is central, because implementation or configuration mismatch could be driving the apparent gains.",
+      "I did not explicitly flag possible cherry-picking of the 8-shot setting in the presentation. On reflection this is probably MINOR, but it is worth noting because the manuscript foregrounds the condition where gains appear strongest while relegating other shot counts to appendix/aggregate plots.",
+      "I also did not explicitly separate two different validity claims: (a) the empirical claim that the hybrid retrieval method gets higher COMET in this setup, and (b) the causal/construct claim that syntax is the reason. Several of my MAJOR-REVISION findings really target (b) more than (a), which suggests some may be closer to interpretability/mechanism concerns than outcome-invalidating flaws.",
+      "I may have been slightly over-broad in treating all syntax-mechanism confounds as equally severe. A cleaner prioritization would make the strongest MAJOR-REVISION points: unfair CTQScorer comparison, lack of significance testing, possible retrieval leakage, parser-quality/construct-validity concerns, and possibly baseline implementation uncertainty for R-BM25. Other mechanism ablations could be secondary."
+    ]
+  },
+  "steelman_b": {
+    "steelman_for_other": "The other reviewer's case is compelling because they systematically identify threats to internal validity that, if confirmed, would collapse the causal claim that 'syntax helps ICL for MT.' Their most powerful points are: (1) the complete absence of any statistical significance testing, which is critical when the reported COMET differences are tiny (~1 point) and the test set is only 1012 sentences — without confidence intervals or bootstrap tests, we cannot know if these differences exceed metric noise; (2) the unambiguous train/test contamination risk: the example database (WikiMatrix) is a massive mined corpus that could easily contain near-duplicates or even exact matches of FLORES+ test sentences, especially since both are derived from Wikipedia content — this is a fatal validity threat because the method could be selecting examples via memorization rather than syntactic reasoning, and the paper provides no deduplication analysis whatsoever; (3) the parser quality issue is not merely a robustness concern but goes to the very construct validity of 'syntax' — if spaCy parsers are unreliable for some languages (e.g., lower-resource ones within the set), the method may not be measuring syntax at all, and without any parser accuracy validation or error analysis, the central mechanism is untested; (4) the failure to disentangle syntax from confounds like sentence length, parse depth, or example diversity means the paper's headline claim is not uniquely supported — the observed gains could be entirely due to selecting longer/shorter sentences or more diverse examples, which would be a trivial finding; (5) the lack of control for demonstration order in the ensemble, combined with known ICL position effects, means the ensemble gains could be artifacts of ordering rather than syntactic quality. These issues are not minor reporting gaps — they are fundamental methodological omissions that prevent any reader from evaluating whether the paper's central conclusion is valid. The other reviewer's severity ratings (most findings MAJOR-REVISION) are actually generous; several come close to RETRACTION-WORTHY because they question whether the data can support any version of the central claim.",
+    "severity_i_now_upgrade": [
+      "Missing significance testing: I rated this MAJOR-REVISION but the other reviewer is right to emphasize that with only 1012 sentences and ~1 COMET point differences, this is arguably RETRACTION-WORTHY — if significance tests were run and showed non-significance, the entire central claim (best on 11/12 directions) would be unsupported. The absence of such tests is not just a reporting gap; it's a failure to provide the minimal evidence needed to support a comparative performance claim.",
+      "Potential train/test contamination: I rated this MAJOR-REVISION but given that WikiMatrix is mined from web data including Wikipedia (which FLORES+ is based on), the risk of exact or near-duplicate retrieval is high. If confirmed, this would invalidate the entire experimental design, making the measured gains reflect memorization/retrieval artifacts rather than selection quality. This is RETRACTION-WORTHY territory.",
+      "Parser quality validation: I rated this MAJOR-REVISION but the other reviewer's point about cross-linguistic variation is stronger than I appreciated. If parser accuracy varies dramatically across the 6 languages (e.g., spaCy is excellent for English/German but poor for some others), then the method's 'syntax' signal is non-uniform and possibly meaningless for some translation directions. This could invalidate direction-specific claims.",
+      "Demonstration order and diversity confounds: The other reviewer's point that the ensemble gains could be entirely due to diversity or ordering (not syntax) is more damaging than I initially assessed. Without an ablation controlling for order and comparing against other diversity-selection methods, the causal claim has zero support from the ensemble results."
+    ],
+    "severity_i_now_downgrade": [
+      "R-BM25 poor performance left to future work: I rated this MAJOR-REVISION but in hindsight this is more of a reproducibility concern than a validity threat. The paper does not claim R-BM25 is their main baseline — it's one of several. Even if R-BM25 is misconfigured, the comparisons against other baselines (Random, Oracle, BM25) can still be evaluated independently. This is MAJOR-REVISION at worst, possibly MINOR.",
+      "Polynomial distance proxy validation: I rated this MAJOR-REVISION but this overlaps heavily with 'parser quality' and 'syntax confounds' points. It's a valid concern but not independently more severe than those issues. I still think MAJOR-REVISION is correct, but I now see it as weaker than the contamination/significance issues."
+    ],
+    "findings_i_still_defend": [
+      {
+        "finding": "Comparison to CTQScorer unequal (different databases/test sets)",
+        "severity": "MAJOR-REVISION"
+      },
+      {
+        "finding": "BLEU scores only in appendix without discussion of alignment with COMET",
+        "severity": "MINOR"
+      },
+      {
+        "finding": "Results for 8 examples highlighted in main text; other numbers in appendix",
+        "severity": "MINOR"
+      },
+      {
+        "finding": "Only one LLM tested (XGLM-7.5B)",
+        "severity": "MINOR"
+      },
+      {
+        "finding": "Limited to common languages, not low-resource",
+        "severity": "MINOR"
+      },
+      {
+        "finding": "Averaging over 12 directions without weighting rationale",
+        "severity": "MINOR"
+      },
+      {
+        "finding": "Only 3 random seeds for Random baseline",
+        "severity": "MINOR"
+      },
+      {
+        "finding": "16-example prompts exceed context length",
+        "severity": "MINOR"
+      },
+      {
+        "finding": "Insufficient reporting of generation settings",
+        "severity": "MINOR"
+      },
+      {
+        "finding": "No check for duplicated or near-duplicate demonstrations within retrieval pool",
+        "severity": "MAJOR-REVISION"
+      }
+    ],
+    "new_errors_noticed": [
+      "The paper does not report whether FLORES+ test sets have any overlap with WikiMatrix training data — given both are derived from Wikipedia articles, this is a non-trivial risk that should have been explicitly checked and reported. Even if the overlap is small, the retrieval method could find those few overlapping sentences and artificially inflate scores.",
+      "The other reviewer's point about demonstration order within the ensemble is actually stronger than I first appreciated: 'BM25 + Polynomial' vs 'Polynomial + BM25' are treated as two methods, but the paper does not control for whether the order itself (independent of content) drives the difference. In ICL, recency effects mean the last example often matters most — if BM25 provides better 'last examples' than Polynomial, the ensemble gains could be order artifacts.",
+      "No analysis of whether the selected demonstrations actually have higher Polynomial similarity to the test source than random or BM25 baselines. The paper assumes the method selects syntactically similar examples but provides no verification that the retrieved pairs actually differ from baselines in the intended dimension.",
+      "The paper does not report per-language parser performance or which specific spaCy models were used. Different languages have vastly different model quality in spaCy (e.g., small vs large pipelines, transformer vs tagger-based). This information is essential for reproducibility and for assessing whether the syntax signal is meaningful across all languages."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.93,
+    "reasoning": "Both reviewers independently converge on several serious methodological concerns that collectively undermine the paper's central claims. The most critical issues are: (1) complete absence of statistical significance testing for the headline claim of best performance on 11/12 directions, with tiny COMET margins over ~1012 test items; (2) unaddressed train/test contamination risk given WikiMatrix and FLORES+ both derive from Wikipedia content; (3) the unfair comparison to CTQScorer acknowledged by the authors themselves; and (4) unvalidated parser quality across languages, which threatens the construct validity of 'syntax' as the causal mechanism. While Reviewer B considered upgrading some findings to RETRACTION-WORTHY during steelmanning, no single finding definitively proves the results are fabricated or impossible — the concerns are about insufficient evidence, uncontrolled confounds, and overclaiming rather than demonstrated fatal errors. The paper requires substantial revision before its conclusions can be considered reliable.",
+    "findings": [
+      {
+        "finding": "No statistical significance testing or uncertainty quantification for the central claim of best performance on 11/12 translation directions, with COMET differences of ~1 point over only 1012 test sentences.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.92,
+        "justification": "Both reviewers identify this as a critical gap. The headline claim could collapse entirely if paired bootstrap or significance tests showed non-significant differences. Reviewer B considered upgrading to RETRACTION-WORTHY but the absence of tests does not prove the results are false — it proves they are unsubstantiated. The claim is overclaimed rather than definitively wrong, which places this at high-end MAJOR-REVISION.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Potential train/test contamination: WikiMatrix (example database) and FLORES+ (test set) both derive from Wikipedia content, and no deduplication or near-duplicate filtering is reported.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.88,
+        "justification": "Both reviewers flag this. Reviewer B considered upgrading to RETRACTION-WORTHY. This is a serious validity threat because retrieval-based methods could select near-duplicates of test sentences, inflating scores artifactually. However, without evidence that such overlap actually exists, this remains a plausible but unconfirmed threat. If contamination were demonstrated, it would be RETRACTION-WORTHY; as an unaddressed risk, it is high-end MAJOR-REVISION.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The comparison to CTQScorer is explicitly not like-for-like: different example databases (WikiMatrix vs. Europarl/ParaCrawl) and different test sets (FLORES+ vs. FLORES-101) are used.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.95,
+        "justification": "Both reviewers agree this invalidates the comparative superiority claim over CTQScorer. The authors themselves acknowledge the difference. This does not invalidate internal comparisons but renders the external state-of-the-art claim unsupported. Clear MAJOR-REVISION with very high confidence.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "No validation of parser accuracy across the six languages, despite syntax being the core proposed signal. spaCy parser quality varies substantially across languages and no error analysis or robustness check is provided.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Identified by Reviewer A and acknowledged as important by Reviewer B during steelmanning. If parsers are unreliable for some languages, the 'syntax' signal is meaningless for those translation directions, undermining direction-specific claims. This is a construct validity issue central to the paper's thesis.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The causal claim that 'syntax helps' is not disentangled from confounds: sentence length, parse depth, branching factor, and example diversity could all explain the observed gains equally well.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.82,
+        "justification": "Both reviewers raise versions of this concern. Reviewer A initially rated multiple related findings as MAJOR-REVISION but acknowledged during steelmanning that some are more about mechanism interpretation than outcome validity. The paper's central interpretive claim (syntax is responsible) is unsupported without ablations, but the empirical observation of improved scores may still hold. MAJOR-REVISION is appropriate for the interpretive overclaim.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The Polynomial Distance is assumed to capture MT-relevant syntactic similarity but this assumption is never empirically validated (e.g., no correlation with human syntactic similarity judgments, no verification that selected examples actually differ from baselines in the intended syntactic dimension).",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Both reviewers flag this. It overlaps with parser quality and confound issues but is independently important: the entire method rests on an untested operationalization of syntax. Reviewer B acknowledged this overlaps with other findings but maintained MAJOR-REVISION.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Unexplained poor performance of R-BM25 baseline, with the authors stating they 'leave exploration of the cause to future work.' This raises questions about implementation correctness or configuration mismatch.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.72,
+        "justification": "Identified by Reviewer B. Reviewer B later downgraded this somewhat during steelmanning, noting R-BM25 is not the main baseline. However, if a previously published method fails unexpectedly, it suggests potential implementation issues that could affect other baselines too. Borderline MAJOR-REVISION/MINOR; retaining MAJOR-REVISION with moderate confidence.",
+        "source": "prover_b",
+        "survived_steelman": false
+      },
+      {
+        "finding": "The ensemble strategy (BM25 + Polynomial) does not control for demonstration order effects or diversity-driven gains independent of syntax.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.75,
+        "justification": "Reviewer A initially rated this MAJOR-REVISION but downgraded during steelmanning, acknowledging this is more of an ablation/interpretability gap than a conclusion-threatening flaw. The paper defines both orderings, suggesting awareness, but doesn't formally control for it. This is a valid concern but unlikely to overturn the core empirical observation.",
+        "source": "prover_a",
+        "survived_steelman": false
+      },
+      {
+        "finding": "No check for duplicate or near-duplicate demonstrations within the retrieval set for a single test instance.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.7,
+        "justification": "Reviewer A initially rated MAJOR-REVISION but acknowledged during steelmanning that within-prompt duplication is probably minor unless shown to be frequent. The more serious part (overlap with test set) is captured by the contamination finding above.",
+        "source": "prover_a",
+        "survived_steelman": false
+      },
+      {
+        "finding": "Only one LLM (XGLM-7.5B) is used, limiting robustness and generalizability of the findings.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers agree this is MINOR. It limits external validity but does not invalidate the reported experiments.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Only six relatively common languages tested; no low-resource settings despite general claims about MT and syntax-aware selection.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers agree. Standard external validity limitation.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "BLEU scores relegated to appendix with no discussion of alignment with COMET trends; no human evaluation provided.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.88,
+        "justification": "Both reviewers agree this is MINOR. COMET is a well-regarded metric, but triangulation would strengthen claims, especially given small effect sizes.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Only three random seeds for the Random baseline, providing a weak variance estimate.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.88,
+        "justification": "Both reviewers agree. Affects precision of the baseline estimate but not fatal.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "16-example prompts sometimes exceed model context length; no controlled truncation analysis provided.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers agree. Concerns secondary analysis rather than the main 8-shot claim.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Insufficient reporting of generation settings (max tokens, stopping criteria, beam/greedy details) reduces reproducibility.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.88,
+        "justification": "Both reviewers agree. A reporting gap, not a methodological flaw.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Main text highlights 8-example setting; results for 2, 4, and 16 examples only in appendix/figures, potentially cherry-picking the most favorable condition.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.78,
+        "justification": "Identified by Reviewer B. Common presentation choice that slightly reduces transparency but does not invalidate results.",
+        "source": "prover_b",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Averaging over 12 directions without describing macro/micro weighting rationale or accounting for differing baseline difficulties.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers agree. Common practice that could be improved but unlikely to change conclusions.",
+        "source": "both",
+        "survived_steelman": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 21885,
+    "duration_s": 150.56,
+    "n_api_calls": 6,
+    "cost_usd": 0.3782,
+    "total_input_tokens": 28007,
+    "total_output_tokens": 9238,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 5518,
+        "output_tokens": 1684,
+        "cost_usd": 0.030635,
+        "duration_s": 28.68,
+        "label": "2403.19285v2/gd/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 5487,
+        "output_tokens": 1085,
+        "cost_usd": 0.00267499,
+        "duration_s": 16.27,
+        "label": "2403.19285v2/gd/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2935,
+        "output_tokens": 682,
+        "cost_usd": 0.00154265,
+        "duration_s": 9.52,
+        "label": "2403.19285v2/gd/judge"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3094,
+        "output_tokens": 1555,
+        "cost_usd": 0.023285,
+        "duration_s": 25.24,
+        "label": "2403.19285v2/gd/steelman_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3163,
+        "output_tokens": 1561,
+        "cost_usd": 0.00257111,
+        "duration_s": 22.11,
+        "label": "2403.19285v2/gd/steelman_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7810,
+        "output_tokens": 2671,
+        "cost_usd": 0.317475,
+        "duration_s": 48.75,
+        "label": "2403.19285v2/gd/arbiter"
+      }
+    ]
+  }
+}

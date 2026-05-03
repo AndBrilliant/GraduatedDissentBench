@@ -1,0 +1,140 @@
+{
+  "condition": "B2",
+  "paper_id": "2409.01021v2",
+  "verdict": "flagged",
+  "confidence": 0.91,
+  "reasoning": "The manuscript appears technically ambitious, but the methods section contains multiple internal inconsistencies and under-specified operations that make the implementation and some claims difficult to validate. The most serious issues concern the mathematical definition of the aggregation pipeline and correspondence/condensation mechanism: several tensors and operations are dimensionally inconsistent or ambiguously defined, so it is unclear whether the described model is actually the one evaluated. I do not see a definitive impossibility that alone proves the reported benchmark results are false, so I would not classify this as retraction-worthy on the text alone. However, the paper would require major methodological clarification and likely revision before its conclusions could be considered well supported.",
+  "findings": [
+    {
+      "finding": "The aggregation network equations are dimensionally inconsistent and do not clearly define a valid computation from the 7D hyperassociation tensor to the claimed association feature tensor. In Eq. (6)-(8), 2D convolutions are applied to slices of tensors with incompatible leading dimensions (e.g., N x H x W x C' treated as a 2D feature map), indices are reused inconsistently, and the text claims elimination of the target H x W dimension while later retaining N x C over target images before averaging.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If confirmed, the core method as written is not reproducible and may not correspond to an implementable architecture. Since PAG/Agg is central to the paper's main contribution, this could materially affect conclusions, but it does not by itself prove the experiments are invalid if the actual code implements a coherent variant."
+    },
+    {
+      "finding": "The correspondence-induced condensation module is not rigorously specified as a differentiable or even well-defined operation. The method uses argmax to select an initial correspondence, predicts continuous offsets, then performs index selection a_s^j(n_s^j) without explaining coordinate discretization, interpolation, boundary handling, or gradient flow through the sampling step.",
+      "severity": "MAJOR-REVISION",
+      "justification": "CAC is a central claimed contribution and its effectiveness depends on how correspondences are sampled. Without a precise definition, the module cannot be reproduced and training behavior is unclear. This could change conclusions if implemented differently, but does not definitively invalidate results."
+    },
+    {
+      "finding": "The object-aware cycle consistency loss uses ground-truth segmentation masks during training to restrict correspondence supervision to co-salient pixels. This injects explicit target annotations into the auxiliary task that is presented as unsupervised/self-supervised correspondence learning.",
+      "severity": "MAJOR-REVISION",
+      "justification": "This is not necessarily invalid, but it is methodologically important because performance gains attributed to correspondence learning may partly arise from privileged supervision unavailable to generic semantic correspondence methods. The framing of the auxiliary task as unsupervised/self-supervised is misleading and should be revised; conclusions about the source of improvement could change."
+    },
+    {
+      "finding": "The paper claims computational burden reduction from CAC, but the proposed procedure appears to require first computing full raw associations to identify maxima and then constructing condensed associations. Since (h_j^0,w_j^0) is selected from a_s^j that itself comes from the full similarity tensor, the claimed reduction is not clearly supported unless full hyperassociations are never materialized. This distinction is not explained.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If full pairwise similarities must still be computed densely, the main efficiency claim is weakened or possibly incorrect. This would not necessarily invalidate accuracy results, but it could materially alter the practical contribution and claims about reduced computation."
+    },
+    {
+      "finding": "The manuscript alternates between describing hyperassociations as 6D and 7D tensors. For example, the related-work comparison says '6D hyperassociations,' while Eq. (4) defines A_s with an additional L_s layer dimension, making it effectively 7D. Similar confusion appears in later tensor descriptions.",
+      "severity": "MINOR",
+      "justification": "This is primarily a reporting/clarity issue, but it contributes to ambiguity in the core method description."
+    },
+    {
+      "finding": "There is an inconsistency in notation and feature dimensions for the aggregation output. Eq. (5) maps to N x H_s x W_s x C_s, but later the intermediate aggregated association is denoted F_s^{A'} in R^{N x H_s x W_s x N x C}, and then averaged over the second N dimension. The relation between C and C_s is unclear.",
+      "severity": "MINOR",
+      "justification": "This may be resolvable as notation sloppiness, but the current presentation obscures what is actually computed."
+    },
+    {
+      "finding": "The training protocol is insufficiently specified for group-based data sampling. The batch size is stated as N=6, but N is also the number of related images in a group throughout the formulation. The manuscript does not explain how groups with variable cardinality are handled during training/evaluation, whether images are subsampled, padded, or grouped dynamically.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Because CoSOD performance can depend strongly on grouping strategy, this omission affects reproducibility and potentially conclusions. Different group sampling protocols could change the reported gains."
+    },
+    {
+      "finding": "The OCC loss averages over all i,j including i=j in Eq. (16), but self-correspondence pairs are trivial and may distort the auxiliary objective. The paper does not state whether diagonal pairs are excluded in implementation.",
+      "severity": "MINOR",
+      "justification": "This likely would not overturn conclusions, but it is a methodological ambiguity that should be clarified."
+    },
+    {
+      "finding": "The manuscript provides no statistical characterization of performance variability: no repeated runs, confidence intervals, or significance testing, despite claiming notable gains over prior work and using multiple training-set combinations.",
+      "severity": "MINOR",
+      "justification": "This is a common reporting weakness rather than a fatal flaw; it would mainly affect confidence in the magnitude of improvement."
+    },
+    {
+      "finding": "Fairness of comparison is only partially established. The authors compare against official saliency maps from prior works trained under potentially different backbones, resolutions, post-processing, and data protocols, while training their own method under several dataset combinations to align with selected baselines. The exact alignment for each comparison is not fully documented in the manuscript.",
+      "severity": "MINOR",
+      "justification": "This weakens comparative rigor but does not on its own invalidate the central method."
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 5,
+    "MINOR": 5
+  },
+  "raw_review": {
+    "verdict": "flagged",
+    "confidence": 0.91,
+    "reasoning": "The manuscript appears technically ambitious, but the methods section contains multiple internal inconsistencies and under-specified operations that make the implementation and some claims difficult to validate. The most serious issues concern the mathematical definition of the aggregation pipeline and correspondence/condensation mechanism: several tensors and operations are dimensionally inconsistent or ambiguously defined, so it is unclear whether the described model is actually the one evaluated. I do not see a definitive impossibility that alone proves the reported benchmark results are false, so I would not classify this as retraction-worthy on the text alone. However, the paper would require major methodological clarification and likely revision before its conclusions could be considered well supported.",
+    "findings": [
+      {
+        "finding": "The aggregation network equations are dimensionally inconsistent and do not clearly define a valid computation from the 7D hyperassociation tensor to the claimed association feature tensor. In Eq. (6)-(8), 2D convolutions are applied to slices of tensors with incompatible leading dimensions (e.g., N x H x W x C' treated as a 2D feature map), indices are reused inconsistently, and the text claims elimination of the target H x W dimension while later retaining N x C over target images before averaging.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the core method as written is not reproducible and may not correspond to an implementable architecture. Since PAG/Agg is central to the paper's main contribution, this could materially affect conclusions, but it does not by itself prove the experiments are invalid if the actual code implements a coherent variant."
+      },
+      {
+        "finding": "The correspondence-induced condensation module is not rigorously specified as a differentiable or even well-defined operation. The method uses argmax to select an initial correspondence, predicts continuous offsets, then performs index selection a_s^j(n_s^j) without explaining coordinate discretization, interpolation, boundary handling, or gradient flow through the sampling step.",
+        "severity": "MAJOR-REVISION",
+        "justification": "CAC is a central claimed contribution and its effectiveness depends on how correspondences are sampled. Without a precise definition, the module cannot be reproduced and training behavior is unclear. This could change conclusions if implemented differently, but does not definitively invalidate results."
+      },
+      {
+        "finding": "The object-aware cycle consistency loss uses ground-truth segmentation masks during training to restrict correspondence supervision to co-salient pixels. This injects explicit target annotations into the auxiliary task that is presented as unsupervised/self-supervised correspondence learning.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is not necessarily invalid, but it is methodologically important because performance gains attributed to correspondence learning may partly arise from privileged supervision unavailable to generic semantic correspondence methods. The framing of the auxiliary task as unsupervised/self-supervised is misleading and should be revised; conclusions about the source of improvement could change."
+      },
+      {
+        "finding": "The paper claims computational burden reduction from CAC, but the proposed procedure appears to require first computing full raw associations to identify maxima and then constructing condensed associations. Since (h_j^0,w_j^0) is selected from a_s^j that itself comes from the full similarity tensor, the claimed reduction is not clearly supported unless full hyperassociations are never materialized. This distinction is not explained.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If full pairwise similarities must still be computed densely, the main efficiency claim is weakened or possibly incorrect. This would not necessarily invalidate accuracy results, but it could materially alter the practical contribution and claims about reduced computation."
+      },
+      {
+        "finding": "The manuscript alternates between describing hyperassociations as 6D and 7D tensors. For example, the related-work comparison says '6D hyperassociations,' while Eq. (4) defines A_s with an additional L_s layer dimension, making it effectively 7D. Similar confusion appears in later tensor descriptions.",
+        "severity": "MINOR",
+        "justification": "This is primarily a reporting/clarity issue, but it contributes to ambiguity in the core method description."
+      },
+      {
+        "finding": "There is an inconsistency in notation and feature dimensions for the aggregation output. Eq. (5) maps to N x H_s x W_s x C_s, but later the intermediate aggregated association is denoted F_s^{A'} in R^{N x H_s x W_s x N x C}, and then averaged over the second N dimension. The relation between C and C_s is unclear.",
+        "severity": "MINOR",
+        "justification": "This may be resolvable as notation sloppiness, but the current presentation obscures what is actually computed."
+      },
+      {
+        "finding": "The training protocol is insufficiently specified for group-based data sampling. The batch size is stated as N=6, but N is also the number of related images in a group throughout the formulation. The manuscript does not explain how groups with variable cardinality are handled during training/evaluation, whether images are subsampled, padded, or grouped dynamically.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Because CoSOD performance can depend strongly on grouping strategy, this omission affects reproducibility and potentially conclusions. Different group sampling protocols could change the reported gains."
+      },
+      {
+        "finding": "The OCC loss averages over all i,j including i=j in Eq. (16), but self-correspondence pairs are trivial and may distort the auxiliary objective. The paper does not state whether diagonal pairs are excluded in implementation.",
+        "severity": "MINOR",
+        "justification": "This likely would not overturn conclusions, but it is a methodological ambiguity that should be clarified."
+      },
+      {
+        "finding": "The manuscript provides no statistical characterization of performance variability: no repeated runs, confidence intervals, or significance testing, despite claiming notable gains over prior work and using multiple training-set combinations.",
+        "severity": "MINOR",
+        "justification": "This is a common reporting weakness rather than a fatal flaw; it would mainly affect confidence in the magnitude of improvement."
+      },
+      {
+        "finding": "Fairness of comparison is only partially established. The authors compare against official saliency maps from prior works trained under potentially different backbones, resolutions, post-processing, and data protocols, while training their own method under several dataset combinations to align with selected baselines. The exact alignment for each comparison is not fully documented in the manuscript.",
+        "severity": "MINOR",
+        "justification": "This weakens comparative rigor but does not on its own invalidate the central method."
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 43206,
+    "duration_s": 23.65,
+    "n_api_calls": 1,
+    "cost_usd": 0.0426,
+    "total_input_tokens": 11892,
+    "total_output_tokens": 1288,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 11892,
+        "output_tokens": 1288,
+        "cost_usd": 0.04261,
+        "duration_s": 23.65,
+        "label": "2409.01021v2/b2/review"
+      }
+    ]
+  }
+}

@@ -1,0 +1,193 @@
+Multi-antenna towards inband shift keying is a new continuous phase frequency shift keying that is particularly suited for multi-antenna communications when the link budget is critical. It combines the constant envelope of frequency modulation with low-rate repetition coding in order to make transmit beamforming dispensable.
+
+Although it is a frequency modulation, its transmit signal shows close to rectangular spectral shape. Similar to GSM's Gaussian minimum shift keying, it can be well approximated by linear modulation, when combined with differential precoding. This allows for easy coherent demodulation by means of a windowed fast Fourier transform.
+
+Communication in the millimeter and terahertz bands are characterized by critical link budgets. The standard solution to this problem is to utilize transmit beamforming which concentrates the signal energy around the receiving unit. However, this comes with lots of unfavorable issues: 1) Beam alignment delays the set-up of up radio links [1]. 2) Directional transmission jeopardizes many forms of network coding. 3) The concentration of signal power raises concerns about electromagnetic compatibility [2]. 4) The narrow angular spread reduces multipath propagation [3] and, thus, diversity. This list is not exhaustive. It only serves the purpose to motivate the search for an alternative to transmit beamforming.
+
+Transmit beamforming is a spatial repetition code. On each antenna, the same data is transmitted. If there are N transmit antennas, the code rate is 1/N. Coherent superposition in the vicinity of the receiver improves the signal-to-noise ratio (SNR) by a factor of N. In time domain, data symbols are conveniently separated by orthogonality via pulse shaping.
+
+Information theory does not care, if we exchange space and time on an additive white Gaussian noise (AWGN) channel. It just means to give the variables in the mathematical model of the channel another physical meaning. However, the implementation may be more beneficial, if we apply the repetition code in time rather than in space.
+
+Let all data be repeated T times. The rate of this temporal repetition code is 1/T. Coherent superposition within the receiver improves the SNR by a factor of T. In spatial domain, data symbols can be conveniently separated by orthogonality via frequency multiplex, if each subcarrier is transmitted over a different antenna.
+
+A multi-carrier multi-antenna system with temporal repetition coding that maps every subcarrier one to one onto the antenna elements is straightforward to implement with standard linear modulations. However, this leaves much room for improvement. Linear modulation with pulse shaping also comes with one quite unfavorable issue: The amplitude varies in continuous time. The signal crest requires the amplifiers to be backed-off to avoid non-linear signal distortion and out-of-band radiation [4]. A significant amount of energy is converted into heat rather than being radiated. Amplifiers which can cope with amplitude variations are also more expensive than their counterparts that can only cope with phase changes.
+
+Nevertheless, linear modulation has displaced their nonlinear counterparts like continuous phase modulation and frequency shift keying over the evolution of wireless standard from 1G to 5G. This was, as frequency shift keying comes with its own severe issues: 1) The spectrum is poorly confined. 2) The amplitude domain is not utilized for data transmission. Both effects result in poor spectral efficiency.
+
+In a multi-carrier system with low-rate repetition coding, the negative issues of frequency shift keying, if properly designed, vanish, while the crest problems of linear modulation remain. This makes continuous-phase frequency shift keying (CPFSK) a promising candidate for communication in millimeter and terahertz bands.
+
+The purpose of this paper is to propose one example of such a proper multi-carrier design of CPFSK, which is termed multi-antenna towards inband shift keying (MA-TISK), in the sequel.
+
+For low-rate repetition coding, it is not an issue to leave the amplitude dimension of the signal unused and utilize the phase only. After all, a repetition code only utilizes one out of many dimensions in signal-space. On the AWGN channel, restricting to phase modulation has a very similar effect as a repetition code of rate one half, if the SNR is high. For low SNR, i.e. for critical link budget, the effect vanishes.
+
+In order to exonerate CPFSK, at least for critical link budgets, it is sufficient to overcome its poor spectral confinement. A method to achieve that is presented in the following sections. Section II develops the main idea at the example of the frequency correction burst of the Global System for Mobile Communications (GSM). Section III generalizes the idea to arbitrary phase modulation and frequency pulses. Section IV provides numerical results, before Section V summarizes the conclusions and promises.
+
+## II. REPETITION CODED GMSK
+
+Data rate \(R\) is fundamentally related to SNR. For the complex-valued AWGN channel, the relation is well-investigated and given by
+\[
+R = \log_2(1 + \mathrm{SNR})
+\]
+If the link budget is critical, SNR is low, that means SNR ≪ 1. In that case, the logarithm in (1) is well approximated by a linear function. We have
+\[
+R \approx \frac{\mathrm{SNR}}{\ln 2}
+\]
+In that regime, you can hardly do anything better than concatenating standard methods of forward-error correction coding designed for moderate rates with repetition coding in order to get an overall very low rate.
+
+Let us consider repetition coding modulated with Gaussian minimum shift keying (GMSK) as used in GSM. Consider a repetition code of rate \(1/T\) with two codewords, the all-one and the all-zero word. If we feed the all-zero codeword into the frequency modulator, the phase is repeatedly shifted upwards. This is equivalent to an increase of frequency. This effect is well-known and even utilized in GSM. Fig. 1 shows the short-term spectrum of GSM during the frequency correction burst which contains 148 consecutive 0-bits [5]. This temporary sine tone at the shifted frequency is used in GSM for initial frequency synchronization and coarse time slot synchronization.
+
+For the all-one codeword, the short-term spectrum looks very similar. The frequency shift is not towards lower frequencies, but also upwards. This is as GSM uses differential precoding. Thus, a sequence of 148 1-bits is first converted into a sequence of at least 147 0-symbols before it is fed into the modulator. For a duration of at least 142 symbols¹, the instantaneous frequency is identical. However, the waveform is phase-shifted by \(\pi\).
+
+The repetition code composed of the all-zero and the all-one codeword shapes the spectrum of GMSK. The modified spectrum has a raised carrier frequency with reduced sidelobes. During phase changes the sidelobes are predominantly left of the raised carrier frequency. The spectrum is asymmetric.
+
+An asymmetric spectrum is well-suited for a multi-carrier system. If the rightmost subcarrier had a spectrum as shown in Fig. 1, the strong sidelobes to the left would interfere with lower subcarriers. Only the weak sidelobes to the right would contribute to out-of-band radiation. While this is good news for the top subcarrier, it is very bad at the lowest subcarrier frequency. There, the strong sidelobes would be out-of-band.
+
+The spectrum in Fig. 1 can be flipped. For that purpose, we need to change the repetition code from \(\mathcal{R}_u = \{0000 \ldots, 1111 \ldots \}\) to \(\mathcal{R}_l = \{1010 \ldots, 0101 \ldots \}\). After differential precoding, this leads to an all-one sequence of at least 147 symbols. As MSK maps a logical 0 to a phase shift of \(\phi = \frac{\pi}{2}\) and a logical 1 to a phase shift of \(\phi = -\frac{\pi}{2}\), it results in a lowering of the instantaneous frequency.
+
+The roadmap towards reduced out-of-band radiation should be clear now: We use the code \(\mathcal{R}_u\) for all subcarriers in the upper sideband (right of the center of the band) and the code \(\mathcal{R}_l\) for all subcarriers in the lower sideband (left of the center of the band). Though one minor issue has remained: The frequencies of the
+
+¹GMSK modulation contains memory of up to 5 symbols.
+
+Instead of changing the code, we could alternatively change the mapping. Let us use the code \( R_u \) for all subcarriers. However, for the subcarriers in the upper sideband, we use the mapping
+\[
+\phi(s) =  \begin{cases}
+\frac{\pi}{2} & \text{for } s = 0 \\
+-\frac{\pi}{2} & \text{for } s = 1
+\end{cases} \tag{3}
+\]
+For subcarriers in the lower sideband, we use the mapping \( -\phi(s) \). Clearly, this gives the same result, as the two codes just differ in the sign of the symbols fed into the modulator.
+
+We can correct the frequency shift by an offset to the phase shifts, as instantaneous frequency is the derivative of the phase. This means, we use the mappings
+\[
+\phi_u(s) = \phi(s) - \frac{\pi}{2} = \begin{cases}
+0 & \text{for } s = 0 \\
+-\pi & \text{for } s = 1
+\end{cases}
+\]
+\[
+\phi_l(s) = \frac{\pi}{2} - \phi(s) = \begin{cases}
+0 & \text{for } s = 0 \\
+\pi & \text{for } s = 1
+\end{cases} \tag{4}
+\]
+for the upper and the lower sideband, respectively. Here, it is important to note that a phase shift by \(\pi\) and by \(-\pi\) are not identical in CPFSK. A positive phase shift means that the instantaneous frequency is temporarily increased, while a negative phase shift means that it is temporarily reduced. After the decay of the frequency pulse, the result does not differ, of course. If the code rate \( \frac{1}{T} \) is small, the receiver will hardly notice the difference, either, but the radio spectrum is strongly affected.
+
+GSM is standardized with minimum shift keying as modulation format. This was based on the thought that minimum shift keying is the most efficient frequency modulation, which is correct [6]. However, GMSK is combined with differential precoding. Thus, it is a differential frequency modulation. In that case, minimum shift keying is not proven optimal. For the time-bandwidth product of BT = 0.3 in GSM, it can be well-approximated by linear modulation [7]. In this case, it is certainly not optimal.
+
+Consider a quaternary minimum shift keying [8] with Gaussian pulse filtering, i.e. a generalization of GMSK where everything stays as it is, except for having quaternary phase-shift keying (QPSK) symbols instead of its binary counterpart. Instead of the phase shifts ±π/2, we have phase shifts from the set {±π/4, ±3π/4} and apply Gray mapping. Both quadrature components can be demodulated independently from each other [8]. For the QPSK example above, the maximal frequency deviation is 3π/4 instead of π/2. This results in an at most 37% wider (slightly above the shoulder of the first sidelobe) spectrum as shown in Fig. 2. However, it doubles data rate. This is a boost in spectral efficiency of at least 46% that was not realized. An alternative way to utilize the inherent redundancy of binary GMSK is reported in [9].
+
+In our multi-antenna concept, we are only concerned with the spectra for repetition codes. As Fig. 2 illustrates, the spectrum of quaternary GMSK is hardly worse than the spectrum of its binary counterpart. Note that only the spectrum of the upper sideband relative to the main lobe influences the out-of-band radiation. The spectrum of the lower sideband only contributes to inter-carrier interference.
+
+In contrast to binary GMSK discussed in Section II, a modification of the phase mapping is not just a frequency shift and/or mirroring, when a repetition code is used. For quaternary phase constellations, it makes a difference, whether the repeated phase shift, i.e. the one that the symbol s = 0 is mapped to, is at the edge of the constellation, i.e. has minimum or maximum phase shift, or it is an inner phase shift between these
+
+extremes. As noted before, a phase shift by a multiple of $2\pi$ is not irrelevant for the spectrum of CPFSK. The four different spectra are shown in Fig. 3. There are two different shapes with their respective mirrored spectra. The repeated phase shifts determine the instantaneous frequency. This can be observed in Fig. 4.
+
+For a multi-carrier system, spectra as in Fig. 3 are quite useful. Each could represent one subcarrier. The overall spectrum of all tones is still better confined as its counterpart without repetition coding in Fig. 2. However, the carrier spacing in Fig. 3 is quite wasteful. Many more tones could be packed in-between these four ones. This issue is addressed in the next section.
+
+Differential precoding converts any constellation of phases into a constellation of phase shifts. Any regular PSK constellation with $M$ points is mapped onto the set of phase shifts
+
+\[
+\mathcal{P} = \left\{0, \frac{2\pi}{M}, \ldots, \frac{2\pi(M - 1)}{M}\right\}.
+\]
+
+While a symbol is repeated, no phase shift occurs and the instantaneous frequency keeps constant.
+
+## A. Antenna/Subcarrier-Dependent Constellation
+
+We can optimize the spectral shape without influencing the performance, e.g., error and information rate, of a digital communication system. In discrete time, a phase shift by $\phi$ and by $\phi + 2\pi$ cannot be distinguished. In continuous time, however, the output signals of a CPFSK modulator differ. For the latter case, the instantaneous frequency is larger than for the former. This influences the spectral shape.
+
+Consider the general set of PSK phase shifts
+\[
+\mathcal{P}(\omega) = \left\{0, \frac{2\pi}{M} - 2\pi\omega_1, \ldots, \frac{2\pi(M - 1)}{M} - 2\pi\omega_{M-1}\right\},
+\]
+for some binary vector $\omega = [\omega_1, \ldots, \omega_{M-1}] \in \{0, 1\}^{M-1}$. For each subcarrier, we can find the optimal vector $\omega$, such that the spectrum of the aggregated signal of all subcarriers is most confined.
+
+For the leftmost subcarrier the optimal choice is the all-zero vector, if the number of subcarriers is large. For the rightmost subcarrier, it is the all one-vector. This is, as we prefer the sidelobes to appear towards the center of the channel band.
+
+For other subcarriers, the optimization can be tedious and requires a clear way to measure spectral confinement. This task is left open for future work. In this work, we opt for a heuristic, but reasonable approach: We chose $\omega$ for each subcarrier in such a way that the maximal deviation of the instantaneous frequency from the center of band is as small as possible. We call this method, as well as its generalizations with more sophisticated optimization of the vector $\omega$, multi-antenna towards inband shift keying.
+
+## B. Pulse Waveforms
+
+In GSM, a Gaussian filtered rectangular frequency pulse shape is used. It is well optimized with respect to the trade-off between spectral confinement and limiting intersymbol interference caused by lack of temporal orthogonality. In MA-TISK, the particular choice of the frequency pulse shape is much less critical.
+
+The repetition code ensures that the shape of the pulse hardly causes intersymbol interference. Due to the repetition code, the transmit signal is similar to a direct-sequence spread-spectrum signal with a row of the discrete Fourier transform matrix as spreading sequence. The frequency pulse shape corresponds to the chip pulse in the spread-spectrum signal. Even chip pulses that are not shift-orthogonal hardly create intersymbol interference. They may interfere with few subsequent chips. But they hardly span long enough in time to cause relevant intersymbol interference. The same considerations apply to the frequency pulses in MA-TISK.
+
+The design of frequency pulses can overwhelmingly focus on spectral confinement. As argued above, intersymbol interference is not a critical issue due to the repetition coding. For GMSK pulses, we can thus go for lower time-bandwidth products than in GSM. It also makes sense to consider totally different pulses like the squared sine wave pulse used in [10]. Optimization of the frequency pulse shape is left open for future work.
+
+## C. Subcarrier Separation
+
+Ideally, the subcarriers are spaced in such a way that they can be easily demodulated via fast Fourier transform (FFT) [11] while keeping the inter-carrier interference at a minimum.
+
+For $N$ subcarriers, the rate $R$ of the repetition code should be slightly smaller than $1/N$. If we repeat for $T > N$ times, the frequency pulse has time to decay such that the instantaneous frequency is constant for $N$ symbol periods. In that case, we can sample the received signal, window it for $N$ symbol periods and perfectly
+
+separate the N subcarriers via FFT. In practice, some crosstalk may remain. The frequency pulse may not have fully decayed or channel dispersion may jeopardize the orthogonality. These effects can be counteracted by slightly reducing the rate R, as demonstrated in Section IV.
+
+The system may even work with severe crosstalk. In [12], [13] a system was proposed that uses non-orthogonal spreading sequences with constant envelope instead of subcarriers. With the help of multiuser detection [14], [15], it is successfully utilized in [16] for satellite communications with a tight spectral mask that asks for a stopband attenuation of −70 dB.
+
+We show an example to demonstrate the quantitative potential of MA-TISK. We compare the resulting spectrum to various single-carrier methods that are state-of-the-art.
+
+We target the spectral mask of 5G downlink at 100 MHz channel bandwidth. We choose a transmit array with N = 64 antennas/subcarriers and QPSK modulation at a symbol rate of 1.25 Msymbols/s on each subcarrier resulting in a total data rate of 160 Mbit/s. The corresponding symbol period is 800 ns. We take a Gaussian filtered rectangular pulse like in the GSM standard [7] but with time-bandwidth product of 0.1 and scale it in time to fit the new data rate. This leads to a pulse duration of 91.4 ns.
+
+In order to have the GMSK pulse largely decayed before the FFT window starts, we set T = 70. This results in a subcarrier spacing of 1.37 MHz. This is, by far, wide enough to be insensitive to Doppler-induced frequency shifts.
+
+The resulting instantaneous frequencies are shown in Fig. 5 for 1.25 symbol periods and all 64 subcarriers. The instantaneous frequencies change over time, but they always keep between the lowest and highest subcarrier frequency. Changes are predominantly directed towards the center of the frequency band.
+
+For most of the symbol period, MA-TISK is linear phase modulation. The instantaneous frequency is constant. The phase of each subcarrier corresponds to the PSK symbol to be transmitted. Only during phase transitions, when the instantaneous frequency changes, the modulated signal relates to the PSK symbol in a nonlinear way. For many antennas, this period is much shorter than the symbol period and can be dismissed in a similar way as the cyclic prefix in orthogonal frequency division multiplexing.
+
+The more antennas are utilized, the larger the symbol period, as the overall bandwidth is divided into more subbands. This makes MA-TISK the more robust against channel dispersion the more antennas are used.
+
+The power spectral density (PSD) of the transmit signal is shown in Fig. 6. While the aggregate signal is wideband, the transmit signals at any individual antenna element is very narrowband. This simplifies the design of the RF-circuitry. In fact, narrowband RF-circuitry would even help to suppress sidelobes and reduce inter-carrier interference. Furthermore, the asymmetry of the PSD at the leftmost and rightmost subcarriers is evident. Even the spectrum of the centered carrier is not symmetric, as it performs phase shifts by –π, but not by +π. The overall spectrum shows significantly less sidelobes than the spectra of the individual subcarriers. This is a direct result of the in-band direction of the frequency deviations.
+
+When compared to single-carrier GMSK, the spectrum of MA-TISK is far better confined and competitive with linear single-carrier PSK. The latter has slight advantages when it comes to high stopband attenuation, but its spectrum deviates more from the ideal rectangular shape in the utilized spectral range.
+
+After demodulation by means of sampling and FFT, the signal-to-interference ratio (SIR) is found as 34.4 dB. No Gaussian noise was added. Interference is solely due to crosstalk of subcarriers and intersymbol interference. The SIR heavily depends on the value of T, cf. Table I, and the duration of the frequency pulse. For T = 64 = N,
+
+the frequency pulse is fully included in the FFT. This results in significant inter-carrier interference. Though, in combination with strong forward error-correction coding, an SIR of 8 dB is more than sufficient for reliable communication with quaternary modulation. For increasing values of \(T\), the window of the FFT begins to span only that range of the symbol periods where the instantaneous frequency is constant. Thus, the subcarriers preserve orthogonality.
+
+The temporal combining gain is 18.1 dB. Note that the temporal combining gain can slightly exceed 18 dB as \(T = 70 > N = 64\). Setting \(T > N\) is spectrally wasteful. However, it reduces inter-carrier interference, cf. Table I. Note that linear single-carrier modulation is also spectrally wasteful due to the roll-off factor.
+
+Transmit beamforming is a spatial repetition code and can be replaced by a temporal repetition code without reducing the data rate or the link budget. This is conveniently implemented via a multi-carrier system where each subcarrier is mapped onto one transmit antenna.
+
+A multi-carrier system with repetition coding can be implemented via differentially precoded continuous phase frequency shift keying while avoiding the spectral issues that come with frequency modulation in single-carrier systems. MA-TISK, a promising method of such implementation, is proposed.
+
+MA-TISK utilizes particular sets of phase shifts that depend on the position of the subcarrier within the channel band. This tilts the spectrum of each subcarrier towards the center of the band and reduces sidelobes towards adjacent channels.
+
+Although MA-TISK is a non-linear modulation, it can be demodulated like a linear one thanks to its combination with repetition coding and differential precoding. Intersymbol interference due to the memory of the continuous phase modulation is negligible. Cost-efficient demodulation by means of fast Fourier transform is possible.
+
+The transition phase may introduce some minor overhead. However, the overheads of competing systems, e.g., roll-off factors or blank subcarriers, are avoided.
+
+Thanks to its constant envelope, MA-TISK can be efficiently implemented by voltage controlled oscillators. Power amplifiers need neither be linear nor broadband and can operate without back-off at high efficiency.
+
+MA-TISK does not require beam alignment. Radio links can be set up fast without serious overhead. This makes MA-TISK suitable for the implementation of internet of things (IoT)-applications in the millimeter-wave and terahertz bands.
+
+MA-TISK is the more sensitive to multipath propagation the fewer antennas are deployed. This makes MA-TISK the more competitive the higher the carrier frequency.
+
+The author would like to thank Martin Vossiek, Christian Carlowitz, and Leonhard Hahn for helpful discussions on millimeter wave circuitry. Further thanks go to Georg Fischer, Wolfgang Gerstacker, Bernhard Niemann, and Hans Rosenberger for fruitful discussions on RF amplifiers, frequency domain equalization, 6G standardization, and proof reading the manuscript, respectively.
+
+[3] Gregory D. Durgin and Theodore S. Rappaport. Theory of multipath shape factors for small-scale fading wireless channels. IEEE Transactions on Antennas and Propagation, 48(5):682–693, May 2000.
+
+[4] Harald Enzinger, Karl Freiberger, and Christian Vogel. Competitive linearity for envelope tracking: Dual-band crest factor reduction and 2D-vector switched digital predistortion. IEEE Microwave Magazine, 54(11):40–47, November 2018.
+
+[5] Georg Frank and Wolfgang Koch. Initial synchronization of a mobile station in the D-net. PKI Technical Journal, (1):43–49, 1990.
+
+[6] John G. Proakis. Digital Communications. McGraw-Hill, New York, 3rd edition, 1995.
+
+[7] Michel Mouly and Marie-Bernadette Pautet. The GSM system for mobile communications, 1992.
+
+[8] Nimal Ekanayake. Quaternary minimum shift keying. In Proc. of IEEE Global Telecommunications Conference (Globecom), pages 909–914, Miami, FL, November/December 1982.
+
+[9] Raimund Meyer, Wolfgang H. Gerstacker, Robert Schober, and Johannes B. Huber. A single antenna interference cancellation algorithm for increased GSM capacity. IEEE Transactions on Wireless Communications, 5(7):1616–1621, July 2006.
+
+[10] Ralf Müller. Transmitter and method for transmitting a data signal over multiple antennas, 2024. European Patent Application No. 24157872.3.
+
+[11] James W. Cooley and John W. Tukey. An algorithm for the machine calculation of complex fourier series. Math. Comput., 19:297–301, 1965.
+
+[12] Ralf R. Müller and Alexander Lampe. Spectral efficiency of random CDMA with constant envelope modulation. International Journal of Electronics and Communications, 65:701–706, 2011.
+
+[13] Ralf R. Müller. On random CDMA with constant envelope. In Proc. of IEEE International Symposium on Information Theory (ISIT), St. Petersburg, Russia, August 2011.
+
+[14] Ralf R. Müller. Multiuser detection for continuous phase CDMA. In Proc. of IEEE Topical Conference on Antennas and Propagation for Wireless Communications, Turin, Italy, September 2011.
+
+[15] G. Gallinaro, N. Alagha, R. Müller, and S. Titomanlio. Quasi constant envelope CDMA for VHF maritime communications via satellite. In Ka and Broadband Communications Conference, Trieste, Italy, October 2017.
+
+[16] ITU-R M.2092-1. Technical characteristics for a VHF data exchange system in the VHF maritime mobile band. Technical report, International Telecommunication Union, February 2022.

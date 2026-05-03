@@ -1,0 +1,210 @@
+{
+  "condition": "B1",
+  "paper_id": "2403.19285v2",
+  "verdict": "not_flagged",
+  "confidence": 0.89,
+  "reasoning": "The manuscript presents a plausible and reasonably motivated methodological contribution: using dependency-tree similarity via Polynomial Distance for in-context example selection in MT, plus a simple ensemble with BM25. Methodologically, the paper has several strengths, including a clear hypothesis, multilingual evaluation, competitive baselines, and transparency about some limitations. However, there are also important weaknesses that limit confidence in the causal claims and generalizability: reliance on a single LLM, incomplete ablations, potential confounds from parser quality and retrieval-pool preprocessing, insufficient statistical significance analysis, unequal baseline comparisons, and a somewhat shallow treatment of computational scaling and prompt-budget effects. Overall, the methodology is promising but not fully rigorous enough to strongly support broad conclusions.",
+  "findings": [
+    {
+      "finding": "Strength: The research question is clear and specific: whether syntax-aware retrieval improves in-context example selection for MT."
+    },
+    {
+      "finding": "Strength: The proposed method is operationalized concretely. The manuscript defines how dependency trees are converted into polynomials and how Polynomial Distance is computed, making the approach conceptually reproducible."
+    },
+    {
+      "finding": "Strength: The study evaluates across 12 translation directions (English paired with 6 languages), which is broader than many prior MT-ICL studies and helps support cross-lingual relevance."
+    },
+    {
+      "finding": "Strength: The paper compares against multiple retrieval baselines, including Random, BM25, R-BM25, and CTQScorer, rather than only weak baselines."
+    },
+    {
+      "finding": "Strength: The use of FLORES+/devtest and COMET as the main metric is methodologically reasonable for MT evaluation; reporting BLEU in the appendix is also a plus."
+    },
+    {
+      "finding": "Strength: The paper includes some analysis beyond headline scores, such as varying the number of in-context examples and providing qualitative examples."
+    },
+    {
+      "finding": "Strength: The authors are transparent about some limitations, including the absence of low-resource evaluation, constituent-tree variants, and exploration of other LLMs."
+    },
+    {
+      "finding": "Strength: Some reproducibility-oriented details are provided, including parser choice, tokenizers, cleaning heuristics, hardware, and deterministic decoding."
+    },
+    {
+      "finding": "Weakness: The experiments use only one backbone model (XGLM-7.5B). This makes it difficult to know whether the gains are specific to this model or generalize across LLM families."
+    },
+    {
+      "finding": "Weakness: The manuscript claims syntax helps MT ICL broadly, but the evidence is limited to a single multilingual decoder-only model and one prompt style inherited from prior work."
+    },
+    {
+      "finding": "Weakness: There is no statistical significance testing or uncertainty reporting for most comparisons. Claims like 'highest on 11 out of 12 directions' may overstate robustness if margins are small."
+    },
+    {
+      "finding": "Weakness: Random is averaged over 3 seeds, but no variance is reported for the deterministic methods through test-set bootstrapping or paired significance analysis."
+    },
+    {
+      "finding": "Weakness: The core comparison may be confounded by parser quality. Since syntax retrieval depends entirely on spaCy parses, and parser accuracy differs substantially across languages, especially Japanese/Chinese, parser errors could drive performance differences."
+    },
+    {
+      "finding": "Weakness: There is no ablation isolating whether gains come from syntactic structure itself versus sentence length, tree shape regularities, or artifacts of dependency label distributions."
+    },
+    {
+      "finding": "Weakness: The paper motivates syntax strongly but does not compare against semantic retrieval baselines such as embedding similarity, which are highly relevant competitors for ICL example selection."
+    },
+    {
+      "finding": "Weakness: The ensemble method is simplistic (half BM25, half Polynomial concatenation) and under-explored. There is no tuning or analysis of ordering effects, deduplication, weighting, or adaptive mixing ratios."
+    },
+    {
+      "finding": "Weakness: The ensemble may confound retrieval quality with prompt composition/order effects. The manuscript mentions both 'BM25 + Polynomial' and 'Polynomial + BM25', but the methodological treatment of order sensitivity is limited."
+    },
+    {
+      "finding": "Weakness: The retrieval pool is WikiMatrix, which is very large and noisy. Although cleaning is described, the impact of remaining noise, domain mismatch with FLORES+, and language-pair-specific database size is not systematically controlled."
+    },
+    {
+      "finding": "Weakness: Baseline fairness is imperfect. The comparison with CTQScorer is acknowledged as unequal because prior work used different datasets and test sets; this weakens any strong claim of superiority over that method."
+    },
+    {
+      "finding": "Weakness: The paper does not report enough detail about prompt length control. Different retrieved examples may vary in token length, and at larger k the context can exceed model limits; this could bias comparisons if some methods retrieve longer demonstrations."
+    },
+    {
+      "finding": "Weakness: Relatedly, there is no explicit normalization for total prompt token budget across methods, which is important in ICL studies."
+    },
+    {
+      "finding": "Weakness: The computational cost analysis appears limited. Since syntax-based retrieval requires parsing plus pairwise distance computation against the example database, scalability to larger databases or real-time systems is unclear."
+    },
+    {
+      "finding": "Weakness: It is not clear whether top-k retrieval excludes near-duplicate examples or examples overlapping with test content, which matters when using mined web-scale parallel corpora."
+    },
+    {
+      "finding": "Weakness: The causal interpretation that syntax itself improves translation remains only partially supported because no targeted linguistic evaluation is performed on syntactic phenomena (e.g., voice, clause structure, negation, reordering)."
+    },
+    {
+      "finding": "Weakness: The qualitative examples are suggestive but anecdotal; stronger methodology would include error categorization or syntax-sensitive challenge sets."
+    },
+    {
+      "finding": "Weakness: The manuscript contains presentation issues that indirectly affect methodological clarity, including repeated introductory paragraphs, fragmented sectioning, and some ambiguity around exact experimental settings."
+    },
+    {
+      "finding": "Weakness: The method only measures source-side syntax similarity. For MT, target-side or joint source-target structural compatibility may matter; the absence of such baselines limits the scope of the conclusions."
+    },
+    {
+      "finding": "Weakness: The choice of Polynomial Distance is justified mainly by convenience and speed, but there is no direct comparison with alternative tree similarity measures such as tree edit distance or tree kernels, so the specific algorithmic choice is under-validated."
+    },
+    {
+      "finding": "Overall methodological assessment: promising idea with decent empirical breadth and reproducibility detail, but the evidence is not yet strong enough to conclusively establish syntax-aware retrieval as the key driver of improvement."
+    }
+  ],
+  "severity_counts": null,
+  "raw_review": {
+    "verdict": "not_flagged",
+    "confidence": 0.89,
+    "reasoning": "The manuscript presents a plausible and reasonably motivated methodological contribution: using dependency-tree similarity via Polynomial Distance for in-context example selection in MT, plus a simple ensemble with BM25. Methodologically, the paper has several strengths, including a clear hypothesis, multilingual evaluation, competitive baselines, and transparency about some limitations. However, there are also important weaknesses that limit confidence in the causal claims and generalizability: reliance on a single LLM, incomplete ablations, potential confounds from parser quality and retrieval-pool preprocessing, insufficient statistical significance analysis, unequal baseline comparisons, and a somewhat shallow treatment of computational scaling and prompt-budget effects. Overall, the methodology is promising but not fully rigorous enough to strongly support broad conclusions.",
+    "findings": [
+      {
+        "finding": "Strength: The research question is clear and specific: whether syntax-aware retrieval improves in-context example selection for MT."
+      },
+      {
+        "finding": "Strength: The proposed method is operationalized concretely. The manuscript defines how dependency trees are converted into polynomials and how Polynomial Distance is computed, making the approach conceptually reproducible."
+      },
+      {
+        "finding": "Strength: The study evaluates across 12 translation directions (English paired with 6 languages), which is broader than many prior MT-ICL studies and helps support cross-lingual relevance."
+      },
+      {
+        "finding": "Strength: The paper compares against multiple retrieval baselines, including Random, BM25, R-BM25, and CTQScorer, rather than only weak baselines."
+      },
+      {
+        "finding": "Strength: The use of FLORES+/devtest and COMET as the main metric is methodologically reasonable for MT evaluation; reporting BLEU in the appendix is also a plus."
+      },
+      {
+        "finding": "Strength: The paper includes some analysis beyond headline scores, such as varying the number of in-context examples and providing qualitative examples."
+      },
+      {
+        "finding": "Strength: The authors are transparent about some limitations, including the absence of low-resource evaluation, constituent-tree variants, and exploration of other LLMs."
+      },
+      {
+        "finding": "Strength: Some reproducibility-oriented details are provided, including parser choice, tokenizers, cleaning heuristics, hardware, and deterministic decoding."
+      },
+      {
+        "finding": "Weakness: The experiments use only one backbone model (XGLM-7.5B). This makes it difficult to know whether the gains are specific to this model or generalize across LLM families."
+      },
+      {
+        "finding": "Weakness: The manuscript claims syntax helps MT ICL broadly, but the evidence is limited to a single multilingual decoder-only model and one prompt style inherited from prior work."
+      },
+      {
+        "finding": "Weakness: There is no statistical significance testing or uncertainty reporting for most comparisons. Claims like 'highest on 11 out of 12 directions' may overstate robustness if margins are small."
+      },
+      {
+        "finding": "Weakness: Random is averaged over 3 seeds, but no variance is reported for the deterministic methods through test-set bootstrapping or paired significance analysis."
+      },
+      {
+        "finding": "Weakness: The core comparison may be confounded by parser quality. Since syntax retrieval depends entirely on spaCy parses, and parser accuracy differs substantially across languages, especially Japanese/Chinese, parser errors could drive performance differences."
+      },
+      {
+        "finding": "Weakness: There is no ablation isolating whether gains come from syntactic structure itself versus sentence length, tree shape regularities, or artifacts of dependency label distributions."
+      },
+      {
+        "finding": "Weakness: The paper motivates syntax strongly but does not compare against semantic retrieval baselines such as embedding similarity, which are highly relevant competitors for ICL example selection."
+      },
+      {
+        "finding": "Weakness: The ensemble method is simplistic (half BM25, half Polynomial concatenation) and under-explored. There is no tuning or analysis of ordering effects, deduplication, weighting, or adaptive mixing ratios."
+      },
+      {
+        "finding": "Weakness: The ensemble may confound retrieval quality with prompt composition/order effects. The manuscript mentions both 'BM25 + Polynomial' and 'Polynomial + BM25', but the methodological treatment of order sensitivity is limited."
+      },
+      {
+        "finding": "Weakness: The retrieval pool is WikiMatrix, which is very large and noisy. Although cleaning is described, the impact of remaining noise, domain mismatch with FLORES+, and language-pair-specific database size is not systematically controlled."
+      },
+      {
+        "finding": "Weakness: Baseline fairness is imperfect. The comparison with CTQScorer is acknowledged as unequal because prior work used different datasets and test sets; this weakens any strong claim of superiority over that method."
+      },
+      {
+        "finding": "Weakness: The paper does not report enough detail about prompt length control. Different retrieved examples may vary in token length, and at larger k the context can exceed model limits; this could bias comparisons if some methods retrieve longer demonstrations."
+      },
+      {
+        "finding": "Weakness: Relatedly, there is no explicit normalization for total prompt token budget across methods, which is important in ICL studies."
+      },
+      {
+        "finding": "Weakness: The computational cost analysis appears limited. Since syntax-based retrieval requires parsing plus pairwise distance computation against the example database, scalability to larger databases or real-time systems is unclear."
+      },
+      {
+        "finding": "Weakness: It is not clear whether top-k retrieval excludes near-duplicate examples or examples overlapping with test content, which matters when using mined web-scale parallel corpora."
+      },
+      {
+        "finding": "Weakness: The causal interpretation that syntax itself improves translation remains only partially supported because no targeted linguistic evaluation is performed on syntactic phenomena (e.g., voice, clause structure, negation, reordering)."
+      },
+      {
+        "finding": "Weakness: The qualitative examples are suggestive but anecdotal; stronger methodology would include error categorization or syntax-sensitive challenge sets."
+      },
+      {
+        "finding": "Weakness: The manuscript contains presentation issues that indirectly affect methodological clarity, including repeated introductory paragraphs, fragmented sectioning, and some ambiguity around exact experimental settings."
+      },
+      {
+        "finding": "Weakness: The method only measures source-side syntax similarity. For MT, target-side or joint source-target structural compatibility may matter; the absence of such baselines limits the scope of the conclusions."
+      },
+      {
+        "finding": "Weakness: The choice of Polynomial Distance is justified mainly by convenience and speed, but there is no direct comparison with alternative tree similarity measures such as tree edit distance or tree kernels, so the specific algorithmic choice is under-validated."
+      },
+      {
+        "finding": "Overall methodological assessment: promising idea with decent empirical breadth and reproducibility detail, but the evidence is not yet strong enough to conclusively establish syntax-aware retrieval as the key driver of improvement."
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 21885,
+    "duration_s": 25.49,
+    "n_api_calls": 1,
+    "cost_usd": 0.0262,
+    "total_input_tokens": 5291,
+    "total_output_tokens": 1301,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 5291,
+        "output_tokens": 1301,
+        "cost_usd": 0.0262375,
+        "duration_s": 25.49,
+        "label": "2403.19285v2/b1/review"
+      }
+    ]
+  }
+}

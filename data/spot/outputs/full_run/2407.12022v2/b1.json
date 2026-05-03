@@ -1,0 +1,150 @@
+{
+  "condition": "B1",
+  "paper_id": "2407.12022v2",
+  "verdict": "flagged",
+  "confidence": 0.97,
+  "reasoning": "The manuscript presents an interesting and potentially useful iterative fine-tuning idea for RTL/Verilog generation, with several methodological positives: a clear training loop, comparison against a non-iterative baseline, use of established benchmarks (VerilogEval-human/machine), and partial ablations on iteration count and softmax normalization. However, the methodology has substantial weaknesses that limit confidence in the claims. The core reward/selection signal is only a weak surrogate (syntax/similarity-based via Pyverilog and Rough-L) for the final functional metric, and the paper itself acknowledges this mismatch. Evaluation protocol appears vulnerable to tuning-on-test because the authors choose the best decoding result over multiple temperatures for each reported metric, which can inflate performance unless a validation set was used. Baseline comparability is also unclear: results are partly taken from prior papers under potentially different prompting/decoding settings, while the authors use a different pretrained backbone and reduced training set. The theoretical analysis is informal and does not establish optimization guarantees; equations conflate surrogate objectives, sampling distributions, and reward maximization without rigor. Critical implementation details are missing for reproducibility, such as data contamination checks against VerilogEval, exact prompt templates, candidate scoring details, sampling budget per iteration, model checkpoint selection, and variance across random seeds. The manuscript also shows bibliographic/template inconsistencies (e.g., 2018 citation for an LLM paper, placeholder venue/DOI, garbled formatting), which further reduce trust. Overall, the method is promising but the current experimental methodology and reporting are not strong enough to support the stated SOTA-level conclusions robustly.",
+  "findings": [
+    {
+      "finding": "Strength: Addresses a relevant methodological problem—static SFT data may mismatch the evolving model distribution—and proposes a simple iterative alternative that is easier to implement than RL."
+    },
+    {
+      "finding": "Strength: Uses recognized downstream benchmarks (VerilogEval-human and VerilogEval-machine) and an execution-based functional metric (pass@k), which is stronger than purely lexical evaluation."
+    },
+    {
+      "finding": "Strength: Includes comparison to a non-iterative variant and reports iteration-wise performance trends, which helps isolate the contribution of the iterative component."
+    },
+    {
+      "finding": "Strength: Provides some ablation on softmax normalization and discusses diminishing returns/over-optimization across iterations."
+    },
+    {
+      "finding": "Weakness: The training signal relies on Pyverilog and Rough-L-based quality scoring, which is only weakly related to the target metric of functional correctness; this threatens construct validity."
+    },
+    {
+      "finding": "Weakness: The paper explicitly selects the best test result across multiple decoding temperatures for each metric. Unless temperature is tuned on a separate validation set, this is test-set overfitting and can bias reported pass@k upward."
+    },
+    {
+      "finding": "Weakness: SOTA comparisons may be unfair or non-comparable because baseline numbers are imported from prior work, potentially under different prompts, decoding settings, sample counts, or evaluation harnesses."
+    },
+    {
+      "finding": "Weakness: Claims about outperforming RTLCoder with only 37% reference samples are difficult to interpret because backbone, training recipe, and possibly inference settings differ; this confounds attribution to the proposed method."
+    },
+    {
+      "finding": "Weakness: No uncertainty estimates are reported. Given the small benchmark sizes (143/156 tasks), differences of ~1% may correspond to only 1–2 problems and may not be statistically meaningful."
+    },
+    {
+      "finding": "Weakness: No multi-seed experiments are reported, despite stochastic sampling being central to the method. Robustness to random initialization/data order/sample generation is therefore unknown."
+    },
+    {
+      "finding": "Weakness: Potential benchmark contamination is not addressed. Since training uses open-source RTL/code-text pairs, overlap or near-duplication with VerilogEval tasks should be checked and reported."
+    },
+    {
+      "finding": "Weakness: Reproducibility is limited: exact prompt templates, candidate generation procedure, score computation details, data preprocessing/filtering, and checkpoint/model-selection criteria are insufficiently specified."
+    },
+    {
+      "finding": "Weakness: Theoretical analysis is heuristic rather than rigorous. The derivations from loss minimization to reward maximization are informal, rely on approximations without assumptions, and do not provide convergence or improvement guarantees."
+    },
+    {
+      "finding": "Weakness: The argument that iterative resampling reduces estimation error/distribution mismatch is plausible but not empirically validated with direct measurements of distributional shift or calibration."
+    },
+    {
+      "finding": "Weakness: The paper does not provide stronger ablations on key hyperparameters such as number of candidates K, number of iterations, fraction of teacher vs sampled responses, alpha/beta margins, and training epochs per iteration."
+    },
+    {
+      "finding": "Weakness: It is unclear whether gains come from iterative resampling itself, increased total compute/sample exposure, or repeated relabeling with the same surrogate scorer; a compute-matched control is missing."
+    },
+    {
+      "finding": "Weakness: The method may risk self-training confirmation bias or mode collapse, but there is little analysis of diversity, novelty, or failure accumulation across iterations."
+    },
+    {
+      "finding": "Weakness: Evaluation focuses almost entirely on VerilogEval; lack of external benchmarks (e.g., RTLLM or held-out industrial-style tasks) limits generalizability."
+    },
+    {
+      "finding": "Weakness: The manuscript contains major formatting and metadata inconsistencies (placeholder venue/DOI, broken section ordering, impossible 2018 date for this topic), which undermine confidence in the care taken in methodology reporting."
+    }
+  ],
+  "severity_counts": null,
+  "raw_review": {
+    "verdict": "flagged",
+    "confidence": 0.97,
+    "reasoning": "The manuscript presents an interesting and potentially useful iterative fine-tuning idea for RTL/Verilog generation, with several methodological positives: a clear training loop, comparison against a non-iterative baseline, use of established benchmarks (VerilogEval-human/machine), and partial ablations on iteration count and softmax normalization. However, the methodology has substantial weaknesses that limit confidence in the claims. The core reward/selection signal is only a weak surrogate (syntax/similarity-based via Pyverilog and Rough-L) for the final functional metric, and the paper itself acknowledges this mismatch. Evaluation protocol appears vulnerable to tuning-on-test because the authors choose the best decoding result over multiple temperatures for each reported metric, which can inflate performance unless a validation set was used. Baseline comparability is also unclear: results are partly taken from prior papers under potentially different prompting/decoding settings, while the authors use a different pretrained backbone and reduced training set. The theoretical analysis is informal and does not establish optimization guarantees; equations conflate surrogate objectives, sampling distributions, and reward maximization without rigor. Critical implementation details are missing for reproducibility, such as data contamination checks against VerilogEval, exact prompt templates, candidate scoring details, sampling budget per iteration, model checkpoint selection, and variance across random seeds. The manuscript also shows bibliographic/template inconsistencies (e.g., 2018 citation for an LLM paper, placeholder venue/DOI, garbled formatting), which further reduce trust. Overall, the method is promising but the current experimental methodology and reporting are not strong enough to support the stated SOTA-level conclusions robustly.",
+    "findings": [
+      {
+        "finding": "Strength: Addresses a relevant methodological problem—static SFT data may mismatch the evolving model distribution—and proposes a simple iterative alternative that is easier to implement than RL."
+      },
+      {
+        "finding": "Strength: Uses recognized downstream benchmarks (VerilogEval-human and VerilogEval-machine) and an execution-based functional metric (pass@k), which is stronger than purely lexical evaluation."
+      },
+      {
+        "finding": "Strength: Includes comparison to a non-iterative variant and reports iteration-wise performance trends, which helps isolate the contribution of the iterative component."
+      },
+      {
+        "finding": "Strength: Provides some ablation on softmax normalization and discusses diminishing returns/over-optimization across iterations."
+      },
+      {
+        "finding": "Weakness: The training signal relies on Pyverilog and Rough-L-based quality scoring, which is only weakly related to the target metric of functional correctness; this threatens construct validity."
+      },
+      {
+        "finding": "Weakness: The paper explicitly selects the best test result across multiple decoding temperatures for each metric. Unless temperature is tuned on a separate validation set, this is test-set overfitting and can bias reported pass@k upward."
+      },
+      {
+        "finding": "Weakness: SOTA comparisons may be unfair or non-comparable because baseline numbers are imported from prior work, potentially under different prompts, decoding settings, sample counts, or evaluation harnesses."
+      },
+      {
+        "finding": "Weakness: Claims about outperforming RTLCoder with only 37% reference samples are difficult to interpret because backbone, training recipe, and possibly inference settings differ; this confounds attribution to the proposed method."
+      },
+      {
+        "finding": "Weakness: No uncertainty estimates are reported. Given the small benchmark sizes (143/156 tasks), differences of ~1% may correspond to only 1–2 problems and may not be statistically meaningful."
+      },
+      {
+        "finding": "Weakness: No multi-seed experiments are reported, despite stochastic sampling being central to the method. Robustness to random initialization/data order/sample generation is therefore unknown."
+      },
+      {
+        "finding": "Weakness: Potential benchmark contamination is not addressed. Since training uses open-source RTL/code-text pairs, overlap or near-duplication with VerilogEval tasks should be checked and reported."
+      },
+      {
+        "finding": "Weakness: Reproducibility is limited: exact prompt templates, candidate generation procedure, score computation details, data preprocessing/filtering, and checkpoint/model-selection criteria are insufficiently specified."
+      },
+      {
+        "finding": "Weakness: Theoretical analysis is heuristic rather than rigorous. The derivations from loss minimization to reward maximization are informal, rely on approximations without assumptions, and do not provide convergence or improvement guarantees."
+      },
+      {
+        "finding": "Weakness: The argument that iterative resampling reduces estimation error/distribution mismatch is plausible but not empirically validated with direct measurements of distributional shift or calibration."
+      },
+      {
+        "finding": "Weakness: The paper does not provide stronger ablations on key hyperparameters such as number of candidates K, number of iterations, fraction of teacher vs sampled responses, alpha/beta margins, and training epochs per iteration."
+      },
+      {
+        "finding": "Weakness: It is unclear whether gains come from iterative resampling itself, increased total compute/sample exposure, or repeated relabeling with the same surrogate scorer; a compute-matched control is missing."
+      },
+      {
+        "finding": "Weakness: The method may risk self-training confirmation bias or mode collapse, but there is little analysis of diversity, novelty, or failure accumulation across iterations."
+      },
+      {
+        "finding": "Weakness: Evaluation focuses almost entirely on VerilogEval; lack of external benchmarks (e.g., RTLLM or held-out industrial-style tasks) limits generalizability."
+      },
+      {
+        "finding": "Weakness: The manuscript contains major formatting and metadata inconsistencies (placeholder venue/DOI, broken section ordering, impossible 2018 date for this topic), which undermine confidence in the care taken in methodology reporting."
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 27242,
+    "duration_s": 21.36,
+    "n_api_calls": 1,
+    "cost_usd": 0.0266,
+    "total_input_tokens": 6257,
+    "total_output_tokens": 1099,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 6257,
+        "output_tokens": 1099,
+        "cost_usd": 0.0266325,
+        "duration_s": 21.36,
+        "label": "2407.12022v2/b1/review"
+      }
+    ]
+  }
+}

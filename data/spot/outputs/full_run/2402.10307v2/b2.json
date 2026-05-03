@@ -1,0 +1,190 @@
+{
+  "condition": "B2",
+  "paper_id": "2402.10307v2",
+  "verdict": "flagged",
+  "confidence": 0.96,
+  "reasoning": "The manuscript contains multiple core methodological and theoretical problems that directly affect its central claims. Most importantly, its repeated claim of 'no loss in link budget gain compared to spatial beamforming at the transmitter' is not established under a fair power normalization and appears to conflate processing gain from longer symbol duration / lower rate with beamforming gain. Several key derivations are dimensionally inconsistent or incomplete, continuous-time constant-envelope and spectral-mask claims are asserted without a valid end-to-end signal model, and performance claims are based almost entirely on interference-only simulations without BER/BLER/capacity comparisons under a normalized channel/noise model. As written, the evidence does not support the paper's strongest conclusions.",
+  "findings": [
+    {
+      "finding": "The central claim of equal link-budget gain to transmit beamforming is not convincingly established and appears to rely on unfair normalization. The manuscript compares a temporal combining gain of about 12 dB to the 12 dB beamforming gain of 16 antennas, while using T = 18.375 > N = 16 and lower subcarrier spacing / longer effective observation interval. This mixes time-bandwidth processing gain with spatial beamforming gain without a clear equal-energy, equal-bandwidth, equal-rate, equal-latency comparison.",
+      "severity": "RETRACTION-WORTHY",
+      "justification": "This is the paper's headline conclusion ('There is no loss in link budget gain compared to spatial beamforming at the transmitter'). If the gain comes from spending more time/frequency resources rather than an equivalent physical link-budget advantage, the central comparative claim fails. A corrected normalization could substantially reduce or eliminate the claimed parity with transmit beamforming."
+    },
+    {
+      "finding": "No rigorous transmit-power normalization is given for the beamforming baseline versus MA-TISK. The manuscript discusses N antennas, TN transmit-matrix entries, and coherent combining gains, but never clearly specifies whether total radiated power, per-antenna power, symbol energy, and occupied bandwidth are held fixed across compared schemes.",
+      "severity": "RETRACTION-WORTHY",
+      "justification": "Without common normalization, received-power/SINR comparisons are not interpretable. In array processing, beamforming gains depend critically on whether total EIRP or per-element power is fixed. If those constraints differ across schemes, the claimed equivalence or superiority is methodologically unsupported."
+    },
+    {
+      "finding": "Equation (3) and the associated dimensions are inconsistent or ill-defined. The text states F_b is T x T, diag(x_b) is N x T, and T_b becomes N x T. But forming diag(x_b) from an N-length vector as an N x T 'diagonal matrix' is nonstandard and not mathematically specified. Subsequent claims about rows/columns and orthogonality depend on this construction.",
+      "severity": "MAJOR-REVISION",
+      "justification": "The foundational signal model is unclear. The main derivations of coherent combining and matched filtering rely on these dimensions. This may be repairable by rewriting the model carefully, but as written it prevents verification of the core mathematics."
+    },
+    {
+      "finding": "The claim that a unitary F_b allows recovery of x_{b,n} 'without crosstalk' by matched filters in (4) is incomplete because the received coefficients are weighted by channel coefficients h_n. Orthogonality of waveform rows alone does not remove the unknown/nonuniform channel scaling; recovery requires a proper channel model, sufficient statistics, and equalization assumptions that are not provided.",
+      "severity": "MAJOR-REVISION",
+      "justification": "This overstates the receiver separability result and affects the argument that temporal combining can straightforwardly replace beamforming. Depending on the actual channel model, interference/noise enhancement may differ materially."
+    },
+    {
+      "finding": "The manuscript asserts 'perfect constant envelope in continuous time' and near-rectangular aggregate spectra, but the continuous-time transmitter model is not rigorously specified. A VCO driven by phase/frequency control with RC smoothing, injection locking, finite tuning range, phase noise, and nonlinear dynamics is not equivalent to ideal continuous-phase modulation unless those dynamics are modeled. Oversampled discrete-time simulation is not sufficient proof of continuous-time constant-envelope spectral compliance.",
+      "severity": "MAJOR-REVISION",
+      "justification": "The hardware/spectral-efficiency claims are central to novelty. If practical continuous-time implementation deviates from the idealized model, the spectral-mask and demodulation claims may not hold. This likely requires a more realistic RF model, though it does not by itself prove the concept impossible."
+    },
+    {
+      "finding": "Spectral-mask claims are unsupported by methodological detail. The paper reports PSD plots and statements such as compliance with a 5G 100 MHz mask and -80 dB decay, but does not define PSD estimation method, averaging interval, windowing, resolution bandwidth, peak versus average mask interpretation, normalization, or whether spectral regrowth under data worst-case sequences was tested rather than averages.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Mask compliance is a major claimed advantage. Average PSD under favorable random data is not enough to establish compliance. Worst-case or standards-consistent measurement procedures could materially alter conclusions."
+    },
+    {
+      "finding": "Performance evaluation is largely based on interference-only simulations ('No Gaussian noise was added') while the paper's principal motivation is operation under critical link budgets. Reported SIR/SINR and combining gains therefore do not demonstrate end-to-end communication performance in the intended low-SNR regime.",
+      "severity": "MAJOR-REVISION",
+      "justification": "A system proposed specifically for link-budget-limited operation must be evaluated under thermal noise, channel fading, and coding assumptions. Interference-only results cannot substantiate the main practical claims, though this is potentially fixable with proper experiments/simulations."
+    },
+    {
+      "finding": "The manuscript provides no BER/BLER/capacity comparison against beamforming or relevant baselines under the same total power, bandwidth, and channel conditions. Claims of equivalent or superior rate/link-budget tradeoff are therefore speculative.",
+      "severity": "MAJOR-REVISION",
+      "justification": "The paper makes strong comparative system-level claims. Without matched baseline comparisons, the conclusions are not adequately supported and could change substantially."
+    },
+    {
+      "finding": "The use of Shannon's AWGN formula in (9)-(10) is oversimplified and then used to argue equivalence between loss in data rate and loss in beamforming gain in multiuser comparisons. This ignores finite constellations, coding gaps, interference-limited operation, peak/average power constraints, and non-AWGN effects. The inference that dividing subcarriers among K users is broadly 'similar' to beamforming with K users is not established.",
+      "severity": "MAJOR-REVISION",
+      "justification": "This underpins several broad architectural claims in Section C. The low-SNR linearization alone is insufficient to justify equivalence of fundamentally different multiuser resource allocations. Conclusions may change under realistic coding and propagation assumptions."
+    },
+    {
+      "finding": "The statement that MA-TISK can achieve 'peak data rate grow linearly with SNR by means of spatial multiplexing even in far field scenarios, since omni-directional transmission does not prevent rich scattering' is not supported. In far field, multiplexing gains depend on channel rank and spatial correlation, not merely absence of beamforming. Omnidirectional transmission does not guarantee high-rank channels.",
+      "severity": "MAJOR-REVISION",
+      "justification": "This is an overreach in theoretical interpretation. It may not invalidate the base waveform idea, but it does undermine a prominent claimed advantage."
+    },
+    {
+      "finding": "The manuscript repeatedly presents qualitative RF/hardware assertions as if they were demonstrated facts: no need for DACs/mixers/upconversion over most of the symbol, narrowband per-antenna hardware being categorically easier, beam squint avoidance, and simple direct phase injection. These claims are not backed by circuit-level analysis, tolerance studies, phase-noise modeling, or prototype evidence.",
+      "severity": "MINOR",
+      "justification": "These are important engineering claims but secondary to the mathematical validity. They should be toned down or supported experimentally."
+    },
+    {
+      "finding": "The discussion of electromagnetic exposure/compatibility is speculative and not methodologically grounded. The manuscript claims omnidirectional radiation avoids critical EMC areas because coherent combining only occurs at the receiver, but field exposure metrics depend on near/far field patterns, total EIRP, duty cycle, and regulatory averaging, not simply whether intended beamforming is used.",
+      "severity": "MINOR",
+      "justification": "This is not central to the core modulation concept, but the current argument is too informal to support the stated advantage."
+    },
+    {
+      "finding": "The claim that transmit beamforming reduces diversity and that MA-TISK 'fully exploits' diversity in space, time, and frequency is asserted without a formal channel/diversity analysis. Diversity order depends on coding/interleaving, channel statistics, combining architecture, and coherence parameters.",
+      "severity": "MINOR",
+      "justification": "This is a plausible discussion point but not demonstrated. It should be reframed as a hypothesis or backed by outage/diversity analysis."
+    },
+    {
+      "finding": "Several receiver claims are insufficiently justified, including that discarding transition intervals and using FFT demodulation can outperform average matched filters, and that 'even for three or more separable propagation paths, two receiver chains are sufficient' for equalization. These statements need explicit channel models and derivations.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Receiver feasibility and complexity are key to the proposal. If these claims fail under realistic channels, system performance and implementation burden may change materially."
+    },
+    {
+      "finding": "The manuscript's notation and exposition are internally inconsistent in places, including switching between ST and SN in transition intervals, fragmented text flow, and unclear definitions of variables and figures. This makes methodological verification difficult.",
+      "severity": "MINOR",
+      "justification": "Primarily a reporting/clarity problem. It does not by itself invalidate conclusions but contributes to ambiguity in the core derivations."
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 2,
+    "MAJOR-REVISION": 9,
+    "MINOR": 4
+  },
+  "raw_review": {
+    "verdict": "flagged",
+    "confidence": 0.96,
+    "reasoning": "The manuscript contains multiple core methodological and theoretical problems that directly affect its central claims. Most importantly, its repeated claim of 'no loss in link budget gain compared to spatial beamforming at the transmitter' is not established under a fair power normalization and appears to conflate processing gain from longer symbol duration / lower rate with beamforming gain. Several key derivations are dimensionally inconsistent or incomplete, continuous-time constant-envelope and spectral-mask claims are asserted without a valid end-to-end signal model, and performance claims are based almost entirely on interference-only simulations without BER/BLER/capacity comparisons under a normalized channel/noise model. As written, the evidence does not support the paper's strongest conclusions.",
+    "findings": [
+      {
+        "finding": "The central claim of equal link-budget gain to transmit beamforming is not convincingly established and appears to rely on unfair normalization. The manuscript compares a temporal combining gain of about 12 dB to the 12 dB beamforming gain of 16 antennas, while using T = 18.375 > N = 16 and lower subcarrier spacing / longer effective observation interval. This mixes time-bandwidth processing gain with spatial beamforming gain without a clear equal-energy, equal-bandwidth, equal-rate, equal-latency comparison.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This is the paper's headline conclusion ('There is no loss in link budget gain compared to spatial beamforming at the transmitter'). If the gain comes from spending more time/frequency resources rather than an equivalent physical link-budget advantage, the central comparative claim fails. A corrected normalization could substantially reduce or eliminate the claimed parity with transmit beamforming."
+      },
+      {
+        "finding": "No rigorous transmit-power normalization is given for the beamforming baseline versus MA-TISK. The manuscript discusses N antennas, TN transmit-matrix entries, and coherent combining gains, but never clearly specifies whether total radiated power, per-antenna power, symbol energy, and occupied bandwidth are held fixed across compared schemes.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "Without common normalization, received-power/SINR comparisons are not interpretable. In array processing, beamforming gains depend critically on whether total EIRP or per-element power is fixed. If those constraints differ across schemes, the claimed equivalence or superiority is methodologically unsupported."
+      },
+      {
+        "finding": "Equation (3) and the associated dimensions are inconsistent or ill-defined. The text states F_b is T x T, diag(x_b) is N x T, and T_b becomes N x T. But forming diag(x_b) from an N-length vector as an N x T 'diagonal matrix' is nonstandard and not mathematically specified. Subsequent claims about rows/columns and orthogonality depend on this construction.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The foundational signal model is unclear. The main derivations of coherent combining and matched filtering rely on these dimensions. This may be repairable by rewriting the model carefully, but as written it prevents verification of the core mathematics."
+      },
+      {
+        "finding": "The claim that a unitary F_b allows recovery of x_{b,n} 'without crosstalk' by matched filters in (4) is incomplete because the received coefficients are weighted by channel coefficients h_n. Orthogonality of waveform rows alone does not remove the unknown/nonuniform channel scaling; recovery requires a proper channel model, sufficient statistics, and equalization assumptions that are not provided.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This overstates the receiver separability result and affects the argument that temporal combining can straightforwardly replace beamforming. Depending on the actual channel model, interference/noise enhancement may differ materially."
+      },
+      {
+        "finding": "The manuscript asserts 'perfect constant envelope in continuous time' and near-rectangular aggregate spectra, but the continuous-time transmitter model is not rigorously specified. A VCO driven by phase/frequency control with RC smoothing, injection locking, finite tuning range, phase noise, and nonlinear dynamics is not equivalent to ideal continuous-phase modulation unless those dynamics are modeled. Oversampled discrete-time simulation is not sufficient proof of continuous-time constant-envelope spectral compliance.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The hardware/spectral-efficiency claims are central to novelty. If practical continuous-time implementation deviates from the idealized model, the spectral-mask and demodulation claims may not hold. This likely requires a more realistic RF model, though it does not by itself prove the concept impossible."
+      },
+      {
+        "finding": "Spectral-mask claims are unsupported by methodological detail. The paper reports PSD plots and statements such as compliance with a 5G 100 MHz mask and -80 dB decay, but does not define PSD estimation method, averaging interval, windowing, resolution bandwidth, peak versus average mask interpretation, normalization, or whether spectral regrowth under data worst-case sequences was tested rather than averages.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Mask compliance is a major claimed advantage. Average PSD under favorable random data is not enough to establish compliance. Worst-case or standards-consistent measurement procedures could materially alter conclusions."
+      },
+      {
+        "finding": "Performance evaluation is largely based on interference-only simulations ('No Gaussian noise was added') while the paper's principal motivation is operation under critical link budgets. Reported SIR/SINR and combining gains therefore do not demonstrate end-to-end communication performance in the intended low-SNR regime.",
+        "severity": "MAJOR-REVISION",
+        "justification": "A system proposed specifically for link-budget-limited operation must be evaluated under thermal noise, channel fading, and coding assumptions. Interference-only results cannot substantiate the main practical claims, though this is potentially fixable with proper experiments/simulations."
+      },
+      {
+        "finding": "The manuscript provides no BER/BLER/capacity comparison against beamforming or relevant baselines under the same total power, bandwidth, and channel conditions. Claims of equivalent or superior rate/link-budget tradeoff are therefore speculative.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The paper makes strong comparative system-level claims. Without matched baseline comparisons, the conclusions are not adequately supported and could change substantially."
+      },
+      {
+        "finding": "The use of Shannon's AWGN formula in (9)-(10) is oversimplified and then used to argue equivalence between loss in data rate and loss in beamforming gain in multiuser comparisons. This ignores finite constellations, coding gaps, interference-limited operation, peak/average power constraints, and non-AWGN effects. The inference that dividing subcarriers among K users is broadly 'similar' to beamforming with K users is not established.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This underpins several broad architectural claims in Section C. The low-SNR linearization alone is insufficient to justify equivalence of fundamentally different multiuser resource allocations. Conclusions may change under realistic coding and propagation assumptions."
+      },
+      {
+        "finding": "The statement that MA-TISK can achieve 'peak data rate grow linearly with SNR by means of spatial multiplexing even in far field scenarios, since omni-directional transmission does not prevent rich scattering' is not supported. In far field, multiplexing gains depend on channel rank and spatial correlation, not merely absence of beamforming. Omnidirectional transmission does not guarantee high-rank channels.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is an overreach in theoretical interpretation. It may not invalidate the base waveform idea, but it does undermine a prominent claimed advantage."
+      },
+      {
+        "finding": "The manuscript repeatedly presents qualitative RF/hardware assertions as if they were demonstrated facts: no need for DACs/mixers/upconversion over most of the symbol, narrowband per-antenna hardware being categorically easier, beam squint avoidance, and simple direct phase injection. These claims are not backed by circuit-level analysis, tolerance studies, phase-noise modeling, or prototype evidence.",
+        "severity": "MINOR",
+        "justification": "These are important engineering claims but secondary to the mathematical validity. They should be toned down or supported experimentally."
+      },
+      {
+        "finding": "The discussion of electromagnetic exposure/compatibility is speculative and not methodologically grounded. The manuscript claims omnidirectional radiation avoids critical EMC areas because coherent combining only occurs at the receiver, but field exposure metrics depend on near/far field patterns, total EIRP, duty cycle, and regulatory averaging, not simply whether intended beamforming is used.",
+        "severity": "MINOR",
+        "justification": "This is not central to the core modulation concept, but the current argument is too informal to support the stated advantage."
+      },
+      {
+        "finding": "The claim that transmit beamforming reduces diversity and that MA-TISK 'fully exploits' diversity in space, time, and frequency is asserted without a formal channel/diversity analysis. Diversity order depends on coding/interleaving, channel statistics, combining architecture, and coherence parameters.",
+        "severity": "MINOR",
+        "justification": "This is a plausible discussion point but not demonstrated. It should be reframed as a hypothesis or backed by outage/diversity analysis."
+      },
+      {
+        "finding": "Several receiver claims are insufficiently justified, including that discarding transition intervals and using FFT demodulation can outperform average matched filters, and that 'even for three or more separable propagation paths, two receiver chains are sufficient' for equalization. These statements need explicit channel models and derivations.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Receiver feasibility and complexity are key to the proposal. If these claims fail under realistic channels, system performance and implementation burden may change materially."
+      },
+      {
+        "finding": "The manuscript's notation and exposition are internally inconsistent in places, including switching between ST and SN in transition intervals, fragmented text flow, and unclear definitions of variables and figures. This makes methodological verification difficult.",
+        "severity": "MINOR",
+        "justification": "Primarily a reporting/clarity problem. It does not by itself invalidate conclusions but contributes to ambiguity in the core derivations."
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 38801,
+    "duration_s": 36.31,
+    "n_api_calls": 1,
+    "cost_usd": 0.0447,
+    "total_input_tokens": 9118,
+    "total_output_tokens": 2192,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 9118,
+        "output_tokens": 2192,
+        "cost_usd": 0.044715,
+        "duration_s": 36.31,
+        "label": "2402.10307v2/b2/review"
+      }
+    ]
+  }
+}

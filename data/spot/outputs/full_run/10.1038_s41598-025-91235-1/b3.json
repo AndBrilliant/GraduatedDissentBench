@@ -1,0 +1,398 @@
+{
+  "condition": "B3",
+  "paper_id": "10.1038_s41598-025-91235-1",
+  "verdict": "flagged",
+  "confidence": 0.96,
+  "reasoning": "Both reviewers independently identified the same core set of critical issues, lending high confidence to the assessment. The most severe problem is the incorrect pIC50 conversion formula, which if actually used in the analyses (rather than being a typographical error) would invalidate the entire QSAR modeling pipeline. Beyond this, both reviewers flagged internally inconsistent performance metrics, inadequate validation for the extremely small dataset, incomplete experimental characterization of the lead compound P8, and potential data leakage in the ML workflow. The convergence of both reviews on these issues, with high confidence, supports a flagged verdict. The pIC50 error is classified as RETRACTION-WORTHY because the paper as written presents a fundamentally incorrect transformation; however, there is some possibility this is a reporting/typographical error rather than a computational one, which introduces uncertainty. The remaining issues collectively represent serious methodological concerns that could change conclusions.",
+  "findings": [
+    {
+      "finding": "The pIC50 conversion formula is defined as pIC50 = 1/IC50(M) instead of the standard pIC50 = -log10(IC50 in molar). If this formula was actually used in all QSAR modeling, the response variable is fundamentally misdefined, invalidating all models, descriptor selections, predictions, and comparative performance claims.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers independently identified this as the most critical error. If the reciprocal transformation was actually applied, then every model (MLR, RF, ANN), every descriptor coefficient, and every prediction for new compounds is built on an incorrectly transformed dependent variable, rendering the central QSAR conclusions unsupportable. The confidence is not 1.0 because there remains the possibility this is purely a typographical error in the manuscript while the actual computations used the correct log transformation—but as written, the paper's methodology is fundamentally broken.",
+      "source": "both"
+    },
+    {
+      "finding": "Reported model performance metrics are internally inconsistent between the abstract and results sections (e.g., MLR training R² = 0.83 vs 0.69; ANN training R² = 0.92 vs 0.89; ANN test RMSE = 0.09 vs 0.05). These discrepancies are never acknowledged or explained.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.92,
+      "justification": "Both reviewers flagged these contradictions. The reader cannot determine which numbers are correct, undermining trust in the claimed model superiority. This could reflect reporting errors, multiple model iterations being conflated, or cherry-picking of results. While serious, it does not definitively prove the underlying analyses are wrong—correction and clarification could resolve the issue.",
+      "source": "both"
+    },
+    {
+      "finding": "The QSAR/ML models are built on only 27 compounds (21 training, 6 test) with no repeated or nested cross-validation, no Y-scrambling/permutation testing, and no confidence intervals. The ANN architecture (4-5-5-5-1) is highly complex relative to the sample size.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.93,
+      "justification": "Both reviewers raised this concern. With such a small dataset, the ANN is highly prone to overfitting, and a single train/test split with only 6 test compounds provides unstable and unreliable performance estimates. The claimed superiority of ANN over RF/MLR may be an artifact. Robust validation practices (nested CV, permutation testing, repeated splits) are needed to support any reliable conclusion about model quality.",
+      "source": "both"
+    },
+    {
+      "finding": "Potential data leakage: it is not clearly demonstrated that descriptor selection and hyperparameter optimization were performed strictly within the training set, with the test set held out until final evaluation.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers noted this concern. If descriptors were selected or hyperparameters tuned using information from the test set, reported performance metrics would be optimistically biased. The manuscript does not provide sufficient methodological detail to rule this out. This could materially change the comparative model performance conclusions.",
+      "source": "both"
+    },
+    {
+      "finding": "The experimental validation of lead compound P8 is incomplete: only single-concentration (100 μM) enzyme inhibition data is reported (~35.5% inhibition), with no IC50 determination. No EC50 values are clearly reported for antiviral assays. The claimed promise of P8 is overstated relative to the modest evidence.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers identified that the biological evidence for P8 is weak. A compound showing only ~35% inhibition at 100 μM without a determined IC50 is not strong evidence for a 'good potential candidate.' This materially affects the paper's biological conclusions and the practical significance of the QSAR-guided discovery claim.",
+      "source": "both"
+    },
+    {
+      "finding": "External validation is inadequate: only 3 compounds from another study were used for external validation (RMSE = 0.35, much worse than test set RMSE of 0.05-0.09), and no applicability domain analysis was performed for predictions on the 13 new analogs.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers noted the extremely small external validation set and the substantial degradation in performance (RMSE 0.35 vs 0.05-0.09). This suggests the model may not generalize well, directly undermining the claim of robust predictive capability. The absence of applicability domain analysis means predictions on new compounds cannot be assessed for reliability.",
+      "source": "both"
+    },
+    {
+      "finding": "Cell-based antiviral assay interpretation is confounded by acknowledged compound solubility/crystal formation at higher concentrations, yet dose-response conclusions are drawn anyway.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "If compounds precipitate in the assay, nominal concentrations do not reflect actual drug exposure, making dose-response curves and any derived EC50 values unreliable. This could substantially affect antiviral efficacy conclusions.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The manuscript refers to testing against 'four strains of SARS-CoV-2 MPro,' which is biologically incoherent (MPro is an enzyme, not a viral strain), suggesting confusion in experimental design description.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "This wording raises concern about whether the experimental design and reporting are accurate. At minimum, major clarification is needed; at worst, this reflects genuine confusion about what was actually tested.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The MLR model uses 5 descriptors on 21 training compounds, yielding a low samples-to-predictors ratio that increases overfitting risk and coefficient instability.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "With roughly 4 samples per predictor, the MLR model is at high risk of overfitting. This weakens both the performance comparison and the descriptor interpretation claims.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The MD/LB-PaCS-MD free-energy landscape methodology (MSM construction, convergence) is not described in sufficient detail to assess correctness of the mechanistic binding pathway conclusions.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.72,
+      "justification": "The mechanistic claims about P8's binding pathway rest on the free-energy analysis, but insufficient methodological detail prevents assessment of whether the MSM and energy landscape are well-converged and reliable.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "No replicate numbers, error bars, or statistical uncertainty are reported for the enzyme inhibition screening results.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.88,
+      "justification": "A common reporting deficiency that weakens confidence in the screening results but does not by itself change conclusions.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Gini importance for descriptor selection has known biases, and no alternative feature selection methods were compared.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "A recognized limitation that may affect descriptor interpretation but does not by itself invalidate the modeling approach.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The R² formula is nonstandard/incompletely defined, and the manuscript lacks predictive statistics such as Q²ext, MAE, CCC, or Tropsha criteria that are standard in QSAR validation.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "A reporting and validation completeness issue that weakens interpretability but does not alone invalidate the analyses.",
+      "source": "both"
+    },
+    {
+      "finding": "Manuscript contains numerous text artifacts/placeholders ([DATE], [JOURNAL]) and wording inconsistencies suggesting inadequate editorial review.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Does not directly prove methodological invalidity but lowers confidence that the scientific reporting was carefully checked.",
+      "source": "prover_a"
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 1,
+    "MAJOR-REVISION": 9,
+    "MINOR": 4
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.98,
+    "reasoning": "The manuscript has multiple serious methodological and reporting problems centered on the QSAR/ML component, which is a main pillar of the paper. Most importantly, the pIC50 transformation is written incorrectly, the dataset is extremely small for the claimed ANN performance, model selection/validation appears vulnerable to overfitting and likely information leakage, and there are internal inconsistencies in reported model metrics (abstract vs results; ANN R² 0.92 vs 0.89, test RMSE 0.09 vs 0.05; MLR training R² 0.83 vs 0.69). These issues make the predictive claims unreliable. The experimental and MD sections are less central to the strongest claims, but they also have notable limitations and reporting ambiguities. I would not conclude certain retraction solely from the text because some problems could reflect reporting mistakes rather than underlying analytic failure; however, if the reported formulas/validation were actually used as written, the central QSAR conclusions would not be supportable.",
+    "findings": [
+      {
+        "finding": "The pIC50 conversion is defined incorrectly as pIC50 = (1 / IC50(M)) rather than the standard logarithmic transform pIC50 = -log10(IC50 in molar units).",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "If the analyses truly used 1/IC50 instead of -log10(IC50), the response variable is misdefined throughout the QSAR modeling, invalidating coefficients, model fit, external predictions, and all comparative claims about predictive performance. This would fundamentally break the paper's central QSAR conclusions. If this is only a typographical error and the actual calculations used -log10, then it is instead a reporting error; but as presented, this is a core methodological defect."
+      },
+      {
+        "finding": "Reported model performance metrics are internally inconsistent across sections (e.g., abstract: MLR/RF/ANN training R² = 0.83/0.82/0.92 and test RMSE = 0.27/0.18/0.09; results: MLR training R² = 0.69 and test RMSE = 0.56; ANN training R² = 0.89 and test RMSE = 0.05).",
+        "severity": "MAJOR-REVISION",
+        "justification": "These discrepancies prevent the reader from knowing which results are correct and therefore whether the claimed superiority of ANN is real. If corrected values differ materially, conclusions about best model and predictive utility may change. This is a serious reporting/integrity issue, though not automatically retraction-worthy unless it reflects underlying data/analysis errors."
+      },
+      {
+        "finding": "The QSAR/ML models are developed on only 27 compounds total, with 21 training and 6 test molecules, yet the manuscript claims highly accurate ANN performance using a 4-(5-5-5)-1 architecture and hyperparameter tuning.",
+        "severity": "MAJOR-REVISION",
+        "justification": "With such a tiny dataset, especially only 21 training samples, a multilayer ANN is highly prone to overfitting and unstable estimates. Apparent test performance on 6 compounds is not a reliable basis for selecting a complex nonlinear model. This could substantially change conclusions about model quality and ranking, but does not prove they are impossible."
+      },
+      {
+        "finding": "Model selection and evaluation procedure is insufficiently protected against overfitting/information leakage: descriptor selection by Gini importance and hyperparameter optimization are described, but it is not clearly shown that all feature selection and tuning were performed strictly within training-only resampling, with the test set held out until the end.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the test set influenced descriptor selection or hyperparameter tuning, reported test RMSE would be optimistically biased and the central predictive claims would be unreliable. This is a classic source of invalid ML inference. It could change conclusions materially, though the current text does not prove leakage occurred."
+      },
+      {
+        "finding": "The external validation of the ANN model uses only three compounds from another study.",
+        "severity": "MAJOR-REVISION",
+        "justification": "An external RMSE based on n=3 is not a meaningful validation of generalization. It is too small to support the manuscript's strong claims that the ANN is robust and accurate for prediction of new analogs. Conclusions about predictive external validity could change substantially with a proper external set."
+      },
+      {
+        "finding": "The split into training/test by Kennard–Stone is deterministic and based on descriptor space, but with only 27 compounds there is no repeated or nested validation, no Y-scrambling/permutation testing, and no confidence intervals for performance.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Single-split validation on a tiny dataset can give highly unstable and misleading performance estimates. Without robustness checks, the claimed superiority of ANN over RF/MLR may be an artifact of one favorable partition. This weakens the central predictive conclusions."
+      },
+      {
+        "finding": "The manuscript uses Gini importance to select descriptors for RF and ANN, but does not discuss known biases of impurity-based variable importance or compare with alternative feature-selection methods.",
+        "severity": "MINOR",
+        "justification": "This is a recognized limitation of RF-style feature importance and may affect descriptor interpretation, but by itself does not invalidate the predictive modeling."
+      },
+      {
+        "finding": "The MLR model uses 5 descriptors on 21 training compounds, which is a high model complexity relative to sample size and increases risk of overfitting/unstable coefficients.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The ratio of samples to predictors is weak for reliable regression, especially after variable selection. Coefficients and fit statistics may be unstable, potentially altering descriptor interpretation and comparative performance conclusions."
+      },
+      {
+        "finding": "The formula presented for R² is nonstandard/incompletely defined in context and omits the residual-sum-of-squares form commonly used for prediction evaluation; the manuscript also uses only training R² and test RMSE without clearer predictive statistics such as Q²ext, MAE, CCC, or Tropsha criteria.",
+        "severity": "MINOR",
+        "justification": "This is mainly a reporting/validation completeness issue. It weakens interpretability and comparability of model quality but does not alone invalidate the analyses."
+      },
+      {
+        "finding": "No applicability domain analysis is reported for QSAR predictions on the 13 new analogs.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Without an applicability domain, the manuscript cannot establish whether the new compounds lie within the chemical space supported by the training data. If they are extrapolations, predicted activities may be unreliable, affecting the rationale for selecting compounds for testing."
+      },
+      {
+        "finding": "The enzyme inhibition assay appears to test the new compounds at only a single concentration (100 μM) rather than determining IC50 values for the screened analogs, yet the paper frames P8 as a notable inhibitor candidate based on modest inhibition.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Single-point inhibition cannot establish potency ranking robustly, especially when the strongest effect reported leaves 64.5% enzymatic activity remaining (i.e., only ~35.5% inhibition at 100 μM). This is weak evidence for calling P8 a strong or notable Mpro inhibitor and could materially alter the biological conclusions."
+      },
+      {
+        "finding": "The strongest enzyme result is described as 'reduction of enzymatic activity to 64.5%' at 100 μM, which indicates only modest inhibition, yet the manuscript repeatedly characterizes P8 as a good potential inhibitor/candidate.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This overstates the experimental support. The biological evidence as presented is insufficient to justify strong claims of antiviral promise, particularly without enzyme IC50 and with possible solubility issues in cell assays."
+      },
+      {
+        "finding": "Cell-based antiviral assay interpretation is confounded by acknowledged solubility/crystal formation at higher concentrations, yet EC50 values are apparently derived anyway and discussed as efficacy evidence.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If compounds precipitate, nominal concentrations do not reflect free drug exposure and dose-response curves may be misleading. This could substantially affect antiviral efficacy conclusions and selection of P8."
+      },
+      {
+        "finding": "The manuscript says seven analogs were tested against 'four strains of SARS-CoV-2 MPro', which is biologically incoherent wording; MPro is an enzyme, not a viral strain. The live-virus section is textually confused and may mix up protease assays with strain assays.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This raises concern that the experimental design and reporting are not clearly or correctly described. If this reflects deeper confusion in execution or analysis, conclusions from the antiviral assays may be unreliable. At minimum, methods need major clarification."
+      },
+      {
+        "finding": "The live-virus experiments use Vero E6 cells only, which are a limited model for SARS-CoV-2 antiviral efficacy and can give misleading translational conclusions.",
+        "severity": "MINOR",
+        "justification": "This affects generalizability rather than internal validity. It would not by itself overturn the reported in vitro observations."
+      },
+      {
+        "finding": "The MD/LB-PaCS-MD section is exploratory and does not validate the proposed binding mode against quantitative binding or covalent-reaction data, despite the known covalent inhibition mechanism of ebselen-like compounds.",
+        "severity": "MINOR",
+        "justification": "This limits mechanistic strength, but the simulations are supportive rather than decisive. Lack of stronger validation does not itself invalidate the whole paper."
+      },
+      {
+        "finding": "The MD ranking coordinate and free-energy interpretation focus on S(C145)-Se(P8) and H41 interactions, but the methodology for constructing a free-energy landscape from PaCS trajectories via MSM is not described in enough detail to assess correctness or convergence.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the MSM/free-energy estimation is not methodologically sound, the mechanistic conclusions about the binding pathway and global minimum state may be overstated or incorrect. This affects the mechanistic claims, though not necessarily the entire paper."
+      },
+      {
+        "finding": "There is no clear report of replicate numbers, variance/error bars, or statistical uncertainty for the enzyme inhibition screen in the main text.",
+        "severity": "MINOR",
+        "justification": "This is a common but real reporting deficiency. It weakens confidence in the screening results but does not by itself change conclusions."
+      },
+      {
+        "finding": "The manuscript contains numerous text artifacts/placeholders ([DATE], [JOURNAL]) and substantial wording inconsistencies, suggesting inadequate editorial control and raising concern about precision of the scientific reporting.",
+        "severity": "MINOR",
+        "justification": "This does not directly prove methodological invalidity, but it lowers confidence that methods/results were carefully checked and accurately transcribed."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "The manuscript has multiple critical methodological flaws that undermine its central conclusions. The most severe issue is the apparent misuse of the pIC₅₀ conversion formula, which transforms IC₅₀ values incorrectly, making all subsequent QSAR modeling and predictions potentially invalid. Additionally, there are inconsistencies in reported statistical results between the abstract and text, questionable model evaluation practices (including inappropriate use of RMSE on a log-transformed scale without proper back-transformation), missing critical details about model training (no hyperparameter optimization results shown for ANN), potential data leakage between training and test sets, and a lack of rigorous external validation. The experimental validation section has incomplete reporting (no IC₅₀ values for the best compound P8, only percentage inhibition at a single concentration). These issues collectively suggest that the main claims about the ANN model's predictive power and the identification of P8 as a lead candidate are not reliably supported.",
+    "findings": [
+      {
+        "finding": "Critical error in pIC₅₀ conversion formula. Equation (1) states pIC₅₀ = 1 / IC₅₀ (M), which is incorrect. The standard definition is pIC₅₀ = -log₁₀(IC₅₀), where IC₅₀ is in molar units. The reciprocal transformation (1/IC₅₀) is not a logarithmic transformation and produces values with completely different statistical properties, making all subsequent QSAR modeling, descriptor selection, and predictions fundamentally questionable.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "If the pIC₅₀ values used throughout the QSAR modeling are based on an incorrect transformation (1/IC₅₀ instead of -log₁₀(IC₅₀)), then every derived model (MLR, RF, ANN), every descriptor selection method (GFA, Gini importance), and every prediction for new compounds is built on mathematically meaningless data. The central conclusion that the ANN model is predictive and that P8 is a promising inhibitor cannot be supported."
+      },
+      {
+        "finding": "Inconsistent and contradictory statistical results between abstract and main text. In the abstract: 'R² values of MLR, RF, and ANN models for the training set were 0.83, 0.82, and 0.92, respectively' and 'RMSE values of the test were 0.27, 0.18, and 0.09 for MLR, RF, and ANN models, respectively.' In the main text: MLR training R² = 0.69 (not 0.83), ANN training R² = 0.89 (not 0.92), ANN test RMSE = 0.05 (not 0.09). These major discrepancies are never explained and suggest either reporting errors or multiple models being conflated.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed as reporting error, it undermines the reliability of the presented results. The reader cannot determine which set of statistics to trust, and the claimed superiority of the ANN model over MLR and RF may be based on cherry-picked numbers."
+      },
+      {
+        "finding": "No external validation of the ANN model on an independent test set (the 13 new compounds are not true external validation because they were predicted without experimental confirmation until later, and the experimental confirmation was only partial and done after the fact). The so-called 'external validation' using three compounds from Amporndanai et al. has an RMSE of 0.35, but the units are not specified (is this on the pIC₅₀ scale? What is the range?). This RMSE is much larger than the reported test set RMSE of 0.05-0.09, indicating the model may not generalize well.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the model's performance on true external data (RMSE > 0.35) is substantially worse than on the partitioned test set (RMSE ≈ 0.07), this indicates overfitting and poor generalizability, weakening the claim that the ANN model is the best and can reliably predict new ebselen analogs."
+      },
+      {
+        "finding": "The experimental validation is incomplete and poorly reported. The key compound P8 is only reported as showing 64.5% reduction in enzymatic activity at 100 μM. No IC₅₀ value is provided for P8 against MPro. The antiviral efficacy data (Fig. 6C) shows only TCID₅₀ reduction at unspecified concentrations (no EC₅₀ values reported). Without quantitative potency measures (IC₅₀, EC₅₀), it is impossible to compare P8 to known inhibitors or to claim it is a 'good potential candidate.'",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the key experimental results (IC₅₀, EC₅₀) are missing, the conclusion that P8 is a lead candidate is unsupported. The data as presented only shows weak activity at a single high concentration, which is not sufficient to support the paper's central claim of identifying a promising inhibitor."
+      },
+      {
+        "finding": "Potential data leakage. The manuscript states that 'thirteen new synthetic ebselen analogs' were used for prediction, but these were synthesized by a collaborating group (Qing-Feng et al.) and may have been known to the authors before model construction. No clear temporal or independent separation is demonstrated. The Kennard-Stone split (21 training, 6 test) is not described in sufficient detail to ensure no information leakage from test to training set during descriptor selection or hyperparameter tuning.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If descriptors were selected using the entire dataset (including the test set) before splitting, or if hyperparameters were optimized using test set performance, the reported R² and RMSE values would be optimistically biased and not reflective of true predictive performance."
+      },
+      {
+        "finding": "Missing details for ANN model. The hyperparameter grid search results (Table 1b) are presented, but the optimal combination found by Grid-Search CV is not reported. The final architecture is given as 4-(5-5-5)-1, but the number of hidden layers (3) and neurons (5 each) are not justified. No learning curves, convergence plots, or cross-validation results are shown. The manuscript does not specify how the training/test split was used during hyperparameter optimization (e.g., nested cross-validation).",
+        "severity": "MINOR",
+        "justification": "While this does not invalidate the results, it is a significant reporting gap that prevents reproducibility and makes it difficult to assess potential overfitting."
+      },
+      {
+        "finding": "The manuscript uses RMSE to evaluate model performance on pIC₅₀ values, but the meaning of RMSE = 0.05 is unclear without context. Since pIC₅₀ is a logarithmic scale (assuming the correct transformation was used), an RMSE of 0.05 corresponds to a factor of ~1.12 in IC₅₀, which is actually very good. However, if the incorrect pIC₅₀ formula was used, the RMSE is meaningless.",
+        "severity": "MINOR (contingent on resolution of the transformation error)",
+        "justification": "If the pIC₅₀ conversion is corrected, this is a minor reporting issue. The authors should interpret RMSE in terms of fold-change in IC₅₀ to make it meaningful for the reader."
+      }
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.96,
+    "reasoning": "Both reviewers independently identified the same core set of critical issues, lending high confidence to the assessment. The most severe problem is the incorrect pIC50 conversion formula, which if actually used in the analyses (rather than being a typographical error) would invalidate the entire QSAR modeling pipeline. Beyond this, both reviewers flagged internally inconsistent performance metrics, inadequate validation for the extremely small dataset, incomplete experimental characterization of the lead compound P8, and potential data leakage in the ML workflow. The convergence of both reviews on these issues, with high confidence, supports a flagged verdict. The pIC50 error is classified as RETRACTION-WORTHY because the paper as written presents a fundamentally incorrect transformation; however, there is some possibility this is a reporting/typographical error rather than a computational one, which introduces uncertainty. The remaining issues collectively represent serious methodological concerns that could change conclusions.",
+    "findings": [
+      {
+        "finding": "The pIC50 conversion formula is defined as pIC50 = 1/IC50(M) instead of the standard pIC50 = -log10(IC50 in molar). If this formula was actually used in all QSAR modeling, the response variable is fundamentally misdefined, invalidating all models, descriptor selections, predictions, and comparative performance claims.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers independently identified this as the most critical error. If the reciprocal transformation was actually applied, then every model (MLR, RF, ANN), every descriptor coefficient, and every prediction for new compounds is built on an incorrectly transformed dependent variable, rendering the central QSAR conclusions unsupportable. The confidence is not 1.0 because there remains the possibility this is purely a typographical error in the manuscript while the actual computations used the correct log transformation—but as written, the paper's methodology is fundamentally broken.",
+        "source": "both"
+      },
+      {
+        "finding": "Reported model performance metrics are internally inconsistent between the abstract and results sections (e.g., MLR training R² = 0.83 vs 0.69; ANN training R² = 0.92 vs 0.89; ANN test RMSE = 0.09 vs 0.05). These discrepancies are never acknowledged or explained.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.92,
+        "justification": "Both reviewers flagged these contradictions. The reader cannot determine which numbers are correct, undermining trust in the claimed model superiority. This could reflect reporting errors, multiple model iterations being conflated, or cherry-picking of results. While serious, it does not definitively prove the underlying analyses are wrong—correction and clarification could resolve the issue.",
+        "source": "both"
+      },
+      {
+        "finding": "The QSAR/ML models are built on only 27 compounds (21 training, 6 test) with no repeated or nested cross-validation, no Y-scrambling/permutation testing, and no confidence intervals. The ANN architecture (4-5-5-5-1) is highly complex relative to the sample size.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.93,
+        "justification": "Both reviewers raised this concern. With such a small dataset, the ANN is highly prone to overfitting, and a single train/test split with only 6 test compounds provides unstable and unreliable performance estimates. The claimed superiority of ANN over RF/MLR may be an artifact. Robust validation practices (nested CV, permutation testing, repeated splits) are needed to support any reliable conclusion about model quality.",
+        "source": "both"
+      },
+      {
+        "finding": "Potential data leakage: it is not clearly demonstrated that descriptor selection and hyperparameter optimization were performed strictly within the training set, with the test set held out until final evaluation.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers noted this concern. If descriptors were selected or hyperparameters tuned using information from the test set, reported performance metrics would be optimistically biased. The manuscript does not provide sufficient methodological detail to rule this out. This could materially change the comparative model performance conclusions.",
+        "source": "both"
+      },
+      {
+        "finding": "The experimental validation of lead compound P8 is incomplete: only single-concentration (100 μM) enzyme inhibition data is reported (~35.5% inhibition), with no IC50 determination. No EC50 values are clearly reported for antiviral assays. The claimed promise of P8 is overstated relative to the modest evidence.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers identified that the biological evidence for P8 is weak. A compound showing only ~35% inhibition at 100 μM without a determined IC50 is not strong evidence for a 'good potential candidate.' This materially affects the paper's biological conclusions and the practical significance of the QSAR-guided discovery claim.",
+        "source": "both"
+      },
+      {
+        "finding": "External validation is inadequate: only 3 compounds from another study were used for external validation (RMSE = 0.35, much worse than test set RMSE of 0.05-0.09), and no applicability domain analysis was performed for predictions on the 13 new analogs.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.88,
+        "justification": "Both reviewers noted the extremely small external validation set and the substantial degradation in performance (RMSE 0.35 vs 0.05-0.09). This suggests the model may not generalize well, directly undermining the claim of robust predictive capability. The absence of applicability domain analysis means predictions on new compounds cannot be assessed for reliability.",
+        "source": "both"
+      },
+      {
+        "finding": "Cell-based antiviral assay interpretation is confounded by acknowledged compound solubility/crystal formation at higher concentrations, yet dose-response conclusions are drawn anyway.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.82,
+        "justification": "If compounds precipitate in the assay, nominal concentrations do not reflect actual drug exposure, making dose-response curves and any derived EC50 values unreliable. This could substantially affect antiviral efficacy conclusions.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "The manuscript refers to testing against 'four strains of SARS-CoV-2 MPro,' which is biologically incoherent (MPro is an enzyme, not a viral strain), suggesting confusion in experimental design description.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.78,
+        "justification": "This wording raises concern about whether the experimental design and reporting are accurate. At minimum, major clarification is needed; at worst, this reflects genuine confusion about what was actually tested.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "The MLR model uses 5 descriptors on 21 training compounds, yielding a low samples-to-predictors ratio that increases overfitting risk and coefficient instability.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "With roughly 4 samples per predictor, the MLR model is at high risk of overfitting. This weakens both the performance comparison and the descriptor interpretation claims.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "The MD/LB-PaCS-MD free-energy landscape methodology (MSM construction, convergence) is not described in sufficient detail to assess correctness of the mechanistic binding pathway conclusions.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.72,
+        "justification": "The mechanistic claims about P8's binding pathway rest on the free-energy analysis, but insufficient methodological detail prevents assessment of whether the MSM and energy landscape are well-converged and reliable.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "No replicate numbers, error bars, or statistical uncertainty are reported for the enzyme inhibition screening results.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.88,
+        "justification": "A common reporting deficiency that weakens confidence in the screening results but does not by itself change conclusions.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Gini importance for descriptor selection has known biases, and no alternative feature selection methods were compared.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "A recognized limitation that may affect descriptor interpretation but does not by itself invalidate the modeling approach.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "The R² formula is nonstandard/incompletely defined, and the manuscript lacks predictive statistics such as Q²ext, MAE, CCC, or Tropsha criteria that are standard in QSAR validation.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "A reporting and validation completeness issue that weakens interpretability but does not alone invalidate the analyses.",
+        "source": "both"
+      },
+      {
+        "finding": "Manuscript contains numerous text artifacts/placeholders ([DATE], [JOURNAL]) and wording inconsistencies suggesting inadequate editorial review.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Does not directly prove methodological invalidity but lowers confidence that the scientific reporting was carefully checked.",
+        "source": "prover_a"
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 38372,
+    "duration_s": 118.76,
+    "n_api_calls": 3,
+    "cost_usd": 0.3077,
+    "total_input_tokens": 25205,
+    "total_output_tokens": 6241,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 10194,
+        "output_tokens": 2167,
+        "cost_usd": 0.047155,
+        "duration_s": 45.52,
+        "label": "10.1038_s41598-025-91235-1/b3/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 10002,
+        "output_tokens": 1662,
+        "cost_usd": 0.00452874,
+        "duration_s": 27.4,
+        "label": "10.1038_s41598-025-91235-1/b3/prover_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 5009,
+        "output_tokens": 2412,
+        "cost_usd": 0.256035,
+        "duration_s": 45.83,
+        "label": "10.1038_s41598-025-91235-1/b3/arbiter"
+      }
+    ]
+  }
+}

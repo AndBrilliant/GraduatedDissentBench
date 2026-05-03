@@ -1,0 +1,230 @@
+{
+  "condition": "B2",
+  "paper_id": "10.1038_s41598-025-91235-1",
+  "verdict": "flagged",
+  "confidence": 0.98,
+  "reasoning": "The manuscript contains multiple serious methodological and reporting problems in the QSAR/ML section, including an incorrect pIC50 formula, highly unstable model development on an extremely small dataset, inconsistent reported model performance across sections, likely invalid hyperparameter settings, and inadequate external validation. These issues substantially undermine the claimed superiority and predictive validity of the ANN model, which is the basis for prioritizing new compounds. The experimental assay section also has interpretational problems: the reported 'most potent' compound leaves 64.5% residual enzyme activity at 100 uM, which is weak inhibition, yet is framed as a promising inhibitor. However, the paper’s central claim is partly supported by actual follow-up assays on new compounds, so the work is not clearly irredeemable in full. Major revision would be required at minimum, and some findings could become retraction-worthy if the numerical transformations/modeling code confirm the apparent errors.",
+  "findings": [
+    {
+      "finding": "The definition of pIC50 is mathematically wrong as written: pIC50 = (1 / IC50(M)). Standard pIC50 is -log10(IC50 in molar units).",
+      "severity": "RETRACTION-WORTHY",
+      "justification": "If the modeling actually used 1/IC50 instead of -log10(IC50), the response variable is incorrectly transformed, invalidating all reported QSAR/ML coefficients, errors, comparisons, and predictions. Because the central conclusions rely on these models, this would fundamentally break the paper. If this is only a typographical error and the code used -log10, the issue would downgrade, but as presented it is a critical flaw."
+    },
+    {
+      "finding": "Reported ANN performance is internally inconsistent across the manuscript: abstract states training R² = 0.92 and test RMSE = 0.09, whereas results later state training R² = 0.89 and test RMSE = 0.05.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Contradictory headline performance metrics prevent reliable assessment of model quality and raise concern about unstable analyses, selective reporting, or version confusion. This directly affects the central claim that ANN is the best predictive model."
+    },
+    {
+      "finding": "The QSAR/ML dataset is extremely small (27 total compounds; 21 train, 6 test), yet the manuscript develops and compares MLR, RF, and a multi-layer ANN (4-(5-5-5)-1).",
+      "severity": "MAJOR-REVISION",
+      "justification": "With only 21 training samples, complex nonlinear models are highly prone to overfitting; a 6-compound test set gives very unstable estimates of predictive performance. Conclusions about ANN superiority and general predictive utility could change materially with more appropriate validation."
+    },
+    {
+      "finding": "Model selection and evaluation appear to rely heavily on a single Kennard-Stone split, with no repeated external resampling or nested validation reported for final performance estimation.",
+      "severity": "MAJOR-REVISION",
+      "justification": "On such a tiny dataset, results can depend strongly on one split. Without repeated cross-validation or nested resampling, the reported test RMSEs may be optimistic and model ranking unreliable. This weakens the main inference that ANN is the best model for prospective prediction."
+    },
+    {
+      "finding": "The ANN hyperparameter search appears to omit a maximum-iteration parameter from Table 1 despite discussing it in text, and the final architecture is too flexible relative to sample size.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Incomplete reporting prevents reproducibility, and the chosen architecture likely has many parameters relative to n=21. If retrained under appropriate regularization/validation, performance may deteriorate substantially."
+    },
+    {
+      "finding": "The random-forest hyperparameter table includes 'Min samples split = 1', which is invalid in standard scikit-learn implementations.",
+      "severity": "MAJOR-REVISION",
+      "justification": "This suggests either incorrect reporting of the search space or nonstandard/erroneous code. If the implemented search differed from what is reported, the model development is not reproducible; if actually set as written, the analysis is invalid."
+    },
+    {
+      "finding": "Feature selection for RF/ANN is based on Gini importance computed on the same tiny dataset, with no clear separation between feature selection and final evaluation.",
+      "severity": "MAJOR-REVISION",
+      "justification": "This can introduce selection bias and optimistic test performance, especially with small n. The apparent ANN advantage may be an artifact of data leakage or unstable feature ranking."
+    },
+    {
+      "finding": "External validation of the ANN uses only three compounds from another study and reports only RMSE = 0.35, with no confidence interval, baseline comparison, or demonstration those compounds are within the model applicability domain.",
+      "severity": "MAJOR-REVISION",
+      "justification": "A 3-compound external set is too small to establish robust generalization, and lack of applicability-domain analysis makes predictive claims weak. This matters because the model is then used prospectively to prioritize synthesis/testing."
+    },
+    {
+      "finding": "The manuscript does not adequately report whether duplicate/replicate bioassay variability exists in the source IC50 data used for QSAR, nor uncertainty propagation into model fitting.",
+      "severity": "MINOR",
+      "justification": "This is a common reporting gap in QSAR papers. It limits interpretation of apparently small RMSE values but does not by itself invalidate the conclusions."
+    },
+    {
+      "finding": "The MLR model is described as 'predictively accurate and acceptable' despite a test RMSE of 0.56 on a pIC50-like scale and only 6 test compounds; this interpretation is overstated.",
+      "severity": "MINOR",
+      "justification": "The wording is too strong for the level of evidence, but this mainly affects presentation rather than the core results."
+    },
+    {
+      "finding": "The paper emphasizes inhibition of SARS-CoV-2 Mpro, yet the enzyme assay reports only single-concentration screening at 100 uM for the new compounds, and the 'most potent' compound P8 still leaves 64.5% enzymatic activity (i.e., only ~35.5% inhibition).",
+      "severity": "MAJOR-REVISION",
+      "justification": "Calling P8 a strong or notable Mpro inhibitor is not supported by these enzyme data. Since this experimental result is used to validate the model-guided selection, overstating potency could materially alter the biological conclusion."
+    },
+    {
+      "finding": "The antiviral cell-based data are described qualitatively (log TCID50 reduction) with apparent solubility problems and inconsistent concentration-response behavior, yet the conclusions still promote P8 as a good candidate.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If antiviral effects are inconsistent because of precipitation/solubility artifacts, the claimed promise of P8 is uncertain. More rigorous concentration-response analysis and solubility controls are needed before concluding meaningful antiviral activity."
+    },
+    {
+      "finding": "There is confusion in biological terminology: the text repeatedly refers to testing compounds 'against four strains of SARS-CoV-2 Mpro' and 'experiments with live SARS-CoV-2 Mpro' in a BSL-3 facility, which is nonsensical because Mpro is a protein, not a viral strain.",
+      "severity": "MINOR",
+      "justification": "This likely reflects writing/editing errors rather than a methodological flaw, but it creates ambiguity about what was actually tested."
+    },
+    {
+      "finding": "The manuscript claims efficacy testing was conducted under Declaration of Helsinki and IRB exemption, although the described work appears to involve cell culture and virus assays, not human subjects.",
+      "severity": "MINOR",
+      "justification": "This is an ethics/reporting mismatch rather than a core methodological defect, but it suggests poor oversight of manuscript preparation."
+    },
+    {
+      "finding": "The LB-PaCS-MD section infers binding mechanism and supportive interactions for P8 from a single selected representative trajectory/global minimum, without demonstrating convergence or comparing alternative bound states/replicates quantitatively.",
+      "severity": "MINOR",
+      "justification": "This weakens mechanistic confidence but does not strongly affect the paper’s main claims, which are mostly driven by QSAR selection and assays."
+    },
+    {
+      "finding": "The ligand was placed ~30 A away and the binding path was inferred using a ranking metric focused on Se(Cmpd)-S(C145) distance, which may bias the simulation toward the presumed covalent approach mechanism.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If the path sampling is strongly steered by an assumed reaction coordinate, the resulting 'binding pathway' is hypothesis-driven rather than emergent. This could change mechanistic interpretation, though it does not alone negate the assay data."
+    },
+    {
+      "finding": "The 2D free-energy landscape is said to be derived from LB-PaCS-MD trajectories based on a Markov State Model, but the manuscript gives no essential MSM construction details (lag time, state definition, validation, implied timescales, stationary distribution checks).",
+      "severity": "MAJOR-REVISION",
+      "justification": "Without these details, the free-energy and pathway claims are not reproducible or assessable. Mechanistic conclusions from the MD analysis may therefore be unreliable."
+    },
+    {
+      "finding": "The manuscript lacks a clear applicability-domain analysis for the 13 newly predicted analogs beyond stating predicted values are within the range of the training data.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Being within the response range is not sufficient; structural extrapolation can still be invalid. Since the main practical use of the model is prospective prediction on new analogs, this omission could affect conclusions."
+    },
+    {
+      "finding": "Several core quantities and formulas are incompletely or incorrectly described, including R² wording/formula context and Gini importance explanation ('0 representing the lowest and best possible importance').",
+      "severity": "MINOR",
+      "justification": "These are serious presentation flaws and may signal conceptual confusion, but on their own they do not prove the analyses are invalid."
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 1,
+    "MAJOR-REVISION": 12,
+    "MINOR": 6
+  },
+  "raw_review": {
+    "verdict": "flagged",
+    "confidence": 0.98,
+    "reasoning": "The manuscript contains multiple serious methodological and reporting problems in the QSAR/ML section, including an incorrect pIC50 formula, highly unstable model development on an extremely small dataset, inconsistent reported model performance across sections, likely invalid hyperparameter settings, and inadequate external validation. These issues substantially undermine the claimed superiority and predictive validity of the ANN model, which is the basis for prioritizing new compounds. The experimental assay section also has interpretational problems: the reported 'most potent' compound leaves 64.5% residual enzyme activity at 100 uM, which is weak inhibition, yet is framed as a promising inhibitor. However, the paper’s central claim is partly supported by actual follow-up assays on new compounds, so the work is not clearly irredeemable in full. Major revision would be required at minimum, and some findings could become retraction-worthy if the numerical transformations/modeling code confirm the apparent errors.",
+    "findings": [
+      {
+        "finding": "The definition of pIC50 is mathematically wrong as written: pIC50 = (1 / IC50(M)). Standard pIC50 is -log10(IC50 in molar units).",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "If the modeling actually used 1/IC50 instead of -log10(IC50), the response variable is incorrectly transformed, invalidating all reported QSAR/ML coefficients, errors, comparisons, and predictions. Because the central conclusions rely on these models, this would fundamentally break the paper. If this is only a typographical error and the code used -log10, the issue would downgrade, but as presented it is a critical flaw."
+      },
+      {
+        "finding": "Reported ANN performance is internally inconsistent across the manuscript: abstract states training R² = 0.92 and test RMSE = 0.09, whereas results later state training R² = 0.89 and test RMSE = 0.05.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Contradictory headline performance metrics prevent reliable assessment of model quality and raise concern about unstable analyses, selective reporting, or version confusion. This directly affects the central claim that ANN is the best predictive model."
+      },
+      {
+        "finding": "The QSAR/ML dataset is extremely small (27 total compounds; 21 train, 6 test), yet the manuscript develops and compares MLR, RF, and a multi-layer ANN (4-(5-5-5)-1).",
+        "severity": "MAJOR-REVISION",
+        "justification": "With only 21 training samples, complex nonlinear models are highly prone to overfitting; a 6-compound test set gives very unstable estimates of predictive performance. Conclusions about ANN superiority and general predictive utility could change materially with more appropriate validation."
+      },
+      {
+        "finding": "Model selection and evaluation appear to rely heavily on a single Kennard-Stone split, with no repeated external resampling or nested validation reported for final performance estimation.",
+        "severity": "MAJOR-REVISION",
+        "justification": "On such a tiny dataset, results can depend strongly on one split. Without repeated cross-validation or nested resampling, the reported test RMSEs may be optimistic and model ranking unreliable. This weakens the main inference that ANN is the best model for prospective prediction."
+      },
+      {
+        "finding": "The ANN hyperparameter search appears to omit a maximum-iteration parameter from Table 1 despite discussing it in text, and the final architecture is too flexible relative to sample size.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Incomplete reporting prevents reproducibility, and the chosen architecture likely has many parameters relative to n=21. If retrained under appropriate regularization/validation, performance may deteriorate substantially."
+      },
+      {
+        "finding": "The random-forest hyperparameter table includes 'Min samples split = 1', which is invalid in standard scikit-learn implementations.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This suggests either incorrect reporting of the search space or nonstandard/erroneous code. If the implemented search differed from what is reported, the model development is not reproducible; if actually set as written, the analysis is invalid."
+      },
+      {
+        "finding": "Feature selection for RF/ANN is based on Gini importance computed on the same tiny dataset, with no clear separation between feature selection and final evaluation.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This can introduce selection bias and optimistic test performance, especially with small n. The apparent ANN advantage may be an artifact of data leakage or unstable feature ranking."
+      },
+      {
+        "finding": "External validation of the ANN uses only three compounds from another study and reports only RMSE = 0.35, with no confidence interval, baseline comparison, or demonstration those compounds are within the model applicability domain.",
+        "severity": "MAJOR-REVISION",
+        "justification": "A 3-compound external set is too small to establish robust generalization, and lack of applicability-domain analysis makes predictive claims weak. This matters because the model is then used prospectively to prioritize synthesis/testing."
+      },
+      {
+        "finding": "The manuscript does not adequately report whether duplicate/replicate bioassay variability exists in the source IC50 data used for QSAR, nor uncertainty propagation into model fitting.",
+        "severity": "MINOR",
+        "justification": "This is a common reporting gap in QSAR papers. It limits interpretation of apparently small RMSE values but does not by itself invalidate the conclusions."
+      },
+      {
+        "finding": "The MLR model is described as 'predictively accurate and acceptable' despite a test RMSE of 0.56 on a pIC50-like scale and only 6 test compounds; this interpretation is overstated.",
+        "severity": "MINOR",
+        "justification": "The wording is too strong for the level of evidence, but this mainly affects presentation rather than the core results."
+      },
+      {
+        "finding": "The paper emphasizes inhibition of SARS-CoV-2 Mpro, yet the enzyme assay reports only single-concentration screening at 100 uM for the new compounds, and the 'most potent' compound P8 still leaves 64.5% enzymatic activity (i.e., only ~35.5% inhibition).",
+        "severity": "MAJOR-REVISION",
+        "justification": "Calling P8 a strong or notable Mpro inhibitor is not supported by these enzyme data. Since this experimental result is used to validate the model-guided selection, overstating potency could materially alter the biological conclusion."
+      },
+      {
+        "finding": "The antiviral cell-based data are described qualitatively (log TCID50 reduction) with apparent solubility problems and inconsistent concentration-response behavior, yet the conclusions still promote P8 as a good candidate.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If antiviral effects are inconsistent because of precipitation/solubility artifacts, the claimed promise of P8 is uncertain. More rigorous concentration-response analysis and solubility controls are needed before concluding meaningful antiviral activity."
+      },
+      {
+        "finding": "There is confusion in biological terminology: the text repeatedly refers to testing compounds 'against four strains of SARS-CoV-2 Mpro' and 'experiments with live SARS-CoV-2 Mpro' in a BSL-3 facility, which is nonsensical because Mpro is a protein, not a viral strain.",
+        "severity": "MINOR",
+        "justification": "This likely reflects writing/editing errors rather than a methodological flaw, but it creates ambiguity about what was actually tested."
+      },
+      {
+        "finding": "The manuscript claims efficacy testing was conducted under Declaration of Helsinki and IRB exemption, although the described work appears to involve cell culture and virus assays, not human subjects.",
+        "severity": "MINOR",
+        "justification": "This is an ethics/reporting mismatch rather than a core methodological defect, but it suggests poor oversight of manuscript preparation."
+      },
+      {
+        "finding": "The LB-PaCS-MD section infers binding mechanism and supportive interactions for P8 from a single selected representative trajectory/global minimum, without demonstrating convergence or comparing alternative bound states/replicates quantitatively.",
+        "severity": "MINOR",
+        "justification": "This weakens mechanistic confidence but does not strongly affect the paper’s main claims, which are mostly driven by QSAR selection and assays."
+      },
+      {
+        "finding": "The ligand was placed ~30 A away and the binding path was inferred using a ranking metric focused on Se(Cmpd)-S(C145) distance, which may bias the simulation toward the presumed covalent approach mechanism.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the path sampling is strongly steered by an assumed reaction coordinate, the resulting 'binding pathway' is hypothesis-driven rather than emergent. This could change mechanistic interpretation, though it does not alone negate the assay data."
+      },
+      {
+        "finding": "The 2D free-energy landscape is said to be derived from LB-PaCS-MD trajectories based on a Markov State Model, but the manuscript gives no essential MSM construction details (lag time, state definition, validation, implied timescales, stationary distribution checks).",
+        "severity": "MAJOR-REVISION",
+        "justification": "Without these details, the free-energy and pathway claims are not reproducible or assessable. Mechanistic conclusions from the MD analysis may therefore be unreliable."
+      },
+      {
+        "finding": "The manuscript lacks a clear applicability-domain analysis for the 13 newly predicted analogs beyond stating predicted values are within the range of the training data.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Being within the response range is not sufficient; structural extrapolation can still be invalid. Since the main practical use of the model is prospective prediction on new analogs, this omission could affect conclusions."
+      },
+      {
+        "finding": "Several core quantities and formulas are incompletely or incorrectly described, including R² wording/formula context and Gini importance explanation ('0 representing the lowest and best possible importance').",
+        "severity": "MINOR",
+        "justification": "These are serious presentation flaws and may signal conceptual confusion, but on their own they do not prove the analyses are invalid."
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 38372,
+    "duration_s": 41.81,
+    "n_api_calls": 1,
+    "cost_usd": 0.0453,
+    "total_input_tokens": 10194,
+    "total_output_tokens": 1985,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 10194,
+        "output_tokens": 1985,
+        "cost_usd": 0.045335,
+        "duration_s": 41.81,
+        "label": "10.1038_s41598-025-91235-1/b2/review"
+      }
+    ]
+  }
+}

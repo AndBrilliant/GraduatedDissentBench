@@ -1,0 +1,485 @@
+{
+  "condition": "GD",
+  "paper_id": "2404.18586v2",
+  "verdict": "flagged",
+  "confidence": 0.94,
+  "reasoning": "Both reviews converge on a core set of serious problems. The manuscript claims to present a physically realizable Gaussian QEC and entanglement distillation protocol, but its central constructions rely entirely on ideal, infinitely squeezed EPR states — a non-normalizable, infinite-energy resource. The finite-squeezing analysis is too informal to bridge this gap. Additionally, the partial transpose operation implemented via CV teleportation is not rigorously shown to yield a valid CPTP map, which is a more fundamental concern than mere implementation imprecision. Several supporting derivations (Lemma 4, Corollary 6, GKP concatenation) are insufficiently rigorous or incomplete. The claims of circumventing Gaussian no-go theorems are not properly reconciled at the theorem level. After the steelman exchange, Review A downgraded its two RETRACTION-WORTHY findings (infinite squeezing dependency and partial transpose CPTP validity) toward MAJOR-REVISION, acknowledging that the underlying mathematical observation might survive reframing. However, the combination of (1) all exact results holding only in an unphysical limit, (2) no rigorous proof that the engineered map is a valid quantum channel, and (3) the headline claims of a realizable protocol/circumvention of no-go theorems being unsupported, collectively constitutes a situation where the paper's central conclusions as stated cannot be supported. This warrants at minimum one RETRACTION-WORTHY finding for the paper as presented, while recognizing that a substantially reframed and corrected version might be salvageable.",
+  "findings": [
+    {
+      "finding": "The protocol's central constructions (bouncing identities, partial transpose implementation, noise polarization in Theorem 5, distillation in Corollary 6) all require ideal infinitely squeezed EPR states. No rigorous finite-squeezing error analysis is provided — no effective finite-r channel is derived, no error bounds (diamond norm, covariance level, or otherwise) are given, and no demonstration that the qualitative advantage survives at any finite resource level is presented. The paper's claims of a physically realizable Gaussian QEC/distillation protocol are therefore unsupported.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviews independently identified this as RETRACTION-WORTHY. Review A considered downgrading to MAJOR-REVISION if the paper were reframed as a purely ideal-limit theorem, but as written the paper explicitly claims a protocol and practical circumvention of no-go results. The finite-squeezing discussion (Appendix G) provides only qualitative statements ('fidelity approaches 1 as r→∞') without any quantitative analysis. Since the paper's stated contributions are a protocol and operational circumvention claims — not merely a mathematical identity in an unphysical limit — the gap between what is proven and what is claimed is fundamental.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The implementation of the partial transpose of a Gaussian channel via CV teleportation is not shown to yield a completely positive trace-preserving (CPTP) map. Lemma 4 acknowledges the transformed M need not be symplectic, yet the paper proceeds to compose such objects as if they were standard Gaussian channels. Without tracking the complete positivity condition N + i(Ω − MΩM^T) ≥ 0 through the transposition-based manipulation, the physical admissibility of the core engineered map is unestablished.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Review A originally rated this RETRACTION-WORTHY but downgraded it during the steelman exchange, acknowledging the authors might be able to recast the construction within a restricted class or provide a rigorous CPTP reformulation. Review B did not independently identify this specific issue but, when presented with it, acknowledged its force. The concern is serious and central — if the engineered map is not a valid channel, the protocol has no operational meaning — but it is conceivable that a careful reformulation could resolve it. As written, however, this is a critical gap.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The claim that the protocol 'circumvents' Gaussian QEC/distillation no-go theorems is not supported by a precise theorem-level reconciliation. The paper does not specify which assumptions of the no-go results are violated, does not properly account for whether ideal EPR pairs count as free/local Gaussian resources under the no-go framework, and concedes that overall entanglement degradation is not reduced. The protocol appears to polarize (redistribute) noise rather than suppress it, which is not QEC in the standard operational sense.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviews flag this. Review B originally rated it MAJOR-REVISION and upgraded it toward RETRACTION-WORTHY during steelman, while Review A consistently rated it MAJOR-REVISION. The issue is serious because it affects how the paper's contribution should be interpreted. However, the underlying mathematical manipulation (noise polarization) may still constitute a valid and interesting observation if properly framed and contextualized, so MAJOR-REVISION is appropriate rather than RETRACTION-WORTHY.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The proof of Lemma 4 is methodologically inadequate. It treats operator partial transpose as a simple substitution p_i → −p_i, applies this directly to Gaussian channels at the covariance-matrix level, and does not rigorously handle operator ordering, complete positivity constraints, or the distinction between state partial transpose and channel-level action.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Identified by Review A and defended through steelman. The argument may be fixable for a restricted class of Gaussian maps, but the current derivation is not rigorous enough to support the downstream theorems that depend on it.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Theorem 5 and its proof contain notation and composition inconsistencies (mixing B_2(G^B), G^{B^T}, B_2^2, Z_2^2, etc.) that are severe enough to impede verification of the main claimed result. Appendix F provides a matrix multiplication but the chain of maps leading to it is not transparently established.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "Identified by Review A and defended through steelman. While these may be fixable notation issues, in a paper whose main theorem rests on careful composition of non-standard channel manipulations, verification must be possible from the text as written.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Corollary 6 (Gaussian entanglement distillation) is presented with an insufficient proof sketch. Critical steps — the specific recovery operations, the explicit circuit, and a step-by-step derivation of the output covariance matrix — are missing. No entanglement monotone calculation or LOCC/Gaussian-operation accounting is provided to substantiate the distillation claim.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviews independently identify this gap. Given that Gaussian distillation no-go results are central motivation for the paper, a corollary claiming distillation requires especially rigorous proof. The current presentation is insufficient for verification.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The finite-squeezing analysis (Appendix G) is too informal to support any practical claim. It provides no explicit error bound on the implemented channel, no convergence rate, no quantification of how finite squeezing modifies the noise matrix, and no demonstration of a finite-r advantage region.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviews agree. Review B considered conditionally downgrading to MINOR (if the partial-transpose CPTP issue renders the whole construction invalid), but since we rate that issue as MAJOR-REVISION rather than definitively fatal, the finite-squeezing gap remains independently important.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The complete positivity condition for Gaussian channels (N + i(Ω − MΩM^T) ≥ 0) is omitted from the paper's definitions. This is critical because the protocol applies non-symplectic Z_i transformations to M, and without tracking this condition, one cannot verify that the engineered maps are physically admissible.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Identified by Review A, acknowledged by Review B during steelman as a significant foundational omission that could propagate through all derivations involving transformed channels.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The covariance matrix is defined as γ_{jk} = tr(ρ x_j x_k) rather than the standard symmetrized convention ½⟨{x_j, x_k}⟩. For noncommuting quadratures this can change matrix properties and affect channel formulas, positivity conditions, and subsequent derivations.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.7,
+      "justification": "Identified by Review A and recognized by Review B during steelman. For many of the isotropic-noise examples in the paper, the difference may be hidden, but the general formalism requires the standard convention or an explicit justification of equivalence.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The GKP two-mode squeezing code concatenation analysis (Eqs. 15–17) presents quantitative results without derivation. No specific GKP code definition, decoding algorithm, or error analysis is provided, and the interaction between the Gaussian protocol's implementation imperfections and the GKP code performance is not analyzed.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Both reviews independently flag this. The section claims a quantitative benefit from concatenation without showing the underlying work or analyzing realistic conditions.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Appendix B's derivation of the recovery operator for an arbitrary 'linear gate' uses BCH expansions and operator decompositions informally, without rigorous handling of Weyl commutation relations and phase factors.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.65,
+      "justification": "Identified by Review A. The recovery operation is a key constructive step; while the result may well be correct, the derivation as presented is insufficient for a rigorous protocol paper.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The treatment of ideal quadrature eigenstates and EPR state normalization is informal, with potential measure-theoretic issues for non-normalizable states that are central to the main results.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Common in CV theory papers. Would not by itself change conclusions but contributes to the overall lack of rigor in a paper where these idealizations are load-bearing.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Internal equation-numbering, citation inconsistencies, and notation mismatches between theorem statements and proofs hamper verification.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Secondary presentation issues that do not independently affect validity but compound the difficulty of verifying the technical claims.",
+      "source": "prover_a",
+      "survived_steelman": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 1,
+    "MAJOR-REVISION": 10,
+    "MINOR": 2
+  },
+  "protocol": {
+    "level": "L2",
+    "agreement": 0.75,
+    "snr": 1.6666666666666667,
+    "theta_accept": 0.9,
+    "theta_noise": 0.15
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.97,
+    "reasoning": "The manuscript contains multiple fundamental methodological and mathematical problems that undermine its central claim: that a fully Gaussian, local-resource protocol can realize a useful Gaussian QEC/noise-reduction and Gaussian entanglement distillation scheme. The most serious issue is that the protocol repeatedly relies on ideal infinitely squeezed EPR states as locally prepared resources and on implementing partial transpose of channels via CV teleportation, but the physical status of these operations/resources is not treated consistently. The resulting effective maps are not shown to be completely positive or physically realizable as channels in the claimed sense, and the manuscript's main theorem is framed as channel engineering/QEC although the construction uses an unphysical idealization at the core. In addition, several derivations are incomplete, inconsistent, or appear algebraically wrong/misreported (notably the composition formulas and theorem proof notation), and the finite-squeezing analysis is too vague to support practical or asymptotic conclusions. As presented, the paper's core conclusions are not methodologically supported.",
+    "findings": [
+      {
+        "finding": "The central protocol depends essentially on ideal infinitely squeezed EPR states (non-normalizable, infinite-energy resources), yet the main claims are presented as a Gaussian QEC protocol using only local Gaussian resources without proving that the protocol remains valid or effective with finite squeezing.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The main construction of gate teleportation, partial bouncing, partial transpose implementation, Theorem 5, and Corollary 6 all rely on |ζ_EPR⟩ as an exact resource. This is not a physical state. The manuscript only gives a qualitative statement that fidelity is 'sufficiently high' when 1−tanh(r)=o(1), without an error bound for the implemented channel, without showing preservation of the claimed noise-polarization effect, and without quantifying how finite squeezing modifies the noise matrix. If exact infinite squeezing is required, then the claimed realizable Gaussian QEC/distillation protocol is not supported by the data/derivations as a physical method."
+      },
+      {
+        "finding": "The manuscript's key novelty is the implementation of the partial transpose of a quantum channel via CV gate teleportation, but it does not establish that the resulting operation is a physically valid completely positive trace-preserving channel acting on arbitrary inputs in the claimed protocol.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "Partial transpose is not a completely positive map in general. Lemma 4 defines a covariance-matrix-level transformation B_i: G^{M,N} -> G^{Z_i M Z_i, Z_i N Z_i}, and the text explicitly notes the transformed M need not be symplectic. However, the paper then inserts such transformed objects into channel concatenations as if they were ordinary Gaussian channels/operations. Without a proof that the teleportation-based implementation plus recovery yields a CPTP map on the relevant system for the class used in Theorem 5, the central theorem does not establish a physically admissible QEC channel. Since the claimed noise reduction hinges on this step, the core conclusion is unsupported."
+      },
+      {
+        "finding": "The proof of Lemma 4 is not methodologically adequate: it treats operator partial transpose as a simple substitution p_i -> -p_i inside an arbitrary Gaussian operator/function and then lifts this directly to Gaussian channels, without rigorously handling operator ordering, complete positivity constraints, or the distinction between state partial transpose and channel action.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Even if the intended result may hold for a restricted class of Gaussian transformations, the manuscript does not prove it rigorously. The argument uses heuristic notation such as W^{T_i}(x)=W(f_i(x)) and applies covariance-matrix reasoning directly to transformed operators. This could alter the admissible class of maps and the validity of subsequent channel compositions. A corrected, rigorous derivation may or may not preserve the claimed theorem."
+      },
+      {
+        "finding": "Theorem 5 and its proof contain notation/composition inconsistencies severe enough to cast doubt on the correctness of the derived polarized noise matrix.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The theorem statement and proof mix symbols such as B_2( G^B ), G^{B^T}, \\tilde{G}^{B_2}, B_2^2, Z_2^2, and 'I, N^{polar}(r)' in a way that is not cleanly defined. Some displayed formulas appear dimensionally or symbolically inconsistent, and the proof jumps between operator-level and covariance-level notation. While Appendix F gives a matrix multiplication yielding the advertised diagonalized noise, the chain of maps leading to that expression is not transparently or rigorously established. If the composition is even slightly misstated, the main theorem could change."
+      },
+      {
+        "finding": "The paper claims to 'circumvent' Gaussian QEC and distillation no-go results while also saying it does not contravene them, but it does not provide a precise theorem-level reconciliation of assumptions and resource accounting.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is not merely rhetorical. The no-go theorems are assumption-sensitive. Here the construction uses ideal EPR resources and teleportation-based realization of a transposed beam splitter. The manuscript needs a precise statement of which assumptions of [31] are violated or avoided, and whether the resource theory counts the ideal EPR pair as free/local Gaussian. Without this, the claimed significance of the result is methodologically unclear and may be overstated."
+      },
+      {
+        "finding": "Corollary 6 on entangled Gaussian state distillation assumes Alice and Bob can locally prepare ideal EPR pairs and then claims a less noisy shared entangled Gaussian state can be distilled, but no entanglement monotone calculation or physically valid LOCC/Gaussian-channel analysis is provided.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Because Gaussian distillation no-go results are central motivation, a corollary claiming distillation requires especially careful proof. The manuscript only gives a protocol sketch and a covariance-level output claim after discarding one mode. It does not quantify the resulting shared entanglement, prove that the overall distributed operation is allowed under the stated locality assumptions, or show that the improvement is not an artifact of unphysical ideal resources."
+      },
+      {
+        "finding": "The finite-squeezing section is too informal to support any practical claim of implementability or robustness.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The manuscript states the fidelity 'approaches 1' and that higher-order terms can be truncated because |tanh(r)|<1, but provides no explicit bound, no convergence rate relevant to the protocol output, and no induced error on the effective channel or logical noise variance. Since all exact claims rely on infinite squeezing, this missing analysis directly affects whether the method survives realistic implementation."
+      },
+      {
+        "finding": "The treatment of teleportation Kraus operators and normalization is informal and may hide measure-theoretic issues associated with non-normalizable quadrature eigenstates and ideal EPR states.",
+        "severity": "MINOR",
+        "justification": "This is common in CV theory papers, but here these idealized objects are central to the main result. A more careful distributional treatment would improve correctness and clarity, though by itself this issue would not necessarily change conclusions if the main physical-validity problems were resolved."
+      },
+      {
+        "finding": "The manuscript defines covariance entries as γ_{jk}=tr(ρ x_j x_k) for zero-mean states, omitting the usual symmetrization/anticommutator convention standard in Gaussian quantum information.",
+        "severity": "MAJOR-REVISION",
+        "justification": "For noncommuting quadratures, the standard covariance matrix is defined via symmetrized second moments. Using unsymmetrized moments can change matrix properties and channel formulas. Although for many displayed isotropic-noise examples the difference may be hidden, the manuscript's Gaussian-channel formalism and proofs should use the standard definition or explicitly justify an equivalent convention throughout. As written, this creates ambiguity in Eq. (2), the positivity conditions, and subsequent derivations."
+      },
+      {
+        "finding": "The manuscript states that an n-mode Gaussian operation is represented by real M and symmetric positive semidefinite N, but omits the necessary complete-positivity condition N + i(Ω - MΩM^T) >= 0.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This omission matters because the paper later manipulates channels by conjugation with nonsymplectic Z_i matrices and treats the outputs as Gaussian channels. Without tracking the full CP condition, one cannot know whether the engineered maps are physically admissible. This directly affects the validity of the main theorem."
+      },
+      {
+        "finding": "Appendix B's derivation of the recovery operator for an arbitrary 'linear gate' is not rigorous enough and contains hand-waving steps about exponentials and operator decomposition into tensor-product displacements.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The argument uses BCH expansions formally, introduces an effective Hamiltonian, and then concludes factorization into modewise displacement operators. But the step from a linear combination of quadratures on two modes to a tensor product of displacement operators requires careful handling of Weyl commutation relations and phase factors. Since the protocol depends on implementable recovery operations, this should be proved cleanly."
+      },
+      {
+        "finding": "There are internal equation-numbering and citation inconsistencies suggesting the manuscript may not have been checked carefully enough to ensure theorem-proof alignment.",
+        "severity": "MINOR",
+        "justification": "Examples include references to Eq. (15) in Appendix F for a result that is actually Theorem 5-related, OCR-corrupted theorem statements, and mismatched notation for channels and matrices. These issues hamper verification but are secondary compared with the conceptual problems."
+      },
+      {
+        "finding": "The claimed concatenation advantage with the GKP two-mode squeezing code is asserted from formulas (15)-(17) without deriving how the proposed noise-polarized channel interfaces with the GKP code under finite-resource assumptions.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The paper imports asymptotic logical-noise formulas and substitutes the polarized variance, but does not analyze whether the prior Gaussian protocol's implementation noise, finite squeezing, and recovery imperfections alter the stated benefit. This can materially affect the practical relevance of the claimed improvement."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.85,
+    "reasoning": "The manuscript presents a novel Gaussian quantum error correction and distillation protocol. While the theoretical framework and mathematical derivations are largely internally consistent, the submission contains several critical issues that undermine the validity of its central claims. These include a reliance on unphysical, infinite-energy resources (ideal EPR states) as a cornerstone of the protocol without addressing the implications of finite squeezing, an overstatement regarding the circumvention of known no-go theorems, and a critical gap in the proof linking the protocol to the no-go results. The manuscript also suffers from insufficient detail on crucial implementation steps and a lack of rigorous performance analysis for realistic (non-ideal) scenarios.",
+    "findings": [
+      {
+        "finding": "The entire protocol (Theorems 5, Corollary 6, and all key lemmas like Lemma 2 and 3) critically depends on the availability of an 'ideal Gaussian EPR state' with infinite squeezing (|ζ_EPR⟩). The authors explicitly acknowledge this in the abstract and later state that 'except for the ideal Gaussian EPR states that are locally prepared, which remain a Gaussian resource.' They treat this as a minor resource assumption, but in practice, it is a fundamental unphysical limit. For any finite squeezing, all the perfect 'bouncing' properties (Lemmas 2 & 3) and the ideal teleportation become approximate. The manuscript's claim to provide a 'Gaussian QEC protocol' that circumvents no-go theorems is predicated on an operation that cannot be performed with finite Gaussian resources.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The protocol's central mechanism—the 'partial transpose' operation and subsequent noise polarization—is proven to work only with infinite squeezing. The paper admits this limitation but does not provide a rigorous finite-energy analysis to show the protocol retains its key advantages (e.g., circumventing the no-go theorem) under realistic conditions. The 'Discussion' section mentions truncating high-order terms and that fidelity 'approaches 1' as r→∞, but this does not prove the protocol works in a meaningful operational sense for any finite r. A protocol requiring infinite energy is not a physically realizable protocol, and its claimed advantages over the established no-go theorems are therefore not demonstrated. This would require a retraction or a complete reframing of the paper's findings as a limiting, theoretical exercise, not a practical protocol."
+      },
+      {
+        "finding": "The claim that the protocol circumvents the Gaussian QEC no-go results is overstated and potentially misleading. The abstract states: 'our findings do not contravene the main theorem in [31] (if extended to the multi-mode case), and the entanglement degradation of the polarized channel is not decreased.' This is a key caveat. The protocol does not truly 'get around' the no-go theorem; it merely shifts the noise to another mode. The central promise of QEC is to *remove* or *suppress* noise from information carriers. Noise polarization (cleaning one mode at the expense of another) is not quantum error correction in the conventional sense, as the overall shared entanglement between Alice and Bob is still degraded. The final state in Eq. (18) is a product of a cleaner EPR state and a noisier ancilla state, but the EPR state is still noisy (N^{e^{-2r}σ²}). The paper does not adequately contextualize this limitation against the standard definition of QEC (which aims to restore a state to near-perfect fidelity).",
+        "severity": "MAJOR-REVISION",
+        "justification": "The paper's central contribution is framed as a 'Gaussian QEC protocol.' If the protocol fundamentally cannot reduce noise below the level set by e^{-2r}σ² (with r being a squeezing parameter of an *idealized* resource), and it is not clear how this compares to simply discarding the noisy channels and using an ideal local EPR pair, then the practical utility is questionable. The paper would need a much clearer, more extensive comparison of performance (e.g., using teleportation fidelity or entanglement negativity) between the proposed noise-polarized channel and other simple strategies (like direct transmission, or using a single two-mode squeezer). The claim of 'circumventing' the no-go result is a major revision target."
+      },
+      {
+        "finding": "The key distillation protocol (Corollary 6) is described in a single paragraph with a cryptic proof sketch. The protocol claim is: 'Alice encodes... using the circuit in Fig. 4(b)... using two noisy EPR states... she teleports the two encoded modes to Bob... Bob executes recovery operations... he applies the decoding circuit in Fig. 4(c)...' This description is insufficient to be considered a valid methodological proof. Critical steps are missing: how exactly are the two noisy EPR states used for teleportation? What are the specific recovery operations? How does this sequence of operations lead to the claimed output state (Eq. 18)? Without a fully specified circuit and a step-by-step derivation of the output state in terms of the input noise and squeezing parameters, the claim is unverified.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The central claim of the distillation protocol (Corollary 6) rests on a non-rigorous proof sketch. A peer reviewer or reader cannot reconstruct the protocol and verify its validity. This is a fundamental methodological flaw. The 'Application' section (point 8-9) is similarly vague. The protocol must be presented with explicit quantum circuit diagrams and a complete algebraic derivation of the output covariance matrix, otherwise it remains a speculation, not a result. This could lead to a retraction if the missing derivation reveals a fatal flaw."
+      },
+      {
+        "finding": "The analysis of the 'Finitely squeezed Gaussian EPR' case (point 22, Appendix G) is mathematically insufficient. The authors claim that 'this fidelity approaches 1 as r tends to infinity' and that 'for finite r, higher-order terms can be truncated... Fidelity F is sufficiently high when 1 − tanh(r) = o(1).' This is not a rigorous error analysis. It is a hand-waving justification. For finite r, the protocol's central lemmas (Lemmas 2-3) are no longer exact. The impact of this approximation on the final noise-polarized channel (N^{polar}(r)) and the distilled state is completely unquantified. The protocol's performance for any realistic (finite) resource is therefore unknown.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The entire paper hinges on infinite squeezing. The brief and non-rigorous treatment of finite squeezing means the paper's conclusions cannot be applied to any real experimental platform. To be a valid scientific contribution, the authors must provide a complete finite-squeezing analysis. They must derive the exact, imperfect operations, compute the resulting noise matrix N^{polar}(r) as a function of *realistic* squeezing parameter r, and show that the protocol still provides a net benefit (e.g., over direct transmission or simpler two-mode squeezing) for some range of r. The current analysis in Appendix G is insufficient and does not constitute a valid methodological demonstration."
+      },
+      {
+        "finding": "The application of the GKP two-mode squeezing code (points 1-8) claims a calculated benefit, but the derivation is completely absent from the manuscript. The text jumps from a general statement about concatenation to specific asymptotic formulas (Eqs. 15-17) without any derivation, circuit diagram, or reference to how these formulas are obtained. This is a critical gap.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The manuscript presents claimed quantitative results (σ_L^2 formulas) for a concatenated code without showing any of the underlying work. This is not a valid methodological presentation. The authors must either remove this section entirely (as it is not central to the paper's main claim) or provide a complete derivation, including the specific GKP code definition, the decoding algorithm, and the error analysis that leads to these formulas. As it stands, this is an unsubstantiated numerical claim."
+      }
+    ]
+  },
+  "judge": {
+    "agreement_score": 0.75,
+    "severity_agreement": "Both reviews agree that the core reliance on infinite squeezing (ideal EPR states) is a 'RETRACTION-WORTHY' issue. However, they disagree on the severity of other findings, particularly related to the physical validity of the partial transpose operation, the proof of Lemma 4, the finite-squeezing analysis, and the distillation corollary. Review A rates several of these as 'MAJOR-REVISION' while Review B also rates them as 'MAJOR-REVISION' (consistent) but places heavier emphasis on the lack of rigorous derivation (which could be seen as bordering on retraction-worthy if unresolved). The key dispute is over the partial transpose channel's physicality: Review A flags it as 'RETRACTION-WORTHY' due to CPTP violations, while Review B does not mention this specific technical flaw at all.",
+    "shared_findings": [
+      "The protocol relies on ideal infinitely squeezed EPR states (infinite energy) as a critical resource, and the finite-squeezing analysis is insufficient to support practical claims.",
+      "The distillation protocol (Corollary 6) is insufficiently detailed/rigorous.",
+      "The circumvention of no-go theorems is overstated or not properly reconciled.",
+      "The finite-squeezing section is too informal and lacks rigorous error bounds.",
+      "The GKP concatenation analysis is incomplete/absent."
+    ],
+    "severity_disputes": [
+      "Review A rates the partial transpose channel's lack of complete positivity as 'RETRACTION-WORTHY'; Review B does not identify this as a finding at all.",
+      "Review A rates the proof of Lemma 4 (operator partial transpose) as 'MAJOR-REVISION'; Review B does not mention Lemma 4 specifically.",
+      "Review A rates the inconsistency and notational issues in Theorem 5's proof as 'MAJOR-REVISION'; Review B does not identify these specific technical inconsistencies."
+    ],
+    "unique_to_a": [
+      "The partial transpose of a channel is not shown to be a completely positive trace-preserving (CPTP) map, making the core theorem unsupported.",
+      "The proof of Lemma 4 is methodologically inadequate (operator ordering, CP constraints).",
+      "Theorem 5 proof contains notation/composition inconsistencies.",
+      "The covariance matrix definition uses unsymmetrized moments (non-standard).",
+      "The complete-positivity condition for Gaussian channels (N + i(Ω - MΩM^T) ≥ 0) is omitted.",
+      "Appendix B's recovery operator derivation is hand-wavy.",
+      "Internal equation-numbering and citation inconsistencies."
+    ],
+    "unique_to_b": [
+      "The protocol is not true quantum error correction (QEC) because it only polarizes noise, not removes it; this is overstated.",
+      "The distillation protocol and GKP concatenation lack any derivation or circuit diagrams, making them unverified.",
+      "The claim of circumventing no-go theorems is misleading because the overall shared entanglement is still degraded (noise polarization, not suppression)."
+    ]
+  },
+  "steelman_a": {
+    "steelman_for_other": "The strongest case for the other reviewer is that the manuscript’s central claims are not merely underdeveloped but are framed in a way that overreaches what has actually been established. On this reading, the paper should be judged by its headline claims—physical Gaussian QEC/noise reduction, circumvention of Gaussian no-go barriers, and Gaussian entanglement distillation using local Gaussian resources—and those claims are not supported in the operational sense readers would reasonably infer.\n\nFirst, the infinite-squeezing issue can be cast as central and potentially decisive in a stronger way than I originally did. The protocol is not just 'illustrated' with ideal EPR states; exact correctness of the bouncing identities, the teleportation implementation, the partial-transpose-induced channel manipulation, and the advertised noise polarization all depend on an idealized, non-normalizable, infinite-energy resource. If every exact theorem in the paper requires that resource, then the manuscript has not demonstrated a physically realizable protocol, only a singular limiting construction. The finite-squeezing discussion does not bridge this gap: it does not derive an effective finite-r channel, does not bound diamond-norm or even covariance-level error in the implemented map, and does not show that the key advantage survives at any finite resource level. Under the journal-standard interpretation of a protocol paper, that can justify treating the central claims as unsupported rather than merely incomplete.\n\nSecond, the other reviewer is right to stress that the paper’s rhetoric about 'circumventing' no-go theorems may be materially misleading even if some covariance manipulation is algebraically correct. The manuscript itself seems to concede that overall entanglement degradation is not reduced, i.e. the protocol largely redistributes noise rather than eliminating it. If so, then calling this Gaussian QEC/distillation in the standard operational sense is contestable. A strong version of that criticism is that the work does not actually refute or evade the spirit of the no-go theorems in any practically meaningful sense; it may only produce a noisier ancilla and a cleaner subsystem under resource assumptions that already import ideal entanglement. If the practical content of the claim is 'one mode can be cleaned by sacrificing another mode while using ideal local EPR resources,' then the headline positioning may be substantially overstated.\n\nThird, the other reviewer’s severity on the distillation corollary can be strengthened. Corollary 6 is not just terse; if it is one of the paper’s marquee consequences, then a proof sketch that omits the explicit channel/circuit specification, recovery map, and quantitative entanglement analysis may be insufficient for publication in its current form. Given the centrality of Gaussian distillation no-go results, any claim of Gaussian entanglement distillation should arguably require explicit monotone calculations or a complete LOCC/Gaussian-operation accounting. Without that, the corollary may function more as conjectural extrapolation from covariance manipulations than as a demonstrated theorem.\n\nFourth, the finite-squeezing criticism can be pushed harder on severity. Because exact infinite squeezing is physically unavailable, a paper that never derives the realistic finite-resource version of its central operation arguably fails the key methodological test for a protocol contribution. If all practical relevance rests on an appendix that says fidelity approaches 1 as r→∞ and higher-order terms can be truncated, then the manuscript has not shown implementability, threshold behavior, or even existence of a finite-r advantage region. The other reviewer’s argument is that this is not a peripheral omission but a failure to establish the main result under any realizable condition.\n\nFinally, the other reviewer’s narrower focus has force: even if some of my additional mathematical concerns were softened, the paper could still be fatally weak on its own terms because the exact result is proved only in an unphysical limit and the realistic regime is not quantitatively analyzed. That is a clean route to a severe verdict without needing to resolve every notation/composition issue.",
+    "severity_i_now_upgrade": [
+      "Corollary 6 / distillation proof sketch may be more severe than I rated: I had MAJOR-REVISION, but I can see a stronger case that if this corollary is presented as a central result, the absence of a fully specified protocol and proof makes the claim effectively unsupported rather than merely incomplete.",
+      "The overstatement/reconciliation with no-go theorems might be more severe rhetorically than I rated. I still would not call it RETRACTION-WORTHY as a standalone issue, but it could be central enough to merit stronger emphasis within MAJOR-REVISION."
+    ],
+    "severity_i_now_downgrade": [
+      "Finding: 'The manuscript's key novelty is the implementation of the partial transpose of a quantum channel via CV gate teleportation, but it does not establish that the resulting operation is a physically valid CPTP channel...' I originally marked this RETRACTION-WORTHY. On reflection, this could be MAJOR-REVISION if the authors can recast the construction more carefully as an encoded/conditional Gaussian transformation or as a covariance-level identity within a restricted class, and then prove physical realizability of the overall implemented map. The concern is still central, but I am less certain it definitively invalidates the result without seeing whether a rigorous CPTP reformulation is available.",
+      "Finding: 'The central protocol depends essentially on ideal infinitely squeezed EPR states...' I originally marked this RETRACTION-WORTHY. This could also be MAJOR-REVISION rather than RETRACTION-WORTHY if the paper is reframed explicitly as an ideal-limit theorem and the claims of practical protocol/QEC/distillation are weakened accordingly, or if the authors can derive a finite-squeezing effective channel and show the qualitative effect survives. As written, the main claims are overstated; but the underlying mathematical observation may still survive as a publishable theoretical result after major reframing."
+    ],
+    "findings_i_still_defend": [
+      "I still defend as MAJOR-REVISION: the proof of Lemma 4 is methodologically inadequate. Even if salvageable, it needs a substantially more rigorous derivation distinguishing state partial transpose, channel action, ordering, and admissible Gaussian maps.",
+      "I still defend as MAJOR-REVISION: Theorem 5/proof notation and composition inconsistencies are serious enough to jeopardize verification of the main theorem.",
+      "I still defend as MAJOR-REVISION: the manuscript omits a precise theorem-level reconciliation with Gaussian QEC/distillation no-go assumptions and resource accounting.",
+      "I still defend as MAJOR-REVISION: the finite-squeezing section is too informal to support practical or asymptotic claims in its current form.",
+      "I still defend as MAJOR-REVISION: Corollary 6 lacks the entanglement/accounting analysis needed for a strong distillation claim.",
+      "I still defend as MAJOR-REVISION: the covariance-matrix definition is ambiguous/nonstandard and should be corrected or justified consistently.",
+      "I still defend as MAJOR-REVISION: omission of the Gaussian-channel CP condition is important given the later nonsymplectic manipulations.",
+      "I still defend as MAJOR-REVISION: Appendix B’s recovery-operator derivation is too hand-wavy for a key constructive step.",
+      "I still defend as MAJOR-REVISION: the GKP concatenation advantage is asserted without enough derivation under realistic assumptions.",
+      "I still defend as MINOR: the treatment of ideal quadrature eigenstates/EPR normalization is informal; important for rigor, but not by itself dispositive.",
+      "I still defend as MINOR: equation-numbering/citation inconsistencies are secondary symptoms, not central validity defects."
+    ],
+    "new_errors_noticed": [
+      "There may be a deeper category error between proving a covariance-matrix identity and proving an operationally realizable quantum channel. Several arguments seem to move from matrix manipulation to protocol claims without an explicit Stinespring/measurement-feedforward realization of the resulting map.",
+      "The manuscript may not clearly distinguish postselected/conditional teleportation identities from deterministic CPTP implementations. If any key step is only exact conditional on idealized measurement outcomes or distributions, that further weakens the protocol claim.",
+      "The resource accounting may be internally inconsistent: calling ideal EPR pairs 'locally prepared Gaussian resources' risks trivializing the operational content unless energy/squeezing cost is explicitly accounted for.",
+      "If the protocol outputs a cleaner mode plus a dirtier sacrificial mode, the manuscript may need a monotonicity statement showing what operational task is actually improved. Without that, the result may be closer to mode reshaping/noise concentration than QEC or distillation in the standard sense.",
+      "The paper may insufficiently specify whether its Gaussian channels are phase-space covariant, trace-preserving on all states, and closed under the transposition-based manipulations used. Some lemmas may only hold for a restricted subclass, which is not made explicit.",
+      "There may be an unaddressed issue of whether the claimed transformed noise matrix after partial-transpose-based engineering still satisfies the bona fide uncertainty/CP constraints for all parameter values, especially once finite squeezing is introduced."
+    ]
+  },
+  "steelman_b": {
+    "steelman_for_other": "The strongest case for the other reviewer's position is that the original review underestimated the foundational, physical impossibility of the protocol's core assumption. The other review correctly identifies that this is not merely a 'lack of finite-squeezing analysis' (which could be fixed with a MAJOR-REVISION), but that the entire mathematical framework of 'partial transpose via teleportation' is not proven to yield a physically valid (CPTP) quantum channel for *any* finite resource. The other reviewer notes that Lemma 4 explicitly states the transformed matrix M need not be symplectic, and that the paper inserts such non-physical objects into channel concatenations as if they were ordinary Gaussian channels. This is not an implementation detail—it is a conceptual category error. If the central operation used to realize the 'bouncing' and 'transpose' effects is not a valid CPTP map on the relevant Hilbert space for the regime where the protocol claims to operate (i.e., approximating the infinite-squeezing limit), then the entire protocol is not a quantum protocol at all; it is a classical linear-algebraic manipulation with no operational meaning. The other review's RETRACTION-WORTHY finding #2 (partial transpose not a completely positive map) is more fundamental than even the infinite-energy issue, because even with infinite energy, the partial transpose of a channel is not automatically a channel. The original review treated this as a secondary 'major revision' point about finite squeezing, but the other reviewer correctly identifies this as a logical non-sequitur prior to any energy considerations. Furthermore, the other review's critique of the unsymmetrized covariance matrix (Finding #9) and missing complete positivity condition (Finding #10) are not minor technicalities—they are errors in the definitional foundation of the paper's mathematical language that could propagate through all subsequent derivations. If the covariance matrix is defined incorrectly, then every formula for the noise matrix N that depends on γ_{jk} = tr(ρ x_j x_k) rather than the standard ½⟨{x_j, x_k}⟩ is potentially erroneous at the level of operator ordering, which would affect the positivity and physicality of all intermediate states.",
+    "severity_i_now_upgrade": [
+      "Finding #2 (in original review): 'The claim that the protocol circumvents the Gaussian QEC no-go results is overstated and potentially misleading.' I originally rated this MAJOR-REVISION. I now believe this should be upgraded to RETRACTION-WORTHY, aligned with the other reviewer's finding #5. The original review noted the protocol 'merely shifts noise to another mode' and does not reduce noise below a floor set by the ideal resource squeezing. But the other reviewer's point is sharper: the paper claims to 'circumvent' the no-go theorem without providing a theorem-level accounting of which assumptions are violated. If the protocol truly operates as described (requiring ideal EPR states and a teleportation-based partial transpose that may not be a valid channel), then the claim of circumvention is not overstated—it is unsupported by the physical formalism presented. The paper cannot simultaneously claim to be a 'Gaussian QEC protocol' and admit that it relies on non-Gaussian, non-local operations (ideal EPR states are not locally preparable with finite Gaussian resources). This is not just an overstatement; it is a mischaracterization of what has actually been proven."
+    ],
+    "severity_i_now_downgrade": [
+      "Finding #4 (in original review): 'The analysis of the Finitely squeezed Gaussian EPR case... is mathematically insufficient.' I originally rated this MAJOR-REVISION. I now believe this could be downgraded to MINOR, but only if one accepts the other reviewer's critique that the entire protocol is RETRACTION-WORTHY on more fundamental grounds. If the core operation (partial transpose via CV teleportation) is not even a valid channel in the idealized infinite-squeezing case, then the finite-squeezing analysis is moot—it is analyzing the approximate behavior of something that was never proved to be a physical map in the first place. In that context, the insufficient finite-squeezing analysis is a secondary concern. However, if one does NOT accept the other review's stronger critique about partial transpose validity, then the original rating of MAJOR-REVISION remains correct. So this downgrade is conditional on the validity of the other review's more foundational criticism."
+    ],
+    "findings_i_still_defend": [
+      "Finding #1 (RETRACTION-WORTHY): The infinite-squeezing dependency remains RETRACTION-WORTHY. The other review's finding #1 agrees on this severity. Both reviews converge on this being a core, unresolved issue. The ideal EPR state is non-normalizable, and the paper's authors acknowledge this in the abstract but treat it as a 'minor resource assumption.' This remains a fundamental physical impossibility that invalidates the protocol as a realizable scheme.",
+      "Finding #3 (MAJOR-REVISION): The insufficient description of the distillation protocol (Corollary 6) remains MAJOR-REVISION. The other review's finding #6 independently identifies the same problem: 'only gives a protocol sketch and a covariance-level output claim after discarding one mode. It does not quantify the resulting shared entanglement, prove that the overall distributed operation is allowed under the stated locality assumptions.' This is a legitimate methodological gap that would require a complete rewrite of that section, even if the larger issues about partial transpose validity could be resolved.",
+      "Finding #5 (MAJOR-REVISION): The absent derivation for the GKP two-mode squeezing code (Eqs. 15-17) remains MAJOR-REVISION. The other review's finding #13 independently agrees: 'imports asymptotic logical-noise formulas and substitutes the polarized variance, but does not analyze whether the prior Gaussian protocol's implementation noise, finite squeezing, and recovery imperfections alter the stated benefit.' This is a separate, standalone flaw in a section that claims quantitative results without showing work."
+    ],
+    "new_errors_noticed": [
+      "The other reviewer's Finding #9 (unsymmetrized covariance matrix definition) made me notice that the original review completely missed this foundational mathematical error. The definition γ_{jk} = tr(ρ x_j x_k) is non-standard and could lead to non-symmetric matrices for states with non-zero means or complex phase-space rotations. Every equation that depends on this definition (including the noise matrix N in Eq. (2) and all subsequent propagation formulas) could be off by ordering-dependent terms. The other reviewer correctly notes this as MAJOR-REVISION—it is not a minor notation choice, as the entire Gaussian channel formalism presumes the symmetrized (Jordan product) definition to ensure real, symmetric covariance matrices that satisfy the uncertainty principle.",
+      "The other reviewer's Finding #10 (missing CP condition N + i(Ω - MΩM^T) ≥ 0) reveals that the original review did not scrutinize whether the paper's definition of a Gaussian channel is complete. Omitting this condition means the paper is effectively redefining what a 'Gaussian channel' means, potentially allowing matrices that do not correspond to any physical CPTP map. This is particularly dangerous given that the protocol then applies non-symplectic Z_i transformations to M—without tracking the CP condition, there is no guarantee the resulting object is a valid channel even if the algebraic manipulation is correct.",
+      "I notice a new error from fresh perspective: The protocol claims to use 'local' ideal EPR states (prepared by Alice or Bob locally), but then the protocol distributes entanglement between Alice and Bob via noisy channels. An ideal EPR state is a two-mode entangled state across Alice's and Bob's separated labs—it cannot be 'locally prepared' as a single-party state. The authors seem to confuse 'locally prepared' with 'prepared without external entanglement assistance,' but even an EPR state prepared entirely in Alice's lab (if she had one) would still be a two-party entangled state requiring a shared reference frame. This is a subtle but real category error."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.94,
+    "reasoning": "Both reviews converge on a core set of serious problems. The manuscript claims to present a physically realizable Gaussian QEC and entanglement distillation protocol, but its central constructions rely entirely on ideal, infinitely squeezed EPR states — a non-normalizable, infinite-energy resource. The finite-squeezing analysis is too informal to bridge this gap. Additionally, the partial transpose operation implemented via CV teleportation is not rigorously shown to yield a valid CPTP map, which is a more fundamental concern than mere implementation imprecision. Several supporting derivations (Lemma 4, Corollary 6, GKP concatenation) are insufficiently rigorous or incomplete. The claims of circumventing Gaussian no-go theorems are not properly reconciled at the theorem level. After the steelman exchange, Review A downgraded its two RETRACTION-WORTHY findings (infinite squeezing dependency and partial transpose CPTP validity) toward MAJOR-REVISION, acknowledging that the underlying mathematical observation might survive reframing. However, the combination of (1) all exact results holding only in an unphysical limit, (2) no rigorous proof that the engineered map is a valid quantum channel, and (3) the headline claims of a realizable protocol/circumvention of no-go theorems being unsupported, collectively constitutes a situation where the paper's central conclusions as stated cannot be supported. This warrants at minimum one RETRACTION-WORTHY finding for the paper as presented, while recognizing that a substantially reframed and corrected version might be salvageable.",
+    "findings": [
+      {
+        "finding": "The protocol's central constructions (bouncing identities, partial transpose implementation, noise polarization in Theorem 5, distillation in Corollary 6) all require ideal infinitely squeezed EPR states. No rigorous finite-squeezing error analysis is provided — no effective finite-r channel is derived, no error bounds (diamond norm, covariance level, or otherwise) are given, and no demonstration that the qualitative advantage survives at any finite resource level is presented. The paper's claims of a physically realizable Gaussian QEC/distillation protocol are therefore unsupported.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviews independently identified this as RETRACTION-WORTHY. Review A considered downgrading to MAJOR-REVISION if the paper were reframed as a purely ideal-limit theorem, but as written the paper explicitly claims a protocol and practical circumvention of no-go results. The finite-squeezing discussion (Appendix G) provides only qualitative statements ('fidelity approaches 1 as r→∞') without any quantitative analysis. Since the paper's stated contributions are a protocol and operational circumvention claims — not merely a mathematical identity in an unphysical limit — the gap between what is proven and what is claimed is fundamental.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The implementation of the partial transpose of a Gaussian channel via CV teleportation is not shown to yield a completely positive trace-preserving (CPTP) map. Lemma 4 acknowledges the transformed M need not be symplectic, yet the paper proceeds to compose such objects as if they were standard Gaussian channels. Without tracking the complete positivity condition N + i(Ω − MΩM^T) ≥ 0 through the transposition-based manipulation, the physical admissibility of the core engineered map is unestablished.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Review A originally rated this RETRACTION-WORTHY but downgraded it during the steelman exchange, acknowledging the authors might be able to recast the construction within a restricted class or provide a rigorous CPTP reformulation. Review B did not independently identify this specific issue but, when presented with it, acknowledged its force. The concern is serious and central — if the engineered map is not a valid channel, the protocol has no operational meaning — but it is conceivable that a careful reformulation could resolve it. As written, however, this is a critical gap.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The claim that the protocol 'circumvents' Gaussian QEC/distillation no-go theorems is not supported by a precise theorem-level reconciliation. The paper does not specify which assumptions of the no-go results are violated, does not properly account for whether ideal EPR pairs count as free/local Gaussian resources under the no-go framework, and concedes that overall entanglement degradation is not reduced. The protocol appears to polarize (redistribute) noise rather than suppress it, which is not QEC in the standard operational sense.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviews flag this. Review B originally rated it MAJOR-REVISION and upgraded it toward RETRACTION-WORTHY during steelman, while Review A consistently rated it MAJOR-REVISION. The issue is serious because it affects how the paper's contribution should be interpreted. However, the underlying mathematical manipulation (noise polarization) may still constitute a valid and interesting observation if properly framed and contextualized, so MAJOR-REVISION is appropriate rather than RETRACTION-WORTHY.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The proof of Lemma 4 is methodologically inadequate. It treats operator partial transpose as a simple substitution p_i → −p_i, applies this directly to Gaussian channels at the covariance-matrix level, and does not rigorously handle operator ordering, complete positivity constraints, or the distinction between state partial transpose and channel-level action.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Identified by Review A and defended through steelman. The argument may be fixable for a restricted class of Gaussian maps, but the current derivation is not rigorous enough to support the downstream theorems that depend on it.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Theorem 5 and its proof contain notation and composition inconsistencies (mixing B_2(G^B), G^{B^T}, B_2^2, Z_2^2, etc.) that are severe enough to impede verification of the main claimed result. Appendix F provides a matrix multiplication but the chain of maps leading to it is not transparently established.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "Identified by Review A and defended through steelman. While these may be fixable notation issues, in a paper whose main theorem rests on careful composition of non-standard channel manipulations, verification must be possible from the text as written.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Corollary 6 (Gaussian entanglement distillation) is presented with an insufficient proof sketch. Critical steps — the specific recovery operations, the explicit circuit, and a step-by-step derivation of the output covariance matrix — are missing. No entanglement monotone calculation or LOCC/Gaussian-operation accounting is provided to substantiate the distillation claim.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviews independently identify this gap. Given that Gaussian distillation no-go results are central motivation for the paper, a corollary claiming distillation requires especially rigorous proof. The current presentation is insufficient for verification.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The finite-squeezing analysis (Appendix G) is too informal to support any practical claim. It provides no explicit error bound on the implemented channel, no convergence rate, no quantification of how finite squeezing modifies the noise matrix, and no demonstration of a finite-r advantage region.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviews agree. Review B considered conditionally downgrading to MINOR (if the partial-transpose CPTP issue renders the whole construction invalid), but since we rate that issue as MAJOR-REVISION rather than definitively fatal, the finite-squeezing gap remains independently important.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The complete positivity condition for Gaussian channels (N + i(Ω − MΩM^T) ≥ 0) is omitted from the paper's definitions. This is critical because the protocol applies non-symplectic Z_i transformations to M, and without tracking this condition, one cannot verify that the engineered maps are physically admissible.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Identified by Review A, acknowledged by Review B during steelman as a significant foundational omission that could propagate through all derivations involving transformed channels.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The covariance matrix is defined as γ_{jk} = tr(ρ x_j x_k) rather than the standard symmetrized convention ½⟨{x_j, x_k}⟩. For noncommuting quadratures this can change matrix properties and affect channel formulas, positivity conditions, and subsequent derivations.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.7,
+        "justification": "Identified by Review A and recognized by Review B during steelman. For many of the isotropic-noise examples in the paper, the difference may be hidden, but the general formalism requires the standard convention or an explicit justification of equivalence.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The GKP two-mode squeezing code concatenation analysis (Eqs. 15–17) presents quantitative results without derivation. No specific GKP code definition, decoding algorithm, or error analysis is provided, and the interaction between the Gaussian protocol's implementation imperfections and the GKP code performance is not analyzed.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Both reviews independently flag this. The section claims a quantitative benefit from concatenation without showing the underlying work or analyzing realistic conditions.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Appendix B's derivation of the recovery operator for an arbitrary 'linear gate' uses BCH expansions and operator decompositions informally, without rigorous handling of Weyl commutation relations and phase factors.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.65,
+        "justification": "Identified by Review A. The recovery operation is a key constructive step; while the result may well be correct, the derivation as presented is insufficient for a rigorous protocol paper.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The treatment of ideal quadrature eigenstates and EPR state normalization is informal, with potential measure-theoretic issues for non-normalizable states that are central to the main results.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "Common in CV theory papers. Would not by itself change conclusions but contributes to the overall lack of rigor in a paper where these idealizations are load-bearing.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Internal equation-numbering, citation inconsistencies, and notation mismatches between theorem statements and proofs hamper verification.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Secondary presentation issues that do not independently affect validity but compound the difficulty of verifying the technical claims.",
+        "source": "prover_a",
+        "survived_steelman": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 37834,
+    "duration_s": 210.12,
+    "n_api_calls": 6,
+    "cost_usd": 0.4729,
+    "total_input_tokens": 50124,
+    "total_output_tokens": 11281,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 14513,
+        "output_tokens": 2257,
+        "cost_usd": 0.0588525,
+        "duration_s": 48.01,
+        "label": "2404.18586v2/gd/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 12910,
+        "output_tokens": 1748,
+        "cost_usd": 0.0054085,
+        "duration_s": 26.57,
+        "label": "2404.18586v2/gd/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4119,
+        "output_tokens": 669,
+        "cost_usd": 0.0018480300000000003,
+        "duration_s": 10.39,
+        "label": "2404.18586v2/gd/judge"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4358,
+        "output_tokens": 1871,
+        "cost_usd": 0.029605,
+        "duration_s": 34.38,
+        "label": "2404.18586v2/gd/steelman_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4347,
+        "output_tokens": 1723,
+        "cost_usd": 0.00306899,
+        "duration_s": 27.56,
+        "label": "2404.18586v2/gd/steelman_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 9877,
+        "output_tokens": 3013,
+        "cost_usd": 0.37413,
+        "duration_s": 63.2,
+        "label": "2404.18586v2/gd/arbiter"
+      }
+    ]
+  }
+}

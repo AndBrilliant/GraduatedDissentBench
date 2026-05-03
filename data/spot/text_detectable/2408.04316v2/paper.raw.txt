@@ -1,0 +1,603 @@
+Abstract. In this paper, we first present an explicit expression for the inverse of a type of matrices. As special applications, the inverse of some matrices arising from implicit time integration techniques, such as the well-known implicit Runge-Kutta schemes and block implicit methods, can also be explicitly determined. Additionally, we introduce three fast algorithms for computing the elements of the inverse of these matrices in O(n²) arithmetic operations, i.e., the first one is based on Traub algorithm for fast inversion of Vandermonde matrices, while the other two utilize the special structure of the matrices. Finally, some symbolic and numerical results are presented to show that our algorithms are both highly efficient and accurate.
+
+Key words. Matrix inversion, fast algorithm, Runge-Kutta matrix, implicit time integration
+
+AMS subject classifications. 15A09, 65F05, 65D30, 68Q25, 65Y20
+
+SHISHUN LI* AND HUILE WEI†
+
+1. Introduction. General speaking, it is unnecessary and inadvisable to actually compute matrix inverse in the vast majority of practical computational problems. However, there exist some matrices and their inverse play a very important role in practical applications. In this paper, we investigate a type of matrices with special structure and design some fast algorithms to compute their inverse. Let c₀, c₁,···, cₙ be distinct real or complex numbers, we consider the explicit expression of the elements of the matrix
+
+(1.1)      W = V⁻¹HV ≡ ⎛ w₁₁ w₁ᵀ ⎞
+            ⎜              ⎟
+            ⎝ w₂  Wₙ   ⎠
+
+where w₁₁ ∈ ℝ, w₁, w₂ ∈ ℝⁿ, Wₙ ∈ ℝⁿˣⁿ,
+
+H = ⎛ 0                ⎞
+  ⎜ 1  ⋱            ⎟
+  ⎜   ⋱ ⋱        ⎟
+  ⎝    n  0        ⎠  and  V = ⎛ 1  1  1  ⋯ 1      ⎞
+               ⎜ c₀ c₁ c₂ ⋯ cₙ  ⎟
+               ⎜ c₀² c₁² c₂² ⋯ cₙ²⎟
+              ⎜ ⋮  ⋮  ⋮   ⋱ ⋮ ⎟
+              ⎝ c₀ⁿ c₁ⁿ c₂ⁿ ⋯ cₙⁿ ⎠
+
+Here V ∈ ℝ^(n+1)×(n+1) is a Vandermonde matrix. It is well-known that the inverse of V can be given explicitly, that is, there exists an explicit formula for the element of V⁻¹. By generalizing the scheme for computing the inverse of a Vandermonde matrix described in [26], we give a explicit expression of the matrix W, i.e., the elements of W can be computed by the basic four arithmetic operations (+, −, *, /) of cᵢ.
+
+The implicit Runge-Kutta (IRK) methods and block implicit methods (BIM) have been widely used for the time discretization of ordinary and partial differential equations [6, 4, 10, 17, 16, 18, 21, 22]. The inverse of IRK matrix and BIM matrix are necessary for stability analysis, and plays an important role in the construction of new time discretization methods with desirable properties [2, 17]. In this paper, we
+
+prove that the inverse of the IRK matrix and BIM matrix is the submatrix of \( W^T \),
+i.e., the inverse of IRK matrix and BIM matrix is exactly \( W_n^T \) if \( c_i \) (\( 1 \leq i \leq n \)) are
+the zeros of the Legendre polynomials and \( c_i = i \) (\( 1 \leq i \leq n \)), respectively. Consider
+a parabolic equation of the form
+
+(1.2) \[ u_t - \nabla \cdot (\alpha(x)\nabla u) + \beta(x) \cdot \nabla u = f(x, t), \quad \text{in}~\Omega \times (0,T] \]
+
+equipped with appropriate initial and boundary conditions, where \( \Omega \subset \mathbb{R}^d \) (\( d = 2 \) or 3) is a bounded, open polygonal (or polyhedral) domain, \( f(x, t) \in L^2(\Omega \times [0, T]) \),
+\( 0 < \alpha_0 \leq \alpha(x) \leq \alpha_1 < +\infty \), and all the coefficients are sufficiently smooth. The
+discretization of (1.2) by IRK in time and finite element in space produces a system
+of equations with the coefficient matrix
+
+(1.3) \[ I \otimes M + \tau A \otimes K, \]
+
+where \( \otimes \) denotes the Kronecker product, \( \tau \) is the time step, \( I \in \mathbb{R}^{r \times r} \), \( A \in \mathbb{R}^{r \times r} \),
+\( M \in \mathbb{R}^{N \times N} \) and \( K \in \mathbb{R}^{N \times N} \) denote identity matrix, the coefficient matrix of \( r \)-
+stage IRK, the mass matrix and the stiffness matrix, respectively. In practice, (1.3)
+is often large and highly ill-conditioned, and parallel preconditioners are necessary to
+construct for solving the system with coefficient matrix (1.3). Usually, it is preferable
+to solve an equivalent system with the coefficient matrix
+
+(1.4) \[ A^{-1} \otimes M + \tau I \otimes K \]
+
+since it can significantly reduce the computational cost [1, 3, 5, 10, 19]. Moreover, it
+requires less memory since \( A^{-1} \otimes M \) is in general sparser than \( A \otimes K \), and the stiff
+part of the matrix is block diagonal so that the analysis and solution more tractable
+[24]. Various preconditioners based on \( A^{-1} \) are constructed, such as, ILU(0)-based
+stage-coupled and stage-parallel preconditioners [20], linear and nonlinear parallel
+preconditioner [25, 24], and the lower triangular preconditioners [1]. Hence, the
+computation of \( A^{-1} \) is very important for solving the system of equations arising from
+the discretization of time-dependent PDEs, and we will present an explicit formula to
+compute \( A^{-1} \).
+
+The explicit formula for the elements of \( W \) is well suited for hand or machine
+calculation. However, the computation of the \( (n + 1)^2 \) elements requires \( O(n^3) \) arithmetic
+operations, and it is clearly too expensive in compute time for large \( n \). In
+this paper, we present three fast algorithms to compute all the elements of \( W \) in
+only \( O(n^2) \) floating point operations (flops). The explicit formula for the Vandermonde
+matrix was first presented by Traub in [26], and an algorithm with the complexity
+\( 6n^2 \) flops was also proposed by using its special structure. This algorithm has been
+generalized to invert the Vandermonde-like matrices [7, 8, 9, 12, 23, 27]. Following
+the idea in [26], we first present a fast algorithm to compute all the elements of \( W \)
+in only \( O(n^2) \) flops. Similar to Traub algorithm for Vandermonde matrix, this algorithm is numerically unstable and inaccurate due to the rapid propagation of roundoff
+errors. Moreover, the solution components may soon exceed the representable machine number and produce overflow as \( n \) increases. Actually, we observe that \( W \) has 
+better structure than Vandermonde matrix although it is singular. By using a trick
+to avoid overflow and underflow in multiplication and division, we derive another two
+algorithms with \( O(n^2) \) complexity. It is shown that our algorithms are both highly
+efficient and accurate for computing all the elements of \( W \).
+
+The remaining part of the paper is organized as follows. In Section 2, we first give
+an explicit formula for the matrix \( W \), then prove that the inverse of IRK matrix and
+
+Here are the corrected texts for each crop:
+
+---
+
+**Crop 1:**
+where \(\sigma_{n+1-k}\) denotes the \(k\)th elementary symmetric function of \(c_0, c_1, \cdots, c_n\), i.e., \(\sigma_{n+1-k}(c_0,c_1, \cdots, c_n)\) is the sum of all distinct products of \(k\) of the arguments \(c_0,c_1, \cdots, c_n\) [12, 26]. The inverse of the Vandermonde matrix can be given by the matrix whose elements are
+
+---
+
+**Crop 2:**
+BIM matrix is exactly the submatrix of \(W\). In Section 3, three fast algorithms with the complexity \(O(n^2)\) flops are presented to compute the elements of \(W\). In Section 4, some symbolic and numerical results are presented to demonstrate the performance of the proposed algorithms. Finally, some concluding remarks are given in Section 5.
+
+---
+
+**Crop 3:**
+\[
+(2.5)\qquad \psi(x)=\sum_{k=0}^{n} b_k x^k = \sum_{k=0}^{n} (-1)^{n-k} \sigma_{n-k}(c_0, c_1, \cdots, c_{i-1}, c_{i+1}, \cdots, c_n)x^k
+\]
+
+---
+
+**Crop 4:**
+\[
+(2.2)\qquad \varphi(x) = \sum_{k=0}^{n+1} a_k x^k = \sum_{k=0}^{n+1} (-1)^{n+1-k} \sigma_{n+1-k}(c_0, c_1, \cdots, c_n)x^k
+\]
+
+---
+
+**Crop 5:**
+\[
+(2.3)\qquad (V^{-1})_{ij} = \frac{(-1)^{n-j} \sigma_{n-j}(c_0, c_1, \cdots, c_{i-1}, c_{i+1}, \cdots, c_n)}{\displaystyle\prod_{\substack{l=0 \\ l\ne i}}^{n} (c_i - c_l)}
+\]
+
+---
+
+**Crop 6:**
+\[
+(2.1)\qquad \varphi(x) = \prod_{k=0}^{n} (x - c_k)
+\]
+
+---
+
+**Crop 7:**
+\[
+\sum_{k=0}^{n} (-1)^{n-k} k c_j^{k-1} \sigma_{n-k}(c_0, c_1, \cdots, c_{i-1}, c_{i+1}, \cdots, c_n) = \begin{cases}
+\prod_{\substack{k=0 \\ k\ne j}}^{n} (c_j - c_k), & i\ne j, \\[2ex]
+\sum_{\substack{m=0 \\ m\ne i}}^{n}\prod_{\substack{k=0 \\ k\ne i,m}}^{n} (c_j - c_k), & i = j.
+\end{cases}
+\]
+
+---
+
+**Crop 8:**
+\[
+(2.4)\qquad \psi'(x) = \sum_{\substack{m=0 \\ m \ne i}}^{n} \prod_{\substack{k=0 \\ k \ne i, m}}^{n} (x - c_k)
+\]
+
+---
+
+**Crop 9:**
+Similar to (2.2), we obtain
+
+---
+
+**Crop 10:**
+**LEMMA 2.1.** Let \(\sigma_{n-k}\) be the \(k\)th elementary symmetric function of \(c_0, c_1, \cdots, c_{i-1}, c_{i+1}, \cdots, c_n\), we have
+
+---
+
+**Crop 11:**
+From the well-known Vieta's formula, we have
+
+---
+
+**Crop 12:**
+Now we introduce the following lemma before giving the explicit formula for \(W\)
+
+---
+
+**Crop 13:**
+Proof. Define \(\psi(x) = \prod_{\substack{k=0 \\ k\ne i}}^{n} (x-c_k)\), the derivative of \(\psi(x)\)
+
+---
+
+Here is the corrected text from the OCR:
+
+---
+
+From (2.5), we see that the derivative of \( \psi(x) \) is
+
+\[
+(2.6) \quad \psi'(x) = \sum_{k=0}^n (-1)^{n-k} k \sigma_{n-k}(c_0, c_1, \cdots, c_{i-1}, c_{i+1}, \cdots, c_n) x^{k-1}.
+\]
+
+Combining (2.4) and (2.6) implies
+
+\[
+(2.7) \quad \sum_{k=0}^n (-1)^{n-k} k \sigma_{n-k}(c_0, c_1, \cdots, c_{i-1}, c_{i+1}, \cdots, c_n) x^{k-1} = \sum_{\substack{m=0 \\ m \neq i}}^n \prod_{\substack{k=0 \\ k \neq i,m}}^n (x - c_k).
+\]
+
+Setting \( x = c_j \) in (2.7), we have
+
+\[
+\sum_{k=0}^n (-1)^{n-k} k c_j^{k-1} \sigma_{n-k}(c_0, c_1, \cdots, c_{i-1}, c_{i+1}, \cdots, c_n)
+\]
+
+\[
+= \sum_{\substack{m=0 \\ m \neq i}}^n \prod_{\substack{k=0 \\ k \neq i,m}}^n (c_j - c_k) = 
+\begin{cases}
+\prod_{\substack{k=0 \\ k \neq i,j}}^n (c_j - c_k), & i \neq j, \\
+\sum_{\substack{m=0 \\ m \neq i}}^n \prod_{\substack{k=0 \\ k \neq i,m}}^n (c_i - c_k), & i = j.
+\end{cases}
+\]
+
+Which completes the proof.
+
+Define the generalized binomial coefficient \( \binom{c_n}{c_i} \) (\(0 < i < n\)) such that
+
+\[
+\binom{c_n}{c_i} = \frac{(c_n - c_0)(c_n - c_1) \cdots (c_n - c_{n-1})}
+{[(c_i - c_0)(c_i - c_1)\cdots (c_i - c_{i-1})][(c_n - c_i)(c_{n-1} - c_i)\cdots (c_{i+1} - c_i)]}
+\]
+\[
+= \frac{\prod_{k=0}^{n-1} (c_n - c_k)}
+{\prod_{k=0}^{i-1} (c_i - c_k) \prod_{k=0}^{n-i-1} (c_{n-k} - c_i)}
+\]
+
+\[
+(2.8) \quad = \frac{\prod_{k=0}^{n-1} (c_n - c_k)}
+{(-1)^{n-i} \prod_{\substack{k=0 \\ k \neq i}}^n (c_i - c_k)}.
+\]
+
+Further, define
+
+\[
+(2.9) \quad \binom{c_n}{c_n} = 1 \quad \text{and} \quad \binom{c_n}{c_0} = \frac{(-1)^n \prod_{k=0}^{n-1} (c_n - c_k)}
+{\prod_{k=0}^{n-1} (c_{n-k} - c_0)}.
+\]
+
+Setting \( c_n = n \) and \( c_i = i \), it is clear that \( \binom{c_n}{c_i} \) is the binomial coefficient
+
+\[
+\binom{n}{i} = \frac{n!}{i!(n-i)!},
+\]
+
+where \( n! \) denotes the factorial of \( n \).
+
+Next we present the main theorem of this paper.
+
+Theorem 2.2. Let \( c_i \ (0 \leq i \leq n) \) be distinct real or complex numbers, the elements of \( W \) in (1.1) are given by
+
+\[
+W_{ij} = 
+\begin{cases}
+\frac{1}{c_j - c_i} \displaystyle\prod_{\substack{k=0 \\ k \neq j}}^n (c_j - c_k) \bigg/ \prod_{\substack{k=0 \\ k \neq i}}^n (c_i - c_k), & i \neq j, \\
+\displaystyle\sum_{\substack{k=0 \\ k \neq i}}^n \frac{1}{c_i - c_k}, & i = j.
+\end{cases}
+= 
+\begin{cases}
+\frac{(-1)^{j-i} \binom{c_n}{c_i}}{c_j - c_i} \binom{c_n}{c_j}^{-1}, & i \neq j, \\
+\displaystyle\sum_{\substack{k=0 \\ k \neq i}}^n \frac{1}{c_i - c_k}, & i = j.
+\end{cases}
+\]
+
+Proof. From the definition of \( H \) and \( V \) in (1.1), it is clear that the elements of \( HV \) are
+
+\[
+(HV)_{ij} = i c_j^{i-1}.
+\]
+
+It follows from (1.1), (2.3), (2.11) and Lemma 2.1 that
+
+\[
+W_{ij} = \sum_{k=0}^n (V^{-1})_{ik} (HV)_{kj}
+= \sum_{k=0}^n \frac{(-1)^{n-k} k c_j^{k-1} \sigma_{n-k}(c_0, c_1, \ldots, c_{i-1}, c_{i+1}, \ldots, c_n)}{\prod_{\substack{l=0 \\ l\neq i}}^n (c_i - c_l)}.
+\]
+
+Combining (2.8), (2.9) and (2.12) implies
+
+\[
+W_{ij} = 
+\begin{cases}
+\frac{1}{c_j - c_i} \displaystyle\prod_{\substack{k=0 \\ k \neq j}}^n (c_j - c_k) \bigg/ \prod_{\substack{k=0 \\ k \neq i}}^n (c_i - c_k), & i \neq j, \\
+\displaystyle\sum_{\substack{k=0 \\ k \neq i}}^n \frac{1}{c_i - c_k}, & i = j,
+\end{cases}
+= 
+\begin{cases}
+\frac{(-1)^{j-i} \binom{c_n}{c_i}}{c_j - c_i} \binom{c_n}{c_j}^{-1}, & i \neq j, \\
+\displaystyle\sum_{\substack{k=0 \\ k \neq i}}^n \frac{1}{c_i - c_k}, & i = j.
+\end{cases}
+\]
+
+Which completes the proof.
+
+Corollary 2.3. Let \( c_i = i \ (0 \leq i \leq n) \), the elements of the matrix \( W \) in (1.1) are
+
+\[
+W_{ij} =
+\begin{cases}
+\displaystyle \sum_{p=1}^i \frac{1}{p} - \sum_{p=1}^{n-i} \frac{1}{p}, & i = j, \\
+\frac{(-1)^{j-i} \binom{n}{i}}{j-i} \binom{n}{j}^{-1}, & i \neq j, \quad i,j = 0,1,\ldots,n.
+\end{cases}
+\]
+
+REMARK 1. For the case \( i = j \), setting \( p = i - k \), we have
+
+\[
+\sum_{k=0, k \neq i}^n \frac{1}{i - k} = \sum_{k=0}^{i-1} \frac{1}{i - k} + \sum_{k=i+1}^n \frac{1}{i - k} = \sum_{p=1}^i \frac{1}{p} - \sum_{p=1}^{n-i} \frac{1}{p}
+\]
+
+Corollary 2.3 was presented in [2]. However, the techniques used in the proof can not be extended for the proof of Theorem 2.2.
+
+## 2.2. The explicit formula for the inverse of IRK matrix and BIM matrix
+
+The IRK methods based on Gaussian and Radau quadrature formulae possess favorable stability properties, offer a high order of accuracy, and have no start-up issues. In this section, we present the explicit formula for the coefficient matrix of Gauss and Radau IIA methods. The elements of these matrices are given by
+
+\[
+(2.14) \qquad a_{ij} = \int_0^{c_i} l_j(\theta) d\theta,
+\]
+
+where \( l_i(\theta) \) is the Lagrange polynomial \( \prod_{k\neq i}(\theta - c_k)/(c_i - c_k) \) and \( c_i \) \((1 \leq i \leq n)\) are the zeros of
+
+\[
+\frac{d^n}{dx^n}\left(x^n(x-1)^n\right), \quad \text{and} \quad \frac{d^n}{dx^{n-1}}\left(x^{n-1}(x-1)^n\right),
+\]
+
+respectively. Due to \( \theta^{k-1} = \sum_{j=1}^n c_j^{k-1} l_j(\theta) \) for \( k = 1,2,\ldots,n \), (2.14) is equivalent to the following systems [11]
+
+\[
+(2.15) \qquad \sum_{j=1}^n a_{ij} c_j^{k-1} = \frac{c_i^k}{k}, \quad k = 1,2,\ldots,n, \quad i = 1,2,\ldots,n.
+\]
+
+From (2.15), we have
+
+\[
+(2.16) \qquad A = C_n V_n D_n^{-1} V_n^{-1},
+\]
+
+where
+
+\[
+C_n = \begin{pmatrix}
+c_1 \\
+ & c_2 \\
+ & & \ddots \\
+ & & & c_n
+\end{pmatrix}, \quad
+D_n = \begin{pmatrix}
+1 \\
+ & 2 \\
+ & & \ddots \\
+ & & & n
+\end{pmatrix}, \quad
+V_n = \begin{pmatrix}
+1 & c_1 & \cdots & c_1^{n-1} \\
+1 & c_2 & \cdots & c_2^{n-1} \\
+\vdots & \vdots & \ddots & \vdots \\
+1 & c_n & \cdots & c_n^{n-1}
+\end{pmatrix}.
+\]
+
+Define \( e_1 = (1,0,\cdots,0)^T \in \mathbb{R}^n \), \( e = (1,1,\cdots,1)^T \in \mathbb{R}^n \), and \( c_0 = (c_0, c_0^2, \cdots, c_0^n)^T \), we have the following theorem.
+
+THEOREM 2.4. Let \( c_0 = 0 \), \( c_i \neq 0\) \((1 \leq i \leq n)\) be distinct real numbers, we have
+
+\[
+\begin{aligned}
+\left( e_1^T V_n^{-1} C_n^{-1} \right)_i &= \frac{(-1)^i}{-c_i} \begin{pmatrix} c_n \\ c_i \\ c_0 \end{pmatrix}, \quad
+(-A^{-1}e)_i = \frac{(-1)^i}{c_i} \begin{pmatrix} c_n \\ c_0 \\ c_i \end{pmatrix} \text{ and} \\[2ex]
+(A^{-1})_{ij} &= 
+\begin{cases}
+\frac{(-1)^{i-j}}{c_i - c_j} \begin{pmatrix} c_n \\ c_j \\ c_i \end{pmatrix}, & i \neq j, \\[2ex]
+\sum_{k=0, k\neq i}^n \frac{1}{c_i - c_k}, & i = j.
+\end{cases}
+\end{aligned}
+\]
+
+Proof. It is clear that \( c_0 = (0,0,\cdots,0)^T \in \mathbb{R}^n \) since \( c_0 = 0 \). From the definition of the Vandermonde matrix \( V \), we have
+
+\[
+(2.17) \quad V^{-T} = \begin{pmatrix} 1 & c_0^T \\ e & C_n V_n \end{pmatrix}^{-1} = \begin{pmatrix} 1 & c_0^T \\ -V_n^{-1}C_n^{-1}e & V_n^{-1}C_n^{-1} \end{pmatrix},
+\]
+
+Set
+
+\[
+F = \begin{pmatrix}
+0 & 1 & & \\
+& \ddots & \ddots & \\
+& & \ddots & 1 \\
+& & & 0
+\end{pmatrix}_{(n+1)\times(n+1)}
+\]
+
+A straightforward computation implies
+
+\[
+(2.18) \quad V^T F = \begin{pmatrix} 0 & e_1^T \\ c_0 & V_n \end{pmatrix} \quad \text{and} \quad H^T = F \begin{pmatrix} 0 & c_0^T \\ c_0 & C_n \end{pmatrix}.
+\]
+
+It follows from (2.17) and (2.18) that
+
+\[
+\begin{aligned}
+W^T &= V^T H^T V^{-T} = V^T F \begin{pmatrix} 0 & c_0^T \\ c_0 & D_n \end{pmatrix} \begin{pmatrix} 1 & c_0^T \\ -V_n^{-1}C_n^{-1}e & V_n^{-1}C_n^{-1} \end{pmatrix} \\
+&= \begin{pmatrix} 0 & e_1^T \\ c_0 & V_n \end{pmatrix} \begin{pmatrix} 0 & c_0^T \\ c_0 & D_n \end{pmatrix} \begin{pmatrix} 1 & c_0^T \\ -V_n^{-1}C_n^{-1}e & V_n^{-1}C_n^{-1} \end{pmatrix} \\
+&= \begin{pmatrix} 0 & e_1^T D_n \\ c_0 & V_n D_n \end{pmatrix} \begin{pmatrix} 1 & c_0^T \\ -V_n^{-1}C_n^{-1}e & V_n^{-1}C_n^{-1} \end{pmatrix} \\
+(2.19) \quad &= \begin{pmatrix}
+-e_1^T D_n V_n^{-1} C_n^{-1} e & e_1^T D_n V_n^{-1} C_n^{-1} \\
+-V_n D_n V_n^{-1} C_n^{-1} e & V_n D_n V_n^{-1} C_n^{-1}
+\end{pmatrix}.
+\end{aligned}
+\]
+
+Combining (2.16), (2.19), and Theorem 2.2 completes the proof.
+
+REMARK 2. From Theorem 2.4, we see that the inverse of IRK matrix can be given explicitly by choosing \( c_i \) as the zeros of the shifted Legendre polynomial of degree \( n \).
+
+Recently, a family of A-stable BIM for solving parabolic equations has been introduced in [17]. BIM have the same desirable properties as IRK methods and are time-parallel in the sense that they compute the solutions at several time steps simultaneously. It shows that the inverse of the BIM matrix can be also given explicitly, i.e.,
+
+\[
+N = D_n (V_n D_n V_n^{-1} D_n^{-1}) D_n^{-1} + D_n^{-1},
+\]
+
+where \( D_n \) and \( V_n \) are defined in (2.16) and \( c_i = i \). The explicit expression of \( N \) plays an important role in constructing new BIM with positive definite BIM matrices. Then the traditional finite element theory for parabolic equations discretized by the backward Euler or Crank-Nicolson schemes can also be extended to BIM.
+
+3. The fast algorithms for the inverse of the matrix. The explicit formula for \( W \) is suitable for symbolic operations using a symbolic manipulation package. However, it may be very expensive for large \( n \). In this section, we present three fast numerical algorithms with \( O(n^2) \) complexity to compute \( W \).
+
+Following the idea of Traub' algorithm for the inverse of Vandermonde matrix \( V \) [26], we introduce the first algorithm to compute the elements of \( W \). Firstly, we calculate the coefficients \( a_k \) of the monic polynomial \( \varphi(x) \) in (2.2) recursively by
+
+\[
+\left\{
+\begin{aligned}
+&\beta_{m+1, m+1} = 1, \quad \beta_{m+1, i} = \beta_{m, i-1} - c_m \beta_{m, i}, \\
+& a_k = \beta_{n+1, k},
+\end{aligned}
+\right.
+\]
+for \( 1 \leq m \leq n, \; 0 \leq i \leq m, \; 0 \leq k \leq n+1, \)
+
+where \( \beta_{1,0} = -c_0, \; \beta_{1,1} = 1 \) and \( \beta_{m,-1} = 0 \). Then, we calculate the coefficients \( b_k \) of \( \psi(x) \) in (2.5) by
+\[
+b_k = a_{k+1} + c_i b_{k+1}, \quad n \geq k \geq 0,
+\]
+where \( b_{n+1} = 0 \). Finally, we calculate the scalars \( \psi(c_i) \) by Horner's rule and obtain
+\[
+(3.1) \quad
+W_{ij} =
+\begin{cases}
+\frac{1}{c_j - c_i} \frac{\psi(c_j)}{\psi(c_i)}, & i \neq j, \\[2ex]
+\displaystyle\sum_{k=0, k \neq i}^{n} \frac{1}{c_i - c_k}, & i = j,
+\end{cases}
+\]
+
+The above scheme is implemented thoroughly in Algorithm 3.1. We see that the computational complexity of Algorithm 3.1 is \( 11n^2 + 12n \) flops. However, it may soon exceed the representable machine number and produce overflow (or underflow) when computing the coefficients \( a_k \) and \( b_k \) for large \( n \), this issue also occurs in computing \( \psi(c_i) \) since it involving a product of \( n \) factors.
+
+In order to avoid the above issue and improve accuracy, we present another fast algorithm by using the special structure of \( W \). Firstly, we introduce the matrix \( G \) which is given by
+\[
+(3.2) \quad
+G = \begin{pmatrix}
+1 & c_0 - c_1 & c_0 - c_2 & \cdots & c_0 - c_{n-1} & c_0 - c_n \\
+c_1 - c_0 & 1 & c_1 - c_2 & \cdots & c_1 - c_{n-1} & c_1 - c_n \\
+c_2 - c_0 & c_2 - c_1 & 1 & \cdots & c_2 - c_{n-1} & c_2 - c_n \\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+c_{n-1} - c_0 & c_{n-1} - c_1 & c_{n-1} - c_2 & \cdots & 1 & c_{n-1} - c_n \\
+c_n - c_0 & c_n - c_1 & c_n - c_2 & \cdots & c_n - c_{n-1} & 1
+\end{pmatrix}
+\]
+
+It is clear the computational complexity for computing \( G \) is \( (n+1)^2 \). From the definition of \( \psi(x) \), we have
+
+\[
+(3.3) \quad \psi(c_i) = \prod_{\substack{k=0 \\ k \neq i}}^n (c_i - c_k) = \prod_{k=0}^n G_{ik}.
+\]
+
+Define
+
+\[
+(3.4) \quad
+\widetilde{W} = \begin{pmatrix}
+1 & \frac{\psi(c_1)}{\psi(c_0)} & \frac{\psi(c_2)}{\psi(c_0)} & \cdots & \frac{\psi(c_{n-1})}{\psi(c_0)} & \frac{\psi(c_n)}{\psi(c_0)} \\
+\frac{\psi(c_0)}{\psi(c_1)} & 1 & \frac{\psi(c_2)}{\psi(c_1)} & \cdots & \frac{\psi(c_{n-1})}{\psi(c_1)} & \frac{\psi(c_n)}{\psi(c_1)} \\
+\frac{\psi(c_0)}{\psi(c_2)} & \frac{\psi(c_1)}{\psi(c_2)} & 1 & \cdots & \frac{\psi(c_{n-1})}{\psi(c_2)} & \frac{\psi(c_n)}{\psi(c_2)} \\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+\frac{\psi(c_0)}{\psi(c_{n-1})} & \frac{\psi(c_1)}{\psi(c_{n-1})} & \frac{\psi(c_2)}{\psi(c_{n-1})} & \cdots & 1 & \frac{\psi(c_n)}{\psi(c_{n-1})} \\
+\frac{\psi(c_0)}{\psi(c_n)} & \frac{\psi(c_1)}{\psi(c_n)} & \frac{\psi(c_2)}{\psi(c_n)} & \cdots & \frac{\psi(c_{n-1})}{\psi(c_n)} & 1
+\end{pmatrix}
+\]
+
+Algorithm 3.1 Given \( c(0) < c(1) < \cdots < c(n) \) this algorithm computes \( W = V^{-1}HV \)
+
+From (3.1) and (3.4), we have
+
+\[
+(3.5) \qquad W_{ij} = 
+\begin{cases}
+\frac{1}{c_j - c_i} \widetilde{W}_{ij}, & i \neq j, \\
+\sum_{k=0,\,k \neq i}^n \frac{1}{G_{ik}}, & i = j.
+\end{cases}
+\]
+
+If \( \widetilde{W}_{ij} \) have been derived, the complexity for computing \( W \) is \( 3n^2 + 7n \) by using formula (3.5). Next we mainly study how to compute the elements of \( \widetilde{W} \).
+
+We first compute the first row of \( \widetilde{W} \) by
+
+\[
+(3.6) \qquad \widetilde{W}_{0j} = \frac{\psi(c_j)}{\psi(c_0)} = \frac{\prod_{k=0}^n G_{jk}}{\prod_{k=0}^n G_{0k}} = \prod_{k=0}^n \frac{G_{jk}}{G_{0k}}, \quad 0 \leq j \leq n.
+\]
+
+Instead of computing the numerator \( \psi(c_j) \) and the denominator \( \psi(c_0) \) for each \( j \), we compute \( \widetilde{W}_{0j} \) by a product of \( n+1 \) factors \( G_{jk}/G_{0k} \). This trick may avoid overflow.
+
+(3.7)                 g = \left( \frac{1}{\widetilde{W}_{01}}, \frac{1}{\widetilde{W}_{02}}, \cdots, \frac{1}{\widetilde{W}_{0n}} \right)^T,
+
+or underflow and improve accuracy. It is clear that the complexity for computing \(\widetilde{W}_{0j}\) (\(0 \leq j \leq n\)) is \(2n^2 + 4n\). Set
+
+the elements \(\widetilde{W}\) can be compute with \(n^2 + n\) operations by
+
+(3.8)                    \(\widetilde{W}_{ij} = \frac{\psi(c_j)}{\psi(c_i)} = \frac{\psi(c_j)}{\psi(c_{0})} \frac{\psi(c_{0})}{\psi(c_{i})} = \widetilde{W}_{0j} g_i, \qquad 0 \leq j \leq n,\, 1 \leq i \leq n.\)
+
+From the above analysis, we observe that it requires \(7n^2 + 15n\) operations to compute \(W\). The details of this scheme is presented in Algorithm 3.2.
+
+From (3.6) and (3.7), we see that the overflow and underflow may also occur if
+
+Algorithm 3.2 Given \(c(0) < c(1) < \cdots < c(n)\) this algorithm computes \(W = V^{-1}HV\)
+
+Algorithm 3.3 Given \( c(0) < c(1) < \cdots < c(n) \) this algorithm computes \( W = V^{-1}HV \)
+
+\( G_{ik} \) is far greater or less than \( G_{0k} \). Now we introduce vector \( \tilde{\mathbf{g}} \) which is given by
+
+\[
+\tilde{\mathbf{g}} = \left( \frac{\psi(c_1)}{\psi(c_0)}, \frac{\psi(c_2)}{\psi(c_1)}, \cdots, \frac{\psi(c_n)}{\psi(c_{n-1})} \right)^T,
+\]
+
+where $\tilde{g}_i$ ($0 \leq i \leq n-1$) are computed by
+
+\[
+\tilde{g}_i = \frac{\psi(c_{i+1})}{\psi(c_i)}
+\]
+\[
+= \frac{(c_{i+1} - c_0)(c_{i+1} - c_1)\cdots(c_{i+1} - c_{i-1})(c_{i+1} - c_{i})(c_{i+1} - c_{i+2})\cdots(c_{i+1} - c_{n})}{(c_i - c_0)(c_i - c_1)\cdots(c_i - c_{i-1})(c_i - c_{i+1})(c_i - c_{i+2})\cdots(c_i - c_n)}
+\]
+\[
+= -\frac{(c_{i+1} - c_0)(c_{i+1} - c_1)\cdots(c_{i+1} - c_{i-1})(c_{i+1} - c_{i+2})\cdots(c_{i+1} - c_n)}{(c_i - c_0)(c_i - c_1)\cdots(c_i - c_{i-1})(c_i - c_{i+2})\cdots(c_i - c_n)}
+\]
+\[
+\tag{3.10}
+= -\prod_{\substack{k=0 \\ k\neq i,i+1}}^n \frac{(c_{i+1} - c_k)}{(c_i - c_k)} = -\prod_{\substack{k=0 \\ k\neq i,i+1}}^n \frac{G_{(i+1)k}}{G_{ik}}
+\]
+
+If $c_0 < c_1 < \cdots < c_n$, it is clear that (3.10) may be more accurate than (3.6). From (3.4), we observe that the upper triangular part of $\tilde{W}$ can be computed recursively by
+
+\[
+\tag{3.11}
+\tilde{W}_{ij} = \frac{\psi(c_j)}{\psi(c_i)} = \frac{\psi(c_{j-1})}{\psi(c_i)} \frac{\psi(c_j)}{\psi(c_{j-1})} = \tilde{W}_{i(j-1)} \tilde{g}_{j-1}, \quad i+1 \leq j \leq n,\, 0 \leq i \leq n,
+\]
+
+where $\tilde{W}_{ii} = 1$. Then the strictly lower triangular part of $\tilde{W}$ is given by
+
+\[
+\tag{3.12}
+\tilde{W}_{ij} = \frac{1}{\tilde{W}_{ji}}, \quad 0 \leq j \leq i-1,\, 1 \leq i \leq n,
+\]
+
+A straightforward calculation shows that complexity for computing $\tilde{g}$ and $\tilde{W}$ are $2n^2$ and $n^2 + n$, respectively. Finally, we obtain Algorithm 3.3 with the complexity $7n^2 + 9n$ flops.
+
+Both Algorithm 3.2 and Algorithm 3.3 include three steps, i.e., computing the elements of the matrices $G$, $\tilde{W}$ and $W$ sequentially. The difference between these algorithms lies in the computation of $\tilde{W}$ in the second step. In each step, both Algorithm 3.2 and Algorithm 3.3 can be implemented in parallel since the computations of each row of $G$, $\tilde{W}$ and $W$ are independent.
+
+## 4. Numerical experiments.
+In this section, we present some symbolic and numerical results to demonstrate the performance of the proposed formula and algorithms. In the experiments, we calculate $W$ by choosing $c_i$ ($i = 1,2,\cdots, n$) from the following four examples.
+
+**Example 1.** (Gauss nodes in (0,1)): $c_0 = 0$ and $c_i$ ($i=1,2,\cdots,n$) are the zeros of $\frac{d^n}{dx^n}(x^n(x-1)^n)$.
+
+**Example 2.** (Radau IIA nodes in (0,1]): $c_0 = 0$ and $c_i$ ($i=1,2,\cdots,n$) are the zeros of $\frac{d^n}{dx^{n-1}}(x^{n-1}(x-1)^n)$.
+
+**Example 3.** (Chebyshev nodes in (0,1)): $c_i = \frac{1}{2} + \frac{1}{2}\cos\left(\frac{2i+1}{2n+1}\pi \right)$ ($i=0,1,2,\cdots,n$).
+
+**Example 4.** (Equidistant nodes in [0, n]): $c_i = i$ ($i=0,1,2,\cdots,n$).
+
+### 4.1. Results of the symbolic operations.
+Since $W$ is given explicitly by (3.1), we can compute it exactly by Mathematica. From Theorem 2.4, we see that the submatrix $W_n^T$ is exactly the inverse of the IRK matrix $A$ when choosing $c_i$ as in Examples 1 and 2. Note that the coefficient matrix of Gauss and Radau IIA methods can
+
+be calculated using the Mathematica command ImplicitRungeKuttaGaussCoefficients and ImplicitRungeKuttaRadauIIACoefficients, which allow software-implemented precision of arbitrary numbers of digits. The number of digits was set to 1000 in the experiment. To test the performance of the explicit formula (3.1), we define
+
+(4.1)    Err = ||WₙᵗA − I||_∞
+
+and list the results in Tables 1 and 2, respectively. It is clear that our formula (3.1) is correct, and the compute time of A and Wₙ grows fast with the increase of n. However, the calculation of Wₙ is much faster than that of A. The calculation of IRK matrix using Mathematica command takes significantly more time (seconds) compared to computing its inverse using the formula (3.1).
+
+4.2. Results of the fast algorithms. Symbolic operations are time-consuming, although they allow for arbitrary precision. Now we will test the performance of Algorithms 3.2 and 3.3 on Examples 1–4. In the experiments, the matrices computed by using long double (80 bits) and quadruple precision (128 bits) are denoted by Wᵈ and Wᵠ, respectively. The compute time is denoted by “T_d” and “T_q”. We consider Wᵠ as exact and define the infinite-norm and componentwise relative errors as follows:
+
+(4.2)  Err₁ = ||Wᵈ − Wᵠ||_∞ / ||Wᵠ||_∞  and  Err₂ = max_{0 ≤ i, j ≤ n} {|Wᵈ_{ij} − Wᵠ_{ij}| / |Wᵠ_{ij}|}.
+
+The numerical results for Example 1 are presented in Table 3, which shows that both Algorithms 3.2 and 3.3 are very fast although the compute time increases as n
+
+grows. We observe that the time for computing \( W^d \) is no more than one second in the case \( n = 5000 \). It is clear that the errors in the computation of \( W \) grow with \( n \), and the accuracy of off-diagonal elements is slightly better than diagonal elements. From (3.1), we see that the computation of the diagonal elements involving recursive summation which may suffer cancellation. Additionally, we observe that Algorithm 3.2 fails for the case \( n = 10000 \). The reason is that the overflow occurs in the computation of formula (3.6) since \( G_{jk} \) is far greater than \( G_{0k} \) when \( j \) is large. However, Algorithm 3.3 works well since the computation of formula (3.10) can avoid overflow.
+
+Similarly to Example 1, Tables 4 and 5 show that the compute time grows mildly with the increase of \( n \) and both Algorithms 3.2 and 3.3 yield very high accuracy in
+
+the infinite-norm. However, the accuracy of the diagonal elements is much worse than the off-diagonal elements if \( n \) is large. In the experiments, we observe that there is heavy cancellation in the sum, that is,
+\[
+\sum_{k=0, k \ne i}^n \left| \frac{1}{c_i - c_k} \right| \gg \sum_{k=0, k \ne i}^n \frac{1}{c_i - c_k}.
+\]
+Moreover, cancellation also occurs in the subtraction of two nearly equal numbers. Hence, there exists a severe loss of significant digits and produces a large relative error in this particular situation. In Figure 1, we present 3D heatmap of the matrix elements for Examples 1-4 by using \( \ln|W_{ij}| \) instead of \( W_{ij} \). From the subfigures (a)-(c), we observe that the matrices exhibit a significant difference in element size, with the diagonal elements being small and approaching 1 in subfigure (b), moreover, the term \( \frac{1}{c_i - c_k} \) in recursive summation may be very large and is either positive or negative. So the algorithms suffer severe cancellation. Fortunately, we can achieve desired high accuracy for this special example by using sufficiently high precision, such as quadruple precision.
+
+Finally, we test the fourth example and present the numerical results in Table 6, which illustrates that both Algorithms 3.2 and 3.3 are very accurate in both types of errors. From Remark 1, we see that the heavy cancellation does not occur in the sum since there exist no nearly equal numbers are subtracted from each other. Subfigure (d) shows that the values of the matrix entries varies widely, making underflow and overflow unavoidable consequences when working in finite precision arithmetic for
+
+very large \( n \).
+
+5. Conclusion. We proposed an explicit formula to compute the inverse of a type of matrices which include the well-known fully IRK and BIM matrices as special cases. So the inverse of these matrices arising from implicit time integration can be computed by the basic four arithmetic operations of the quadrature nodes, and we can obtain their inverse exactly by using a symbolic manipulation package. It’s shown that the inverse of these matrices is much easier to compute than themselves.
+
+by Mathematica. We also presented three fast algorithms with \(O(n^2)\) complexity to compute the inverse of these matrices. The numerical results demonstrate that Algorithm 3.3 is very fast and it only requires several seconds to obtain the inverse of the matrices with size \(n = 10000\). Although encountering substantial cancellation in the computation of diagonal elements with Radau IIA nodes and Chebyshev nodes, we can also obtain desirable high accuracy by using higher precision, such as quadruple precision, and the compute time is considerably less than that required by using the symbolic manipulation package.
+
+18                                 Shishun Li and Huile Wei
+
+[23] M.-R. Skrzipek, Inversion of Vandermonde-like matrices, BIT, 44 (2004), pp. 291–306.
+
+[24] B. S. Southworth, O. Krzysik, W. Pazner, and H. D. Sterck, Fast Solution of Fully Implicit Runge-Kutta and Discontinuous Galerkin in Time for Numerical PDEs, Part I: the Linear Setting, SIAM J. Sci. Comput. 44 (2022), pp. A416–A443.
+
+[25] B. S. Southworth, O. Krzysik, and W. Pazner, Fast Solution of Fully Implicit Runge-Kutta and Discontinuous Galerkin in Time for Numerical PDEs, Part II: Nonlinearities and DAEs, SIAM J. Sci. Comput. 44 (2022), pp. A636–A663.
+
+[26] J. Traub, Associated polynomials and uniform methods for the solution of linear problems, SIAM Rev. 8 (1966), pp. 277–301.
+
+[27] Z. Xu and Z. You, A fast inversion of confluent Vandermonde-like matrices involving polynomials that satisfy a three-term recurrence relation, SIAM J. Matrix Anal. Appl. 19 (1998), pp. 797–806.

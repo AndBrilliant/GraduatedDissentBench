@@ -1,0 +1,316 @@
+{
+  "condition": "B3",
+  "paper_id": "2403.19285v2",
+  "verdict": "flagged",
+  "confidence": 0.9,
+  "reasoning": "Both reviewers converge on the same core concerns: the paper's central claim of superiority (syntax-based retrieval achieving highest COMET scores on 11/12 directions) rests on small numerical differences without any statistical significance testing, variance reporting, or confidence intervals. Additionally, the comparison to CTQScorer is explicitly acknowledged as non-equivalent, yet is presented as evidence of superiority. While no single issue rises to retraction level—the experimental design could in principle be valid—the cumulative weight of multiple major concerns (no significance testing, unfair baselines, unaddressed context truncation, no data leakage checks, no parser quality analysis) materially undermines confidence in the claimed conclusions. The paper needs substantial methodological reinforcement before its claims can be considered well-supported.",
+  "findings": [
+    {
+      "finding": "No statistical significance testing or uncertainty reporting for the main COMET comparisons, despite claims based on small numerical differences across 12 translation directions.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.95,
+      "justification": "Both reviewers independently identify this as a central problem. The headline claim ('highest on 11/12 directions') could easily be noise if differences are within metric variance. Without paired tests, bootstrap confidence intervals, or even error bars, the core conclusion is unsupported but not definitively wrong—hence MAJOR-REVISION rather than RETRACTION-WORTHY.",
+      "source": "both"
+    },
+    {
+      "finding": "Comparison to CTQScorer uses different databases, test sets, and potentially different experimental conditions, making it a non-equivalent comparison despite being presented as evidence of superiority.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.93,
+      "justification": "Both reviewers flag this. The authors themselves acknowledge the comparison is unequal, yet draw strong comparative conclusions from it. This undermines one of the paper's key claims but does not invalidate the within-setup experiments comparing syntax-based retrieval to BM25 and random baselines.",
+      "source": "both"
+    },
+    {
+      "finding": "Context-length overflow with 16 in-context examples is acknowledged but handling is not specified; truncation could differentially affect selection methods.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "If methods that retrieve longer examples are more frequently truncated, this introduces a systematic confound. Since the paper examines performance across different numbers of examples (including 16), this could distort the robustness analysis. The concern is plausible and unaddressed but not confirmed to have occurred.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Random baseline averaged over only 3 seeds; deterministic methods have single-point estimates with no variability analysis across test instances or bootstrap resampling.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Three seeds for random is minimal, and providing no variance estimates for the main methods makes it impossible to assess whether the ~1 COMET point advantages are stable. This compounds the first finding about missing statistical testing.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "No data leakage checks between the WikiMatrix retrieval database and the FLORES+ test set.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "WikiMatrix is large and noisy; FLORES+ sentences could overlap or near-duplicate with retrieved examples. If leakage exists, retrieval-based methods would be artificially inflated. This is a plausible concern given the setup, but there is no evidence it actually occurred—hence MAJOR-REVISION.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Dependency parser quality varies across the six languages but is not analyzed; no parser accuracy discussion or ablation examining whether gains correlate with parsing quality.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "The entire proposed method depends on parsed dependency trees. If parsing is poor for certain languages, the measured 'syntax' effect may reflect parser artifacts. This is a meaningful confound for a syntax-based contribution, though it does not invalidate the overall approach.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Ensemble strategy (combining BM25 and Polynomial top examples) does not clarify whether duplicate examples across the two retrieval methods are removed.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "Duplicates would inflate the nominal example count while reducing diversity. Since the ensemble is presented as a central contribution, this ambiguity needs resolution. However, the impact direction is uncertain.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Study evaluates only one LLM (XGLM-7.5B) but makes broad claims about syntax helping ICL for MT in general.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "This is a generalizability limitation common in NLP research. Claims should be scoped to the tested model, but this alone does not invalidate the reported results.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "No comparison to alternative tree similarity measures despite the core contribution being specifically about syntax-based retrieval.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "This limits the strength of the claim that the proposed syntax-based method is optimal, but does not invalidate the empirical gains observed with the chosen measure.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Japanese preprocessing removes ~33% of sentences, potentially introducing selection bias for Japanese translation directions.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Substantial data loss could bias results for Japanese, but the proposed method still shows competitive performance. This is a limitation worth noting more explicitly.",
+      "source": "prover_b"
+    },
+    {
+      "finding": "Overclaim in interpretation: experiments test a retrieval heuristic using parser-derived features, not a causal role of syntax per se.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "The framing suggests syntax itself is the causal driver, but the design only shows that a syntax-informed retrieval signal helps in this specific setup. This is an interpretive overclaim, not a methodological failure.",
+      "source": "prover_a"
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 7,
+    "MINOR": 4
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.92,
+    "reasoning": "The paper’s core idea is plausible, but the manuscript as presented has several methodological/reporting problems that materially weaken confidence in the claimed superiority of the syntax-based method. The most serious issues are lack of statistical significance/variance analysis despite tiny reported gains, potentially unfair and explicitly acknowledged non-equivalent comparison to CTQScorer, and unclear handling of context-length truncation when varying the number of in-context examples. I do not see a definitive retraction-level flaw from the text alone, because the central experiments could still be valid in principle, but the evidence as presented is insufficiently rigorous to support strong claims such as 'highest on 11/12 directions' and broad effectiveness.",
+    "findings": [
+      {
+        "finding": "No statistical significance testing or uncertainty reporting is provided for the main comparison, despite claims based on small COMET differences across 12 directions.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The headline conclusion rests on being numerically best in 11/12 directions, but without confidence intervals, paired significance tests, or even run-to-run variability for deterministic settings versus evaluation noise, it is impossible to know whether those wins are meaningful or just metric fluctuation. If tested properly, several claimed wins could disappear, altering the main conclusion from 'syntax helps' to 'inconclusive.'"
+      },
+      {
+        "finding": "Comparison to CTQScorer is not on a matched experimental setup, and the manuscript itself notes the comparison may be unequal because prior work used different databases and test sets.",
+        "severity": "MAJOR-REVISION",
+        "justification": "An apples-to-oranges baseline comparison cannot support claims of superiority over CTQScorer. If the same database, preprocessing, prompt template, and test set were used, the ranking could change. This does not invalidate the syntax method itself, but it undermines one of the key comparative claims."
+      },
+      {
+        "finding": "The manuscript acknowledges that with 16 in-context examples the context sometimes exceeds the model’s maximum length, but does not specify how overlength prompts were handled or whether truncation affected methods differentially.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Prompt overflow can systematically bias selection methods, especially when example lengths differ by strategy. If one method more often triggers truncation or loses later examples, comparisons across strategies and example counts may be distorted. This could change conclusions about robustness to the number of examples."
+      },
+      {
+        "finding": "Random baseline is averaged over 3 seeds, but deterministic retrieval methods are given single-point estimates only; no comparable variability analysis is reported across test instances or bootstrap resampling of metric scores.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Using only 3 seeds for random and no uncertainty estimates for the main methods makes the benchmark unstable. Since the reported average improvement is around 1 COMET point, insufficient variance characterization could materially affect whether the claimed advantage is real."
+      },
+      {
+        "finding": "The ensemble strategy concatenates top examples from BM25 and Polynomial without clearly stating whether duplicate examples across the two retrieval methods are removed.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If duplicates are not removed, the nominal number of demonstrations is inflated while actual diversity is reduced, which could either help or hurt performance. Because the ensemble is a central contribution, ambiguity here could change the observed gains and must be resolved."
+      },
+      {
+        "finding": "The study evaluates only one LLM (XGLM-7.5B), yet makes broad claims about 'LLMs' and about syntax helping ICL for MT generally.",
+        "severity": "MINOR",
+        "justification": "This is a generalizability issue rather than a validity failure. The conclusions should be narrowed to the tested model and settings."
+      },
+      {
+        "finding": "Dependency parsing quality likely varies substantially across the six languages, but the paper provides no parser accuracy discussion, no parser ablation, and no analysis of whether gains correlate with parsing quality.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Because the proposed method depends entirely on parsed dependency trees, parser errors are part of the treatment. If parsing is poor for some languages, the measured effect of 'syntax' may instead reflect parser artifacts or language-specific preprocessing. This could change language-level conclusions."
+      },
+      {
+        "finding": "The choice of Polynomial Distance is justified primarily as convenient and time-saving, but there is no comparison to other tree similarity measures despite the contribution being specifically about syntax-based retrieval.",
+        "severity": "MINOR",
+        "justification": "This limits the strength of the claim that the proposed syntax-based method is a good way to exploit syntax. However, it does not by itself invalidate the reported empirical gains."
+      },
+      {
+        "finding": "The paper uses an extremely large and noisy retrieval database (WikiMatrix) but does not describe any data leakage checks against FLORES+ test sentences or near-duplicate contamination.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If test or near-test sentences appear in the retrieval database, retrieval-based ICL performance can be inflated. Since retrieval quality is the object of study, leakage would directly threaten the validity of the reported gains."
+      },
+      {
+        "finding": "The claim that syntax improves MT is stronger than what the design isolates; the experiments test a retrieval heuristic using parser-derived features, not a causal role of syntax per se.",
+        "severity": "MINOR",
+        "justification": "This is an overclaim in interpretation. The data may show that a syntax-informed retrieval signal helps in this setup, but not necessarily that syntactic knowledge itself is the causal driver."
+      },
+      {
+        "finding": "Tokenization and preprocessing differ by language and can affect both BM25 retrieval and downstream evaluation, but the manuscript does not report robustness to these choices.",
+        "severity": "MINOR",
+        "justification": "This is a standard reproducibility/robustness concern. It could matter quantitatively, but absent evidence of a specific failure it is not enough to overturn the conclusions."
+      },
+      {
+        "finding": "The paper highlights 'highest COMET scores on 11 out of 12 directions' rather than reporting average effect sizes, and the narrative suggests wins-counting rather than a formal aggregated analysis.",
+        "severity": "MINOR",
+        "justification": "Wins-counting can exaggerate evidence when margins are tiny. A proper paired aggregate analysis across directions would be more informative, but this issue alone does not invalidate the results."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "not_flagged",
+    "confidence": 0.85,
+    "reasoning": "The manuscript describes a straightforward and methodologically sound approach to in-context example selection for machine translation using syntactic similarity (Polynomial Distance) and an ensemble with BM25. The experimental setup is clearly described, the model (XGLM 7.5B) is fixed, the datasets are specified, and the evaluation metric (COMET) is appropriate. There are no errors that would fundamentally invalidate the central conclusions. However, there are some concerns regarding reporting completeness and potential confounds that warrant discussion, hence the confidence is not 1.0.",
+    "findings": [
+      {
+        "finding": "The authors state 'M et al. (2023) propose CTQScorer' and later cite 'Aswanth M, Ratish Puduppully, Raj Dabre, and Anoop Kunchukuttan. 2023.' This is an unusual and potentially confusing citation format. While not a methodological error per se, it hinders clarity and could be considered a minor reporting gap.",
+        "severity": "MINOR",
+        "justification": "This is a style/reporting issue that does not affect the validity of the experimental results. The work is still identifiable."
+      },
+      {
+        "finding": "The manuscript compares against CTQScorer (Table 2) but explicitly notes that the comparison is 'unequal' due to different example databases and test sets. The authors correctly flag this caveat, but presenting a comparison that is acknowledged as non-equivalent weakens the strength of the claimed superiority.",
+        "severity": "MAJOR-REVISION",
+        "justification": "These comparisons are presented as evidence of superiority. If the conditions are materially different (different databases, different model sizes, different test sets), the comparison is not a controlled experiment. The conclusion that 'Our proposed methods secure all the highest scores' in this table is not supported by a fair comparison. A major revision would require either removing this comparison or executing a controlled experiment."
+      },
+      {
+        "finding": "The manuscript reports that 'Surprisingly, the performance of R-BM25 is poor under our experimental settings' and speculates on reasons. This is a valid observation, but the lack of any analysis or controlled experiment to isolate the cause (e.g., database size, prompt format) leaves the reader uncertain about the robustness of the baseline. This does not invalidate the main findings, as BM25 and Random are still strong baselines.",
+        "severity": "MINOR",
+        "justification": "This is a reporting gap. The authors acknowledge the surprise and leave it to future work. It does not break the core conclusion that the proposed syntax-based method improves over BM25 and Random in their specific setup."
+      },
+      {
+        "finding": "The manuscript claims 'Our proposed ensemble strategy constantly outperforms baselines under different numbers of examples' based on Figure 2. While the trend is clear, the figure appears to show point estimates without error bars or confidence intervals. Without measures of variance (e.g., standard deviation across seeds), it is impossible to know if the observed differences are statistically significant.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is a common issue in NLP papers. The claim of 'constantly outperforms' implies a statistically reliable effect. The absence of any variance estimation or confidence intervals means a reader cannot assess the stability of the result. A major revision would involve providing error bars or confidence intervals for the main results in Figure 2 and Table 1."
+      },
+      {
+        "finding": "The manuscript does not report whether statistical significance testing (e.g., bootstrap or paired tests) was performed for the COMET scores in Table 1. While COMET scores are often treated as continuous, the paper's central claim rests on the relative ordering of methods across 12 directions. Without any significance assessment, it's unclear whether the 'highest scores on 11 out of 12' are actually meaningful improvements or noise.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the differences between the proposed method and the best baseline are very small (e.g., < 0.5 COMET points), the central claim of superiority could be fragile. A major revision would require either a significance analysis or a clear statement that no significance testing was done and the results should be interpreted as rankings only."
+      },
+      {
+        "finding": "The manuscript mentions that for Japanese, after preprocessing, only 67% of sentences remain (vs. ~85% for others). This substantial data loss could introduce a selection bias (e.g., systematically removing more complex sentences). While the authors report the raw numbers, they do not discuss how this might affect the generalizability of results for Japanese.",
+        "severity": "MINOR",
+        "justification": "This is a valid concern but unlikely to overturn the main conclusions, as results for Japanese (JA-EN and EN-JA) still show the proposed method as best. However, it is a limitation that should be noted more explicitly in the main text, not just in an appendix."
+      }
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.9,
+    "reasoning": "Both reviewers converge on the same core concerns: the paper's central claim of superiority (syntax-based retrieval achieving highest COMET scores on 11/12 directions) rests on small numerical differences without any statistical significance testing, variance reporting, or confidence intervals. Additionally, the comparison to CTQScorer is explicitly acknowledged as non-equivalent, yet is presented as evidence of superiority. While no single issue rises to retraction level—the experimental design could in principle be valid—the cumulative weight of multiple major concerns (no significance testing, unfair baselines, unaddressed context truncation, no data leakage checks, no parser quality analysis) materially undermines confidence in the claimed conclusions. The paper needs substantial methodological reinforcement before its claims can be considered well-supported.",
+    "findings": [
+      {
+        "finding": "No statistical significance testing or uncertainty reporting for the main COMET comparisons, despite claims based on small numerical differences across 12 translation directions.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.95,
+        "justification": "Both reviewers independently identify this as a central problem. The headline claim ('highest on 11/12 directions') could easily be noise if differences are within metric variance. Without paired tests, bootstrap confidence intervals, or even error bars, the core conclusion is unsupported but not definitively wrong—hence MAJOR-REVISION rather than RETRACTION-WORTHY.",
+        "source": "both"
+      },
+      {
+        "finding": "Comparison to CTQScorer uses different databases, test sets, and potentially different experimental conditions, making it a non-equivalent comparison despite being presented as evidence of superiority.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.93,
+        "justification": "Both reviewers flag this. The authors themselves acknowledge the comparison is unequal, yet draw strong comparative conclusions from it. This undermines one of the paper's key claims but does not invalidate the within-setup experiments comparing syntax-based retrieval to BM25 and random baselines.",
+        "source": "both"
+      },
+      {
+        "finding": "Context-length overflow with 16 in-context examples is acknowledged but handling is not specified; truncation could differentially affect selection methods.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.82,
+        "justification": "If methods that retrieve longer examples are more frequently truncated, this introduces a systematic confound. Since the paper examines performance across different numbers of examples (including 16), this could distort the robustness analysis. The concern is plausible and unaddressed but not confirmed to have occurred.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Random baseline averaged over only 3 seeds; deterministic methods have single-point estimates with no variability analysis across test instances or bootstrap resampling.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.88,
+        "justification": "Three seeds for random is minimal, and providing no variance estimates for the main methods makes it impossible to assess whether the ~1 COMET point advantages are stable. This compounds the first finding about missing statistical testing.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "No data leakage checks between the WikiMatrix retrieval database and the FLORES+ test set.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.78,
+        "justification": "WikiMatrix is large and noisy; FLORES+ sentences could overlap or near-duplicate with retrieved examples. If leakage exists, retrieval-based methods would be artificially inflated. This is a plausible concern given the setup, but there is no evidence it actually occurred—hence MAJOR-REVISION.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Dependency parser quality varies across the six languages but is not analyzed; no parser accuracy discussion or ablation examining whether gains correlate with parsing quality.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "The entire proposed method depends on parsed dependency trees. If parsing is poor for certain languages, the measured 'syntax' effect may reflect parser artifacts. This is a meaningful confound for a syntax-based contribution, though it does not invalidate the overall approach.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Ensemble strategy (combining BM25 and Polynomial top examples) does not clarify whether duplicate examples across the two retrieval methods are removed.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "Duplicates would inflate the nominal example count while reducing diversity. Since the ensemble is presented as a central contribution, this ambiguity needs resolution. However, the impact direction is uncertain.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Study evaluates only one LLM (XGLM-7.5B) but makes broad claims about syntax helping ICL for MT in general.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "This is a generalizability limitation common in NLP research. Claims should be scoped to the tested model, but this alone does not invalidate the reported results.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "No comparison to alternative tree similarity measures despite the core contribution being specifically about syntax-based retrieval.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "This limits the strength of the claim that the proposed syntax-based method is optimal, but does not invalidate the empirical gains observed with the chosen measure.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Japanese preprocessing removes ~33% of sentences, potentially introducing selection bias for Japanese translation directions.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "Substantial data loss could bias results for Japanese, but the proposed method still shows competitive performance. This is a limitation worth noting more explicitly.",
+        "source": "prover_b"
+      },
+      {
+        "finding": "Overclaim in interpretation: experiments test a retrieval heuristic using parser-derived features, not a causal role of syntax per se.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "The framing suggests syntax itself is the causal driver, but the design only shows that a syntax-informed retrieval signal helps in this specific setup. This is an interpretive overclaim, not a methodological failure.",
+        "source": "prover_a"
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 21885,
+    "duration_s": 71.8,
+    "n_api_calls": 3,
+    "cost_usd": 0.2029,
+    "total_input_tokens": 14188,
+    "total_output_tokens": 4171,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 5518,
+        "output_tokens": 1412,
+        "cost_usd": 0.027915,
+        "duration_s": 27.04,
+        "label": "2403.19285v2/b3/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 5487,
+        "output_tokens": 1098,
+        "cost_usd": 0.00268929,
+        "duration_s": 15.16,
+        "label": "2403.19285v2/b3/prover_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 3183,
+        "output_tokens": 1661,
+        "cost_usd": 0.17232,
+        "duration_s": 29.59,
+        "label": "2403.19285v2/b3/arbiter"
+      }
+    ]
+  }
+}

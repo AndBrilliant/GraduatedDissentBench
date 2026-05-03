@@ -1,0 +1,197 @@
+{
+  "condition": "B3",
+  "paper_id": "2407.04410v3",
+  "verdict": "flagged",
+  "confidence": 0.95,
+  "reasoning": "Both reviewers independently identified the same critical gap in Theorem 8: the proof claims that the admissible class is contained in a closed, bounded, and hence weakly sequentially compact subset of L²(G), but no argument is provided that the functions are even in L²(G), let alone uniformly bounded in L²-norm. The pointwise bound |f| ≤ 1 and the finite measure of Ω only control the positive part; the negative part can extend over sets of infinite measure, making the L² norm potentially infinite. This is the engine of the existence proof, and without it the extraction of a weakly convergent subsequence—and hence the entire existence result—is unsupported. Reviewer A also identified additional non-trivial gaps (convergence at 0, extension from H to G) that compound the problem. Reviewer B raised a concern about support preservation after null-set correction that is a genuine gap but likely fixable. Overall, the central compactness argument is fundamentally unjustified as written, which means the paper's main theorem is not established by the presented proof.",
+  "findings": [
+    {
+      "finding": "The proof of Theorem 8 asserts that the admissible class G_G(Ω) is contained in a closed, bounded subset of L²(G) and hence is weakly sequentially compact. No argument is given that admissible functions belong to L²(G) or have uniformly bounded L²-norms. The pointwise bound |f| ≤ 1 and finite measure of Ω only control the positive part; the negative part may live on a set of infinite measure, so ∫|f|² can be infinite. Without L²-boundedness, the weak compactness extraction that produces the candidate extremizer is invalid, and the entire existence proof collapses. Theorem 9 depends on Theorem 8, so the main result is unsupported.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.95,
+      "justification": "Both reviewers flagged this independently with high confidence. The gap is not a matter of missing details—it concerns a claim that appears to be false under the paper's hypotheses. If the functions are not in L²(G), weak compactness in L² cannot be invoked, and no alternative compactness framework is provided. The entire existence proof rests on this step.",
+      "source": "both"
+    },
+    {
+      "finding": "The proof of Theorem 8 requires that the approximating sequence (f_n) converges to f at the identity (f(0) = 1) before invoking Theorem 6 to obtain uniform-on-compacts convergence. The paper only derives f(0) = 1 after an extremality argument, but pointwise convergence at 0 is needed as a hypothesis for Theorem 6. The logical ordering is circular or at minimum incomplete.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "This is a real logical gap in the proof structure. It may be fixable (e.g., by using that f_n(0) = 1 for all n and establishing weak convergence implies convergence at 0 through separate arguments), but as written the proof does not close this loop. Since the existence claim might survive a corrected argument, this is major-revision level rather than retraction-worthy on its own.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "After obtaining an integrally positive definite function f that agrees a.e. with a continuous positive definite function, the authors correct f on a null set to make it continuous. No argument is given that this correction preserves supp(f₊) ⊂ Ω, which is needed to show the limit function remains in the admissible class.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.7,
+      "justification": "Since Ω is closed and f₊ ≤ 1_Ω a.e., the continuous representative's positive part is bounded by 1_Ω everywhere by continuity, so supp(f₊) ⊂ Ω should follow. The gap is likely repairable but is not addressed in the text.",
+      "source": "prover_b"
+    },
+    {
+      "finding": "In Theorem 9, the claim that uniform-on-compacts convergence on H implies uniform-on-compacts convergence of the zero-extensions on G suppresses a non-trivial argument about the interaction of compact sets with cosets of H in G.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.75,
+      "justification": "Since H is open (and closed) in G, compact subsets of G intersect only finitely many cosets, and the extensions are zero outside H. The argument is straightforward but should be stated.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The manuscript uses a non-standard definition of support ({g : f(g) ≠ 0} rather than its closure) and has several notational inconsistencies (e.g., G_G(Ω) vs. 𝒢_G(Ω), incorrect measure notation). These impede verification of the proofs.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Editorial issues that do not alter conclusions but should be corrected for clarity and verifiability.",
+      "source": "prover_a"
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 1,
+    "MAJOR-REVISION": 2,
+    "MINOR": 2
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.98,
+    "reasoning": "The manuscript’s main existence theorem relies on a crucial compactness step in Theorem 8 that is not justified and is generally false as stated. Specifically, the authors claim that the admissible class is contained in a closed, bounded, hence weakly sequentially compact subset of L^2(G). In infinite-dimensional Hilbert spaces, closed bounded sets are weakly compact, but weak sequential compactness requires more care and, more importantly, the paper never establishes that every admissible function lies in L^2(G) with a uniform L^2 bound. The defining assumptions only give |f|≤1 and f_+ supported on a finite-measure set; this does not imply f∈L^2(G), because the negative part may live on a set of infinite measure. The later argument proving L^1 integrability of the limit uses properties of the approximating sequence, but that does not retroactively justify starting in L^2 or applying weak compactness there. Since this unsupported L^2 compactness is the engine of the existence proof for both Theorem 8 and thus Theorem 9, the central conclusion is not established from the presented arguments. There are also additional significant gaps in the proof of convergence at 0 and in the extension from H to G.",
+    "findings": [
+      {
+        "finding": "Theorem 8 assumes without proof that \\(\\mathcal G_G(\\Omega)\\subset L^2(G)\\) and is contained in a bounded subset of \\(L^2(G)\\). This is not implied by the hypotheses \\(f\\in P_1(G)\\), \\(|f|\\le 1\\), and \\(\\operatorname{supp} f_+\\subset \\Omega\\) with \\(\\lambda(\\Omega)<\\infty\\). The negative part may extend over a set of infinite measure, so \\(\\int |f|^2\\) need not be finite, let alone uniformly bounded over the class.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "If this fails, the weak compactness/subsequence extraction in \\(L^2\\) used to produce a candidate extremizer is invalid. The existence proof in Theorem 8 collapses, and Theorem 9 depends on Theorem 8. Thus the main conclusion is not supported by the manuscript as written."
+      },
+      {
+        "finding": "The statement in Theorem 8 proof that a closed, bounded subset of \\(L^2(G)\\) is 'hence weakly sequentially compact' is not correctly justified. Even in reflexive spaces one needs an argument beyond 'closed and bounded'; moreover this only matters after establishing the set is actually bounded in \\(L^2\\), which the paper does not do.",
+        "severity": "MAJOR-REVISION",
+        "justification": "On its own this is a fixable functional-analytic imprecision if the authors work in a correct compactness framework. But together with the missing \\(L^2\\)-boundedness it contributes to failure of the main proof."
+      },
+      {
+        "finding": "The final use of Theorem 6 in Theorem 8 requires \\(\\lim_{n\\to\\infty} f_n(0)=f(0)\\). The proof only derives \\(f(0)=1\\) for the limit function after an extremality argument; it never establishes that the approximating sequence converges at 0. Since each \\(f_n(0)=1\\), the needed hypothesis is equivalent to proving \\(f(0)=1\\) before invoking Theorem 6 or otherwise proving pointwise convergence at 0. The current order of arguments is logically incomplete.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This affects the claimed uniform-on-compacts approximation part of the theorem. The existence of an extremizer might still survive with a corrected proof, but the approximation claim is not established as written."
+      },
+      {
+        "finding": "In Theorem 9, the sentence 'As in Theorem 8, \\((f_n)\\) converges to \\(f\\) uniformly on the compact subsets of \\(H\\), and hence \\((\\tilde f_n)\\) converges to \\(\\tilde f\\) uniformly on the compact subsets of \\(G\\)' suppresses an argument. For a compact set intersecting infinitely many cosets this could be delicate, and one must use that \\(H\\) is open-and-closed to show a compact subset of \\(G\\setminus H\\) is uniformly zero under the extensions and that the part in \\(H\\) is compact in \\(H\\). This is likely repairable but not proved.",
+        "severity": "MINOR",
+        "justification": "This is mainly a reporting/proof-detail issue and likely fixable once the main theorem is correctly established."
+      },
+      {
+        "finding": "The manuscript defines support as \\(\\{g:f(g)\\neq 0\\}\\), not the usual closed support. Several arguments use statements like '\\(\\operatorname{supp} f_+\\subset \\Omega\\)' with \\(\\Omega\\) closed and infer pointwise sign restrictions outside \\(\\Omega\\). This is workable with their convention, but it departs from standard usage without discussing possible confusion, especially when later appealing to continuity and support-related closure arguments.",
+        "severity": "MINOR",
+        "justification": "This is a definitional/reporting issue unlikely to alter conclusions if the main compactness argument were fixed."
+      },
+      {
+        "finding": "There are several notation/statement inconsistencies: e.g. writing \\(G_G(\\Omega)\\) instead of \\(\\mathcal G_G(\\Omega)\\), using \\(\\int_G f(g)\\,d\\lambda_G(\\Omega)\\) where \\(d\\lambda_G(g)\\) is intended, and theorem labels/section transitions that are garbled. These do not by themselves invalidate results but make the proof harder to verify.",
+        "severity": "MINOR",
+        "justification": "These are editorial issues, but they impede checking correctness and should be cleaned up in revision."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.85,
+    "reasoning": "The manuscript contains critical gaps in the proof of Theorem 8 and a logical error in Theorem 3 that undermine the central existence result. Specifically, the claim that the set of functions is contained in a weakly sequentially compact subset of L^2(G) is unjustified without establishing uniform L^2 bounds, and the conclusion that an integrally positive definite function can be corrected to a continuous positive definite function while preserving support containment and the integral value is not properly justified. Additionally, Theorem 3's argument about the subgroup H containing Ω relies on an incorrect claim about open sets having strictly positive Haar measure. These issues are not minor; they directly affect the validity of the main theorem.",
+    "findings": [
+      {
+        "finding": "The proof of Theorem 8 claims that the extremal sequence (f_n) is contained in a closed, bounded, and hence weakly sequentially compact subset of L^2(G). However, no argument is provided that these functions are uniformly bounded in L^2(G). Only pointwise bounds (|f_n(g)| ≤ 1) are given, but L^2 boundedness does not follow from pointwise bounds unless the group has finite measure. The set Ω has finite measure, but the functions may be nonzero outside Ω (they can be negative there). The L^2 norm could be infinite or unbounded. The 'closed bounded' claim is unsupported.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "If the weak convergence argument in L^2(G) is invalid because the sequence is not in a weakly compact set, then the existence of a weak limit is not guaranteed, and the entire proof of Theorem 8 collapses. The central result of the paper depends on this step."
+      },
+      {
+        "finding": "In the proof of Theorem 8, after obtaining an integrally positive definite function f that agrees almost everywhere with a continuous positive definite function, the authors assert that they can correct f on a set of Haar measure zero to become continuous, without changing the value of its integral, and that the support condition supp f_+ ⊂ Ω is preserved. The support condition is a topological condition (closure of where f_+ > 0). Changing f on a null set could destroy the support condition unless additional continuity arguments are made. No argument is given that the modified function still satisfies supp f_+ ⊂ Ω.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is a significant gap; the conclusion that the limit function lies in the admissible class G_G(Ω) may not follow. However, it might be fixable with additional justification (e.g., using that the pointwise almost everywhere limit of functions with support in Ω has its positive part supported in Ω, since Ω is closed). The severity is not retraction-worthy if a fix is plausible, but it is a major oversight in the current text."
+      },
+      {
+        "finding": "In the proof of Theorem 3, the argument that '(g+K) ∩ U is open, and every open set is either empty or has strictly positive measure' is false for a general Haar measure. On a locally compact Abelian group, open sets can have zero measure if the group is not discrete and the measure is not strictly positive. For example, on ℝ with Lebesgue measure, open sets have positive measure. But on a group like a product of a discrete and a continuous group, an open set could be of the form {0} × open interval, which has measure zero if the discrete part has counting measure? Actually, the statement is that any nonempty open set has positive measure for Haar measure (since Haar measure is strictly positive: any nonempty open set has positive measure). This is actually true: Haar measure assigns positive measure to every nonempty open set. So this finding might be incorrect. Review: In standard Haar measure theory, nonempty open sets always have positive measure. So this is not an error. I withdraw this finding. However, the argument about countability of cosets that intersect U is still correct because each such intersection has positive measure, and the total measure is finite, so only countably many can be nonempty. So this part is fine.",
+        "severity": "MINOR",
+        "justification": "The finding was based on a mistaken recollection. The reasoning in Theorem 3 is actually correct."
+      },
+      {
+        "finding": "In the proof of Theorem 8, the argument that the convex combination sequence (h_n) remains in G_G(Ω) is not fully justified. The class G_G(Ω) consists of continuous positive definite functions with f(0)=1 and support of positive part within Ω. Convex combinations of positive definite functions are positive definite, and convex combinations of functions with f(0)=1 preserve f(0)=1. However, continuity is preserved under finite convex combinations, and the support condition is also preserved. But the functions in the convex hull are finite convex combinations of the original functions. Since each original function is in the class, so are the convex combinations. This is fine.",
+        "severity": "MINOR",
+        "justification": "The reasoning is actually correct, though the text could be more explicit. This is not a real error."
+      },
+      {
+        "finding": "The proof of Theorem 8 uses Fatou's lemma to bound the L^1 norm of the negative part of f. The inequality (6) states ∫ f_- ≤ liminf ∫ (f_n)_-, and then bounds that by liminf ∫ (f_n)_+ ≤ λ_G(Ω). But the last inequality is not justified: the functions (f_n)_+ are bounded by 1_Ω but the measure of Ω is finite, so ∫ (f_n)_+ ≤ λ_G(Ω). That is correct. However, the step 'liminf ∫ (f_n)_- ≤ liminf ∫ (f_n)_+' uses the fact that since f_n has nonnegative integral, we have ∫ (f_n)_- ≤ ∫ (f_n)_+. But that is only true if ∫ f_n ≥ 0, which is true for positive definite functions (as noted). So that part is fine.",
+        "severity": "MINOR",
+        "justification": "The reasoning is logically sound; no error."
+      }
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "Both reviewers independently identified the same critical gap in Theorem 8: the proof claims that the admissible class is contained in a closed, bounded, and hence weakly sequentially compact subset of L²(G), but no argument is provided that the functions are even in L²(G), let alone uniformly bounded in L²-norm. The pointwise bound |f| ≤ 1 and the finite measure of Ω only control the positive part; the negative part can extend over sets of infinite measure, making the L² norm potentially infinite. This is the engine of the existence proof, and without it the extraction of a weakly convergent subsequence—and hence the entire existence result—is unsupported. Reviewer A also identified additional non-trivial gaps (convergence at 0, extension from H to G) that compound the problem. Reviewer B raised a concern about support preservation after null-set correction that is a genuine gap but likely fixable. Overall, the central compactness argument is fundamentally unjustified as written, which means the paper's main theorem is not established by the presented proof.",
+    "findings": [
+      {
+        "finding": "The proof of Theorem 8 asserts that the admissible class G_G(Ω) is contained in a closed, bounded subset of L²(G) and hence is weakly sequentially compact. No argument is given that admissible functions belong to L²(G) or have uniformly bounded L²-norms. The pointwise bound |f| ≤ 1 and finite measure of Ω only control the positive part; the negative part may live on a set of infinite measure, so ∫|f|² can be infinite. Without L²-boundedness, the weak compactness extraction that produces the candidate extremizer is invalid, and the entire existence proof collapses. Theorem 9 depends on Theorem 8, so the main result is unsupported.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.95,
+        "justification": "Both reviewers flagged this independently with high confidence. The gap is not a matter of missing details—it concerns a claim that appears to be false under the paper's hypotheses. If the functions are not in L²(G), weak compactness in L² cannot be invoked, and no alternative compactness framework is provided. The entire existence proof rests on this step.",
+        "source": "both"
+      },
+      {
+        "finding": "The proof of Theorem 8 requires that the approximating sequence (f_n) converges to f at the identity (f(0) = 1) before invoking Theorem 6 to obtain uniform-on-compacts convergence. The paper only derives f(0) = 1 after an extremality argument, but pointwise convergence at 0 is needed as a hypothesis for Theorem 6. The logical ordering is circular or at minimum incomplete.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "This is a real logical gap in the proof structure. It may be fixable (e.g., by using that f_n(0) = 1 for all n and establishing weak convergence implies convergence at 0 through separate arguments), but as written the proof does not close this loop. Since the existence claim might survive a corrected argument, this is major-revision level rather than retraction-worthy on its own.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "After obtaining an integrally positive definite function f that agrees a.e. with a continuous positive definite function, the authors correct f on a null set to make it continuous. No argument is given that this correction preserves supp(f₊) ⊂ Ω, which is needed to show the limit function remains in the admissible class.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.7,
+        "justification": "Since Ω is closed and f₊ ≤ 1_Ω a.e., the continuous representative's positive part is bounded by 1_Ω everywhere by continuity, so supp(f₊) ⊂ Ω should follow. The gap is likely repairable but is not addressed in the text.",
+        "source": "prover_b"
+      },
+      {
+        "finding": "In Theorem 9, the claim that uniform-on-compacts convergence on H implies uniform-on-compacts convergence of the zero-extensions on G suppresses a non-trivial argument about the interaction of compact sets with cosets of H in G.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.75,
+        "justification": "Since H is open (and closed) in G, compact subsets of G intersect only finitely many cosets, and the extensions are zero outside H. The argument is straightforward but should be stated.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "The manuscript uses a non-standard definition of support ({g : f(g) ≠ 0} rather than its closure) and has several notational inconsistencies (e.g., G_G(Ω) vs. 𝒢_G(Ω), incorrect measure notation). These impede verification of the proofs.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Editorial issues that do not alter conclusions but should be corrected for clarity and verifiability.",
+        "source": "prover_a"
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 27373,
+    "duration_s": 70.75,
+    "n_api_calls": 3,
+    "cost_usd": 0.1957,
+    "total_input_tokens": 21614,
+    "total_output_tokens": 3989,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 9452,
+        "output_tokens": 1278,
+        "cost_usd": 0.03641,
+        "duration_s": 21.97,
+        "label": "2407.04410v3/b3/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 8607,
+        "output_tokens": 1349,
+        "cost_usd": 0.0038077900000000006,
+        "duration_s": 21.49,
+        "label": "2407.04410v3/b3/prover_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 3555,
+        "output_tokens": 1362,
+        "cost_usd": 0.155475,
+        "duration_s": 27.29,
+        "label": "2407.04410v3/b3/arbiter"
+      }
+    ]
+  }
+}

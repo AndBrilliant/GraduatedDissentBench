@@ -1,0 +1,180 @@
+{
+  "condition": "B2",
+  "paper_id": "2403.19285v2",
+  "verdict": "flagged",
+  "confidence": 0.88,
+  "reasoning": "The paper's idea is plausible, but the manuscript has several methodological and reporting weaknesses that prevent confident evaluation of the claimed gains. I do not see a clear retraction-level flaw from the text alone, because the core experiment design is at least facially coherent: retrieve demonstrations from a parallel corpus, prompt a fixed LLM, and evaluate on FLORES+ with COMET. However, there are major revision issues around statistical support, fairness/comparability of baselines, possible contamination/leakage checks, and incomplete experimental specification. These could materially affect the claimed superiority on 11/12 directions.",
+  "findings": [
+    {
+      "finding": "No statistical significance testing or uncertainty estimates are reported for the main claim of 'highest COMET scores on 11 out of 12 translation directions.'",
+      "severity": "MAJOR-REVISION",
+      "justification": "Without confidence intervals, paired significance tests, or even variance estimates beyond 3 random seeds for the Random baseline, it is impossible to know whether the reported score differences are meaningful or just noise. This could change the main conclusion that the proposed methods consistently outperform baselines, but does not by itself prove the results are invalid."
+    },
+    {
+      "finding": "The comparison to CTQScorer is explicitly acknowledged as unequal because it uses different example databases and a different test benchmark in the cited prior work, yet the manuscript presents superiority claims over CTQScorer.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If the authors did not reimplement CTQScorer under exactly the same data, preprocessing, example pool, prompt template, and model conditions, then the comparison is not methodologically fair. This could materially alter claims of superiority over that baseline, but does not invalidate the within-paper comparisons among methods run in the same setup."
+    },
+    {
+      "finding": "Possible train/test contamination or near-duplicate retrieval from WikiMatrix into FLORES+ is not checked or controlled.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Because demonstrations are retrieved from a very large parallel corpus for each test sentence, near-duplicate or highly overlapping examples could inflate results, especially for lexical retrieval baselines and for the proposed method. A deduplication/overlap analysis against FLORES+ is necessary. If contamination exists, the apparent gains from retrieval strategies could be overstated, potentially changing conclusions, though not necessarily making them unsalvageable."
+    },
+    {
+      "finding": "The main result relies on a single model (XGLM-7.5B) and appears to use deterministic decoding only, with no robustness across models or decoding settings.",
+      "severity": "MINOR",
+      "justification": "This limits generalizability and robustness of the conclusions. It does not invalidate the reported results for that model, but weakens broad claims about 'LLMs' or MT generally."
+    },
+    {
+      "finding": "The manuscript gives insufficient detail on generation settings for the LLM inference (e.g., max new tokens, stopping criteria, length penalties, beam/greedy configuration, handling of truncation when prompt approaches context limit).",
+      "severity": "MAJOR-REVISION",
+      "justification": "Generation settings can substantially affect MT quality and may interact with prompt length and demonstration ordering. Without these details, the experiment is not fully reproducible and some observed gains could be artifacts of decoding configuration."
+    },
+    {
+      "finding": "The ensemble method concatenates BM25-selected and syntax-selected examples, but duplicate examples between the two retrieval methods are not discussed or controlled.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If overlap occurs, the effective number of demonstrations differs across conditions, making the comparison unfair. Duplicate demonstrations can also bias results via repetition. This could affect conclusions about the ensemble's superiority."
+    },
+    {
+      "finding": "The ordering of demonstrations in the ensemble prompt is changed ('BM25 + Polynomial' versus 'Polynomial + BM25'), but prompt-order effects are not systematically isolated from retrieval-strategy effects.",
+      "severity": "MAJOR-REVISION",
+      "justification": "In ICL, example order can materially affect performance. If the ensemble benefit partly comes from order rather than feature complementarity, the causal claim about syntax helping via selection is weakened. A controlled ablation with identical sets but permuted order would be needed."
+    },
+    {
+      "finding": "The paper averages over 12 translation directions in some analyses, but does not report whether retrieval and prompting are symmetric in source/target direction or whether language-specific parsing quality differences may confound the direction-wise comparison.",
+      "severity": "MINOR",
+      "justification": "This is a nuance about interpretation rather than a fatal flaw. However, variable parser quality across English, Chinese, Japanese, Russian, etc. could influence syntax retrieval quality and should be analyzed."
+    },
+    {
+      "finding": "Dependency parsing quality is assumed adequate across all six languages using spaCy, but no validation or error analysis is provided for parser quality on WikiMatrix-style noisy text.",
+      "severity": "MAJOR-REVISION",
+      "justification": "The method depends directly on dependency trees. If parsing is poor or inconsistent across languages/domains, the claimed syntax signal may be unreliable, and observed effects may not stem from syntax as intended. This could alter language-specific conclusions."
+    },
+    {
+      "finding": "The choice of Polynomial Distance is justified largely by convenience and speed, but no direct comparison is made against simpler syntax representations or alternative tree similarity measures.",
+      "severity": "MINOR",
+      "justification": "This weakens the claim that the specific proposed distance is responsible for the gains, but does not negate evidence that some syntax-based retrieval may help."
+    },
+    {
+      "finding": "The example database preprocessing removes sentence pairs based on language ID and source/target length ratio, but the exact tokenization/language-ID pipeline relative to each language pair is not fully specified and may affect retrieval quality.",
+      "severity": "MINOR",
+      "justification": "This is a reproducibility/reporting issue. It could modestly affect results but is unlikely to overturn the main finding alone."
+    },
+    {
+      "finding": "The manuscript notes that with 16 examples the prompt sometimes exceeds the model's maximum length, which may hurt precision, but does not clearly state how overlength prompts are handled in all experiments.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If truncation occurs unpredictably, especially in longer prompts or certain languages, comparisons across methods with different example lengths may be biased. This could change conclusions regarding performance as a function of number of examples."
+    },
+    {
+      "finding": "The Random baseline is averaged over 3 seeds, but deterministic retrieval baselines are reported as single runs; there is no accounting for variance from model/hardware nondeterminism or any bootstrap over test sentences.",
+      "severity": "MINOR",
+      "justification": "This is mainly a missing uncertainty quantification issue. It should be fixed but does not alone invalidate the conclusions."
+    },
+    {
+      "finding": "The claim that syntax 'effectively enhances ICL for MT' may be overstated because the paper does not isolate whether gains come from syntax per se versus simply selecting semantically or structurally similar templates correlated with sentence length/style.",
+      "severity": "MAJOR-REVISION",
+      "justification": "A stronger causal claim requires ablations controlling for length, punctuation, clause count, or shallow structural proxies. Without that, the method may still work, but the interpretation that syntax specifically is the reason remains insufficiently supported."
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 9,
+    "MINOR": 5
+  },
+  "raw_review": {
+    "verdict": "flagged",
+    "confidence": 0.88,
+    "reasoning": "The paper's idea is plausible, but the manuscript has several methodological and reporting weaknesses that prevent confident evaluation of the claimed gains. I do not see a clear retraction-level flaw from the text alone, because the core experiment design is at least facially coherent: retrieve demonstrations from a parallel corpus, prompt a fixed LLM, and evaluate on FLORES+ with COMET. However, there are major revision issues around statistical support, fairness/comparability of baselines, possible contamination/leakage checks, and incomplete experimental specification. These could materially affect the claimed superiority on 11/12 directions.",
+    "findings": [
+      {
+        "finding": "No statistical significance testing or uncertainty estimates are reported for the main claim of 'highest COMET scores on 11 out of 12 translation directions.'",
+        "severity": "MAJOR-REVISION",
+        "justification": "Without confidence intervals, paired significance tests, or even variance estimates beyond 3 random seeds for the Random baseline, it is impossible to know whether the reported score differences are meaningful or just noise. This could change the main conclusion that the proposed methods consistently outperform baselines, but does not by itself prove the results are invalid."
+      },
+      {
+        "finding": "The comparison to CTQScorer is explicitly acknowledged as unequal because it uses different example databases and a different test benchmark in the cited prior work, yet the manuscript presents superiority claims over CTQScorer.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the authors did not reimplement CTQScorer under exactly the same data, preprocessing, example pool, prompt template, and model conditions, then the comparison is not methodologically fair. This could materially alter claims of superiority over that baseline, but does not invalidate the within-paper comparisons among methods run in the same setup."
+      },
+      {
+        "finding": "Possible train/test contamination or near-duplicate retrieval from WikiMatrix into FLORES+ is not checked or controlled.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Because demonstrations are retrieved from a very large parallel corpus for each test sentence, near-duplicate or highly overlapping examples could inflate results, especially for lexical retrieval baselines and for the proposed method. A deduplication/overlap analysis against FLORES+ is necessary. If contamination exists, the apparent gains from retrieval strategies could be overstated, potentially changing conclusions, though not necessarily making them unsalvageable."
+      },
+      {
+        "finding": "The main result relies on a single model (XGLM-7.5B) and appears to use deterministic decoding only, with no robustness across models or decoding settings.",
+        "severity": "MINOR",
+        "justification": "This limits generalizability and robustness of the conclusions. It does not invalidate the reported results for that model, but weakens broad claims about 'LLMs' or MT generally."
+      },
+      {
+        "finding": "The manuscript gives insufficient detail on generation settings for the LLM inference (e.g., max new tokens, stopping criteria, length penalties, beam/greedy configuration, handling of truncation when prompt approaches context limit).",
+        "severity": "MAJOR-REVISION",
+        "justification": "Generation settings can substantially affect MT quality and may interact with prompt length and demonstration ordering. Without these details, the experiment is not fully reproducible and some observed gains could be artifacts of decoding configuration."
+      },
+      {
+        "finding": "The ensemble method concatenates BM25-selected and syntax-selected examples, but duplicate examples between the two retrieval methods are not discussed or controlled.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If overlap occurs, the effective number of demonstrations differs across conditions, making the comparison unfair. Duplicate demonstrations can also bias results via repetition. This could affect conclusions about the ensemble's superiority."
+      },
+      {
+        "finding": "The ordering of demonstrations in the ensemble prompt is changed ('BM25 + Polynomial' versus 'Polynomial + BM25'), but prompt-order effects are not systematically isolated from retrieval-strategy effects.",
+        "severity": "MAJOR-REVISION",
+        "justification": "In ICL, example order can materially affect performance. If the ensemble benefit partly comes from order rather than feature complementarity, the causal claim about syntax helping via selection is weakened. A controlled ablation with identical sets but permuted order would be needed."
+      },
+      {
+        "finding": "The paper averages over 12 translation directions in some analyses, but does not report whether retrieval and prompting are symmetric in source/target direction or whether language-specific parsing quality differences may confound the direction-wise comparison.",
+        "severity": "MINOR",
+        "justification": "This is a nuance about interpretation rather than a fatal flaw. However, variable parser quality across English, Chinese, Japanese, Russian, etc. could influence syntax retrieval quality and should be analyzed."
+      },
+      {
+        "finding": "Dependency parsing quality is assumed adequate across all six languages using spaCy, but no validation or error analysis is provided for parser quality on WikiMatrix-style noisy text.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The method depends directly on dependency trees. If parsing is poor or inconsistent across languages/domains, the claimed syntax signal may be unreliable, and observed effects may not stem from syntax as intended. This could alter language-specific conclusions."
+      },
+      {
+        "finding": "The choice of Polynomial Distance is justified largely by convenience and speed, but no direct comparison is made against simpler syntax representations or alternative tree similarity measures.",
+        "severity": "MINOR",
+        "justification": "This weakens the claim that the specific proposed distance is responsible for the gains, but does not negate evidence that some syntax-based retrieval may help."
+      },
+      {
+        "finding": "The example database preprocessing removes sentence pairs based on language ID and source/target length ratio, but the exact tokenization/language-ID pipeline relative to each language pair is not fully specified and may affect retrieval quality.",
+        "severity": "MINOR",
+        "justification": "This is a reproducibility/reporting issue. It could modestly affect results but is unlikely to overturn the main finding alone."
+      },
+      {
+        "finding": "The manuscript notes that with 16 examples the prompt sometimes exceeds the model's maximum length, which may hurt precision, but does not clearly state how overlength prompts are handled in all experiments.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If truncation occurs unpredictably, especially in longer prompts or certain languages, comparisons across methods with different example lengths may be biased. This could change conclusions regarding performance as a function of number of examples."
+      },
+      {
+        "finding": "The Random baseline is averaged over 3 seeds, but deterministic retrieval baselines are reported as single runs; there is no accounting for variance from model/hardware nondeterminism or any bootstrap over test sentences.",
+        "severity": "MINOR",
+        "justification": "This is mainly a missing uncertainty quantification issue. It should be fixed but does not alone invalidate the conclusions."
+      },
+      {
+        "finding": "The claim that syntax 'effectively enhances ICL for MT' may be overstated because the paper does not isolate whether gains come from syntax per se versus simply selecting semantically or structurally similar templates correlated with sentence length/style.",
+        "severity": "MAJOR-REVISION",
+        "justification": "A stronger causal claim requires ablations controlling for length, punctuation, clause count, or shallow structural proxies. Without that, the method may still work, but the interpretation that syntax specifically is the reason remains insufficiently supported."
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 21885,
+    "duration_s": 28.65,
+    "n_api_calls": 1,
+    "cost_usd": 0.0283,
+    "total_input_tokens": 5518,
+    "total_output_tokens": 1449,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 5518,
+        "output_tokens": 1449,
+        "cost_usd": 0.028285,
+        "duration_s": 28.65,
+        "label": "2403.19285v2/b2/review"
+      }
+    ]
+  }
+}

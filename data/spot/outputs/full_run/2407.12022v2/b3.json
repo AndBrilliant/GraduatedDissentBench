@@ -1,0 +1,345 @@
+{
+  "condition": "B3",
+  "paper_id": "2407.12022v2",
+  "verdict": "flagged",
+  "confidence": 0.93,
+  "reasoning": "Both reviewers independently converge on the same core concerns: (1) the evaluation protocol selects the best temperature per metric, inflating reported pass@k and making comparisons to prior work unfair; (2) no contamination/overlap analysis between training data and VerilogEval benchmarks; (3) the theoretical framework is mathematically inconsistent and only loosely connected to the actual implemented loss; (4) missing compute-matched baselines make it impossible to attribute gains to the iterative resampling principle versus simply more training; (5) no statistical uncertainty is reported despite small benchmark sizes. Individually, each is a serious methodological concern at the MAJOR-REVISION level. Collectively, they substantially weaken confidence in the headline claims (SOTA performance, data efficiency, theoretical grounding), but they do not definitively prove the central iterative self-sampling idea is broken—hence MAJOR-REVISION rather than RETRACTION-WORTHY.",
+  "findings": [
+    {
+      "finding": "Best-of-temperature selection per metric inflates pass@k estimates and invalidates fair comparison with prior work. The paper selects the best result across temperatures (0, 0.2, 0.5, 0.8) for each metric, which is a form of test-time tuning. It is unclear whether baselines were subjected to the same protocol, and this breaks the unbiased pass@k estimation assumptions.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.92,
+      "justification": "Both reviewers flag this independently. If baselines used a single fixed temperature while the proposed method was evaluated under best-of-four, SOTA claims are not valid. However, the iterative training effect could still be real under a controlled evaluation, so this is revision-level.",
+      "source": "both"
+    },
+    {
+      "finding": "No train-test contamination or overlap analysis between the 10k training subset (from RTLCoder's 27k pairs) and VerilogEval benchmark tasks. No decontamination procedure, duplicate checking, or overlap statistics are reported.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers raise this. In code-generation benchmarks, even partial overlap can substantially inflate pass rates. Without evidence of disjointness, the generalization claims are unsubstantiated. Retraction would require evidence of actual contamination, which is not established.",
+      "source": "both"
+    },
+    {
+      "finding": "Missing compute- and data-matched baselines. The iterative method trains for 7 iterations × 3 epochs = 21 effective epochs, but it is unclear how many total gradient steps/epochs the non-iterative baselines receive. Observed improvements may be partially or entirely attributable to additional training compute rather than the iterative resampling principle.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers independently identify this confound. Without a baseline trained for the same total number of steps on a static dataset, the core mechanistic claim (that iteration over self-generated samples is what drives improvement) is unsubstantiated.",
+      "source": "both"
+    },
+    {
+      "finding": "The theoretical analysis (Section 3.2) is mathematically inconsistent and does not formally connect to the implemented loss function. Equation (6) contains dimensionally incorrect expressions (e.g., 'log(P_teacher / log P_pi)'), unjustified dropped constants, and non-rigorous convergence arguments. The implemented ranking + MLE loss is not directly derived from the surrogate reward formulation.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers flag the theory-practice gap. The mathematical errors mean the theoretical justification does not actually support the claimed optimization interpretation. However, the empirical method could still work even if the theory is wrong, so this is revision-level.",
+      "source": "both"
+    },
+    {
+      "finding": "No statistical significance testing or confidence intervals for benchmark results. With only 143–156 problems and some claimed improvements of 1–2 percentage points, observed differences may be within sampling noise.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Both reviewers note this. While common in the field, when claiming SOTA on small benchmarks, the absence of uncertainty quantification is more consequential. Some headline improvements could plausibly be noise, which would change the SOTA claims.",
+      "source": "both"
+    },
+    {
+      "finding": "Internal inconsistency in evaluation protocol description. The paper claims to focus on pass@1 under greedy decoding to avoid randomness, but also states the best result is chosen across temperatures for each metric including pass@1. This creates ambiguity about the exact reported numbers.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Flagged by Reviewer A. The contradiction in the evaluation protocol description undermines reproducibility and makes it unclear what the primary reported pass@1 number actually represents.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Potential test-set model/iteration selection. Performance peaks around iteration 5 and declines thereafter, but it is unclear whether the final reported model was selected based on benchmark performance. If so, this constitutes another form of test-set overfitting.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "Flagged by Reviewer A. Without a separate validation set for iteration selection, reporting the best-performing iteration on the test set inflates results.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The adaptive weighting λ = sg(L_ce) in Equation 4 is an unusual, unjustified design choice with no ablation study. This dynamically changes the ranking loss weight during training based on the current cross-entropy value.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.72,
+      "justification": "Flagged by Reviewer B. Without analysis or ablation, it is unclear how sensitive results are to this choice and whether simpler alternatives would perform comparably or differently.",
+      "source": "prover_b"
+    },
+    {
+      "finding": "Training data handling is underspecified: whether the 10k subset is fixed or resampled across iterations, how random sampling was performed, and reproducibility details (seeds, subset identifiers) are not provided.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Both reviewers note underspecification. This is primarily a reproducibility concern and would not by itself change conclusions if clarified.",
+      "source": "both"
+    },
+    {
+      "finding": "Data efficiency claim (37% of reference samples) is potentially misleading because the model also trains on self-generated samples across iterations, increasing total training data beyond the 10k reference count.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.78,
+      "justification": "Flagged by Reviewer B. Technically true for external data, but the framing overstates efficiency. This is a presentation issue rather than a methodological flaw.",
+      "source": "prover_b"
+    },
+    {
+      "finding": "Quality scoring surrogate relies on Pyverilog syntax checking and ROUGE-L-like similarity, which may reward lexical overlap rather than functional correctness. No validation that the scoring correlates with benchmark success is provided.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.7,
+      "justification": "Flagged by Reviewer A. A plausible limitation affecting mechanism claims but not sufficient alone to invalidate results.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Numerous presentation anomalies (incorrect year, placeholder metadata, fragmented equations) suggest the manuscript may be a draft or corrupted version.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.75,
+      "justification": "Flagged by Reviewer A. Does not affect methodological validity but raises concerns about completeness and reproducibility.",
+      "source": "prover_a"
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 8,
+    "MINOR": 4
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "The manuscript presents an interesting iterative self-sampling fine-tuning idea, but there are serious methodological and reporting problems that undermine confidence in the empirical claims. The largest concerns are: (i) the evaluation protocol appears to select the best result across multiple decoding temperatures for each metric, which is a test-time tuning practice that can materially inflate benchmark results unless identically applied to all baselines; (ii) the paper does not provide enough detail to assess leakage/contamination between the 27k training pairs and VerilogEval benchmark tasks despite benchmark overlap being a major risk in code-generation studies; and (iii) the theoretical derivations are mathematically inconsistent and do not support the claimed optimization interpretation. These issues do not prove the core empirical effect is false, but they are substantial enough that the manuscript should not be accepted without major revision and clarification.",
+    "findings": [
+      {
+        "finding": "Test-time evaluation appears to choose the best score across multiple decoding temperatures for each metric ('For each test metric ... the best result is chosen'). This amounts to tuning on the test benchmark and can inflate pass@k unless the same search protocol was applied to every baseline under identical conditions.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the headline SOTA comparisons may not be apples-to-apples and reported pass@1/pass@5/pass@10 could be overstated. This would require revision/re-evaluation, but does not automatically invalidate the entire iterative-training effect."
+      },
+      {
+        "finding": "The manuscript does not adequately address possible train-test contamination or near-duplicate overlap between the 27k reference instruction-code pairs from RTLCoder and the VerilogEval benchmark tasks, despite using only a 10k subset. No decontamination, overlap analysis, or duplicate checking is reported.",
+        "severity": "MAJOR-REVISION",
+        "justification": "In code-generation benchmarks, contamination can substantially bias pass rates upward and change conclusions about SOTA performance. This is a serious concern requiring revision and documentation, though not automatically retraction-worthy without evidence of actual overlap."
+      },
+      {
+        "finding": "Comparisons to prior work are likely not methodologically controlled. The paper compares its own results obtained with 'best-of-temperature' selection against literature numbers for GPT-3.5, GPT-4, VerilogEval, VeriGen, and RTLCoder that may have used different prompting, sampling, number of generated candidates, and model selection procedures.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If baselines were not rerun under the same protocol, the claimed superiority over SOTA is not a fair causal comparison. This would necessitate revised benchmarking but does not by itself prove the proposed method ineffective."
+      },
+      {
+        "finding": "Theoretical derivations are mathematically unsound/incomplete. Equation (6) rewrites cross-entropy minimization as involving KL terms in a way that is not valid as written; the expression 'log(P_teacher / log P_pi)' is dimensionally/mathematically incorrect, constants are dropped without justification, and the transitions to reward-maximization via the law of large numbers are not rigorous. Similar issues affect the ranking-loss derivation.",
+        "severity": "MAJOR-REVISION",
+        "justification": "These errors mean the theoretical claims do not currently support the mechanism or superiority assertions. The empirical study could still be valid, so this is revision-level rather than retraction-level."
+      },
+      {
+        "finding": "The paper repeatedly interprets reductions in distribution mismatch and 'estimation error' as established consequences of the iterative scheme, but no direct measurement or controlled evidence is provided for these causal explanations.",
+        "severity": "MINOR",
+        "justification": "This is an overclaiming/interpretation problem. It weakens mechanistic conclusions but would not materially change the main empirical findings if corrected."
+      },
+      {
+        "finding": "Key ablation controls are missing. Since the method changes both the data distribution and effectively increases exposure to self-generated samples over 7 iterations, there is no control that matches total optimization steps/token budget/sample count without iteration. The gain could partially reflect additional training rather than the iterative resampling principle.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Without compute- and data-matched controls, attribution of gains specifically to iteration is uncertain and conclusions about the mechanism may change. This requires revised experiments, but does not necessarily negate the observed performance improvements."
+      },
+      {
+        "finding": "Statistical uncertainty is not reported for benchmark results. With only 143 and 156 tasks, pass@1 differences of around 1-2 percentage points may be within sampling variability, yet no confidence intervals, bootstrap intervals, or repeated-run variance are provided.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Some headline improvements over baselines are small enough that significance is unclear. This could change claims of outperforming SOTA on certain datasets, requiring revision."
+      },
+      {
+        "finding": "The manuscript says it focuses on pass@1 under greedy decoding to avoid randomness, but later states the best result is chosen across temperatures for each metric, including pass@1. This is internally inconsistent and obscures what exact pass@1 number is being claimed.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Ambiguity in the primary evaluation protocol affects reproducibility and interpretation of the main result tables. Clarification/revision is needed."
+      },
+      {
+        "finding": "The paper reports using the same benchmark to choose the number of iterations, noting performance peaks around iteration 5 and declines thereafter, but it is unclear whether the final reported model/iteration was selected using benchmark performance. If so, this is another form of test-set model selection.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Selecting the best checkpoint or iteration on the test set can inflate performance and bias conclusions. This would require a validation split or held-out tuning set."
+      },
+      {
+        "finding": "The quality scoring surrogate for training relies on Pyverilog and ROUGE-L-like similarity ('Rough-L'), which may reward lexical overlap with reference code. If teacher/reference code is included in each training tuple, this can encourage imitation of stylistic similarity rather than functional correctness, yet no analysis is provided to show the scoring correlates with benchmark success.",
+        "severity": "MINOR",
+        "justification": "This is a plausible methodological limitation affecting mechanism and generalization claims, but not enough by itself to invalidate the reported benchmark outcomes."
+      },
+      {
+        "finding": "The paper does not specify whether benchmark prompts or semantically equivalent variants were excluded from the sampled 10k training subset. Randomly sampling from a larger corpus without publishing the subset or seed prevents reproducibility and contamination auditing.",
+        "severity": "MINOR",
+        "justification": "Primarily a reporting/reproducibility problem unless overlap is later found."
+      },
+      {
+        "finding": "The use of 'unbiased' pass@k formula is standard only under a fixed n-sample generation protocol, but the manuscript mixes greedy decoding for pass@1 and top-p decoding with multiple temperatures for other metrics, then chooses the best result. This breaks the clean interpretation of a single pass@k estimator.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the pass@k estimates are not directly comparable to standard benchmark reporting and may be upwardly biased. This requires reevaluation."
+      },
+      {
+        "finding": "There are numerous presentation anomalies suggesting the manuscript may be a draft or corrupted version (e.g., year 2018 for an LLM paper, placeholder DOI/journal metadata, fragmented equations/text). While not a methodological error per se, they make it hard to assess exact methods and may hide omitted details.",
+        "severity": "MINOR",
+        "justification": "This does not itself alter conclusions but raises reproducibility concerns and should be corrected."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.85,
+    "reasoning": "The manuscript presents a novel iterative fine-tuning framework for LLM-based Verilog code generation, with theoretical analysis and experimental results. However, there are several methodological concerns, including incomplete reporting of experimental setup, potential data leakage, lack of statistical significance testing, and a mismatch between the theoretical framework and the actual implementation. These issues do not definitively invalidate the central conclusions but require significant clarification and additional analysis.",
+    "findings": [
+      {
+        "finding": "The paper uses only 10k randomly sampled entries from the 27k open-source instruction-code pairs from RTLCoder [12], but does not specify how the random sampling was performed or whether the same 10k subset was used across all iterations. If the subset is fixed, the model may overfit to that specific subset; if it changes, the training data distribution shifts across iterations, complicating convergence analysis.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The training data handling is underspecified. Without clear details on whether the 10k sample is fixed or resampled each iteration, the reproducibility and validity of the iterative improvement claims are weakened. This could affect the conclusions about the benefit of iteration over a static dataset."
+      },
+      {
+        "finding": "The evaluation metric pass@k is estimated with n=10 samples for each problem, but the paper reports 'best result chosen' across multiple temperatures (0, 0.2, 0.5, 0.8). This cherry-picking of the best temperature per metric violates standard evaluation practice and inflates performance estimates.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Selecting the best temperature per metric after seeing the results introduces optimism bias and invalidates the pass@k unbiased estimation formula, which assumes fixed sampling parameters. The reported pass@1,5,10 values are not directly comparable to prior work that uses a single temperature."
+      },
+      {
+        "finding": "No statistical significance or confidence intervals are reported for any of the pass@k results. Given the small number of problems (143-156), performance differences of 1-2% may be within noise.",
+        "severity": "MINOR",
+        "justification": "Common in many LLM papers, but for a claimed state-of-the-art improvement, the lack of uncertainty quantification makes it impossible to assess whether the observed improvements are reliable or due to random variation."
+      },
+      {
+        "finding": "The theoretical analysis (Section 3.2) treats the iterative training as a reward maximization problem using a surrogate reward function r_π, but the actual loss function (Equation 2) is a ranking loss with a margin parameter α and a threshold β, which is not directly derived from the surrogate reward formulation. The connection between the theoretical objective and the implemented loss is not formally justified.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The paper claims theoretical superiority of the iterative approach based on distribution mismatch reduction and reward maximization, but the actual training procedure (ranking + MLE loss) is only loosely linked to the theory. If the theory does not correctly describe the algorithm, the theoretical arguments cannot support the experimental results."
+      },
+      {
+        "finding": "The paper does not control for data leakage between the training data and the VerilogEval benchmark. The training data is sourced from RTLCoder [12], which itself may have been constructed from the same or similar sources as VerilogEval. Without a clear statement of non-overlap, performance results may be inflated.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If there is any overlap between the training instruction-code pairs and the test problems, the pass@k results would not reflect genuine generalization. The paper must demonstrate that the training set and benchmark are disjoint, or at least discuss this potential limitation."
+      },
+      {
+        "finding": "The iterative training uses only 3 epochs per iteration, but the model is trained for 7 iterations, resulting in 21 epochs total. The baseline (non-iterative) model is trained for how many epochs? If the baseline is trained for fewer total epochs, the comparison is unfair and the benefit of iteration may actually be due to more total training steps.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The paper does not specify the total number of epochs or gradient steps for the baseline methods. If the iterative model receives more training iterations, the 16.9% relative improvement may be partially or entirely attributable to increased compute rather than the iterative sampling procedure."
+      },
+      {
+        "finding": "The paper claims to use only 37% reference samples compared to the SOTA open-source model (RTLCoder with 27k samples), but the model is also trained with 10k reference samples plus self-generated samples from prior iterations. The total number of training samples seen by the model is higher than 10k. The framing is misleading.",
+        "severity": "MINOR",
+        "justification": "The claim about data efficiency is technically true for externally-sourced reference data, but the model also consumes self-generated samples. The paper should clarify that the total training data includes both reference and self-generated samples, which are not free."
+      },
+      {
+        "finding": "The hyperparameter λ in Equation 4 is set equal to sg(L_ce), a stop-gradient operation on the cross-entropy loss term. This means the weight of the ranking loss changes dynamically during training based on the current cross-entropy value, which is unusual and not justified. No ablation study on λ is provided.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The adaptive weighting scheme is a non-standard design choice that could significantly affect training dynamics and convergence. Without analysis of how this weighting impacts results, the method is not properly characterized and alternative simpler weightings might perform differently."
+      }
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.93,
+    "reasoning": "Both reviewers independently converge on the same core concerns: (1) the evaluation protocol selects the best temperature per metric, inflating reported pass@k and making comparisons to prior work unfair; (2) no contamination/overlap analysis between training data and VerilogEval benchmarks; (3) the theoretical framework is mathematically inconsistent and only loosely connected to the actual implemented loss; (4) missing compute-matched baselines make it impossible to attribute gains to the iterative resampling principle versus simply more training; (5) no statistical uncertainty is reported despite small benchmark sizes. Individually, each is a serious methodological concern at the MAJOR-REVISION level. Collectively, they substantially weaken confidence in the headline claims (SOTA performance, data efficiency, theoretical grounding), but they do not definitively prove the central iterative self-sampling idea is broken—hence MAJOR-REVISION rather than RETRACTION-WORTHY.",
+    "findings": [
+      {
+        "finding": "Best-of-temperature selection per metric inflates pass@k estimates and invalidates fair comparison with prior work. The paper selects the best result across temperatures (0, 0.2, 0.5, 0.8) for each metric, which is a form of test-time tuning. It is unclear whether baselines were subjected to the same protocol, and this breaks the unbiased pass@k estimation assumptions.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.92,
+        "justification": "Both reviewers flag this independently. If baselines used a single fixed temperature while the proposed method was evaluated under best-of-four, SOTA claims are not valid. However, the iterative training effect could still be real under a controlled evaluation, so this is revision-level.",
+        "source": "both"
+      },
+      {
+        "finding": "No train-test contamination or overlap analysis between the 10k training subset (from RTLCoder's 27k pairs) and VerilogEval benchmark tasks. No decontamination procedure, duplicate checking, or overlap statistics are reported.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.88,
+        "justification": "Both reviewers raise this. In code-generation benchmarks, even partial overlap can substantially inflate pass rates. Without evidence of disjointness, the generalization claims are unsubstantiated. Retraction would require evidence of actual contamination, which is not established.",
+        "source": "both"
+      },
+      {
+        "finding": "Missing compute- and data-matched baselines. The iterative method trains for 7 iterations × 3 epochs = 21 effective epochs, but it is unclear how many total gradient steps/epochs the non-iterative baselines receive. Observed improvements may be partially or entirely attributable to additional training compute rather than the iterative resampling principle.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers independently identify this confound. Without a baseline trained for the same total number of steps on a static dataset, the core mechanistic claim (that iteration over self-generated samples is what drives improvement) is unsubstantiated.",
+        "source": "both"
+      },
+      {
+        "finding": "The theoretical analysis (Section 3.2) is mathematically inconsistent and does not formally connect to the implemented loss function. Equation (6) contains dimensionally incorrect expressions (e.g., 'log(P_teacher / log P_pi)'), unjustified dropped constants, and non-rigorous convergence arguments. The implemented ranking + MLE loss is not directly derived from the surrogate reward formulation.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.88,
+        "justification": "Both reviewers flag the theory-practice gap. The mathematical errors mean the theoretical justification does not actually support the claimed optimization interpretation. However, the empirical method could still work even if the theory is wrong, so this is revision-level.",
+        "source": "both"
+      },
+      {
+        "finding": "No statistical significance testing or confidence intervals for benchmark results. With only 143–156 problems and some claimed improvements of 1–2 percentage points, observed differences may be within sampling noise.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Both reviewers note this. While common in the field, when claiming SOTA on small benchmarks, the absence of uncertainty quantification is more consequential. Some headline improvements could plausibly be noise, which would change the SOTA claims.",
+        "source": "both"
+      },
+      {
+        "finding": "Internal inconsistency in evaluation protocol description. The paper claims to focus on pass@1 under greedy decoding to avoid randomness, but also states the best result is chosen across temperatures for each metric including pass@1. This creates ambiguity about the exact reported numbers.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Flagged by Reviewer A. The contradiction in the evaluation protocol description undermines reproducibility and makes it unclear what the primary reported pass@1 number actually represents.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Potential test-set model/iteration selection. Performance peaks around iteration 5 and declines thereafter, but it is unclear whether the final reported model was selected based on benchmark performance. If so, this constitutes another form of test-set overfitting.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.82,
+        "justification": "Flagged by Reviewer A. Without a separate validation set for iteration selection, reporting the best-performing iteration on the test set inflates results.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "The adaptive weighting λ = sg(L_ce) in Equation 4 is an unusual, unjustified design choice with no ablation study. This dynamically changes the ranking loss weight during training based on the current cross-entropy value.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.72,
+        "justification": "Flagged by Reviewer B. Without analysis or ablation, it is unclear how sensitive results are to this choice and whether simpler alternatives would perform comparably or differently.",
+        "source": "prover_b"
+      },
+      {
+        "finding": "Training data handling is underspecified: whether the 10k subset is fixed or resampled across iterations, how random sampling was performed, and reproducibility details (seeds, subset identifiers) are not provided.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "Both reviewers note underspecification. This is primarily a reproducibility concern and would not by itself change conclusions if clarified.",
+        "source": "both"
+      },
+      {
+        "finding": "Data efficiency claim (37% of reference samples) is potentially misleading because the model also trains on self-generated samples across iterations, increasing total training data beyond the 10k reference count.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.78,
+        "justification": "Flagged by Reviewer B. Technically true for external data, but the framing overstates efficiency. This is a presentation issue rather than a methodological flaw.",
+        "source": "prover_b"
+      },
+      {
+        "finding": "Quality scoring surrogate relies on Pyverilog syntax checking and ROUGE-L-like similarity, which may reward lexical overlap rather than functional correctness. No validation that the scoring correlates with benchmark success is provided.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.7,
+        "justification": "Flagged by Reviewer A. A plausible limitation affecting mechanism claims but not sufficient alone to invalidate results.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Numerous presentation anomalies (incorrect year, placeholder metadata, fragmented equations) suggest the manuscript may be a draft or corrupted version.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.75,
+        "justification": "Flagged by Reviewer A. Does not affect methodological validity but raises concerns about completeness and reproducibility.",
+        "source": "prover_a"
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 27242,
+    "duration_s": 82.99,
+    "n_api_calls": 3,
+    "cost_usd": 0.2437,
+    "total_input_tokens": 16600,
+    "total_output_tokens": 4855,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 6484,
+        "output_tokens": 1538,
+        "cost_usd": 0.03159,
+        "duration_s": 27.94,
+        "label": "2407.12022v2/b3/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 6397,
+        "output_tokens": 1274,
+        "cost_usd": 0.00312859,
+        "duration_s": 19.53,
+        "label": "2407.12022v2/b3/prover_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 3719,
+        "output_tokens": 2043,
+        "cost_usd": 0.20901,
+        "duration_s": 35.51,
+        "label": "2407.12022v2/b3/arbiter"
+      }
+    ]
+  }
+}
