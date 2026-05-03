@@ -1,0 +1,186 @@
+High Dynamic Range (HDR) imaging aims to generate an artifact-free HDR image with realistic details by fusing multi-exposure Low Dynamic Range (LDR) images. Caused by large motion and severe under-/over-exposure among input LDR images, HDR imaging suffers from ghosting artifacts and fusion distortions. To address these critical issues, we propose an HDR Transformer Deformation Convolution (HDRTransDC) network to generate high-quality HDR images, which consists of the Transformer Deformable Convolution Alignment Module (TDCAM) and the Dynamic Weight Fusion Block (DWFB). To solve the ghosting artifacts, the proposed TDCAM extracts long-distance content similar to the reference feature in the entire non-reference features, which can accurately remove misalignment and fill the content occluded by moving objects. For the purpose of eliminating fusion distortions, we propose DWFB to spatially adaptively select useful information across frames to effectively fuse multi-exposed features. Extensive experiments show that our method quantitatively and qualitatively achieves state-of-the-art performance.
+
+The limited range of most digital photography sensors causes under-/over-exposed regions to appear in Low Dynamic Range (LDR) images, which can not reflect the human ability to see content in an actual scene. To generate an image with a broad illuminance range, High Dynamic Range (HDR) imaging has been developed in recent years. The most common HDR imaging methods [Debevec and Malik, 2008; Granados et al., 2010; Reinhard et al., 2010; Mertens et al., 2007; Ma et al., 2017; Kalantari et al., 2017] usually merge several LDR images with different exposures to get a high-quality HDR image. However, misalignment usually appears in LDR images due to the motions of the camera and foreground objects. When the misaligned LDR images with different exposures are fused, ghosting artifacts often appear in the HDR results [Myszkowski et al., 2008; Zimmer et al., 2011]. Such a problem is challenging to overcome since it is difficult to compensate for the misalignment and occluded content caused by moving objects.
+
+To address the above problems, several traditional methods are proposed, including alignment-based methods [Bogoni, 2000; Kang et al., 2003; Zimmer et al., 2011; Sen et al., 2012] and rejection-based methods [Zhang and Cham, 2011; Granados et al., 2013; Lee et al., 2014; Oh et al., 2014]. The alignment-based methods employ optical flow or homographies to explicitly align the motion regions, but they are error-prone and cause ghosts when LDRs contain motion and saturation. The rejection-based methods attempt to remove the misaligned components before fusion, but they suffer from insufficient information recovery in other regions.
+
+With the rise of Deep Neural Networks (DNNs), recent methods reconstruct an HDR image using Convolution Neural Networks (CNNs). Some non-end-to-end methods [Kalantari et al., 2017; Wu et al., 2018] first explicitly align the LDRs by optical flow or homographies, and then
+
+School of Computer Science (National Pilot Software Engineering School), Beijing University of Posts and Telecommunications
+
+{shangshuaikang, kangxuejing}@bupt.edu.cn, mal_paper@yeah.net
+
+merge the aligned LDRs by a CNN. However, these methods are limited by the unreliability of the optical flow and homographies that introduce the artifacts in the results. The other end-to-end methods [Yan et al., 2019; Yan et al., 2020; Niu et al., 2021] directly use a CNN to implicitly align and merge multi-exposure information at the feature level. In these methods, a specially designed alignment module or an adversarial learning strategy is used to handle misalignment, thereby achieving better performance. However, the results still suffer from severe ghosting artifacts when LDR images contain large motions and severe saturation, as shown in Figure 1. The reason lies in the local extraction of the CNN-based alignment module. These methods can not extract long-range relevant features to align moving objects and recover occlusion areas, so the saturated regions of the reference image are filled with moving objects. Besides, existing methods fuse multi-exposure features by simply stacking convolutional layers, which can not effectively select the complement information to accurately recover the saturation regions, resulting in fusion distortions.
+
+In this paper, to remove the ghosting artifacts and fusing distortions to generate a high-quality HDR image, we propose an HDR imaging framework with Transformer Deformation Convolution (HDRTransDC) which establishes the complicated alignment and fusion relationship between reference and non-reference images. Firstly, we propose a Transformer Deformable Convolution Alignment Module (TDCAM) to compensate for the misalignment and occluded content. Specifically, our TDCAM uses a designed Transformer Offset Estimator (TOE) to learn the global information to capture the location of long-range content similar to the reference image. Then the deformable convolution is utilized to extract the matching content to perform the geometric transformation of original non-reference images, thereby aligning the non-reference images to the reference image. Secondly, to further alleviate the fusion distortions, we propose the Dynamic Weight Fusion Block (DWFB) that spatially and adaptively selects useful information across frames to effectively fuse multi-exposed features. In summary, the main contributions of the paper can be summarized as follows:
+
+- The proposed TDCAM extracts long-distance content similar to the reference feature in the entire non-reference features to align the objects and recover the occluded regions to solve the ghosting artifacts.
+
+- The proposed DWFB adaptively selects useful information across frames to effectively fuse multi-exposed features, thus further alleviating the fusing distortions.
+
+- Extensive experiments are conducted to demonstrate that our method achieves excellent results and state-of-the-art performance.
+
+## 2 Related Work
+
+Several methods have been proposed to alleviate the ghosting artifacts in HDR imaging, and these methods can be generalized into two categories: the traditional methods and the CNN-based methods.
+
+### 2.1 Traditional methods
+
+#### Motion alignment methods
+These methods focus on aligning the non-reference LDRs to reference one before fusing them by using optical flow or searching for the best matching region. For example, some works adopt the optical flow in the image domain [Bogoni, 2000; Zimmer et al., 2011] or luminance domain [Kang et al., 2003] to align the LDR images. [Sen et al., 2012] utilizes a patch-based energy-minimization formulation that integrates alignment and reconstruction in a joint optimization. However, these methods are nearly ineffective for large motions since the accurate alignment is challenging, producing visible ghosting artifacts.
+
+#### Motion rejection methods
+These methods aim to detect motion areas between the reference and non-reference images and exclude these pixels during fusion. For instance, [Zhang and Cham, 2011] finds the misaligned regions with the guidance of gradient-based quality assessment and generates the motion weighting map. [Granados et al., 2013] uses a Markov random field prior and the color difference of inputs for detection and generation. [Lee et al., 2014] and Oh [Oh et al., 2014] have also proposed rank minimization to detect motion and synthesize HDR images. However, these methods heavily depend on the effectiveness of motion detection and lose the content of moving objects, which is not sufficient for recovering information.
+
+### 2.2 CNN-based methods
+
+With the great success of deep learning in vision tasks, several CNN-based methods have been proposed to reconstruct ghost-free high-quality HDR images. [Kalantari et al., 2017] proposed the first CNN-based method that uses a CNN to merge the LDR images that were aligned explicitly by optical flow. DeepHDR [Wu et al., 2018] formulated HDR imaging as an image translation problem, and used homography to align the camera motion and a CNN to fuse them. However, the optical flow and homography are unreliable in the presence of occlusion and saturation, which results in artifacts and color distortions. Instead of aligning LDRs in the image domain, AHDRNet [Yan et al., 2019] employed spatial attention to suppress the motion regions between the LDR images for ghost-free HDR images and improved the performance. [Prabhakar et al., 2020] proposed the bilateral guided upsampler and motion compensation based on CNN for HDR deghosting. HDR-GAN [Niu et al., 2021] first introduced the Generative Adversarial Networks (GAN) framework to generate the missing content. Although the CNN-based methods can alleviate the ghosts in the weak motion regions and retain reasonable local details, the ghosting artifacts are still severe when LDR images contain large motions and saturation. The main reason lies in the limited receptive field of CNN, which cannot capture long-distance similar features to align the large motion and fill the occluded regions.
+
+## 3 Method
+
+In this section, we present the HDRTransDC network that compensates for large motion and fuses the useful content
+
+between multi-exposed features to generate ghost-free high-quality HDR images. Given three LDR images {Li|i = 1, 2, 3} (sorted by their exposure time), our goal is to merge them to obtain an HDR image. The estimated HDR image contains the similar structure as the reference image. Following previous work [Kalantari et al., 2017; Yan et al., 2019], the medium exposure image L2 is regarded as the reference image and we transform {Li} to HDR domain {Hi} with gamma correction and exposure normalization:
+
+\[
+H_i = \frac{L_i^\gamma}{t_i}, i = 1, 2, 3 \tag{1}
+\]
+
+where ti denotes the exposure time of LDR image Li, γ represents the gamma correction parameter, we set γ to 2.2. It is confirmed that the LDR images are effective in detecting saturated and noisy regions and HDR domains are effective in detecting moving objects. Hence, we concatenate the Li and Hi along the channel to get a 6-channel input Xi.
+
+As shown in Figure 2, the entire network consists of the feature extraction network and feature merging network. Since the input LDR images are captured from different exposure domains, in the feature extraction network, we first use three Residual Blocks (RBs) to extract the domain-specific features that are beneficial for detecting moving objects. Each RB consists of two convolution layers and a LeakyReLU activation function. The large motion causes severe misalignment and occluded content in non-reference images so that the saturated regions of reference images cannot be filled with reasonable non-reference image information, resulting in ghosting artifacts. Here, we utilize stacked TDCAM to adaptively capture the long-range relevant information to compensate for the moving objects and occluded content, aligning the multi-exposed features.
+
+In the under-/over-exposed regions where seriously miss the information, inaccurate information recovery leads to fusion distortions such as blurring and halos in the results. In the feature merging network, we use a series of Residual Dynamic Weight Fusion Blocks (RDWFBs) to fuse the extracted alignment features and get the final satisfactory HDR image. The RDWFB uses the proposed DWFB as the basic unit which spatially and adaptively selects useful information across frames to effectively restore the saturated region content while maintaining well-exposed regions of the reference image to effectively fuse multi-exposed features, further alleviating the fusion distortions.
+
+### 3.1 Transformer Deformation Convolution Alignment Module
+
+When LDR images contain long-distance motions, the neighbor information cannot be used to handle misalignment and fill occluded content accurately. Here, we propose the TDCAM to get the aligned non-reference features with the guidance of reference features. As shown in Figure 3, the proposed TDCAM uses the TOE to generate precise offsets of relevant features after searching for similar information on the entire feature map. Then, to get the aligned features, the deformable convolution extracts the matching information and performs the geometric transformation of the origin features based on the predicted offsets.
+
+**Transformer Offset Estimator** Considering that LDR images contain both aligned and misaligned regions, TOE utilizes local Transformers and global Transformers to capture the position of the most relevant features, respectively. Because the final offsets represent the position difference between the extracted features and the generated feature, we add the learnable absolute positional encoding \( Pos \in \mathbb{R}^{H \times W \times C} \) on the non-reference features \( F_{non} \in \mathbb{R}^{H \times W \times C} \).
+
+For the aligned regions, we use M local Transformer layers.
+
+to localize the locally relevant features. In each local Transformer layer, we divided the non-reference feature maps into several windows, and the similarity of features is calculated inside the windows. Hence, the details in the aligned regions are enhanced by the information in a window. For large motion regions, we use N global Transformer layers to capture the long-distance relevant features. The global feature similarity is computed to be aware of the global information and search for the content that is used to compensate for the misalignment and occluded content.
+
+In order to maintain the structural consistency between the non-reference image and the reference image, we search for features similar to the reference image on the non-reference image. Hence, in both the local Transformer layer and global Transformer layer, we use the reference tokens Z_ref to generate query Q and use the non-reference tokens Z_non to generate the key K and the value V:
+
+Q = Z_ref W_q, K = Z_non W_k, V = Z_non W_v     (2)
+
+where W_q, W_k, W_v are the weights. The output of a Transformer layer can be calculated by:
+
+Y′ = MSA(Q, K, V) + Z_non
+Y = FFN(Y′) + Y′       (3)
+
+where MSA is the multi-headed self-attention and FFN denotes the feed-forward network. Here, the position and similarity of local and global information are captured through Transformer layers. Finally, a CNN-based block which consists of several convolution layers and the LeakyReLU activation function is used to generate the final offsets of similar features.
+
+Deformable Convolution Layer  Based on the accurate offsets ΔP predicted by TOE, deformable convolution is used to extract the matching features on the origin non-reference feature F_non:
+
+F^a_non(p) = ∑_{k=1}^{K} m_k · F_non(p + p_k + ΔP(p, k))      (4)
+
+where F^a_non denotes the aligned non-reference features and K, k are the number and index of kernel weights. m_k, p, p_k denote the k-th kernel weight, position of center and the k-th fixed offset respectively. The origin non-reference features are geometrically transformed via convolution extraction so that the misalignment is removed and the occluded content is compensated. K, the number of kernel weights, also can be adjusted to modify the number of relevant features that are captured by TOE.
+
+Through the combination of TOE and deformable convolution, the proposed TDCAM can extract long-distance features after being aware of the global information to generate more accurate and robust aligned non-reference features. To further explain the advantages of our proposed TDCAM in resolving ghosting, we visualize its sampling map for alignment. As shown in Figure 4, when LDRs contain large motion (green points), the CNN-based method can only extract local features (red points) for the alignment and cannot recover the occluded regions. Since the non-reference image is not aligned, the saturation regions of the reference image will be filled with moving objects and ghosts will appear in the HDR images. On the contrary, our TDCAM can extract long-range content (red points) in the non-reference image according to the content of the reference image to restore the occluded regions, hence our TDCAM can effectively extract the aligned non-reference features and significantly alleviate the ghosting artifacts.
+
+After the aligned features are extracted, the multi-exposed information also should be fused accurately to obtain a high-quality HDR image. On the reference image, the well-exposed information is beneficial to maintain the result consistent with the reference, and the complement information of the high/low exposure images is effective in recovering the missing content in the under-/over-exposed regions. Since convolutions share fusion weights across the entire feature, it is difficult for directly stacking convolutional layers to spatially and dynamically highlight the information of an appropriate image for an accurate result. Moreover, the traditional convolution gets more attention for the information of reference images and weakens the complement information of non-reference images, resulting in fusing distortions. To effectively fuse the multi-exposed features, we propose DWFB which spatially selects the useful information across frames, as shown in Fig. 5(a).
+
+To be special, given the input feature x ∈ 𝑅^{H×W×D}, we
+
+first utilize the spatial attention mechanism to generate a dynamic weight Δw based on the content of the input multi-exposure features:
+
+Δw = φ(x)       (5)
+
+where φ is the attention block. The attention block generates the dynamic weight by sensing the exposure levels of multiple frames in different areas. The dynamic weight Δw adaptively selects the information of different frames, that is, the information in the well-exposed regions of the reference image is selected, and the supplementary content corresponding to the non-reference image is selected in the badly-exposed area of the reference image. Then, we use the weight Δw that is shared in spatial dimension and fully connected in channel dimension to fuse inter-channel information to merge the content of multi-exposed images.
+
+As shown in 5(b), we build the RDWFB that is based on the DWFB to form the HDR merging network to fuse the aligned multi-exposure features for final results. The residual structure of RDWFB helps to preserve image information, which is beneficial to accurate HDR images.
+
+In the HDR task, we jointly utilize the l1 loss and gradient loss to reconstruct satisfactory results. Given the predicted HDR image H and ground truth HDR image Hgt, the l1 loss is computed like previous methods [Yan et al., 2019; Niu et al., 2021]:
+
+L_{l1} = ||Γ(H) - Γ(H_{gt})||_1       (6)
+
+where Γ(·) stands for the tonemapping based on μ-law [Kalantari et al., 2017; Yan et al., 2019; Niu et al., 2021]. Considering that the l1 loss may result in the damage of high-frequency content in the reconstructed HDR images [Xu et al., 2020a], such as texture and edge, we use a gradient loss that is based on the Sobel operator to compensate for the l1 loss to retain the high-frequency content:
+
+L_{grad} = ||∇Γ(H) - ∇Γ(H_{gt})||_1      (7)
+
+where ∇ denotes the Sobel operator. Finally, the total loss L is defined as:
+
+L = L_{l1} + λ_g L_{grad}      (8)
+
+where λ_g is the trade-off coefficient, and we set it to 0.6.
+
+Based on the total loss, the proposed model is optimized to focus on both overall content and high-frequency regions, further promoting the generation of high-quality images with rich details.
+
+We implement our network using the PyTorch platform. For training, we use Adam optimizer, and the β1 and β2 are set to 0.5 and 0.999, respectively. The learning rate is initialized to 1×10^-4 and gradually is decreased to 0. In addition, we train our network on 6000 epochs with a batch size of 2. Given the training images, we randomly crop the 256×256 patches and flip and rotate the patches for training. The whole training is performed on an NVIDIA RTX 3090 GPU with 24G.
+
+Datasets To evaluate our method, we select Kalantari’s dataset [Kalantari et al., 2017] that consists of 74 training scenes and 15 test scenes. Each scene contains three LDR images with exposure {−2, 0, +2} or {−3, 0, +3} and an HDR ground truth. The resolution of images is 1000 × 1500. Flipping and rotation on cropped patches are applied while training. We conduct quantitative and qualitative evaluation experiments on Kalantari’s dataset. To verify the normalization of our method on other datasets, we also perform the qualitative evaluation on Tursun’s [Tursun et al., 2016] and Sen’s [Sen et al., 2012] datasets without ground truth.
+
+homographies to explicitly align the large motion. The AHDRNet [Yan et al., 2019] and Liu's method [Liu et al., 2022] use attention to suppress the motion regions. HDR-GAN [Niu et al., 2021] utilizes a CNN-based residual block to align the moving objects. However, due to the local extraction of their alignment module, these methods still produce severe ghosting artifacts, as shown in Figures 6(c)-(e) and 7(c)-(e). On the contrary, our method can extract long-distance information to align the motion objects and occluded regions. That is, for the regions covered by the arm shown by the red block in Figure 6 and 7, our method can effectively extract the information of walls or cars to fill in the occluded content. Hence, the ghosts are effectively removed in the results, and more accurate and robust HDR images are reconstructed.
+
+Comparison on datasets w/o GT To verify the generalization of the proposed method, we also conduct qualitative experiments on Tursun's and Sen's datasets. We provide visual comparison results because there is no Ground Truth. As shown in Figure 8, the red blocks indicate large motion regions and the carpet is occluded by trains in non-reference images, making it difficult to recover the information of over-exposed regions in reference images. The previous methods can not accurately fill the occluded content and suffer from distortions and ghosts in HDR images. The proposed method handles the problems caused by the large motion and generates the aligned features, thus reconstructing high-quality ghost-free results. In Figure 9, the boy's hand occludes a region with textures like tree branches, and previous methods produce artifacts in the results and lose some texture content. Our method effectively mitigates ghosting artifacts and hallucinates complete textures.
+
+Metrics Following previous works [Yan et al., 2019; Niu et al., 2021; Chen et al., 2022], we select and compute the PSNR and SSIM value in both linear and tonemapped (using μ-law) domains to compare these methods, denoted by PSNR-l, PSNR-μ, SSIM-l, SSIM-μ. To assess the visibility and quality of HDR images, we also apply the HDR-VDP-2 [Mantiuk et al., 2011] as the metric.
+
+Comparison on Kalantari's dataset We conduct a quantitative comparison on testing data of Kalantari's dataset. The results are listed in Table 1. We can find that our method outperforms the exiting Liu's method [Liu et al., 2022] by 0.34 dB, 0.33 dB, and 0.07 in terms of PSNR-μ, PSNR-l, and HDR-VDP-2. Our best performance on PSNR-l and PSNR-μ indicates that the proposed method reconstructs the results with the highest fidelity in both the HDR domain and tonemapped domain. Furthermore, other metrics demonstrate the reconstruction ability of our method in terms of structure and visualization.
+
+The qualitative comparison of some challenging scenes with saturated background and foreground motions are shown in Figure 6 and 7. The LDR patches contain large motions of the arm or body, resulting in severe misalignment between the LDR images and the occluded content in non-reference images. As shown in Figures 6(a)(b) and 7(a)(b), non-end-to-end methods [Kalantari et al., 2017; Wu et al., 2018] still suffer from ghosts since they use unreliable optical flow or
+
+Analysis of Computational Budgets We also compare the inference time of our proposed method and the state-of-the-art methods. To be specific, the inference time is calculated by the average time of generating 15 images with the resolution of 1500 × 1000 in Kalantari's dataset using GPU. It is worth noting that we do not consider the time consumption
+
+We conduct qualitative and quantitative ablation experiments on Kalantari’s dataset to evaluate the effectiveness of each component in the proposed HDRTransDC.
+
+Ablation Analysis of Network Architecture In the experiments (1), we directly replace the proposed TDCAM with a deformable convolution layer that uses CNN to estimate the offset to verify the effectiveness of the proposed alignment module. As shown in Table 3, comparing experiments (1) and (4), we can find that our TDCAM can improve the performance effectively. The reason is that it can extract distant similar features to align multi-exposure features. The qualitative experiments in Figure 10 (a) demonstrate that the TDCAM effectively alleviates the ghosting artifact and significantly improves the quality of the reconstructed image. In experiment (2), we remove the DWFB and use the traditional convolution layers to merge the features. The results show that DWFB further improves the quality of the HDR images since it can perceive the exposure levels of different regions and adaptively select useful information from different frames. As shown in Figure 10 (b), the proposed DWFB further mitigates fusing distortions and recovers missing contents, and thereby more satisfactory results are reconstructed.
+
+Ablation Analysis of Loss We also verify the effect of the gradient loss and conduct the ablation experiments. As shown in Table 3, experiment (3) shows that the gradient loss further improves the performance of the proposed model since this loss introduces more attention to high-frequency regions to retain the textures and edges. The qualitative results in Figure 10 (c) demonstrate that textures and details are blurred if the gradient loss is removed, proving the effectiveness of this loss.
+
+of homographies in DeepHDR [Wu et al., 2018]. The reason is that this model assumes that the input LDRs are pre-aligned and homographies are usually performed on CPU and are very time-consuming. As shown in Table 2, the inference time of our model is acceptable.
+
+This paper proposes an HDRTransDC network to establish the complicated alignment and fusion relationship between reference and non-reference images to reconstruct high-quality HDR images. Specifically, we propose a TDCAM to extract long-range relevant information to compensate for the misaligned components and occluded content to remove the ghosting artifacts caused by the large motion and saturation. In addition, we propose the DWFB to adaptively select useful information across frames to effectively fuse multi-exposed features, which reduces the fusing distortions. We conduct extensive comparative experiments to verify that the proposed method achieves state-of-the-art performance and generates artifact-free HDR images with realistic details. The ablation experiments are also performed to verify the effectiveness of the components.
+
+[Bogoni, 2000] Luca Bogoni. Extending dynamic range of monochrome and color images through fusion. In Proceedings 15th International Conference on Pattern Recognition. ICPR-2000, volume 3, pages 7–12. IEEE, 2000.
+
+[Yan et al., 2020] Qingsen Yan, Lei Zhang, Yu Liu, Yu Zhu, Jinqiu Sun, Qinfeng Shi, and Yanning Zhang. Deep hdr imaging via a non-local network. IEEE Transactions on Image Processing, 29:4308–4322, 2020.
+
+[Xu et al., 2020a] H. Xu, J. Ma, and X. P. Zhang. Mef-gan: Multi-exposure image fusion via generative adversarial networks. IEEE Transactions on Image Processing, PP(99):1–1, 2020.
+
+[Prabhakar et al., 2020] K Ram Prabhakar, Susmit Agrawal, Durgesh Kumar Singh, Balraj Ashwath, and R Venkatesh Babu. Towards practical and efficient high-resolution hdr deghosting with cnn. In European Conference on Computer Vision, pages 497–513. Springer, 2020.
+
+[Oh et al., 2014] Tae-Hyun Oh, Joon-Young Lee, Yu-Wing Tai, and In So Kweon. Robust high dynamic range imaging by rank minimization. IEEE transactions on pattern analysis and machine intelligence, 37(6):1219–1232, 2014.
+
+[Chen et al., 2022] Jie Chen, Zaifeng Yang, Tsz Nam Chan, Hui Li, Junhui Hou, and Lap-Pui Chau. Attention-guided progressive neural texture fusion for high dynamic range image restoration. IEEE Transactions on Image Processing, 31:2661–2672, 2022.
+
+[Granados et al., 2010] Miguel Granados, Boris Ajdin, Michael Wand, Christian Theobalt, Hans-Peter Seidel, and Hendrik PA Lensch. Optimal hdr reconstruction with linear digital cameras. In 2010 IEEE computer society conference on computer vision and pattern recognition, pages 215–222. IEEE, 2010.
+
+[Zhang and Cham, 2011] Wei Zhang and Wai-Kuen Cham. Gradient-directed multiexposure composition. IEEE Transactions on Image Processing, 21(4):2318–2323, 2011.
+
+[Niu et al., 2021] Yuzhen Niu, Jianbin Wu, Wenxi Liu, Wenzhong Guo, and Rynson WH Lau. Hdr-gan: Hdr image reconstruction from multi-exposed ldr images with large motions. IEEE Transactions on Image Processing, 30:3885–3896, 2021.
+
+[Myszkowski et al., 2008] Karol Myszkowski, Rafal Mantiuk, and Grzegorz Krawczyk. High dynamic range video. Synthesis Lectures on Computer Graphics and Animation, 1(1):1–158, 2008.
+
+[Wu et al., 2018] Shangzhe Wu, Jiarui Xu, Yu-Wing Tai, and Chi-Keung Tang. Deep high dynamic range imaging with large foreground motions. In Proceedings of the European Conference on Computer Vision (ECCV), pages 117–132, 2018.
+
+[Tursun et al., 2016] Okan Tarhan Tursun, Ahmet Oğuz Akyüz, Aykut Erdem, and Erkut Erdem. An objective deghosting quality metric for hdr images. In Computer Graphics Forum, volume 35, pages 139–152. Wiley Online Library, 2016.
+
+[Mertens et al., 2007] Tom Mertens, Jan Kautz, and Frank Van Reeth. Exposure fusion. In 15th Pacific Conference on Computer Graphics and Applications (PG’07), pages 382–390. IEEE, 2007.
+
+[Yan et al., 2019] Qingsen Yan, Dong Gong, Qinfeng Shi, Anton van den Hengel, Chunhua Shen, Ian Reid, and Yanning Zhang. Attention-guided network for ghost-free high dynamic range imaging. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pages 1751–1760, 2019.
+
+[Reinhard et al., 2010] Erik Reinhard, Wolfgang Heidrich, Paul Debevec, Sumanta Pattanaik, Greg Ward, and Karol Myszkowski. High dynamic range imaging: acquisition, display, and image-based lighting. Morgan Kaufmann, 2010.
+
+[Debevec and Malik, 2008] Paul E Debevec and Jitendra Malik. Recovering high dynamic range radiance maps from photographs. In ACM SIGGRAPH 2008 classes, pages 1–10. 2008.
+
+[Granados et al., 2013] Miguel Granados, Kwang In Kim, James Tompkin, and Christian Theobalt. Automatic noise modeling for ghost-free hdr reconstruction. ACM Transactions on Graphics (TOG), 32(6):1–10, 2013.
+
+[Sen et al., 2012] Pradeep Sen, Nima Khademi Kalantari, Maziar Yaesoubi, Soheil Darabi, Dan B Goldman, and Eli Shechtman. Robust patch-based hdr reconstruction of dynamic scenes. ACM Trans. Graph., 31(6):203–1, 2012.
+
+[Kang et al., 2003] Sing Bing Kang, Matthew Uyttendaele, Simon Winder, and Richard Szeliski. High dynamic range video. ACM Transactions on Graphics (TOG), 22(3):319–325, 2003.
+
+[Kalantari et al., 2017] Nima Khademi Kalantari, Ravi Ramamoorthi, et al. Deep high dynamic range imaging of dynamic scenes. ACM Trans. Graph., 36(4):144–1, 2017.
+
+[Liu et al., 2022] Zhen Liu, Yinglong Wang, Bing Zeng, and Shuaicheng Liu. Ghost-free high dynamic range imaging with context-aware transformer. arXiv preprint arXiv:2208.05114, 2022.
+
+[Lee et al., 2014] Chul Lee, Yuelong Li, and Vishal Monga. Ghost-free high dynamic range imaging via rank minimization. IEEE signal processing letters, 21(9):1045–1049, 2014.
+
+[Ma et al., 2017] Kede Ma, Hui Li, Hongwei Yong, Zhou Wang, Deyu Meng, and Lei Zhang. Robust multi-exposure image fusion: a structural patch decomposition approach. IEEE Transactions on Image Processing, 26(5):2519–2532, 2017.
+
+[Mantiuk et al., 2011] Rafał Mantiuk, Kil Joong Kim, Allan G Rempel, and Wolfgang Heidrich. Hdr-vdp-2: A calibrated visual metric for visibility and quality predictions in all luminance conditions. ACM Transactions on graphics (TOG), 30(4):1–14, 2011.
+
+[Zimmer et al., 2011] Henning Zimmer, Andrés Bruhn, and Joachim Weickert. Freehand HDR imaging of moving scenes with simultaneous resolution enhancement. In Computer Graphics Forum, volume 30, pages 405–414. Wiley Online Library, 2011.

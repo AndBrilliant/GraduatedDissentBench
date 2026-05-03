@@ -1,0 +1,606 @@
+En-Jui Chang¹,* and Ching-Yi Lai¹,†
+
+¹Institute of Communications Engineering, National Yang Ming Chiao Tung University, Hsinchu 30010, Taiwan
+(Dated: April 30, 2024)
+
+Gaussian quantum information processing with continuous-variable (CV) quantum information carriers holds significant promise for applications in quantum communication and quantum internet. However, applying Gaussian state distillation and quantum error correction (QEC) faces limitations imposed by no-go results concerning local Gaussian unitary operations and classical communications. This paper introduces a Gaussian QEC protocol that relies solely on local Gaussian resources. A pivotal component of our approach is CV gate teleportation using entangled Gaussian states, which facilitates the implementation of the partial transpose operation on a quantum channel. Consequently, we can efficiently construct a two-mode noise-polarized channel from two noisy Gaussian channels. Furthermore, this QEC protocol naturally extends to a nonlocal Gaussian state distillation protocol.
+
+The theoretical advantages of universal quantum computers and quantum communications over classical counterparts have been demonstrated in specific tasks, such as Shor’s factoring algorithm [1], Grover search [2], and quantum key distribution [3]. To fully exploit the potential of both quantum and classical technologies, it is necessary to develop a quantum internet [4, 5] that enables the transfer of classical or quantum data packets between classical and quantum devices [6, 7].
+
+Recent quantum devices often suffer from imperfect state preparation, noisy quantum gates, and imprecise measurements, all of which degrade the performance of quantum schemes. Although recent studies have demonstrated that noisy, shallow circuits can still yield quantum advantages [8], circuits with large quantum depth are essential for achieving greater computational power [9]. Thus, incorporating quantum error correction (QEC) is essential to ensure efficient and reliable operation of a quantum network [10–14]. Additionally, QEC schemes for qubits based on quantum architectures of the near future are anticipated to require significant overheads [15]. Consequently, there is a need for low-resource, fault-tolerant quantum computing solutions.
+
+One potential solution to address the issue of large overhead is using continuous-variable (CV) quantum information carriers, such as quantized harmonic oscillators, which are particularly suitable for quantum communication. CV QEC codes [16–25] serve as building blocks for quantum internet and transducers [26]. Particularly, Gaussian quantum information processing techniques have reached a high level of maturity [27].
+
+(Gaussian no-go theorems.) However, limitations arise when applying Gaussian state distillation [28–30] and quantum error correction [31] with local Gaussian unitary operations and classical communications. The prevailing belief is that the Gaussian QEC struggles to effectively reduce noise in both the position and the momentum quadratures of a bosonic mode [27, 31]. A reduction in noise variance in one quadrature often results in a corresponding increase in the other, as specifically observed in single-mode squeezing, presenting a significant challenge in noise management strategies [32].
+
+This paper presents a Gaussian QEC protocol comprising beam splitters, two-mode squeezers, and homodyne measurements. An essential aspect of our approach is using entangled Gaussian states to facilitate CV gate teleportation. This enables us to implement the partial transpose of a quantum channel, effectively conjugating a symplectic matrix by a nonsymplectic one. Consequently, we can transform two noisy Gaussian channels into a two-mode noise-polarized channel with one cleaner mode and one noisier mode, thus facilitating effective quantum communication on the cleaner mode.
+
+Remarkably, our findings do not contravene the main theorem in [31] (if extended to the multi-mode case), and the entanglement degradation of the polarized channel is not decreased. Moreover, all the components of our protocol have been previously considered in [28–30], except for the ideal Gaussian EPR states that are locally prepared, which remain a Gaussian resource.
+
+(Gaussian quantum information processing.) We briefly introduce Gaussian quantum information [33] and establish notation. To simplify, we set the Planck constant ℏ to be one. Let â and â† represent the annihilation and creation operators on a bosonic mode associated with a Hilbert space 𝓗, respectively, where â := ∑ₙ'₌₁^∞ √n' |n' − 1⟩⟨n'| in the number basis {|n⟩}ₙ₌₀^∞, and their commutator satisfies [â, â†] = 1. We will focus on the phase space with two quadratures defined by position and momentum operators: q̂ := (â + â†)/√2 and p̂ := (â − â†)/i√2, where i = √−1 and [q̂, p̂] = i.
+
+For a quantum system comprising n bosonic modes in ⊗ⱼ₌₁ⁿ 𝓗ⱼ, the vector of canonical quadrature operators is defined as:
+
+x̂ := (q̂₁, p̂₁, ..., q̂ₙ, p̂ₙ), (1)
+
+* ejchang@nycu.edu.tw
+† cylai@nycu.edu.tw
+
+where q̂ᵢ and p̂ᵢ operate on the i-th mode. Additionally, let x̂ⱼ denote the j-th component of x̂.
+
+An n-mode Gaussian state ρ can be fully characterized by its mean vector mⱼ = tr(ρx̂ⱼ) and the covariance matrix γ(ρ). For simplicity, we focus on Gaussian states with zero means mⱼ = 0 and thus the (j, k)-th entry of γ(ρ) is γ(ρ)ⱼ,ₖ = tr(ρx̂ⱼx̂ₖ). Adjusting the mean vector can be accomplished using a displacement operator D̂(α) := e^{αâ†-α*â}, where α ∈ ℂ.
+
+An n-mode Gaussian quantum operation is a completely positive and trace-preserving operation that transforms one Gaussian state into another. Consequently, we care only about its effects on the first two moments of an input Gaussian state. A Gaussian operation will be denoted as 𝒢^{M,N}, where M and N are two 2n × 2n real matrices and N is symmetric and positive semidefinite. Its action on a covariance matrix γ is defined by
+
+𝒢^{M,N} : γ → MγMᵀ + N. (2)
+
+Thus, M characterizes a Gaussian operation, while N introduces additive Gaussian noise.
+
+Let I = [1 0; 0 1], Z = [1 0; 0 -1], and 0 be a zero matrix of appropriate dimension. Herein, the noisy single-mode Gaussian channel under consideration is defined by
+
+𝒩^{σ²} := 𝒢^{I,σ²I}, (3)
+
+where σ² is the noise variance.
+
+A noiseless Gaussian unitary operation is defined by 𝒢^M ≜ 𝒢^{M,0}, with M being symplectic. In this case, det{M} = 1 and MᵀΩₙM = Ωₙ, with Ω_{α+1} := Ω_α ⊕ Ω_1 and Ω_1 := [0 -1; 1 0] for α ∈ ℕ. Elementary noiseless Gaussian unitary operations include single-mode squeezers Ŝⱼ(r) := e^{r(âⱼ²-âⱼ†²)/2}, two-mode squeezers Ŝ_{j,k}(r) := e^{r(âⱼâₖ-âⱼ†âₖ†)} for r ∈ ℝ and (balanced) beam splitters B̂_{j,k} := e^{iπ(q̂ⱼp̂ₖ-p̂ⱼq̂ₖ)/4}, where the subscripts j and k denote the modes to which they are applied. Their corresponding symplectic matrices are Sⱼ(r) = [e^{-r} 0; 0 e^{r}],
+
+S_{j,k}(r) = [cosh(r)I sinh(r)Z; sinh(r)Z cosh(r)I] and B_{j,k} = 1/√2 [I I; -I I],
+
+respectively.
+
+By applying a two-mode squeezer to the vacuum state, we obtain the following two-mode squeezed vacuum state
+
+|ζ_r⟩_{1,2} = 1/cosh(r) ∑_{n'=0}^∞ tanh^{n'}(r) |n'⟩₁ |n'⟩₂, (4)
+
+which is a two-mode Gaussian state with zero mean, also known as an Einstein-Podolsky-Rosen (EPR) state. In particular, an infinitely squeezed two-mode squeezed vacuum state will be denoted as |ζ_{EPR}⟩ := lim_{r→∞} |ζ_r⟩ and ρ_ζ := |ζ_{EPR}⟩⟨ζ_{EPR}|, which serves as an ideal resource for CV quantum teleportation [34, 35] as shown in Fig. 1.
+
+(CV quantum teleportation.) The Bell measurement operation, combined with the EPR pair in CV teleportation, can be characterized by the Kraus operators K̂(q₁, p₂) : ℋ₁ → ℋ₃ for q₁, p₂ ∈ ℝ, given by
+
+K̂(q₁, p₂) = ⟨ζ_{EPR}|_{1,2} D̂₃(-μ) |ζ_{EPR}⟩_{2,3}, (5)
+
+where μ := √2(q₁+ip₂). Up to normalization, the output state of the gate teleportation scheme becomes
+
+ρ_out ∝ K̂(q₁, p₂)ρ_in K̂†(q₁, p₂)
+   = D̂₃(-μ) (∑_{m,n} ⟨m|₁ ρ_in |n⟩₁ |m⟩₃⟨n|₃) D̂₃(μ). (6)
+
+The expression ∑_{m,n} ⟨m|₁ ρ_in |n⟩₁ |m⟩₃⟨n|₃ represents the quantum state teleported from the first mode to the third mode. Consequently, the resulting output state is the teleported state with a displacement dependent on the measurement outcome: ρ_out = D̂₃(-μ) ρ_in D̂₃(μ). Hence, we can counteract this extra displacement by implementing a recovery operation D̂₃(μ) as shown in Fig. 1. (See Appendix A for more details.)
+
+This process can be extended to CV gate teleportation [36], where a target quantum operation is applied to the entangled resource state first, followed by a corresponding recovery operation dependent on the measurement outcomes. In particular, if a two-mode unitary operation Ŵ_{j,k} is to be applied to a single-mode state ρ_in and an ancillary state ρ_anc, Ŵ_{j,k} is first applied to one mode of the EPR state. Then, a Bell measurement is conducted on the other mode of the EPR state together with ρ_in. This effectively produces the following state before applying a recovery operation:
+
+Ŵ_{3,4} D̂₃(-μ) ρ_in ⊗ ρ_anc D̂₃(μ) Ŵ_{3,4}†. (7)
+
+The recovery operation is Ŵ_{3,4} D̂₃(μ) Ŵ_{3,4}† and the complete process is shown in Fig. 2. If a single-mode operator Ŵ_j is to be applied, we may ignore the ancillary mode in Fig. 2.
+
+While this recovery operator may generally be complex, it simplifies to some displacement operators for linear gates Ŵ_{3,4}. (Refer to Appendix B.) A gate is said to
+
+be linear if it is of the form $\hat{W}_{j,k} = e^{-i\hat{H}_{j,k} t}$, where $\hat{H}_{j,k}$ is a Hamiltonian composed of a linear combination of $\hat{I}$, $\hat{q}_j$, $\hat{p}_j$, $\hat{q}_k$, $\hat{p}_k$, $\hat{q}_j \hat{q}_k$, $\hat{q}_j \hat{p}_k$, $\hat{p}_j \hat{q}_k$, and $\hat{p}_j \hat{p}_k$ with real coefficients. In particular, we will consider $\hat{W}_{j, k}$ corresponding to a beam splitter, as shown in the following lemma. (For further elaboration, see Appendix C.)
+
+Lemma 1 When a displacement operator $\hat{D}_j(\mu)$ evolves in the Heisenberg picture under a beam splitter $\hat{B}^\dagger_{j, k}$, it transforms into a composition of two displacements:
+
+\[
+\hat{B}_{j,k} \hat{D}_j(\mu) \hat{B}^\dagger_{j,k} = \hat{D}_j\left(\frac{\mu}{\sqrt{2}}\right) \otimes \hat{D}_k\left(-\frac{\mu}{\sqrt{2}}\right). \qquad (8)
+\]
+
+(Engineering Gaussian channels.) One can show that a bouncing property holds for an infinitely squeezed two-mode state, as shown in [36]. (See Appendix D.)
+
+Lemma 2 (CV bouncing.) Let $\hat{W}$ be a single-mode operator. Then
+
+\[
+\hat{I} \otimes \hat{W} |\zeta_{EPR}\rangle = \hat{W}^T \otimes \hat{I} |\zeta_{EPR}\rangle. \qquad (9)
+\]
+
+Moreover, we generalize the above lemma to the case of partially bouncing operations. (See Appendix E.)
+
+Lemma 3 (CV partial bouncing.) Let $|\psi\rangle$ be an arbitrary $n$-mode state, $n \in \mathbb{N}$. Then
+
+\[
+\left(\hat{I}_i \otimes \hat{W}_{j, k_1}\right) |\zeta_{EPR}\rangle_{i, j} \otimes |\psi\rangle_{k_1, \dots, k_n}
+= \left(\hat{W}^T_{i, k_1} \otimes \hat{I}_j\right) |\zeta_{EPR}\rangle_{i, j} \otimes |\psi\rangle_{k_1, \dots, k_n}. \qquad (10)
+\]
+
+for any two-mode operator $\hat{W}$, where $T_i$ denotes the partial transpose with respect to the $i$-th mode.
+
+Therefore, if we initially swap the two modes of the EPR state for gate teleportation, we can effectively implement the operation $\hat{W}^T_{j, k}$, using a corresponding recovery operation. This process is illustrated in Fig. 3.
+
+Moreover, by combining Lemma 1 and Lemma 3, we can effectively implement the partial transpose of a balanced beam splitter through CV gate teleportation with recovery by displacement operators.
+
+It is clear that $\hat{a}^T = \left(\sum_{n' = 1}^{\infty} \sqrt{n'} |n' - 1\rangle \langle n'|\right)^T = \hat{a}^\dagger$.
+Thus, $\hat{q}^T = \hat{q}$ and $\hat{p}^T = -\hat{p}$. Consequently, if $\hat{W}_{j, k}$ is an operator that is a function of $\hat{x}$, then the component $\hat{p}_j$ of $\hat{W}_{j, k}$ is flipped in $\hat{W}^{T}_{j, k}$. We have the following observation.
+
+Lemma 4 Given an $n$-mode Gaussian operation $\mathcal{G}^{M,N}$, its partial transpose with respect to the $i$-th mode is $\mathcal{G}^{\tilde{M}_i, \tilde{N}_i}$, where $\tilde{M}_i := Z_i M Z_i$ and $\tilde{N}_i := Z_i N Z_i$ and $Z_i = I^{\oplus i - 1} \oplus Z \oplus I^{\oplus n - i}$.
+
+Proof.
+Consider a Gaussian operator $\hat{W}(\hat{x})$ that is a function of $\hat{x}$ and let $\mathcal{G}^{M,N}$ be its corresponding symplectic-matrix representation. If $\hat{W}^{T_i}(\hat{x})$ is applied to $\rho$, the covariance matrix becomes $\gamma\left(\hat{W}^{T_i}(\hat{x}) \rho (\hat{W}^{T_i}(\hat{x}))^\dagger \hat{x}_j \hat{x}_k\right)$. In the Heisenberg picture, it can be expressed as
+
+\[
+\hat{x}_j \hat{x}_k \xrightarrow{\hat{W}^{T_i}(\hat{x})} (\hat{W}^{T_i}(\hat{x}))^\dagger \hat{x}_j \hat{x}_k \hat{W}^{T_i}(\hat{x}). \qquad (11)
+\]
+
+Let $f_i : \hat{q}_i, \hat{p}_i \mapsto \hat{q}_i, -\hat{p}_i$ be a function describing the action of partial transpose on the $i$-th mode in the Heisenberg picture for $i \in \mathbb{N}$. Then $\hat{W}^{T_i}(\hat{x}) = f_i(\hat{W}(\hat{x})) = \hat{W}(f_i(\hat{x}))$. Then (11) can written as
+
+\[
+\hat{x}_j \hat{x}_k \xrightarrow{\hat{W}^{T_i}(\hat{x})} (\hat{W}(f_i(\hat{x})))^\dagger \hat{x}_j \hat{x}_k \hat{W}(f_i(\hat{x}))
+= f_i(\hat{W}(\hat{x})^\dagger f_i(\hat{x}_j \hat{x}_k) \hat{W}(\hat{x})). \qquad (12)
+\]
+
+Also, we have $f_i(\gamma(\rho)_{j k}) = \operatorname{tr}(\rho f_i(\hat{x}_j) f_i(\hat{x}_k))$, which implies $f_i(\gamma(\rho)) = Z_i \gamma(\rho) Z_i$. Thus (12) implies that
+
+\[
+\gamma(\rho) \xrightarrow{\hat{W}^{T_i}(\hat{x})} Z_i M Z_i \gamma(\rho) Z_i M Z_i + Z_i N Z_i. \qquad (13)
+\]
+
+In general, $\tilde{M}_i$ is not symplectic since $Z_i$ is not symplectic. For convenience, we define an operation $B_i$ at the level of covariance matrices:
+
+\[
+B_i : \mathcal{G}^{M,N} \mapsto \mathcal{G}^{\tilde{M}_i, \tilde{N}_i}. \qquad (14)
+\]
+
+In the following, we propose a noise-polarization protocol for a one-way CV quantum communication system.
+
+Here are the corrected OCR texts for each crop in order:
+
+---
+1. By concatenating the GKP two-mode squeezing code with our noise-polarization scheme, we can further suppress the logical noise variance to
+---
+2. code is approximately given by
+---
+3. 
+\[
+\sigma_L^2 \stackrel{\sigma \ll 1}{\longrightarrow} \frac{2\sigma^2}{\sqrt{\pi}} \ln \frac{\pi^{1.5}}{2\sigma^4}.
+\]
+(15)
+
+---
+4. 
+\[
+\sigma_L^2 \stackrel{e^{-r}\sigma \ll 1}{\longrightarrow} e^{-2r}\frac{2\sigma^2}{\sqrt{\pi}} \sqrt{4r + \ln \frac{\pi^{1.5}}{2\sigma^4}}.
+\]
+(16)
+
+---
+5. This concatenation is useful when
+---
+6. 
+\[
+\frac{4}{\ln \frac{\pi^{1.5}}{2\sigma^4}} + 1 < e^{4r}.
+\]
+(17)
+
+---
+7. For typical noise levels satisfying \(\sigma^2 < \frac{\pi^{3}}{4\sqrt{2e}} \approx 1.012\), it is clear that this concatenation always yields benefits for \(r > 0\).
+---
+8. (Application.) Noh et al. [20] demonstrated that on input the channel noise variance \(\sigma^2\), the optimal logical noise variance \(\sigma_L^2\) using the GKP two-mode squeezing
+---
+9. Moreover, using Theorem 5, we can construct a Gaussian entanglement distillation that circumvents the Gaussian QEC no-go result [31]. The idea involves substituting the noisy Gaussian channels in Fig. 4 (a) with noisy teleportation operations and subsequently implementing QEC on a shared EPR.
+---
+10. 
+Theorem 5 (Noise-polarization.) Consider independent and identically distributed noisy Gaussian channels \(\mathcal{N}_j^{\sigma^2} , j = 1, 2\). Then, the composite channel
+---
+11. 
+\[
+\mathcal{G}_{1,2}^{I,\mathcal{N}^{polar}(r)} := \mathcal{B}_2(\mathcal{G}_{1,2}^B) \circ \mathcal{G}_{1,2}^{S(-r)} \circ \bigotimes_{j=1}^2 \mathcal{N}_j^{\sigma^2} \circ \mathcal{G}_{1,2}^{S(r)} \circ \mathcal{B}_2(\mathcal{G}_{1,2}^{B^T})
+\]
+---
+12. is noise-polarized with \(\mathbf{N}^{polar}(r) = \sigma^2 \begin{bmatrix} e^{-2r}\mathbf{I} & 0 \\ 0 & e^{2r}\mathbf{I} \end{bmatrix}\)
+---
+13. 
+Proof. Recall that the action of a Gaussian channel is given in Eq. (2). Thus \(\mathcal{G}_{1,2}^{S(-r)} \circ (\mathcal{N}_1^{\sigma^2} \otimes \mathcal{N}_2^{\sigma^2}) = \mathcal{G}_{1,2}^{S(-r), \sigma^2 S(-r) S^T(-r)}\). Then we have
+---
+14. 
+\[
+\begin{aligned}
+\mathcal{G}_{1,2}^{I, \mathcal{N}^{polar}(r)}
+&= \tilde{\mathcal{G}}_{1,2}^{B_2} \circ \mathcal{G}_{1,2}^{I, \sigma^2 S(-r) S^T(-r)} \circ \tilde{\mathcal{G}}_{1,2}^{B_2^T} \\
+&= \mathcal{G}_{1,2}^{I, \sigma^2 B_2^2 S(-r) S^T(-r) B_2^T} \\
+&= \mathcal{G}_{1,2}^{I, \sigma^2 Z_2^2 B_2 Z_2^2 S(-r) S^T(-r) Z_2 B_2^T Z_2}
+\end{aligned}
+\]
+
+---
+15. Therefore, \(\mathbf{N}^{polar}(r) = \sigma^2 \begin{bmatrix} e^{-2r}\mathbf{I} & 0 \\ 0 & e^{2r}\mathbf{I} \end{bmatrix}\) after some calculations (see Appendix F). ■
+---
+16. The implementation of this composite channel is illustrated in Fig. 4. Note that \(\mathbf{B}_{2,1} = \mathbf{B}_{1,2}^T\), and thus we have used the block \(\hat{B}_{(2,1)}\) in Fig. 4 (b).
+---
+17. By Theorem 5, this is equivalent to applying a Gaussian channel \(\mathbf{I}_{(1)} \otimes \mathcal{G}_{(2,3)}^{I, \mathcal{N}^{polar}(r)}\) to \(\sigma^{(1)}_{AB}\) and \(\rho_{anc}\). Consequently, the output state is
+---
+18. 
+\[
+(\hat{I} \otimes \mathcal{N}^{e^{-2r}\sigma^2})(\rho_\zeta)_{1,2} \otimes (\mathcal{N}^{e^{2r}\sigma^2})(\rho_a)_{(3)}.
+\]
+(18)
+
+---
+19. Finally, Bob disposes of the third mode, and they end up sharing a Gaussian EPR pair with reduced noise.
+---
+20. 
+Corollary 6 (Entangled Gaussian state distillation.) Assume that Alice and Bob can locally prepare ideal EPR pairs \(\rho_\zeta\). Suppose that Alice and Bob share some noisy entangled states \(\sigma_{AB}^{(i)} = (\hat{I}_A \otimes \mathcal{N}_B^{\sigma^2})(\rho_\zeta)\). Then, a less noisy shared entangled Gaussian state \((\hat{I} \otimes \mathcal{N}^{e^{-2r}\sigma^2})(\rho_\zeta)_{1,2}\) can be distilled.
+---
+21. 
+Proof. We have a distillation protocol as follows. Firstly, Alice encodes \(\sigma_A^{(1)}\) along with some ancillary state \(\rho_{anc}\) using the circuit in Fig. 4 (b) with the help of one ideal local EPR. Subsequently, using two noisy EPR states \(\sigma_{AB}^{(2)}\) and \(\sigma_{AB}^{(3)}\), she teleports the two encoded modes to Bob. Upon receiving the measurement outcomes, Bob executes recovery operations on \(\sigma_B^{(2)}\) and \(\sigma_B^{(3)}\), accordingly. Then, he applies the decoding circuit in Fig. 4 (c) with the help of one ideal local EPR.
+---
+22. 
+(Finitely squeezed Gaussian EPR.) In the previous constructions, we assumed the availability of a two-mode infinitely squeezed vacuum state \(\rho_\zeta\). Now, we investigate the case where a finitely squeezed vacuum state \(|\zeta_r\rangle\) is available instead of an infinitely squeezed one. Specifically, we examine the fidelity between the states on the
+---
+
+left-hand and right-hand sides of Eq.(10). This fidelity approaches 1 as r tends to infinity. However, for finite r, higher-order terms can be truncated since |tanh(r)| < 1. Although summing up this series remains challenging, it can be inferred that the fidelity F is sufficiently high when 1 − tanh(r) = o(1). Further details are provided in Appendix G.
+
+(Discussion.) Our Gaussian QEC method demonstrates the ability to engineer uncorrelated additive noisy Gaussian channels utilizing local Gaussian unitary operators, local quadrature measurements, and an arbitrary CV ancillary state. In particular, this process remains unaffected by the initial states, allowing the extension of our Gaussian QEC approach to non-Gaussian states [18, 22–25, 37].
+
+While Gaussian QEC applied to specific types of correlated noisy Gaussian channels [16, 17], described by a single variance variable, has potential in specific physical platforms; addressing uncorrelated noisy Gaussian channels is still crucial. It is worth noting that the beam splitter alone, as considered in [16, 17], cannot convert two identical and independently distributed random variables into correlated ones within the context of [31]. However, as demonstrated in [20], the two-mode squeezers enable this transformation. To utilize the distinction between two-mode squeezers and beam splitters, we concatenated standard Gaussian channels with a channel that exhibits Gaussian behavior, thereby achieving noise polarization in the noisy Gaussian channels.
+
+In summary, a fully Gaussian QEC combined with Gaussian quantum information processing techniques is expected to be more readily accessible and impactful in the near term.
+
+CYL was supported by the National Science and Technology Council in Taiwan under Grants 111-2628-E-A49-024-MY2 and 113-2119-M-A49-008.
+
+Proceedings of the 29th annual ACM symposium on theory of computing, STOC '97 (ACM, New York, NY, USA, 1997) pp. 176–
+
+tonomous error-correction with low-order nonlinearity, Quantum Science and Technology 4, 035007 (2019).
+
+Note that the two-mode squeezer can be decomposed into single-mode squeezers and beam splitters:
+
+$$S_{j, k}(-r) = B_{j, k} \big(S(-r)_j \oplus S(r)_k \big) B^{T}_{j, k}. \tag{A1}$$
+
+Then, the two-mode squeezed vacuum state can be written as
+
+$$|\zeta_r\rangle_{1, 2} = \hat{B}_{1, 2} \circ (\hat{S}_1(-r) \otimes \hat{S}_2(r)) \circ \hat{B}^{\dagger}_{1, 2} |0\rangle_1 |0\rangle_2$$
+$$= \hat{B}_{1, 2} \circ (\hat{S}_1(-r) \otimes \hat{S}_2(r)) |0\rangle_1 |0\rangle_2,$$
+
+where the second equality is because applying a beam splitter on two vacuum modes has no effect. As $r$ approaches infinity, the two states $\lim_{r \to \infty} \hat{S}(r) |0\rangle$ and $\lim_{r \to \infty} \hat{S}(-r) |0\rangle$ emerge as eigenstates of quadrature operators $\hat{q}$ and $\hat{p}$, with eigenvalues 0, respectively. These states will be denoted as $|q = 0\rangle$ and $|p = 0\rangle$, respectively, and they should not be confused with the vacuum state $|0\rangle$ in the number basis. Consequently, the ideal EPR state $|\zeta_{EPR}\rangle$ can be written as [36]
+
+$$|\zeta_{EPR}\rangle_{1, 2} = \hat{B}_{1, 2}\, |p = 0\rangle_1 |q = 0\rangle_2. \tag{A2}$$
+
+The Bell measurement operation, combined with the EPR pair in CV teleportation, can be characterized by the Kraus operators $\hat{K}(q_1, p_2) : \mathcal{H}_1 \to \mathcal{H}_3$ for $q_1, p_2 \in \mathbb{R}$, given by
+
+$$\hat{K}(q_1, p_2) = \langle q = q_1|_1 \langle p = p_2|_2\, \hat{B}_{1, 2} |\zeta_{EPR}\rangle_{2, 3}$$
+$$= \langle q = 0|_1 \langle p = 0|_2\, \hat{D}^{\dagger}_1(q_1)\hat{D}^{\dagger}_2(ip_2)\hat{B}_{1, 2} |\zeta_{EPR}\rangle_{2, 3}$$
+$$= \langle \zeta_{EPR}|_{1, 2}\, \hat{B}^{\dagger}_{1, 2} \hat{D}^{\dagger}_1(q_1)\hat{D}^{\dagger}_2(ip_2)\hat{B}_{1, 2} |\zeta_{EPR}\rangle_{2, 3}$$
+$$= \langle \zeta_{EPR}|_{1, 2}\, \hat{D}^{\dagger}_1\left(\frac{\mu_+}{2}\right)\hat{D}^{\dagger}_2\left(\frac{\mu_-}{2}\right) |\zeta_{EPR}\rangle_{2, 3}, \tag{A3}$$
+
+where $\mu_{\pm} := \sqrt{2}(q_1 \pm ip_2)$. In the Heisenberg picture, the last equality is to evolve the operator $\hat{D}^{\dagger}_1(q_1)\hat{D}^{\dagger}_2(ip_2)$ under
+
+\(\hat{B}_{1,2}\), i.e. applying \(\mathbf{B}_{1,2}\) on the quadratures.
+
+\[
+\hat{K}(q_1, p_2) = \langle \zeta_{EPR} |_{1,2} \hat{D}_1^\dagger \left( \frac{\mu_+}{2} \right) \hat{D}_2^\dagger \left( \frac{\mu_-}{2} \right) | \zeta_{EPR} \rangle_{2,3},
+\]
+\[
+= \langle \zeta_{EPR}|_{1,2} \hat{D}_2( -\mu_- ) | \zeta_{EPR} \rangle_{2,3},
+\]
+\[
+= \langle \zeta_{EPR}|_{1,2} \hat{D}_3( -\mu_+ ) | \zeta_{EPR} \rangle_{2,3}.
+\tag{A4}
+\]
+
+The second and the third equality utilize Lemma 2 with \(\langle \zeta_{EPR} |_{1,2}\) and \(| \zeta_{EPR} \rangle_{2,3}\), respectively, and the transpose of displacement operators is the complex conjugate of its inversion, i.e., \(\hat{D}^T(\alpha) = (\hat{D}^\dagger(\alpha))^* = \hat{D}(-\alpha^*)\).
+
+Then, the output state is
+
+\[
+\rho_{out} = \frac{ \hat{K}(q_1, p_2) \rho_{in} \hat{K}^\dagger(q_1, p_2) }{ \mathrm{Pr}(q_1, p_2) },
+\tag{A5}
+\]
+
+where \(\mathrm{Pr}(q_1, p_2) = \mathrm{tr}( \hat{K}(q_1, p_2) \rho_{in} \hat{K}^\dagger(q_1, p_2) )\).
+
+Up to normalization, the output state of the gate teleportation scheme becomes
+
+\[
+\rho_{out} \propto \hat{K}(q_1, p_2) \rho_{in} \hat{K}^\dagger(q_1, p_2)
+\]
+\[
+= \hat{D}_3(-\mu_+) \left( \sum_{m, n} \langle m|_1 \rho_{in} |n \rangle_1 |m\rangle_3 \langle n|_3 \right) \hat{D}_3(\mu_+).
+\tag{A6}
+\]
+
+## Appendix B: Recovery operator
+
+**Lemma 7** When a displacement operator \(\hat{D}_j(\mu)\) evolves in the Heisenberg picture under a linear gate \(\hat{W}_{j,k}^\dagger\), it transforms into a composition of two displacements.
+
+Herein, we prove that when a gate \(\hat{W}_{j,k} = e^{-i \hat{H}_{j,k} t}\) is linear, then \(\hat{W}_{j,k} \hat{D}_j(\mu) \hat{W}_{j,k}^\dagger\) remains a product of displacement operators on the \(j\)-th and \(k\)-th modes. To be succinct, we define the operators \(\hat{O}_j^{(0)} := \hat{I}_j, \hat{O}_j^{(1)} := \hat{q}_j, \hat{O}_j^{(2)} := \hat{p}_j\) on the \(j\)-th mode. Consider a Hamiltonian \(\hat{H}_{j,k}\) of the form
+
+\[
+\hat{H}_{j,k} = \sum_{a,b=0}^2 c_{ab} \hat{O}_j^{(a)} \otimes \hat{O}_k^{(b)},
+\tag{B1}
+\]
+
+where \(c_{ab} \in \mathbb{R}, \forall a, b \in \{0,1,2\}\), which is a linear combination of \(\{\hat{I}_j, \hat{q}_j, \hat{p}_j, \hat{q}_k, \hat{p}_k, \hat{q}_j\hat{q}_k, \hat{q}_j\hat{p}_k, \hat{p}_j\hat{q}_k, \hat{p}_j\hat{p}_k\}\).
+
+Recall that the displacement operator \(\hat{D}_j(\alpha) = e^{i\sqrt{2} \left( \mathrm{Im}\{\alpha\} \hat{q}_j + \mathrm{Re}\{\alpha\} \hat{p}_j \right) }\). We denote \(\hat{D}_j(\alpha) = e^{-i\hat{G}_j t}\), where \(\hat{G}_j = -t^{-1} \sqrt{2} ( \mathrm{Im}\{\alpha\} \hat{q}_j + \mathrm{Re}\{\alpha\} \hat{p}_j )\).
+
+Now consider the following identity for matrices
+
+\[
+e^X Y e^{-X} = Y + [X, Y] + \frac{1}{2!} [X, [X, Y]] + \frac{1}{3!} [X, [X, [X, Y]]] + \cdots.
+\tag{B2}
+\]
+
+For our case, we take \(X = -i \hat{H}_{j,k} t\) and \(Y = \sum_{m=0}^{\infty} \frac{(-i \hat{G}_j t)^m}{m!}\). Then, the recovery operator can be expressed as
+
+\[
+e^X Y e^{-X} = e^X \sum_{m=0}^\infty \frac{(-i \hat{G}_j t)^m}{m!} e^{-X}
+\tag{B3}
+\]
+\[
+= \sum_{m=0}^\infty \frac{(-it)^m}{m!} e^X \hat{G}_j^m e^{-X}
+\tag{B4}
+\]
+\[
+= \sum_{m=0}^\infty \frac{(-it)^m}{m!} ( e^X \hat{G}_j e^{-X} )^m
+\tag{B5}
+\]
+\[
+= \sum_{m=0}^\infty \frac{ ( -i e^X \hat{G}_j e^{-X} t )^m }{ m! }
+\tag{B6}
+\]
+\[
+= \sum_{m=0}^\infty \frac{ ( -i \hat{H}^{\prime} t )^m }{ m! }.
+\tag{B7}
+\]
+
+
+where $\hat{H}' = e^{\hat{X}}\hat{G}_j e^{-\hat{X}}$ is the effective Hamiltonian.
+
+Next, we show that $\hat{H}'$ is a linear combination of $\{\hat{q}_j, \hat{p}_j, \hat{q}_k, \hat{p}_k\}$. We expand this Hamiltonian as
+
+$$\hat{H}' = \hat{G}_j + (-it)[\hat{H}_{j,k}, \hat{G}_j] + \frac{(-it)^2}{2!}[\hat{H}_{j,k},[\hat{H}_{j,k},\hat{G}_j]] + \frac{(-it)^3}{3!}[\hat{H}_{j,k},[\hat{H}_{j,k},[\hat{H}_{j,k},\hat{G}_j]]] + \cdots. \tag{B8}$$
+
+Since $\hat{G}_j$ is a linear combination of $\hat{q}_j$ and $\hat{p}_j$, we can use the commutation relations between these quadratures to deduce that the commutator $[\hat{H}_{j,k}, \hat{G}_j]$ is a linear combination of $\hat{q}_k, \hat{p}_k$ and also $\hat{I}_k$ with pure imaginary coefficients. This makes $(-it)[\hat{H}_{j,k}, \hat{G}_j]$ a real coefficient linear combination.
+
+\[
+\begin{aligned}
+(-it)[\hat{H}_{j,k}, \hat{G}_j] 
+&= (-it) \left[\sum_{a,b=0}^2 c_{ab} \hat{O}_j^{(a)} \otimes \hat{O}_k^{(b)}, -t^{-1}\sqrt{2}(\text{Im}\{\alpha\}\hat{q}_j + \text{Re}\{\alpha\}\hat{p}_j)\right] \\
+&= (i\sqrt{2}) \sum_{a,b=0}^2 c_{ab} \left[\hat{O}_j^{(a)}, (\text{Im}\{\alpha\}\hat{q}_j + \text{Re}\{\alpha\}\hat{p}_j)\right] \otimes \hat{O}_k^{(b)} \\
+&= (i\sqrt{2}) \sum_{a,b=0}^2 c_{ab} \left(\text{Im}\{\alpha\}[\hat{O}_j^{(a)}, \hat{q}_j] + \text{Re}\{\alpha\}[\hat{O}_j^{(a)}, \hat{p}_j]\right) \otimes \hat{O}_k^{(b)} \\
+&= (i\sqrt{2}) \sum_{b=0}^2 (c_{2b}\text{Im}\{\alpha\}[\hat{O}_j^{(2)}, \hat{q}_j] + c_{1b}\text{Re}\{\alpha\}[\hat{O}_j^{(1)}, \hat{p}_j]) \otimes \hat{O}_k^{(b)} \\
+&= (i\sqrt{2}) \sum_{b=0}^2 (c_{2b}\text{Im}\{\alpha\} [\hat{p}_j,\hat{q}_j] + c_{1b}\text{Re}\{\alpha\} [\hat{q}_j,\hat{p}_j]) \otimes \hat{O}_k^{(b)} \\
+&= \sqrt{2} \sum_{b=0}^2 (c_{2b}\text{Im}\{\alpha\} - c_{1b}\text{Re}\{\alpha\})\hat{I}_j \otimes \hat{O}_k^{(b)} \\
+&= \sum_{b=0}^2 \text{Re}\{\alpha\beta_b\} \hat{I}_j \otimes \hat{O}_k^{(b)} \\
+&= \text{Re}\{\alpha\beta_0\}\hat{I}_j \otimes \hat{O}_k^{(0)} + \hat{G}_k',
+\end{aligned}
+\tag{B9}
+\]
+where $\beta_b = -\sqrt{2}(c_{1b} + ic_{2b})$ and $\hat{G}_k' = \sum_{b=1}^2 \text{Re}\{\alpha\beta_b\}\hat{I}_j \otimes \hat{O}_k^{(b)}$. Note that the term $\hat{I}_j \otimes \hat{I}_k$ will not affect higher order commutators, $[\hat{H}_{j,k}, \hat{I}_j\otimes\hat{I}_k]=0$. Also, the gate $e^{-i\hat{I}_j\otimes\hat{I}_k \tau}$ for $\tau\in \mathbb{R}$ contributes only a global phase. Thus, we can ignore this term.
+
+Since $\hat{G}_k'$ is expressed as a displacement operator on $k$-th mode, the higher order term $(-it)^2[\hat{H}_{j,k},[\hat{H}_{j,k},\hat{G}_j]]$ is a linear combination of $\{\hat{q}_j,\hat{p}_j\}$ again.
+
+\[
+\begin{aligned}
+(-it)^2[\hat{H}_{j,k},[\hat{H}_{j,k},\hat{G}_j]]
+&= (-it)[\hat{H}_{j,k},\hat{G}_k'] \tag{B10}\\
+&= (-it)\left[\sum_{a,b=0}^2 c_{ab}\hat{O}_j^{(a)}\otimes \hat{O}_k^{(b)}, \sum_{d=1}^2 \text{Re}\{\alpha\beta_d\}\hat{I}_j \otimes \hat{O}_k^{(d)}\right] \tag{B11}\\
+&= (-it) \sum_{a,b=0}^2 \sum_{d=1}^2 c_{ab} \text{Re}\{\alpha\beta_d\} \hat{O}_j^{(a)} \otimes [\hat{O}_k^{(b)}, \hat{O}_k^{(d)}] \tag{B12}\\
+&= t \sum_{a=0}^2 (c_{a1} \text{Re}\{\alpha\beta_2\} - c_{a2} \text{Re}\{\alpha\beta_1\}) \hat{O}_j^{(a)}\otimes \hat{I}_k. \tag{B13}
+\end{aligned}
+\]
+
+Iterating this argument, it is clear that $\hat{H}'$ is a linear combination of $\{\hat{q}_j, \hat{p}_j, \hat{q}_k, \hat{p}_k\}$. Hence, the Hamiltonian $\hat{H}'$ can be expressed as $\hat{H}' = \hat{H}_j' + \hat{H}_k'$, where $\hat{H}_j'$ and $\hat{H}_k'$ are linear combinations of $\{\hat{q}_j, \hat{p}_j\}$ and $\{\hat{q}_k, \hat{p}_k\}$, respectively. Thus, the Hamiltonian $\hat{H}'$ corresponds to displacement operators $\hat{D}_j(\alpha_j) \otimes \hat{D}_k(\alpha_k)$ for some $\alpha_j, \alpha_k \in \mathbb{C}$.
+
+Let $\hat{C}:=(\hat{q}_j,\hat{p}_j,\hat{q}_k,\hat{p}_k)^T$ be a column vector of the quadratures. A real linear combination of $\{\hat{q}_j,\hat{p}_j,\hat{q}_k,\hat{p}_k\}$ can be written as $\mathbf{R}\hat{C}$ for some $4\times 1$ real row vector $\mathbf{R}$. For a linear operator $\hat{O}_{\text{lin}} = \mathbf{R}\hat{C}$ for some $\mathbf{R}$, the mapping $L: \hat{O}_{\text{lin}} \mapsto (-it)[\hat{H}_{j,k},\hat{O}_{\text{lin}}]$ is also a real linear transformation. Thus $(-it)[\hat{H}_{j,k},\hat{O}_{\text{lin}}] = \mathbf{R} \mathbf{S} \hat{C}$ for some real ...
+
+matrix $\mathbf{S}$. Thus, the operator $L^{\circ n}$, which applies this linear transformation $n$ times, remains a linear transform, and $L^{\circ n} : \mathbf{R}\hat{C} \mapsto \mathbf{R} \mathbf{S}^n \hat{C}$.
+
+Let $\hat{G}_j = \mathbf{R}\hat{C}$. Then, the Hamiltonian in Eq. (B8) can be determined as:
+
+\[
+\hat{H}' = \mathbf{R}\hat{C} + \mathbf{R}\mathbf{S}\hat{C} + \mathbf{R} \frac{\mathbf{S}^2}{2!}\hat{C} + \mathbf{R} \frac{\mathbf{S}^3}{3!}\hat{C} + \cdots \tag{B14}
+\]
+
+\[
+= \mathbf{R}e^{\mathbf{S}}\hat{C}. \tag{B15}
+\]
+
+Since the Hamiltonian $\hat{H}' = \mathbf{R}e^{\mathbf{S}}\hat{C}$ is still a real linear combination of $\{\hat{q}_j, \hat{p}_j, \hat{q}_k, \hat{p}_k\}$, the recovery operator $e^{-i\hat{H}' t}$
+can be expressed as
+
+\[
+e^{-i\hat{H}' t} = e^{-i(a\hat{q}_j + b\hat{p}_j)t} \otimes e^{-i(c\hat{q}_k + d\hat{p}_k)t} \tag{B16}
+\]
+
+\[
+= \hat{D}_j\left(-\frac{b+ia}{\sqrt{2}}\right) \otimes \hat{D}_k\left(-\frac{d+ic}{\sqrt{2}}\right)  \tag{B17}
+\]
+
+for certain $a, b, c, d \in \mathbb{R}$.
+
+## Appendix C: Recovery operator of a gate teleportation with beam splitter
+
+In this context, we demonstrate that when a displacement operator $\hat{D}_j(\mu)$ evolves in the Heisenberg picture under a balanced beam splitter $\hat{B}^\dagger_{j,k}$, denoted as $\hat{B}_{j,k} \hat{D}_j(\mu)\hat{B}^\dagger_{j,k}$, the resulting product of displacement operators on the $j$-th and $k$-th modes can be directly inferred from the input.
+Recall that $\gamma_{j,k} = \mathrm{tr} \left( \rho (\hat{x}^T \hat{x})_{j,k} \right)$ and a Gaussian channel $\mathcal{G}^{\mathbf{M},\mathbf{N}} : \gamma \mapsto \mathbf{M} \gamma \mathbf{M}^T + \mathbf{N}$. Thus a Gaussian channel $\mathcal{G}^{\mathbf{M},0}$
+can be expressed as
+
+\[
+\mathcal{G}^{\mathbf{M},0} : \mathrm{tr} \big( \rho (\hat{x}^T \hat{x})_{j,k} \big) \mapsto \mathrm{tr} \big( \rho ( \mathbf{M} \hat{x}^T (\mathbf{M} \hat{x}^T)^T )_{j,k} \big),  \tag{C2}
+\]
+
+Or equivalently, $\mathcal{G}^{\mathbf{M},0}$ can be simply expressed as $\mathcal{G}^{\mathbf{M},0} : \hat{x}^T \rightarrow \mathbf{M} \hat{x}^T$.
+For a beam splitter $\hat{B}_{j,k}^{\dagger}$, the corresponding Gaussian channel is $\mathcal{G}^{\mathbf{B}^{-1},0}_{j,k}$, i.e.
+
+\[
+(\hat{q}_j, \hat{p}_j, \hat{q}_k, \hat{p}_k)^T \mapsto \mathbf{B}_{j,k}^T(\hat{q}_j, \hat{p}_j, \hat{q}_k, \hat{p}_k)^T \tag{C3}
+\]
+
+\[
+= \frac{1}{\sqrt{2}} (\hat{q}_j - \hat{q}_k, \hat{p}_j - \hat{p}_k, \hat{q}_j + \hat{q}_k, \hat{p}_j + \hat{p}_k)^T. \tag{C4}
+\]
+
+Therefore, the evolution of a displacement operator $\hat{D}_j(\mu)$ becomes
+
+\[
+e^{i\sqrt{2} (\mathrm{Im}\{\mu\} \hat{q}_j + \mathrm{Re}\{\mu\} \hat{p}_j)} \mapsto e^{i(\mathrm{Im}\{\mu\} (\hat{q}_j - \hat{q}_k) + \mathrm{Re}\{\mu\} (\hat{p}_j - \hat{p}_k))} \tag{C5}
+\]
+
+\[
+\hat{D}_j(\mu) \mapsto \hat{D}_j\left( \frac{\mu}{\sqrt{2}} \right) \otimes \hat{D}_k\left( -\frac{\mu}{\sqrt{2}} \right). \tag{C6}
+\]
+
+## Appendix D: Proof of Lemma 2
+
+Let $\hat{W} = \sum_{m', n' = 0}^\infty \alpha_{m' n'} |m' \rangle \langle n'|$ be an expansion of $\hat{W}$ in the number basis. By a direct calculation, one can show that
+
+\[
+\hat{I} \otimes \hat{W} \sum_{n'=0}^\infty |n'\rangle |n'\rangle
+= \hat{W}^T \otimes \hat{I} \sum_{n'=0}^\infty |n'\rangle |n'\rangle.
+\]
+
+Thus, the assertion holds.
+
+\[
+\hat{W}_{j,k_1} = \sum_{n',m',n'',m''=0}^{\infty} \alpha_{n' m' n'' m''} |m'\rangle_j \langle n'| \otimes |m''\rangle_{k_1} \langle n''|
+\]
+
+be an expansion of \(\hat{W}\) in the number basis. Then
+
+\[
+\hat{W}_{i,k_1}^T = \sum_{n',m',n'',m''=0}^{\infty} \alpha_{n' m' n'' m''} |n'\rangle_i \langle m'| \otimes |m''\rangle_{k_1} \langle n''|.
+\]
+
+By a direct calculation, one can demonstrate that
+
+\[
+\hat{I}_i \otimes \hat{W}_{j,k_1} \sum_{n'=0}^{\infty} |n'\rangle_i |n'\rangle_j \otimes |\psi\rangle_{k_1,\ldots,k_n} = \hat{W}_{i,k_1}^T \otimes \hat{I}_j \sum_{n'=0}^{\infty} |n'\rangle_i |n'\rangle_j \otimes |\psi\rangle_{k_1,\ldots,k_n}.
+\]
+
+---
+
+In this section, we explicitly derive \( N^{\mathrm{polar}}(r) \) in Theorem 5. We have shown in Eq.(15) that
+
+\[
+\mathcal{G}_{1,2}^{N^{\mathrm{polar}}(r)} = \mathcal{G}_{1,2}^{\sigma^2 Z_2 BZ_2 S(-r)S^T(-r)Z_2 B^T Z_2}.
+\]
+
+Therefore,
+\[
+N^{\mathrm{polar}}(r) = \sigma^2 Z_2 BZ_2 S(-r)S^T(-r)Z_2 B^T Z_2
+\]
+\[
+= \frac{\sigma^2}{2} 
+\begin{bmatrix}
+I & 0 \\ 0 & Z 
+\end{bmatrix}
+\begin{bmatrix}
+I & I \\ -I & I 
+\end{bmatrix}
+\begin{bmatrix}
+I & 0 \\ 0 & Z 
+\end{bmatrix}
+\begin{bmatrix}
+\cosh(-r)I & \sinh(-r)Z \\ \sinh(-r)Z & \cosh(-r)I
+\end{bmatrix}^2
+\begin{bmatrix}
+I & 0 \\ 0 & Z 
+\end{bmatrix}
+\begin{bmatrix}
+I & -I \\ I & I
+\end{bmatrix}
+\begin{bmatrix}
+I & 0 \\ 0 & Z
+\end{bmatrix}
+\]
+\[
+= \frac{\sigma^2}{2}
+\begin{bmatrix}
+I & Z \\ -Z & I 
+\end{bmatrix}
+\begin{bmatrix}
+\cosh(-r)I & \sinh(-r)Z \\ \sinh(-r)Z & \cosh(-r)I
+\end{bmatrix}^2
+\begin{bmatrix}
+I & -Z \\ Z & I 
+\end{bmatrix}
+\]
+\[
+= \frac{\sigma^2}{2}
+\begin{bmatrix}
+I & Z \\ -Z & I
+\end{bmatrix}
+\begin{bmatrix}
+(\cosh^2(-r) + \sinh^2(-r))I & 2 \cosh(-r)\sinh(-r) Z \\
+2 \cosh(-r)\sinh(-r) Z & (\cosh^2(-r) + \sinh^2(-r))I
+\end{bmatrix}
+\begin{bmatrix}
+I & -Z \\ Z & I
+\end{bmatrix}
+\]
+\[
+= \frac{\sigma^2}{2}
+\begin{bmatrix}
+(\cosh(-r) + \sinh(-r))^2 I & (\cosh(-r) + \sinh(-r))^2 Z \\
+-(\cosh(-r) - \sinh(-r))^2 Z & (\cosh(-r) - \sinh(-r))^2 I
+\end{bmatrix}
+\begin{bmatrix}
+I & -Z \\ Z & I
+\end{bmatrix}
+\]
+\[
+= \frac{\sigma^2}{2}
+\begin{bmatrix}
+e^{-2r}I & e^{-2r}Z \\
+-e^{2r}Z & e^{2r}I
+\end{bmatrix}
+\begin{bmatrix}
+I & -Z \\ Z & I
+\end{bmatrix}
+\]
+\[
+= \sigma^2
+\begin{bmatrix}
+e^{-2r} I & 0 \\
+0 & e^{2r} I
+\end{bmatrix}.
+\tag{F1}
+\]
+
+---
+
+Let \( |\Psi_0\rangle := |\zeta_r\rangle_{i,j} \otimes |\psi\rangle_{k_1,\ldots,k_n} \), and \( \rho_0 := |\Psi_0\rangle \langle\Psi_0| \). Now, define
+
+\[
+|\Psi_L\rangle := (\hat{I}_i \otimes \hat{W}_{j,k_1}) |\Psi_0\rangle,
+\]
+\[
+|\Psi_R\rangle := (\hat{W}_{i,k_1}^T \otimes \hat{I}_j) |\Psi_0\rangle, \tag{G1}
+\]
+
+and let \( \rho_L = |\Psi_L\rangle \langle\Psi_L| \), \( \rho_R = |\Psi_R\rangle \langle\Psi_R| \). Hence, the fidelity between \( \rho_L \) and \( \rho_R \) is
+
+\[
+= \left| \operatorname{tr}(\rho_0 \hat{V}) \right|^2. \tag{G2}
+\]
+
+1. 
+\[
+|\psi\rangle_{k_1,...,k_n} = \sum_{n_{k_1},...,n_{k_n}=0}^{\infty} \beta_{n_{k_1},...,n_{k_n}} |n_{k_1},\ldots,n_{k_n}\rangle
+\]
+
+2. 
+be an expansion of \(\hat{W}\) in the number basis. Then \(\hat{V}\) can be explicitly expanded in the number basis
+
+3. 
+Suppose that
+
+4. 
+where \(\beta_{n_{k_1},\ldots,n_{k_n}} \in \mathbb{C}\). Therefore,
+
+5. 
+\[
+\hat{W}_{j,k_1} = \sum_{n',m',n'',m''=0}^{\infty} \alpha_{n' m' n'' m''} |m'\rangle_j \langle n'| \otimes |m''\rangle_{k_1} \langle n''|
+\]
+
+6. 
+\[
+\hat{V} = \sum_{n',m',n'',m'',n''',m''',n''''=0}^{\infty} \alpha_{n' m' n'' m_{k_1}} \alpha_{n''' m''' n'''' n''} |n'\rangle_i\langle m'| \otimes |m'''\rangle_j\langle n''| \otimes |m_{k_1}\rangle_{k_1} \langle n''''|
+\]
+
+7. 
+\[
+\text{tr}\left(\rho_0 \hat{V}\right) = \sum_{n',m',n'',m'',n_{k_1},m_{k_1},\ldots,n_{k_n},m_{k_n}=0}^{\infty} \frac{\tanh^{m'+n'}(r)}{\cosh^2(r)} \alpha_{n' m' n'' n_{k_1}} \alpha_{m' n' m_{k_1} n''} \beta_{m_{k_1},...,n_{k_n}} \beta^*_{n_{k_1},...,n_{k_n}}. \tag{G3}
+\]
+
+8. 
+where \(\hat{V} = \left(\hat{W}^{T}_{i,k_1} \otimes \hat{I}_j\right)^\dagger \left(\hat{I}_i \otimes \hat{W}_{j,k_1}\right)\). Let
+
+9.
+\[
+\frac{\tanh^{m'+n'}(r)}{\cosh^2(r)} \alpha_{n' m' n'' n_{k_1}} \alpha_{m' n' m_{k_1} n''} \beta_{m_{k_1},...,n_{k_n}} \beta^*_{n_{k_1},...,n_{k_n}}. \tag{G3}
+\]
