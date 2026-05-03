@@ -56,8 +56,14 @@ Categorize each as:
   same error
 - **AMBIGUOUS** — partial overlap; reasonable people could disagree
 
-Total TPs across the four conditions: 5 + 4 + 5 + 7 = 21 to audit.
-If any are spurious, recompute the affected aggregate.
+Total TPs across the four conditions on the now-uniform-anonymization n=20:
+4 + 5 + 4 + 6 = 19 to audit. If any are spurious, recompute the
+affected aggregate.
+
+Per the evaluator audit, paper_014 GD is flagged as **disputed** in
+`per_paper_scores.csv` (column `disputed`). The aggregate is reported
+two ways: `GD_strict` excludes it (pass@1 = 25%), `GD_standard`
+includes it (pass@1 = 30%).
 
 ## Step 3 — Discordant pair audit (B3 vs GD)
 
