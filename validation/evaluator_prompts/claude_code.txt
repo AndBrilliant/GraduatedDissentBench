@@ -1,0 +1,29 @@
+cd [REPO_PATH]
+Read validation/README.md and validation/VALIDATION.md in full before
+taking any action. Then execute the protocol step by step:
+
+1. Run validation/scoring/score_outputs.py and confirm the printed
+   aggregates match the README's reported table exactly. Note the
+   anonymization stratification.
+2. Audit every true positive (21 across all conditions) by cross-
+   referencing raw_outputs/<paper>/<COND>.json against
+   ground_truth/spot_ground_truth.csv and scoring/judge_traces.jsonl.
+3. Audit every B3-vs-GD discordant pair (3 favoring GD, 1 favoring B3).
+4. Diff the four prompt files in prompts/ and confirm conditions are
+   correctly differentiated; spot-check raw_outputs to confirm stored
+   protocol traces match the prompts.
+5. Spot-check at least 5 ground-truth rows against
+   https://huggingface.co/datasets/amphora/SPOT-MetaData.
+6. Investigate the anonymization confound — compare paper_category
+   distributions in the two subsets and assess whether the detection-
+   rate gap is driven by category mix, by anonymization itself, or by
+   sampling noise.
+7. Write your report to validation/reports/claude_code_report.md using
+   the template at the bottom of validation/README.md.
+
+Be thorough and adversarial — assume the reported results might be wrong
+and try to prove it. End your report with one of: CONFIRMED, ISSUES
+FOUND, or CRITICAL PROBLEM.
+
+Do not run any new model API calls. Do not modify files outside
+validation/reports/. Do not commit or push.

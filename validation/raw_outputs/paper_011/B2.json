@@ -1,0 +1,140 @@
+{
+  "condition": "B2",
+  "paper_id": "paper_011",
+  "verdict": "flagged",
+  "confidence": 0.97,
+  "reasoning": "The manuscript’s main theorem is not methodologically supportable from the proof as written. Multiple core steps are either unproven, internally inconsistent, or invoke incorrect claims in ways that directly affect the kernelization argument and the equivalence proof. In particular, the proof of equivalence after deleting vertices from C2 is incomplete and appears to rely on unsupported structural assertions about the retained set inducing a linear forest and about the existence of safe rerouting moves. There are also serious numbering/cross-reference errors and missing claims, but more importantly several pivotal combinatorial arguments are not valid as stated.",
+  "findings": [
+    {
+      "finding": "Claim 5 is false as stated for token jumping on arbitrary linear forests: not every pair of size-k independent sets in a linear forest are always reconfigurable. For example, in a graph of k disjoint edges, the two maximum independent sets choosing opposite endpoints in every edge are disconnected under token jumping because every unoccupied vertex is adjacent to an occupied one.",
+      "severity": "RETRACTION-WORTHY",
+      "justification": "This is a central structural lemma later used to conclude YES on the reduced instance once the relevant induced subgraph is said to be a linear forest. If false, the claimed universal reconfigurability inside the retained structure collapses, and the main correctness argument for the kernel does not go through."
+    },
+    {
+      "finding": "The proof later says 'Since G[J_s ∪ J_t ∪ J_m] is a linear forest, by Claim 4 the answer ... is YES.' But Claim 4 does not state reconfigurability in linear forests; Claim 5 does. More importantly, no valid proof is given that G[J_s ∪ J_t ∪ J_m] is a linear forest. J_s and J_t are explicitly 'not necessarily independent,' and unions across different X-pairs can contain the boundary vertices y', y'' from X, which may create arbitrary adjacencies through G[X].",
+      "severity": "RETRACTION-WORTHY",
+      "justification": "This is the bridge from existence of certain kept vertices to correctness of the reduced instance. If the retained subgraph is not guaranteed to be a linear forest, the concluding YES argument is unsupported. This directly affects the main theorem."
+    },
+    {
+      "finding": "Claim 7 (equivalence of G and G') is incomplete and appears incorrect as written. The argument only sketches how to move tokens from I_s to J_s ∪ J_m or from I_t to J_t ∪ J_m when a deleted vertex is used, but it never rigorously constructs a full reconfiguration sequence in G' from I_s to I_t. It also depends on the unsupported statement that the union J_s ∪ J_t ∪ J_m forms a linear forest and on the false Claim 5.",
+      "severity": "RETRACTION-WORTHY",
+      "justification": "Kernel correctness requires a full iff equivalence proof. If the reduction’s correctness is not established, the central conclusion that a linear kernel exists is not supported."
+    },
+    {
+      "finding": "Claim 3’s proof is not rigorous enough to support the asserted non-adjacency between interior vertices from distinct X-pairs. The topological argument assumes regions bounded by C1 and C2 are either disjoint or nested because the cycles intersect in at most one vertex; this is not justified in the presence of shared vertices/edges or non-simple embeddings, and the final step 'z1 lies inside C1, z2 lies outside it. Thus z1z2 ∉ E(G)' is not generally valid without a Jordan-curve-type argument excluding edges crossing the boundary except at endpoints.",
+      "severity": "MAJOR-REVISION",
+      "justification": "This claim underpins later decomposition arguments treating contributions from different X-pairs as independent/disjoint. If false or insufficiently justified, several size bounds and the construction of independent sets inside the pair classes may fail, potentially changing conclusions."
+    },
+    {
+      "finding": "The proof of Claim 2 is underspecified and likely incomplete. The correspondence between sets Y with |Y|≥3 and faces of a plane graph on X is only sketched; it is not shown that distinct Y yield distinct faces, nor that the construction preserves planarity and simplicity as needed for the face count. The bound '|C_Y| ≤ 2' from K3,3-freeness also needs the vertices of Y to contain three distinct vertices and the chosen vertices in C_Y to have no extra identifications, which is not carefully handled.",
+      "severity": "MAJOR-REVISION",
+      "justification": "The O(k) bound on C3 is a core part of the linear kernel size analysis. If this face-counting argument fails, the size bound may not hold, though a repair may still be possible with a more careful planar-structure proof."
+    },
+    {
+      "finding": "Claim 1’s 'trivially YES' argument is not fully valid as written. It says for each v in I_s with a neighbor w_v in I_m, move the token on v to such w_v, then move remaining tokens greedily to unoccupied vertices of I_m. But token jumping does not require adjacency, and the argument instead needs every target vertex in I_m to be nonadjacent to all currently occupied vertices at the moment of the move. This is not shown carefully, especially when some occupied vertices remain in I_s and vertices in I_m may have one neighbor in X.",
+      "severity": "MAJOR-REVISION",
+      "justification": "This is used to assume |C1|<4k. If the YES shortcut is wrong, the subsequent case split is unsound. The conclusion might still be salvageable with a corrected argument, but as stated it is not reliable."
+    },
+    {
+      "finding": "There is a major logical gap around the definition and use of J_s. The construction says to include vertices from classes in P^1 'up to the point (if it occurs) where J_s contains an independent set of size k' and otherwise continue. This stopping rule is ambiguous and non-algorithmic unless accompanied by an explicit ordering and proof that the stated size bounds and later correctness arguments are independent of the order chosen.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Kernelization requires a well-defined polynomial-time reduction. An ambiguous construction threatens both implementability and correctness, though this may be repairable by specifying an ordering and proof."
+    },
+    {
+      "finding": "The proof of the size bound for J_s relies on 'Since the size of such a set is at most k (by construction) ... ≤ 2k'. But the stopping condition says stop when an independent set of size k occurs, so if it does not occur the maximum size is at most k-1, whereas if it does occur the process terminates at some prefix depending on order. The argument conflates these cases and does not cleanly prove the stated bound under all branches.",
+      "severity": "MAJOR-REVISION",
+      "justification": "This affects the explicit linear kernel-size bound and the soundness of the construction. It may be fixable, but the current proof is not methodologically complete."
+    },
+    {
+      "finding": "The induction in Claim 7 over Y_1,...,Y_a is not justified. The assumption 'no token appears on the closed neighborhood of z_{i-1}'' ' is asserted without proof, and the proposed moves may conflict with still-occupied vertices in X or in other pair classes. The argument also presumes the chosen vertices z_i', z_i'' from J_m can serve as reusable buffers in a controlled way, but J_m is only known to be independent, not to satisfy the additional neighborhood-clearing invariant.",
+      "severity": "RETRACTION-WORTHY",
+      "justification": "This is a key constructive step in rerouting any sequence that uses deleted vertices into one that stays inside the kernel. If this rerouting fails, the equivalence proof fails and the kernel theorem is unsupported."
+    },
+    {
+      "finding": "The manuscript contains severe presentation/consistency problems that obscure correctness: missing Claim 6 (yet used later), duplicated introductory sentences, a proof block inserted before the theorem is finished, and cross-reference mistakes ('by Claim 4' where Claim 5 is intended).",
+      "severity": "MINOR",
+      "justification": "These issues alone do not invalidate results, but they substantially hinder verification and suggest the proof has not been carefully checked."
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 4,
+    "MAJOR-REVISION": 5,
+    "MINOR": 1
+  },
+  "raw_review": {
+    "verdict": "flagged",
+    "confidence": 0.97,
+    "reasoning": "The manuscript’s main theorem is not methodologically supportable from the proof as written. Multiple core steps are either unproven, internally inconsistent, or invoke incorrect claims in ways that directly affect the kernelization argument and the equivalence proof. In particular, the proof of equivalence after deleting vertices from C2 is incomplete and appears to rely on unsupported structural assertions about the retained set inducing a linear forest and about the existence of safe rerouting moves. There are also serious numbering/cross-reference errors and missing claims, but more importantly several pivotal combinatorial arguments are not valid as stated.",
+    "findings": [
+      {
+        "finding": "Claim 5 is false as stated for token jumping on arbitrary linear forests: not every pair of size-k independent sets in a linear forest are always reconfigurable. For example, in a graph of k disjoint edges, the two maximum independent sets choosing opposite endpoints in every edge are disconnected under token jumping because every unoccupied vertex is adjacent to an occupied one.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This is a central structural lemma later used to conclude YES on the reduced instance once the relevant induced subgraph is said to be a linear forest. If false, the claimed universal reconfigurability inside the retained structure collapses, and the main correctness argument for the kernel does not go through."
+      },
+      {
+        "finding": "The proof later says 'Since G[J_s ∪ J_t ∪ J_m] is a linear forest, by Claim 4 the answer ... is YES.' But Claim 4 does not state reconfigurability in linear forests; Claim 5 does. More importantly, no valid proof is given that G[J_s ∪ J_t ∪ J_m] is a linear forest. J_s and J_t are explicitly 'not necessarily independent,' and unions across different X-pairs can contain the boundary vertices y', y'' from X, which may create arbitrary adjacencies through G[X].",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This is the bridge from existence of certain kept vertices to correctness of the reduced instance. If the retained subgraph is not guaranteed to be a linear forest, the concluding YES argument is unsupported. This directly affects the main theorem."
+      },
+      {
+        "finding": "Claim 7 (equivalence of G and G') is incomplete and appears incorrect as written. The argument only sketches how to move tokens from I_s to J_s ∪ J_m or from I_t to J_t ∪ J_m when a deleted vertex is used, but it never rigorously constructs a full reconfiguration sequence in G' from I_s to I_t. It also depends on the unsupported statement that the union J_s ∪ J_t ∪ J_m forms a linear forest and on the false Claim 5.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "Kernel correctness requires a full iff equivalence proof. If the reduction’s correctness is not established, the central conclusion that a linear kernel exists is not supported."
+      },
+      {
+        "finding": "Claim 3’s proof is not rigorous enough to support the asserted non-adjacency between interior vertices from distinct X-pairs. The topological argument assumes regions bounded by C1 and C2 are either disjoint or nested because the cycles intersect in at most one vertex; this is not justified in the presence of shared vertices/edges or non-simple embeddings, and the final step 'z1 lies inside C1, z2 lies outside it. Thus z1z2 ∉ E(G)' is not generally valid without a Jordan-curve-type argument excluding edges crossing the boundary except at endpoints.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This claim underpins later decomposition arguments treating contributions from different X-pairs as independent/disjoint. If false or insufficiently justified, several size bounds and the construction of independent sets inside the pair classes may fail, potentially changing conclusions."
+      },
+      {
+        "finding": "The proof of Claim 2 is underspecified and likely incomplete. The correspondence between sets Y with |Y|≥3 and faces of a plane graph on X is only sketched; it is not shown that distinct Y yield distinct faces, nor that the construction preserves planarity and simplicity as needed for the face count. The bound '|C_Y| ≤ 2' from K3,3-freeness also needs the vertices of Y to contain three distinct vertices and the chosen vertices in C_Y to have no extra identifications, which is not carefully handled.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The O(k) bound on C3 is a core part of the linear kernel size analysis. If this face-counting argument fails, the size bound may not hold, though a repair may still be possible with a more careful planar-structure proof."
+      },
+      {
+        "finding": "Claim 1’s 'trivially YES' argument is not fully valid as written. It says for each v in I_s with a neighbor w_v in I_m, move the token on v to such w_v, then move remaining tokens greedily to unoccupied vertices of I_m. But token jumping does not require adjacency, and the argument instead needs every target vertex in I_m to be nonadjacent to all currently occupied vertices at the moment of the move. This is not shown carefully, especially when some occupied vertices remain in I_s and vertices in I_m may have one neighbor in X.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is used to assume |C1|<4k. If the YES shortcut is wrong, the subsequent case split is unsound. The conclusion might still be salvageable with a corrected argument, but as stated it is not reliable."
+      },
+      {
+        "finding": "There is a major logical gap around the definition and use of J_s. The construction says to include vertices from classes in P^1 'up to the point (if it occurs) where J_s contains an independent set of size k' and otherwise continue. This stopping rule is ambiguous and non-algorithmic unless accompanied by an explicit ordering and proof that the stated size bounds and later correctness arguments are independent of the order chosen.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Kernelization requires a well-defined polynomial-time reduction. An ambiguous construction threatens both implementability and correctness, though this may be repairable by specifying an ordering and proof."
+      },
+      {
+        "finding": "The proof of the size bound for J_s relies on 'Since the size of such a set is at most k (by construction) ... ≤ 2k'. But the stopping condition says stop when an independent set of size k occurs, so if it does not occur the maximum size is at most k-1, whereas if it does occur the process terminates at some prefix depending on order. The argument conflates these cases and does not cleanly prove the stated bound under all branches.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This affects the explicit linear kernel-size bound and the soundness of the construction. It may be fixable, but the current proof is not methodologically complete."
+      },
+      {
+        "finding": "The induction in Claim 7 over Y_1,...,Y_a is not justified. The assumption 'no token appears on the closed neighborhood of z_{i-1}'' ' is asserted without proof, and the proposed moves may conflict with still-occupied vertices in X or in other pair classes. The argument also presumes the chosen vertices z_i', z_i'' from J_m can serve as reusable buffers in a controlled way, but J_m is only known to be independent, not to satisfy the additional neighborhood-clearing invariant.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This is a key constructive step in rerouting any sequence that uses deleted vertices into one that stays inside the kernel. If this rerouting fails, the equivalence proof fails and the kernel theorem is unsupported."
+      },
+      {
+        "finding": "The manuscript contains severe presentation/consistency problems that obscure correctness: missing Claim 6 (yet used later), duplicated introductory sentences, a proof block inserted before the theorem is finished, and cross-reference mistakes ('by Claim 4' where Claim 5 is intended).",
+        "severity": "MINOR",
+        "justification": "These issues alone do not invalidate results, but they substantially hinder verification and suggest the proof has not been carefully checked."
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 16501,
+    "duration_s": 32.66,
+    "n_api_calls": 1,
+    "cost_usd": 0.032,
+    "total_input_tokens": 6004,
+    "total_output_tokens": 1696,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 6004,
+        "output_tokens": 1696,
+        "cost_usd": 0.03197,
+        "duration_s": 32.66,
+        "label": "paper_011/b2/review"
+      }
+    ]
+  }
+}

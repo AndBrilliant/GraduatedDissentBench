@@ -1,0 +1,428 @@
+{
+  "condition": "GD",
+  "paper_id": "paper_015",
+  "verdict": "flagged",
+  "confidence": 0.87,
+  "reasoning": "Both reviewers converge on the same core weaknesses: the paper's central state-of-the-art claims rest on tiny metric gains (0.33-0.34 dB PSNR) over only 15 test scenes with no statistical significance testing, no uncertainty quantification, and insufficient architectural/experimental detail for reproducibility. The dataset split ambiguity, lack of baseline harmonization, and absence of a validation protocol compound these issues. While Reviewer B initially proposed upgrading some findings to RETRACTION-WORTHY during steelmanning, this is not warranted because no finding demonstrates that the results are definitively false or impossible—rather, the evidence is insufficiently rigorous to support the strength of the claims made. Reviewer A appropriately downgraded some of their own speculative concerns (overfitting risk, benchmark leakage) during steelmanning. The collective picture is of a paper that may describe a valid method but whose empirical evidence is too weak and underspecified to substantiate state-of-the-art claims, warranting major revision across multiple dimensions.",
+  "findings": [
+    {
+      "finding": "No statistical significance testing or uncertainty estimates for quantitative comparisons. Reported PSNR gains of ~0.34 dB over 15 test scenes could easily arise from random variation, scene-to-scene variability, or run-to-run differences. No confidence intervals, paired tests, or multi-seed evaluations are provided.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.92,
+      "justification": "Both reviewers independently flagged this as the most critical threat to the central SOTA claim. Reviewer B considered upgrading to RETRACTION-WORTHY but this is unwarranted: the absence of significance testing means the claim is unsubstantiated, not proven false. The results could survive once proper statistical analysis is conducted. This is the textbook definition of MAJOR-REVISION.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Critical architectural details are missing, preventing reproducibility. The numbers of local/global Transformer layers (M, N), window sizes, channel dimensions, number of attention heads, deformable convolution kernel sizes, offset parameterization, and exact DWFB/RDWFB/TDCAM configurations are unspecified. No code or pretrained models are provided.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers identified this independently and both maintained MAJOR-REVISION through steelmanning. The method cannot be independently verified or reproduced. While incomplete reporting does not prove the method is wrong, it prevents the scientific community from validating the claims.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Dataset split ambiguity and potential unfairness of baseline comparisons. The exact train/test split of the Kalantari dataset is not clearly specified, and it is unclear whether all baseline methods were evaluated on the identical test set. Different works use different splits (e.g., 64+10 vs 74+15). It is also unclear whether baselines were retrained under a common pipeline or whether published numbers were copied, and whether tonemapping/metric implementations are standardized.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers flagged this from complementary angles. Reviewer A emphasized baseline harmonization; Reviewer B emphasized the specific split ambiguity. If splits or evaluation protocols differ, the comparative table may not be valid. However, this can be resolved by clarification and potentially re-evaluation, making it MAJOR-REVISION rather than RETRACTION-WORTHY.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "No validation split or model selection protocol is described. With only 74 training scenes and 15 test scenes, and training for 6000 epochs, there is a risk of implicit test-set tuning. No early stopping rule, validation set, or model selection criterion is reported.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "Reviewer A flagged this and Reviewer B acknowledged it as a critical oversight during steelmanning. Reviewer A partially downgraded the overfitting-specific concern but maintained the validation protocol concern. There is no concrete evidence of data leakage, but the absence of any described safeguards on such a small benchmark is a meaningful methodological gap that could affect the reliability of reported results.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The efficiency/runtime comparison is not apples-to-apples. CPU-based homography time for DeepHDR is excluded while full GPU inference time is reported for the proposed method, creating an incomparable timing comparison.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.75,
+      "justification": "Reviewer A originally rated this MAJOR-REVISION but downgraded it during steelmanning, acknowledging that if efficiency is not a headline claim, this is a subsidiary concern. The core contribution is reconstruction quality, not speed. This is a valid criticism but does not threaten the central conclusions.",
+      "source": "prover_a",
+      "survived_steelman": false
+    },
+    {
+      "finding": "Evaluation limited to a single small benchmark (15 test scenes from Kalantari et al., 2017). Qualitative results on additional datasets lack ground truth and cannot support quantitative generalization claims.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Both reviewers noted this. Reviewer B upgraded from MINOR to MAJOR-REVISION during steelmanning, and Reviewer A had it as a component of the underpowered evaluation concern. While common in HDR imaging research, combined with the tiny metric gains and lack of significance testing, the single-benchmark evaluation materially weakens the evidence base for SOTA claims.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Ablation study is too coarse to isolate the source of improvements. Only complete component removals are tested; no analysis of local vs global transformers separately, positional encoding, number of stages, or sensitivity to hyperparameters like gradient loss weight λ_g.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.82,
+      "justification": "Both reviewers noted this (Reviewer A explicitly, Reviewer B via the λ_g concern). Both maintained it as MINOR or weak MAJOR through steelmanning. It weakens mechanistic understanding but does not overturn empirical results. Reviewer B's upgrade of λ_g sensitivity to MAJOR-REVISION is somewhat overstated given that the ablation does show gradient loss helps—the specific weight is a secondary concern.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Notation ambiguities and potential conceptual confusion: 'self-attention' is used to describe cross-image attention (Eq. 3), deformable convolution parameterization is unclear (Eq. 4), and DWFB weight sharing description is inconsistent with claimed spatial adaptivity.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Reviewer A flagged this; Reviewer B noted the DWFB ambiguity separately. These likely reflect imprecise writing rather than incorrect implementation, but they contribute to the reproducibility problem. Maintained as MINOR through steelmanning.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Qualitative generalization claims are overstated. Phrases like 'hallucinates complete textures' are used without objective validation or user studies for results on datasets without ground truth.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Reviewer A flagged this; maintained as MINOR through steelmanning. This is an interpretive/writing issue that does not affect the core benchmark results.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Causal mechanism claims are stronger than the evidence supports. The paper asserts CNN methods fail due to limited receptive fields and that transformers recover occluded content via distant matching, but no controlled experiments isolate these mechanisms from increased capacity or different inductive biases.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.83,
+      "justification": "Reviewer A flagged this; maintained as MINOR through steelmanning. Common in deep learning papers and does not change empirical findings.",
+      "source": "prover_a",
+      "survived_steelman": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 5,
+    "MINOR": 5
+  },
+  "protocol": {
+    "level": "L2",
+    "agreement": 0.72,
+    "snr": 1.866666666666667,
+    "theta_accept": 0.9,
+    "theta_noise": 0.15
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.84,
+    "reasoning": "The manuscript presents a plausible deep HDR architecture, but the methodological reporting is too incomplete to verify the claimed state-of-the-art performance, and several evaluation choices materially weaken the evidential basis for the conclusions. The most important concerns are not obvious fatal mathematical impossibilities, but they do affect whether the comparative claims are supportable: the paper omits essential experimental details needed for reproducibility and fair comparison, uses a very small benchmark with little discussion of variance/significance, and reports computational comparisons that are explicitly not apples-to-apples. In addition, multiple architectural descriptions are underspecified or internally ambiguous, preventing a reader from determining exactly what model was trained and compared. These issues warrant major revision rather than retraction because the core approach could still be valid, but the evidence as presented is not methodologically robust enough for strong SOTA claims.",
+    "findings": [
+      {
+        "finding": "The experimental methodology is insufficiently specified to permit reproducibility or independent verification of the main results. Critical details are missing for the proposed Transformer/deformable alignment and dynamic fusion blocks, including the numbers of local/global transformer layers (M, N), window sizes, tokenization strategy, channel dimensions, number of heads, deformable convolution kernel size and offset parameterization, exact architecture of the attention block in DWFB, number of RDWFB/TDCAM stages, and tonemapping function details used in training/evaluation.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, this requires revision because the central performance claims cannot be independently reproduced or fairly audited. It does not by itself prove the conclusions are false, but it prevents methodological verification."
+      },
+      {
+        "finding": "The comparative evaluation appears underpowered and lacks uncertainty estimates. The main benchmark uses only the 15-scene Kalantari test split, yet the paper reports small gains (e.g., 0.33–0.34 dB) as evidence of state-of-the-art superiority without confidence intervals, repeated runs, statistical testing, or per-scene variance.",
+        "severity": "MAJOR-REVISION",
+        "justification": "On such a small test set, modest metric gains may be within run-to-run or scene-to-scene variability. This could change the strength of the SOTA claim, though it does not automatically invalidate the method."
+      },
+      {
+        "finding": "The efficiency comparison is explicitly not fair across methods. The manuscript states that homography time for DeepHDR is excluded because it is CPU-based and assumes pre-aligned inputs, while inference time for the proposed method is reported on GPU over full images. This mixes incompatible accounting conventions and can bias the computational-budget conclusions.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the claim that the proposed runtime is competitive or acceptable relative to prior methods is not adequately supported and must be revised with a like-for-like timing protocol."
+      },
+      {
+        "finding": "The paper claims qualitative generalization/normalization on other datasets without ground truth, but this evidence is purely visual and includes language such as 'hallucinates complete textures' without any objective validation or user study. This overstates what can be concluded from those experiments.",
+        "severity": "MINOR",
+        "justification": "This mainly affects interpretation and wording rather than the core HDR reconstruction results on the benchmark dataset."
+      },
+      {
+        "finding": "The ablation study is too limited to isolate the source of gains in a complex model. Only coarse component removals are described; there is no analysis of the separate effects of local vs global transformers, positional encoding, number of alignment stages, dynamic weighting design choices, or sensitivity to the gradient-loss weight.",
+        "severity": "MINOR",
+        "justification": "This weakens mechanistic support for the proposed design but would not by itself overturn the empirical findings."
+      },
+      {
+        "finding": "The training setup raises concerns about overfitting and instability but is not sufficiently discussed. Training for 6000 epochs on only 74 training scenes with batch size 2 and random 256x256 crops may be acceptable in patch-based restoration, yet no validation protocol, early stopping rule, model selection criterion, or multiple-seed evaluation is reported.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, performance may depend strongly on a particular training run or implicit tuning on the test benchmark. This could alter reported superiority claims and should be addressed."
+      },
+      {
+        "finding": "The notation and module definitions contain ambiguities that obscure methodological correctness. For example, Equation (3) uses cross-image queries (reference) and keys/values (non-reference) but then calls the operator 'self-attention'; Equation (4) uses m_k where standard deformable convolution often distinguishes kernel weights from modulation scalars; DWFB is described as using weights 'shared in spatial dimension and fully connected in channel dimension,' which is hard to reconcile with the earlier claim of spatial adaptivity.",
+        "severity": "MINOR",
+        "justification": "These may reflect imprecise exposition rather than incorrect implementation, but they make the method difficult to verify and should be clarified."
+      },
+      {
+        "finding": "The paper does not adequately document whether all baselines were retrained under a common pipeline or whether published numbers were copied. Since preprocessing, gamma/exposure conversion, patch extraction, augmentation, and metric implementations can materially affect HDR results, fair comparison requires explicit harmonization details.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the central comparative claims could change because differences may arise from training/evaluation protocol rather than the proposed method itself."
+      },
+      {
+        "finding": "No safeguards against benchmark leakage are described. With only 74 training and 15 test scenes, it is important to state whether hyperparameters, architectural choices, and ablations were tuned using the test split or a separate validation set. The manuscript does not mention any validation split.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the reported gains may be optimistic due to implicit test-set tuning, which could materially affect conclusions."
+      },
+      {
+        "finding": "Claims about causal mechanism are stronger than the evidence presented. The manuscript repeatedly asserts that CNN methods fail specifically because of limited receptive field and that the proposed transformer-based search recovers occlusions by finding similar distant content, but no controlled analysis demonstrates that the gains are due to that mechanism rather than simply increased capacity or different inductive bias.",
+        "severity": "MINOR",
+        "justification": "This is an over-interpretation issue; it does not necessarily change empirical performance but should be toned down or supported by stronger analysis."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.85,
+    "reasoning": "The manuscript presents a novel deep learning architecture for HDR imaging with reasonable methodological choices overall. However, several critical gaps in reporting and experimental rigor prevent full confidence in the claimed state-of-the-art results. The most severe issues are the absence of statistical significance testing for quantitative comparisons (given very small metric gains), lack of code or reproducibility details, and incomplete reporting of training/validation data splits. These do not necessarily invalidate the work but require major revisions to substantiate the claims.",
+    "findings": [
+      {
+        "finding": "No statistical significance testing is reported for the quantitative comparisons (Table 1). The reported gains over the prior method (e.g., PSNR-μ improvement of 0.34 dB) are very small and could easily arise from random variation. Without confidence intervals or significance tests, the claim of 'state-of-the-art performance' is not reliably supported.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, this would mean the central quantitative claim of superiority is unsubstantiated. A revision is needed to add statistical testing (e.g., paired t-tests over the 15 test scenes) or to temper the claims accordingly."
+      },
+      {
+        "finding": "The manuscript does not provide code, pre-trained models, or detailed implementation of the proposed Transformer Offset Estimator (TOE). The architecture description is ambiguous: 'M local Transformer layers' and 'N global Transformer layers' are mentioned but M and N are never specified. This makes the work irreproducible and the claimed innovations difficult to verify.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Reproducibility is a core scientific standard. Without these details, the paper's findings cannot be independently confirmed or built upon. The authors must specify M, N, and ideally release code."
+      },
+      {
+        "finding": "The dataset split is incompletely described. Kalantari's dataset is said to have '74 training scenes and 15 test scenes', but it is known that this dataset has 74 sequences total; some works use 64 for training and 10 for testing, others use 74 for training and 15 for testing by including additional scenes from other sources. The exact split and how it relates to prior works used for comparison is not clarified, which could affect fairness of comparison.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the test set composition differs from the comparison methods', the quantitative results may not be directly comparable. The authors must explicitly state the split and verify that prior methods were evaluated on the identical test set."
+      },
+      {
+        "finding": "The dynamic weight Δw in DWFB is described as 'shared in spatial dimension and fully connected in channel dimension'. However, the equation (5) simply writes Δw = φ(x) without specifying dimensionality or how the weight is applied to fuse features. This lack of clarity makes the proposed fusion mechanism ambiguous.",
+        "severity": "MINOR",
+        "justification": "While this does not invalidate the approach, it hinders understanding and reproduction. Providing a clear equation or pseudocode for the fusion operation would strengthen the paper."
+      },
+      {
+        "finding": "The gradient loss weight λ_g is set to 0.6 without any ablation or justification for this specific value. The ablation study only compares with and without gradient loss, not different values of λ_g. Since gradient loss can significantly affect texture/sharpness trade-offs, the choice appears arbitrary.",
+        "severity": "MINOR",
+        "justification": "This is a minor concern because the ablation still shows improvement with the gradient loss. However, a sensitivity analysis or citation for the chosen value would improve rigor."
+      },
+      {
+        "finding": "The manuscript claims 'extensive experiments' but uses only a single test dataset (Kalantari et al., 2017) for quantitative evaluation. Qualitative results on two additional datasets are shown without ground truth, so quantitative generalization is not demonstrated. Given the small test size (15 scenes), conclusions about state-of-the-art performance are limited.",
+        "severity": "MINOR",
+        "justification": "This is a common limitation in HDR imaging research. It does not invalidate the work but limits generalizability. The authors acknowledge this implicitly by describing it as a limitation."
+      }
+    ]
+  },
+  "judge": {
+    "agreement_score": 0.72,
+    "severity_agreement": "Both reviews agree that no finding is retraction-worthy; all flagged findings are either MAJOR-REVISION or MINOR, with no recommendation for retraction. They agree on the core methodological weaknesses (lack of reproducibility, missing statistical testing, small benchmark, potential unfair comparison) and both assign MAJOR-REVISION to the most critical issues.",
+    "shared_findings": [
+      "Missing statistical significance testing / confidence intervals for quantitative comparisons",
+      "Incomplete architectural specifications (M, N, and other parameters) preventing reproducibility",
+      "Small test set (15 scenes) with limited generalizability",
+      "Potential unfair comparison with baselines (mixed timing protocols, different test splits)",
+      "Lack of validation split / risk of test-set tuning"
+    ],
+    "severity_disputes": [
+      "Finding about missing validation split: A rates it MAJOR-REVISION; B does not mention this explicitly (B treats dataset split incompleteness as MAJOR-REVISION but does not separately flag validation leakage).",
+      "Finding about ablation study being too limited: A rates it MINOR; B does not list this as a separate finding but indirectly implies it via the gradient loss weight justification (MINOR).",
+      "Finding about qualitative overinterpretation: A rates it MINOR; B does not explicitly address this.",
+      "Finding about overfitting/instability due to 6000 epochs on small data: A rates it MAJOR-REVISION; B does not mention this concern."
+    ],
+    "unique_to_a": [
+      "Efficiency comparison is not apples-to-apples (CPU vs GPU timing)",
+      "Qualitative overstatement of generalization (e.g., 'hallucinates complete textures')",
+      "Overfitting/instability concerns with 6000 epochs on only 74 training scenes",
+      "Notation and module definition ambiguities (e.g., self-attention vs cross-attention, deformable convolution parameterization)",
+      "No analysis of separate effects of local vs global transformers or other design choices",
+      "No safeguards against benchmark leakage (no validation split mentioned)"
+    ],
+    "unique_to_b": [
+      "Gradient loss weight λ_g = 0.6 set without ablation or sensitivity analysis",
+      "Dataset split incompleteness specifically compared to prior works (e.g., 64+10 vs 74+15) and how it affects fairness"
+    ]
+  },
+  "steelman_a": {
+    "steelman_for_other": "The strongest case for the other reviewer is that most of the manuscript's problems are classic substantiation and reporting defects, not demonstrated fatal flaws. On that reading, the paper may well describe a real and useful HDR model, but the evidence is not yet rigorous enough for strong SOTA claims. In particular:\n\n1. The core empirical claim is narrow: modest superiority on a small HDR benchmark. The other reviewer is right that the main threat is inferential overclaiming, not proven falsity. A 0.3 dB-scale gain on 15 scenes without confidence intervals, paired significance tests, or multiple seeds is exactly the sort of issue that should trigger major revision rather than any stronger sanction. The result could survive once uncertainty is quantified.\n\n2. The architecture/reporting gaps are serious for reproducibility but do not show impossibility or contradiction. Missing M/N, unclear DWFB dimensionality, and absent code mean others cannot reproduce the method, yet many papers are still correct despite poor reporting. This supports MAJOR-REVISION, not a stronger label.\n\n3. The split ambiguity is especially important and the other reviewer frames it well: if the train/test composition is not the standard split used by compared methods, then the headline comparisons may not be apples-to-apples. That would directly affect the central quantitative claim, but still in a way that can be repaired by clarifying the split and rerunning comparisons if needed. Again this is MAJOR-REVISION.\n\n4. The other reviewer is also persuasive on severity discipline. Several of my concerns are real but may be too broad or cumulative: lack of validation split, possible benchmark tuning, incomplete baseline harmonization, and training instability are all concerns, but absent concrete evidence of leakage or unfair evaluation they are better cast as major revision requests for transparency and robustness checks rather than stronger claims about invalidity.\n\n5. Their narrower focus identifies the most decision-relevant issues: (i) statistical support for tiny gains, (ii) reproducibility details/code, and (iii) exact dataset split/fairness. Those three alone are sufficient to flag the paper for major revision. By contrast, some of my additional concerns about causal interpretation, ablation depth, and qualitative generalization are better treated as secondary and mostly minor.\n\n6. On severity specifically, the strongest charitable interpretation is: nothing in the manuscript as summarized proves the numbers are wrong, the method impossible, or the conclusions fundamentally unsupported by the data in the strict retraction sense. The deficiencies mostly mean the claims are not yet adequately demonstrated. That is exactly the territory of MAJOR-REVISION.\n\nSo the best case for the other reviewer is that they separate 'insufficiently substantiated' from 'invalid,' avoid over-penalizing common but important reporting gaps, and center the decision on the few issues most likely to change the comparative claim if corrected.",
+    "severity_i_now_upgrade": [
+      "Finding on dataset split / comparison fairness: I would upgrade my baseline-documentation concern by making the dataset split ambiguity explicit and central. If the paper does not clearly state the exact Kalantari split and whether all compared methods used the identical test set, that is a stronger MAJOR-REVISION concern than I initially articulated.",
+      "Finding on statistical significance / uncertainty: while I already rated the underpowered evaluation as MAJOR-REVISION, I would strengthen its framing. The absence of per-scene paired analysis, confidence intervals, or repeated-seed uncertainty is the most direct challenge to the SOTA claim and should be emphasized more strongly within MAJOR-REVISION."
+    ],
+    "severity_i_now_downgrade": [
+      "Training setup raises concerns about overfitting and instability but is not sufficiently discussed — downgrade from MAJOR-REVISION to MINOR or weak MAJOR-REVISION. As written, this finding relies too much on speculative risk (6000 epochs, small dataset, batch size 2) without evidence of actual instability, leakage, or unusual tuning. The stronger issue is lack of validation/model-selection reporting, which is already captured elsewhere.",
+      "No safeguards against benchmark leakage are described — possible downgrade from MAJOR-REVISION to MINOR/weak MAJOR-REVISION. Without evidence that the authors tuned on the test set, this may overstate the problem. It is better framed as a missing transparency item unless there are textual cues of test-set-driven tuning.",
+      "Efficiency comparison is explicitly not fair across methods — possible downgrade from MAJOR-REVISION to MINOR if the paper presents runtime only as a side note rather than a central contribution. If efficiency is not a headline claim, the mismatch in timing protocol weakens a subsidiary argument more than the core reconstruction claim."
+    ],
+    "findings_i_still_defend": [
+      "Experimental methodology insufficiently specified for reproducibility — MAJOR-REVISION. This remains central because critical architectural and training details are missing, making independent verification of the main result impossible.",
+      "Comparative evaluation underpowered and lacking uncertainty estimates — MAJOR-REVISION. On a 15-scene benchmark, small gains cannot robustly support a SOTA claim without paired statistical analysis or uncertainty reporting.",
+      "Baseline harmonization/documentation inadequate — MAJOR-REVISION. If preprocessing, tonemapping, splits, and metric code are not aligned across methods, comparative claims may reflect protocol differences rather than model superiority.",
+      "Qualitative generalization claims overstated — MINOR. Visual examples without ground truth can suggest plausibility but not establish generalization.",
+      "Ablation study too limited — MINOR. Useful criticism, but not enough to overturn the main empirical result.",
+      "Notation/module ambiguities obscure method definition — MINOR. This affects clarity and reproducibility more than validity.",
+      "Causal-mechanism claims stronger than evidence — MINOR. The architecture may work, but mechanistic explanations are insufficiently demonstrated."
+    ],
+    "new_errors_noticed": [
+      "The two reviews together highlight a concrete omission I should have stated more directly: the exact Kalantari dataset composition/split is not merely a generic reproducibility issue but a specific comparability threat. If the test scenes differ from prior work, Table 1 may not be directly comparable.",
+      "I should have separated 'missing code' from 'missing implementation details.' Code release is desirable but not mandatory; the real severity driver is whether the textual specification is sufficient to reproduce the model. That nuance matters for severity.",
+      "My original review may have double-counted related concerns: incomplete validation protocol, possible benchmark leakage, and overfitting risk all stem from the same missing training/selection transparency. These might be consolidated rather than treated as distinct major issues.",
+      "I did not explicitly mention whether the reported gains are paired per-scene gains or only aggregate means. For a 15-scene benchmark, paired per-scene deltas are especially important; lack of that reporting is a sharper criticism than generic absence of significance testing.",
+      "I may have underemphasized that the fairness of comparison depends not only on retraining baselines but also on using identical tonemapping/metric implementations. In HDR work, this can materially alter PSNR-μ/SSIM-μ and should be explicitly standardized."
+    ]
+  },
+  "steelman_b": {
+    "steelman_for_other": "The other reviewer correctly identifies that the experimental methodology is fundamentally underpowered and lacks the rigor needed for state-of-the-art claims. The use of only 15 test scenes with tiny metric gains (0.33-0.34 dB) without any uncertainty estimates, repeated runs, or statistical testing means the central quantitative claim is essentially unsupported—this is not just a minor omission but a failure of evidence. Furthermore, the missing architectural details (M, N, window sizes, channel dimensions, number of heads, deformable convolution parameters) are so extensive that the method cannot be reproduced or verified, which is a severe barrier to scientific validation. The undisclosed training/validation split and lack of any validation protocol or model selection criterion raise the possibility that hyperparameters and architectural choices were tuned on the test set—if true, this would constitute data leakage that invalidates the reported performance. The efficiency comparison is explicitly not apples-to-apples (excluding CPU-based homography time for competitors while reporting full GPU time for the proposed method), which misrepresents computational trade-offs. Collectively, these issues suggest that the paper's evidence for state-of-the-art performance is methodologically insufficient to support its conclusions, warranting a more severe judgment than 'major revision' on several points.",
+    "severity_i_now_upgrade": [
+      "finding: No statistical significance testing is reported... (my original MAJOR-REVISION) — should be RETRACTION-WORTHY because the central SOTA claim depends on those tiny metric differences, and without significance testing the claim is unsubstantiated by the data as presented.",
+      "finding: The dataset split is incompletely described... (my original MAJOR-REVISION) — should be RETRACTION-WORTHY because if the test set composition differs from comparisons, the entire comparative table could be invalid.",
+      "finding: The manuscript claims 'extensive experiments' but uses only a single test dataset... (my original MINOR) — should be MAJOR-REVISION because the single small benchmark with no uncertainty quantifies means the generalization claim is overstated and the evidence is too weak for SOTA conclusions.",
+      "finding: The gradient loss weight λ_g is set to 0.6 without any ablation... (my original MINOR) — should be MAJOR-REVISION because gradient loss weight critically affects texture/sharpness trade-offs and could artificially boost metrics without being justified; it's not a trivial tuning parameter."
+    ],
+    "severity_i_now_downgrade": [
+      "finding: The dynamic weight Δw in DWFB is described ambiguously... (my original MINOR) — I maintain MINOR; it's a clarity issue but not central to validity.",
+      "finding: The manuscript claims 'extensive experiments' but uses only a single test dataset... (I now upgrade above, so downgrade is not applicable here)"
+    ],
+    "findings_i_still_defend": [
+      "finding: No code or reproducibility details provided (my original MAJOR-REVISION) — I still defend MAJOR-REVISION because while serious, the lack of code does not definitively invalidate the method; a revision with full architectural details and pseudocode could suffice.",
+      "finding: The dynamic weight Δw in DWFB ambiguity (my original MINOR) — I still defend MINOR; it's a reporting gap that doesn't change the conclusions.",
+      "finding: The gradient loss weight λ_g set to 0.6 without ablation (my original MINOR) — I now upgrade this to MAJOR-REVISION as per above.",
+      "finding: Limited test dataset (my original MINOR) — I now upgrade this to MAJOR-REVISION as per above."
+    ],
+    "new_errors_noticed": [
+      "The other reviewer's finding about training validation protocol (no validation split, no early stopping, no multiple seeds) is a critical oversight I did not originally flag—this is a real data leakage risk that could invalidate results and should be MAJOR-REVISION or higher.",
+      "The other reviewer's point about baseline retraining harmonization is important—I assumed prior results were comparable, but differences in preprocessing/metric implementations could substantially affect comparisons; this is a MAJOR-REVISION oversight in my review.",
+      "The paper's use of 'self-attention' for cross-image attention is notationally incorrect and could indicate a conceptual misunderstanding, though it may just be sloppy writing—still, this warrants a MAJOR-REVISION flag for methodological clarity.",
+      "The ablation study is indeed too coarse—removing entire components without isolating local vs global transformers, positional encoding, or number of stages means the source of gains is not identified, which weakens the paper's explanatory power but does not invalidate the empirical results (still MINOR)."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.87,
+    "reasoning": "Both reviewers converge on the same core weaknesses: the paper's central state-of-the-art claims rest on tiny metric gains (0.33-0.34 dB PSNR) over only 15 test scenes with no statistical significance testing, no uncertainty quantification, and insufficient architectural/experimental detail for reproducibility. The dataset split ambiguity, lack of baseline harmonization, and absence of a validation protocol compound these issues. While Reviewer B initially proposed upgrading some findings to RETRACTION-WORTHY during steelmanning, this is not warranted because no finding demonstrates that the results are definitively false or impossible—rather, the evidence is insufficiently rigorous to support the strength of the claims made. Reviewer A appropriately downgraded some of their own speculative concerns (overfitting risk, benchmark leakage) during steelmanning. The collective picture is of a paper that may describe a valid method but whose empirical evidence is too weak and underspecified to substantiate state-of-the-art claims, warranting major revision across multiple dimensions.",
+    "findings": [
+      {
+        "finding": "No statistical significance testing or uncertainty estimates for quantitative comparisons. Reported PSNR gains of ~0.34 dB over 15 test scenes could easily arise from random variation, scene-to-scene variability, or run-to-run differences. No confidence intervals, paired tests, or multi-seed evaluations are provided.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.92,
+        "justification": "Both reviewers independently flagged this as the most critical threat to the central SOTA claim. Reviewer B considered upgrading to RETRACTION-WORTHY but this is unwarranted: the absence of significance testing means the claim is unsubstantiated, not proven false. The results could survive once proper statistical analysis is conducted. This is the textbook definition of MAJOR-REVISION.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Critical architectural details are missing, preventing reproducibility. The numbers of local/global Transformer layers (M, N), window sizes, channel dimensions, number of attention heads, deformable convolution kernel sizes, offset parameterization, and exact DWFB/RDWFB/TDCAM configurations are unspecified. No code or pretrained models are provided.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers identified this independently and both maintained MAJOR-REVISION through steelmanning. The method cannot be independently verified or reproduced. While incomplete reporting does not prove the method is wrong, it prevents the scientific community from validating the claims.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Dataset split ambiguity and potential unfairness of baseline comparisons. The exact train/test split of the Kalantari dataset is not clearly specified, and it is unclear whether all baseline methods were evaluated on the identical test set. Different works use different splits (e.g., 64+10 vs 74+15). It is also unclear whether baselines were retrained under a common pipeline or whether published numbers were copied, and whether tonemapping/metric implementations are standardized.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.88,
+        "justification": "Both reviewers flagged this from complementary angles. Reviewer A emphasized baseline harmonization; Reviewer B emphasized the specific split ambiguity. If splits or evaluation protocols differ, the comparative table may not be valid. However, this can be resolved by clarification and potentially re-evaluation, making it MAJOR-REVISION rather than RETRACTION-WORTHY.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "No validation split or model selection protocol is described. With only 74 training scenes and 15 test scenes, and training for 6000 epochs, there is a risk of implicit test-set tuning. No early stopping rule, validation set, or model selection criterion is reported.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.78,
+        "justification": "Reviewer A flagged this and Reviewer B acknowledged it as a critical oversight during steelmanning. Reviewer A partially downgraded the overfitting-specific concern but maintained the validation protocol concern. There is no concrete evidence of data leakage, but the absence of any described safeguards on such a small benchmark is a meaningful methodological gap that could affect the reliability of reported results.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The efficiency/runtime comparison is not apples-to-apples. CPU-based homography time for DeepHDR is excluded while full GPU inference time is reported for the proposed method, creating an incomparable timing comparison.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.75,
+        "justification": "Reviewer A originally rated this MAJOR-REVISION but downgraded it during steelmanning, acknowledging that if efficiency is not a headline claim, this is a subsidiary concern. The core contribution is reconstruction quality, not speed. This is a valid criticism but does not threaten the central conclusions.",
+        "source": "prover_a",
+        "survived_steelman": false
+      },
+      {
+        "finding": "Evaluation limited to a single small benchmark (15 test scenes from Kalantari et al., 2017). Qualitative results on additional datasets lack ground truth and cannot support quantitative generalization claims.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Both reviewers noted this. Reviewer B upgraded from MINOR to MAJOR-REVISION during steelmanning, and Reviewer A had it as a component of the underpowered evaluation concern. While common in HDR imaging research, combined with the tiny metric gains and lack of significance testing, the single-benchmark evaluation materially weakens the evidence base for SOTA claims.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Ablation study is too coarse to isolate the source of improvements. Only complete component removals are tested; no analysis of local vs global transformers separately, positional encoding, number of stages, or sensitivity to hyperparameters like gradient loss weight λ_g.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.82,
+        "justification": "Both reviewers noted this (Reviewer A explicitly, Reviewer B via the λ_g concern). Both maintained it as MINOR or weak MAJOR through steelmanning. It weakens mechanistic understanding but does not overturn empirical results. Reviewer B's upgrade of λ_g sensitivity to MAJOR-REVISION is somewhat overstated given that the ablation does show gradient loss helps—the specific weight is a secondary concern.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Notation ambiguities and potential conceptual confusion: 'self-attention' is used to describe cross-image attention (Eq. 3), deformable convolution parameterization is unclear (Eq. 4), and DWFB weight sharing description is inconsistent with claimed spatial adaptivity.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "Reviewer A flagged this; Reviewer B noted the DWFB ambiguity separately. These likely reflect imprecise writing rather than incorrect implementation, but they contribute to the reproducibility problem. Maintained as MINOR through steelmanning.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Qualitative generalization claims are overstated. Phrases like 'hallucinates complete textures' are used without objective validation or user studies for results on datasets without ground truth.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Reviewer A flagged this; maintained as MINOR through steelmanning. This is an interpretive/writing issue that does not affect the core benchmark results.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Causal mechanism claims are stronger than the evidence supports. The paper asserts CNN methods fail due to limited receptive fields and that transformers recover occluded content via distant matching, but no controlled experiments isolate these mechanisms from increased capacity or different inductive biases.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.83,
+        "justification": "Reviewer A flagged this; maintained as MINOR through steelmanning. Common in deep learning papers and does not change empirical findings.",
+        "source": "prover_a",
+        "survived_steelman": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 32143,
+    "duration_s": 226.17,
+    "n_api_calls": 6,
+    "cost_usd": 0.3203,
+    "total_input_tokens": 29629,
+    "total_output_tokens": 7549,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 7579,
+        "output_tokens": 1428,
+        "cost_usd": 0.0332275,
+        "duration_s": 31.08,
+        "label": "paper_015/gd/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 7601,
+        "output_tokens": 942,
+        "cost_usd": 0.0030884700000000003,
+        "duration_s": 12.96,
+        "label": "paper_015/gd/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2519,
+        "output_tokens": 526,
+        "cost_usd": 0.00125873,
+        "duration_s": 6.96,
+        "label": "paper_015/gd/judge"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2699,
+        "output_tokens": 1470,
+        "cost_usd": 0.0214475,
+        "duration_s": 119.45,
+        "label": "paper_015/gd/steelman_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2747,
+        "output_tokens": 1021,
+        "cost_usd": 0.0018647900000000003,
+        "duration_s": 13.29,
+        "label": "paper_015/gd/steelman_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 6484,
+        "output_tokens": 2162,
+        "cost_usd": 0.25941,
+        "duration_s": 42.42,
+        "label": "paper_015/gd/arbiter"
+      }
+    ]
+  }
+}

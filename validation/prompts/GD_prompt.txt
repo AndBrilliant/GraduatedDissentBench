@@ -1,0 +1,173 @@
+================================================================
+GD: Graduated dissent — full protocol
+Five-to-seven calls per paper depending on escalation level.
+
+Sequence:
+  1) Prover A (GPT-5.4) — uses PROVER_PROMPT
+  2) Prover B (DeepSeek V3.2) — uses PROVER_PROMPT (same as B3)
+  3) Judge (DeepSeek V3.2) — uses JUDGE_PROMPT to score agreement
+  4) Escalation gate (deterministic):
+       L0 if agreement >= 0.90  -> skip 5,6
+       L1 if (1-agreement)/0.15 < 1  -> skip 5,6
+       L2 otherwise  -> proceed to 5,6
+  5) Steelman A (GPT-5.4) — uses STEELMAN_PROMPT
+  6) Steelman B (DeepSeek V3.2) — uses STEELMAN_PROMPT
+  7) Arbiter (Claude Opus 4.6) — uses ARBITER_GD_PROMPT (sees ALL prior outputs)
+
+This is the difference from B3: GD includes the steelman exchange and the
+arbiter sees the steelman material; B3's arbiter sees only the two raw reviews.
+================================================================
+
+
+--- PROVER_PROMPT (same as B3 prover prompt) ---
+
+You are an independent scientific reviewer. Review this manuscript for
+methodological correctness. For each error or concern, classify its severity.
+
+
+SEVERITY CLASSIFICATION (required for every finding):
+
+RETRACTION-WORTHY: The error means the paper's central conclusions CANNOT be
+supported by the data as presented. Not "could be improved" — "fundamentally broken."
+Examples: data coding errors that change the primary outcome, impossible statistical
+values, applying tests that don't match the study design rendering all inferences invalid.
+
+MAJOR-REVISION: A real methodological concern that could change conclusions if
+addressed differently, but does NOT definitively invalidate them.
+Examples: missing controls, underpowered secondary analyses, questionable but
+defensible statistical choices.
+
+MINOR: Valid criticism applicable to most published papers. Would not change conclusions.
+Examples: no robustness checks, limited generalizability, minor reporting gaps.
+
+KEY TEST: If confirmed, would this need RETRACTION, REVISION, or just NOTING?
+
+Manuscript:
+{paper_text}
+
+Respond in JSON:
+{"verdict": "flagged"|"not_flagged",
+  "confidence": 0.0-1.0,
+  "reasoning": "overall assessment",
+  "findings": [
+    {"finding": "description",
+      "severity": "RETRACTION-WORTHY|MAJOR-REVISION|MINOR",
+      "justification": "what breaks if confirmed?"}
+  ]}
+
+
+--- JUDGE_PROMPT (DeepSeek scores agreement between provers) ---
+
+Compare two independent reviews of the same manuscript.
+
+REVIEW A:
+{review_a}
+
+REVIEW B:
+{review_b}
+
+Rate semantic agreement 0.0-1.0. Identify where they disagree on severity.
+
+Respond in JSON:
+{"agreement_score": 0.0-1.0,
+  "severity_agreement": "do they agree on which findings are retraction-worthy?",
+  "shared_findings": ["findings both identify"],
+  "severity_disputes": ["findings where severity differs"],
+  "unique_to_a": ["only in A"],
+  "unique_to_b": ["only in B"]}
+
+
+--- STEELMAN_PROMPT (each prover argues the other's position; only triggered at L2) ---
+
+You previously reviewed a manuscript.
+
+YOUR REVIEW:
+{own_review}
+
+A DIFFERENT REVIEWER reached different conclusions:
+{other_review}
+
+TASKS:
+1. Build the STRONGEST CASE for the other reviewer's position, especially on severity.
+2. For findings you rated RETRACTION-WORTHY: could they be MAJOR-REVISION instead?
+3. Which of your severity ratings might be wrong?
+
+
+SEVERITY CLASSIFICATION (required for every finding):
+
+RETRACTION-WORTHY: The error means the paper's central conclusions CANNOT be
+supported by the data as presented. Not "could be improved" — "fundamentally broken."
+Examples: data coding errors that change the primary outcome, impossible statistical
+values, applying tests that don't match the study design rendering all inferences invalid.
+
+MAJOR-REVISION: A real methodological concern that could change conclusions if
+addressed differently, but does NOT definitively invalidate them.
+Examples: missing controls, underpowered secondary analyses, questionable but
+defensible statistical choices.
+
+MINOR: Valid criticism applicable to most published papers. Would not change conclusions.
+Examples: no robustness checks, limited generalizability, minor reporting gaps.
+
+KEY TEST: If confirmed, would this need RETRACTION, REVISION, or just NOTING?
+
+Respond in JSON:
+{"steelman_for_other": "strongest case for their position",
+  "severity_i_now_upgrade": ["findings I think are MORE severe"],
+  "severity_i_now_downgrade": ["findings I think are LESS severe"],
+  "findings_i_still_defend": ["findings + severity I stand by"],
+  "new_errors_noticed": ["errors from fresh perspective"]}
+
+
+--- ARBITER_GD_PROMPT (Opus arbiter; CRITICALLY: includes steelman exchange material) ---
+
+You are the Arbiter. You have the complete deliberation.
+
+
+SEVERITY CLASSIFICATION (required for every finding):
+
+RETRACTION-WORTHY: The error means the paper's central conclusions CANNOT be
+supported by the data as presented. Not "could be improved" — "fundamentally broken."
+Examples: data coding errors that change the primary outcome, impossible statistical
+values, applying tests that don't match the study design rendering all inferences invalid.
+
+MAJOR-REVISION: A real methodological concern that could change conclusions if
+addressed differently, but does NOT definitively invalidate them.
+Examples: missing controls, underpowered secondary analyses, questionable but
+defensible statistical choices.
+
+MINOR: Valid criticism applicable to most published papers. Would not change conclusions.
+Examples: no robustness checks, limited generalizability, minor reporting gaps.
+
+KEY TEST: If confirmed, would this need RETRACTION, REVISION, or just NOTING?
+
+REVIEW A:
+{review_a}
+
+REVIEW B:
+{review_b}
+
+JUDGE:
+{judge_analysis}
+
+STEELMAN EXCHANGE:
+A's steelman of B: {steelman_a}
+B's steelman of A: {steelman_b}
+
+TASK: Final severity-ranked assessment.
+- Findings surviving steelman with consistent severity = high confidence
+- Findings where a prover downgraded own severity = probably overstated
+- ONLY classify as RETRACTION-WORTHY if fundamentally broken.
+  When in doubt, MAJOR-REVISION.
+
+Respond in JSON:
+{"verdict": "flagged"|"not_flagged",
+  "confidence": 0.0-1.0,
+  "reasoning": "synthesis",
+  "findings": [
+    {"finding": "description",
+      "severity": "RETRACTION-WORTHY|MAJOR-REVISION|MINOR",
+      "confidence_in_severity": 0.0-1.0,
+      "justification": "why this level",
+      "source": "both|prover_a|prover_b|emergent",
+      "survived_steelman": true|false}
+  ]}

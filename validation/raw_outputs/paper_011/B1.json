@@ -1,0 +1,234 @@
+{
+  "condition": "B1",
+  "paper_id": "paper_011",
+  "verdict": "flagged",
+  "confidence": 0.97,
+  "reasoning": "The manuscript presents a promising kernelization strategy based on partitioning vertices by neighborhoods into X = I_s \\cup I_t, exploiting planarity to bound high-neighborhood classes, and identifying a large 'easy' region in pair classes. These are genuine methodological strengths. However, the proof as written has multiple serious methodological weaknesses: several key claims are only sketched or asserted without sufficient justification, some arguments appear incorrect or incomplete, notation is inconsistent, and at least one core equivalence argument depends on undeclared assumptions. As a result, the central theorem is not adequately supported in its current form.",
+  "findings": [
+    {
+      "finding": "Strength: The overall parameterized-kernelization framework is natural and well targeted to the problem. Defining X = I_s \\cup I_t and classifying vertices by their neighborhood in X is a standard but effective reduction strategy for reconfiguration problems."
+    },
+    {
+      "finding": "Strength: The decomposition into C_1, C_2, C_3 is methodologically sound in spirit: vertices with many neighbors in X are bounded via planarity, vertices with very few neighbors lead to a YES shortcut, and the challenging case is concentrated in the two-neighbor classes."
+    },
+    {
+      "finding": "Strength: Claim 2 uses a planar projection/facial counting idea to bound the number of distinct neighborhood types with |Y| >= 3. This is an appropriate structural use of planarity and suggests a meaningful route to a linear kernel."
+    },
+    {
+      "finding": "Strength: The use of K_{3,3}-freeness to infer |C_Y| <= 2 for |Y| >= 3 is a plausible and elegant planarity-based compression idea."
+    },
+    {
+      "finding": "Strength: The attempt to exploit an induced ordering within each C_Y for |Y|=2, and to isolate 'interior' vertices that behave independently across pair classes, is conceptually strong and could underpin a valid reduction if fully proved."
+    },
+    {
+      "finding": "Strength: The manuscript aims not only for FPT but for an explicit linear kernel size bound, and tracks constants throughout. Even if the constants are rough, this reflects methodological transparency."
+    },
+    {
+      "finding": "Weakness: The manuscript is not self-contained and contains major proof gaps. Several statements are introduced as 'easy to show' or given as proof sketches, despite being essential to the theorem."
+    },
+    {
+      "finding": "Weakness: Claim 1 is insufficiently justified. The argument 'for each v in I_s with a neighbor w_v in I_m, move the token on v to some such w_v; now move all remaining tokens to unoccupied vertices of I_m' does not prove that every intermediate configuration remains independent. It also does not justify existence of the required jumps for all remaining tokens."
+    },
+    {
+      "finding": "Weakness: Claim 1 appears to rely on token-jumping semantics in a way that ignores possible conflicts between occupied source vertices and chosen destinations. Because token jumping allows arbitrary relocation subject to the resulting set being independent, the proof should explicitly argue that each destination in I_m is nonadjacent to all currently occupied token positions at that moment."
+    },
+    {
+      "finding": "Weakness: Claim 2's construction of G_X is only partially described and is too informal for a critical counting lemma. The text is truncated ('For each pair of vertices ...') and the face correspondence argument is not rigorously established."
+    },
+    {
+      "finding": "Weakness: The statement 'the number of sets Y with |Y| >= 3 and C_Y != empty is less than 2|X|' is not proved with sufficient precision. The later bound uses Euler's formula on a derived graph, but the derivation of one face per relevant Y and the absence of duplications/crossings needs a formal topological argument."
+    },
+    {
+      "finding": "Weakness: The claim that each X-pair corresponds to an edge of a plane graph with vertex set X, yielding |P| <= 3|X|, is asserted without adequate proof. This bound is subsequently used quantitatively in kernel-size estimates."
+    },
+    {
+      "finding": "Weakness: The recursive definition of the left-to-right order on C_Y is not rigorous enough to support later arguments. In particular, the transition cases in which the outer face changes are acknowledged as subtle, but not fully analyzed."
+    },
+    {
+      "finding": "Weakness: Claim 3 is a key independence lemma, but its proof is topologically underdeveloped. The conclusion 'z_1 lies inside C_1, and z_2 lies outside it. Thus z_1z_2 notin E(G)' assumes without proof that an edge between them would violate planarity given the embedding and chosen regions."
+    },
+    {
+      "finding": "Weakness: The manuscript states 'G[C_Y] is a linear forest, since each z in C_Y has edges only to (possibly) its predecessor and/or successor in the linear order.' This is a strong structural assertion, but no proof is given that edges cannot skip over vertices in the order or create more complex outerplanar structure."
+    },
+    {
+      "finding": "Weakness: Claim 4 contains a likely numbering error: it later says 'by Claim 4' to conclude reconfigurability inside a linear forest, but that property was stated in Claim 5. This indicates lack of proof hygiene in a central section."
+    },
+    {
+      "finding": "Weakness: Claim 4's counting argument depends on the statement that for Y notin P_Big, |N^{Int}(Y)| <= 2. This follows from the definition only if every N^{Int}(Y) with at least 3 vertices contains two nonadjacent vertices, which is true for paths/linear forests but only after the unproved statement that G[C_Y] is a linear forest. The dependency chain is fragile and not made explicit."
+    },
+    {
+      "finding": "Weakness: Claim 5 is only a proof sketch for a central reconfiguration fact. Reconfiguring arbitrary independent sets in a linear forest under token jumping may be true, but the manuscript does not fully prove the invariant that every move preserves independence and cardinality, nor the claimed 2k bound."
+    },
+    {
+      "finding": "Weakness: Claim 6 is missing as a labeled claim. The text jumps from Claim 5 to an unlabeled proof deriving |J_s| <= 26k and |V(G')| <= 67k, then later refers back to 'Claim 6'. This breaks logical traceability of the argument."
+    },
+    {
+      "finding": "Weakness: The construction of J_s and J_t is ambiguous and contains grammatical/logical errors. Example: 'include, for all Y in P^1, each vertex in C_Y such that I_s contains at most one vertex of Y' is not a coherent selection rule, because the condition concerns Y, not individual vertices of C_Y."
+    },
+    {
+      "finding": "Weakness: The proof bounding |J_s| assumes that the maximum independent set in \\cup_{Y in P^1} N^{Int}(Y) has size at most k 'by construction', but the described stopping rule says 'up to the point where J_s contains an independent set of size k'; this does not automatically imply the required extremal bound on the entire union unless the construction is formalized carefully."
+    },
+    {
+      "finding": "Weakness: The manuscript repeatedly says G[J_s \\cup J_t \\cup J_m] 'is a linear forest', but this is not established. J_s and J_t are explicitly said to be 'not necessarily independent', and combining vertices taken from different C_Y classes plus J_m could create interactions unless ruled out with detailed arguments."
+    },
+    {
+      "finding": "Weakness: Claim 7, the equivalence proof, is incomplete and likely incorrect as written. It depends on identifying the first and last vertices outside G' used by an arbitrary successful sequence and then deriving canonical reroutings through J_s, J_t, J_m. The necessary simulation argument is not fully shown."
+    },
+    {
+      "finding": "Weakness: In Claim 7, notation is inconsistent: P^1/P^2 are used instead of \\mathcal{P}^1/\\mathcal{P}^2, and P_Big instead of \\mathcal{P}_{Big}. Such inconsistencies matter because these sets are central to the reduction."
+    },
+    {
+      "finding": "Weakness: The induction in Claim 7 over Y_1, ..., Y_a is not sufficiently justified. The statement 'we assume that no token appears on the closed neighborhood of z_{i-1}'' ' is used as an induction hypothesis, but the manuscript does not prove it is maintained after the described moves."
+    },
+    {
+      "finding": "Weakness: The phrase 'Finally, we greedily move all remaining tokens to J_m' is unjustified. Even if J_m is independent, one must show every remaining token can jump to an unoccupied vertex of J_m while preserving independence at each step."
+    },
+    {
+      "finding": "Weakness: The proof direction at the start of Claim 7 is misstated. It says 'Since G' subseteq G, if the answer to ISR-TJ(G, I_s, I_t) is NO, then clearly the answer to ISR-TJ(G', I_s, I_t) is also NO.' This is logically true, but the 'clear' monotonicity should be framed as: any sequence in G' is also a sequence in G. Precision matters in equivalence proofs."
+    },
+    {
+      "finding": "Weakness: There are textual artifacts and likely copy-editing issues ('to be fixed-parameter tractable...' repeated; abrupt sentence fragments; missing continuation before 'ISR-TJ(G, I_s, I_t)). For the latter...'). These disrupt the proof flow and suggest the manuscript may be incomplete."
+    },
+    {
+      "finding": "Weakness: Several constants are tracked, but because earlier counting lemmas and structural claims are not fully proved, the final 67k bound is not methodologically reliable."
+    },
+    {
+      "finding": "Weakness: The theorem claims a kernelization algorithm, but algorithmic aspects are under-specified. It is not enough to show existential size bounds; one must specify how to compute the partition classes, the embedding-dependent orderings, P_Big, and the reduced instance in polynomial time."
+    },
+    {
+      "finding": "Weakness: The manuscript assumes a plane embedding and cites linear-time planarity testing/embedding, which is fine, but many reduction steps depend on embedding-specific notions. It is not discussed whether different embeddings affect correctness or whether the chosen embedding can be arbitrary."
+    },
+    {
+      "finding": "Weakness: The reduction preserves planarity because G' is a subgraph of G, which is good, but the proof never explicitly states this invariant when claiming a planar kernel; this should be stated more cleanly."
+    },
+    {
+      "finding": "Overall methodological assessment: the paper has an appealing high-level strategy and some potentially strong structural ideas, but the current proof architecture lacks the rigor needed for acceptance. The main result should be considered unverified until Claims 1, 2, 3, 5, and especially the equivalence argument are fully formalized and notation/statement issues are repaired."
+    }
+  ],
+  "severity_counts": null,
+  "raw_review": {
+    "verdict": "flagged",
+    "confidence": 0.97,
+    "reasoning": "The manuscript presents a promising kernelization strategy based on partitioning vertices by neighborhoods into X = I_s \\cup I_t, exploiting planarity to bound high-neighborhood classes, and identifying a large 'easy' region in pair classes. These are genuine methodological strengths. However, the proof as written has multiple serious methodological weaknesses: several key claims are only sketched or asserted without sufficient justification, some arguments appear incorrect or incomplete, notation is inconsistent, and at least one core equivalence argument depends on undeclared assumptions. As a result, the central theorem is not adequately supported in its current form.",
+    "findings": [
+      {
+        "finding": "Strength: The overall parameterized-kernelization framework is natural and well targeted to the problem. Defining X = I_s \\cup I_t and classifying vertices by their neighborhood in X is a standard but effective reduction strategy for reconfiguration problems."
+      },
+      {
+        "finding": "Strength: The decomposition into C_1, C_2, C_3 is methodologically sound in spirit: vertices with many neighbors in X are bounded via planarity, vertices with very few neighbors lead to a YES shortcut, and the challenging case is concentrated in the two-neighbor classes."
+      },
+      {
+        "finding": "Strength: Claim 2 uses a planar projection/facial counting idea to bound the number of distinct neighborhood types with |Y| >= 3. This is an appropriate structural use of planarity and suggests a meaningful route to a linear kernel."
+      },
+      {
+        "finding": "Strength: The use of K_{3,3}-freeness to infer |C_Y| <= 2 for |Y| >= 3 is a plausible and elegant planarity-based compression idea."
+      },
+      {
+        "finding": "Strength: The attempt to exploit an induced ordering within each C_Y for |Y|=2, and to isolate 'interior' vertices that behave independently across pair classes, is conceptually strong and could underpin a valid reduction if fully proved."
+      },
+      {
+        "finding": "Strength: The manuscript aims not only for FPT but for an explicit linear kernel size bound, and tracks constants throughout. Even if the constants are rough, this reflects methodological transparency."
+      },
+      {
+        "finding": "Weakness: The manuscript is not self-contained and contains major proof gaps. Several statements are introduced as 'easy to show' or given as proof sketches, despite being essential to the theorem."
+      },
+      {
+        "finding": "Weakness: Claim 1 is insufficiently justified. The argument 'for each v in I_s with a neighbor w_v in I_m, move the token on v to some such w_v; now move all remaining tokens to unoccupied vertices of I_m' does not prove that every intermediate configuration remains independent. It also does not justify existence of the required jumps for all remaining tokens."
+      },
+      {
+        "finding": "Weakness: Claim 1 appears to rely on token-jumping semantics in a way that ignores possible conflicts between occupied source vertices and chosen destinations. Because token jumping allows arbitrary relocation subject to the resulting set being independent, the proof should explicitly argue that each destination in I_m is nonadjacent to all currently occupied token positions at that moment."
+      },
+      {
+        "finding": "Weakness: Claim 2's construction of G_X is only partially described and is too informal for a critical counting lemma. The text is truncated ('For each pair of vertices ...') and the face correspondence argument is not rigorously established."
+      },
+      {
+        "finding": "Weakness: The statement 'the number of sets Y with |Y| >= 3 and C_Y != empty is less than 2|X|' is not proved with sufficient precision. The later bound uses Euler's formula on a derived graph, but the derivation of one face per relevant Y and the absence of duplications/crossings needs a formal topological argument."
+      },
+      {
+        "finding": "Weakness: The claim that each X-pair corresponds to an edge of a plane graph with vertex set X, yielding |P| <= 3|X|, is asserted without adequate proof. This bound is subsequently used quantitatively in kernel-size estimates."
+      },
+      {
+        "finding": "Weakness: The recursive definition of the left-to-right order on C_Y is not rigorous enough to support later arguments. In particular, the transition cases in which the outer face changes are acknowledged as subtle, but not fully analyzed."
+      },
+      {
+        "finding": "Weakness: Claim 3 is a key independence lemma, but its proof is topologically underdeveloped. The conclusion 'z_1 lies inside C_1, and z_2 lies outside it. Thus z_1z_2 notin E(G)' assumes without proof that an edge between them would violate planarity given the embedding and chosen regions."
+      },
+      {
+        "finding": "Weakness: The manuscript states 'G[C_Y] is a linear forest, since each z in C_Y has edges only to (possibly) its predecessor and/or successor in the linear order.' This is a strong structural assertion, but no proof is given that edges cannot skip over vertices in the order or create more complex outerplanar structure."
+      },
+      {
+        "finding": "Weakness: Claim 4 contains a likely numbering error: it later says 'by Claim 4' to conclude reconfigurability inside a linear forest, but that property was stated in Claim 5. This indicates lack of proof hygiene in a central section."
+      },
+      {
+        "finding": "Weakness: Claim 4's counting argument depends on the statement that for Y notin P_Big, |N^{Int}(Y)| <= 2. This follows from the definition only if every N^{Int}(Y) with at least 3 vertices contains two nonadjacent vertices, which is true for paths/linear forests but only after the unproved statement that G[C_Y] is a linear forest. The dependency chain is fragile and not made explicit."
+      },
+      {
+        "finding": "Weakness: Claim 5 is only a proof sketch for a central reconfiguration fact. Reconfiguring arbitrary independent sets in a linear forest under token jumping may be true, but the manuscript does not fully prove the invariant that every move preserves independence and cardinality, nor the claimed 2k bound."
+      },
+      {
+        "finding": "Weakness: Claim 6 is missing as a labeled claim. The text jumps from Claim 5 to an unlabeled proof deriving |J_s| <= 26k and |V(G')| <= 67k, then later refers back to 'Claim 6'. This breaks logical traceability of the argument."
+      },
+      {
+        "finding": "Weakness: The construction of J_s and J_t is ambiguous and contains grammatical/logical errors. Example: 'include, for all Y in P^1, each vertex in C_Y such that I_s contains at most one vertex of Y' is not a coherent selection rule, because the condition concerns Y, not individual vertices of C_Y."
+      },
+      {
+        "finding": "Weakness: The proof bounding |J_s| assumes that the maximum independent set in \\cup_{Y in P^1} N^{Int}(Y) has size at most k 'by construction', but the described stopping rule says 'up to the point where J_s contains an independent set of size k'; this does not automatically imply the required extremal bound on the entire union unless the construction is formalized carefully."
+      },
+      {
+        "finding": "Weakness: The manuscript repeatedly says G[J_s \\cup J_t \\cup J_m] 'is a linear forest', but this is not established. J_s and J_t are explicitly said to be 'not necessarily independent', and combining vertices taken from different C_Y classes plus J_m could create interactions unless ruled out with detailed arguments."
+      },
+      {
+        "finding": "Weakness: Claim 7, the equivalence proof, is incomplete and likely incorrect as written. It depends on identifying the first and last vertices outside G' used by an arbitrary successful sequence and then deriving canonical reroutings through J_s, J_t, J_m. The necessary simulation argument is not fully shown."
+      },
+      {
+        "finding": "Weakness: In Claim 7, notation is inconsistent: P^1/P^2 are used instead of \\mathcal{P}^1/\\mathcal{P}^2, and P_Big instead of \\mathcal{P}_{Big}. Such inconsistencies matter because these sets are central to the reduction."
+      },
+      {
+        "finding": "Weakness: The induction in Claim 7 over Y_1, ..., Y_a is not sufficiently justified. The statement 'we assume that no token appears on the closed neighborhood of z_{i-1}'' ' is used as an induction hypothesis, but the manuscript does not prove it is maintained after the described moves."
+      },
+      {
+        "finding": "Weakness: The phrase 'Finally, we greedily move all remaining tokens to J_m' is unjustified. Even if J_m is independent, one must show every remaining token can jump to an unoccupied vertex of J_m while preserving independence at each step."
+      },
+      {
+        "finding": "Weakness: The proof direction at the start of Claim 7 is misstated. It says 'Since G' subseteq G, if the answer to ISR-TJ(G, I_s, I_t) is NO, then clearly the answer to ISR-TJ(G', I_s, I_t) is also NO.' This is logically true, but the 'clear' monotonicity should be framed as: any sequence in G' is also a sequence in G. Precision matters in equivalence proofs."
+      },
+      {
+        "finding": "Weakness: There are textual artifacts and likely copy-editing issues ('to be fixed-parameter tractable...' repeated; abrupt sentence fragments; missing continuation before 'ISR-TJ(G, I_s, I_t)). For the latter...'). These disrupt the proof flow and suggest the manuscript may be incomplete."
+      },
+      {
+        "finding": "Weakness: Several constants are tracked, but because earlier counting lemmas and structural claims are not fully proved, the final 67k bound is not methodologically reliable."
+      },
+      {
+        "finding": "Weakness: The theorem claims a kernelization algorithm, but algorithmic aspects are under-specified. It is not enough to show existential size bounds; one must specify how to compute the partition classes, the embedding-dependent orderings, P_Big, and the reduced instance in polynomial time."
+      },
+      {
+        "finding": "Weakness: The manuscript assumes a plane embedding and cites linear-time planarity testing/embedding, which is fine, but many reduction steps depend on embedding-specific notions. It is not discussed whether different embeddings affect correctness or whether the chosen embedding can be arbitrary."
+      },
+      {
+        "finding": "Weakness: The reduction preserves planarity because G' is a subgraph of G, which is good, but the proof never explicitly states this invariant when claiming a planar kernel; this should be stated more cleanly."
+      },
+      {
+        "finding": "Overall methodological assessment: the paper has an appealing high-level strategy and some potentially strong structural ideas, but the current proof architecture lacks the rigor needed for acceptance. The main result should be considered unverified until Claims 1, 2, 3, 5, and especially the equivalence argument are fully formalized and notation/statement issues are repaired."
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 16501,
+    "duration_s": 42.21,
+    "n_api_calls": 1,
+    "cost_usd": 0.0368,
+    "total_input_tokens": 5777,
+    "total_output_tokens": 2239,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 5777,
+        "output_tokens": 2239,
+        "cost_usd": 0.0368325,
+        "duration_s": 42.21,
+        "label": "paper_011/b1/review"
+      }
+    ]
+  }
+}

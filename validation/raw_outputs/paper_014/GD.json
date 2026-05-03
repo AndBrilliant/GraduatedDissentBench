@@ -1,0 +1,395 @@
+{
+  "condition": "GD",
+  "paper_id": "paper_014",
+  "verdict": "flagged",
+  "confidence": 0.95,
+  "reasoning": "Both reviewers agree the paper has serious methodological deficiencies. The central runtime claim (Õ(n + d_max) for 1-machine) is not established because the amortization argument only counts new 1-positions but does not account for the cost of materializing the inserted string content (zero-padding of length p_j per job) required by the dynamic string data structure. Reviewer A initially rated this retraction-worthy but in steelman acknowledged it might be 'not proved rather than disproved,' downgrading to major-revision. Reviewer B initially rated it major-revision but after steelman upgraded to retraction-worthy. The key question is whether the flaw is a provable impossibility or merely an undemonstrated claim. Since the paper's contribution IS the runtime bound, and the bound is not established as written, but we cannot definitively rule out that a clever lazy/compressed representation might salvage it, the conservative classification is MAJOR-REVISION for the 1-machine result. For the multi-machine extension, both reviewers independently rate it retraction-worthy and neither downgrades in steelman — no data structure is specified, no operations are defined, no complexity is proven. This is fundamentally unsupported. Together, these flaws mean the paper's conclusions cannot be accepted as stated.",
+  "findings": [
+    {
+      "finding": "The multi-machine extension (Section 4) claims Õ(n + d_max^m) time for constant m but provides no multidimensional data structure construction, no operation definitions, no complexity proofs. The result is asserted by analogy with the 1D case in a single paragraph.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.93,
+      "justification": "Both reviewers independently classified this as retraction-worthy. Neither downgraded during steelman. The paper claims a distinct theorem without supplying the central algorithmic object needed to state or analyze it. No cited multidimensional dynamic string structure exists with the required properties. This is not an exposition gap — it is a completely unsupported claim that constitutes a headline contribution of the paper.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The main Õ(n + d_max) runtime claim for the 1-machine problem is not established. The amortization argument (Lemma 3.2) bounds only the number of newly reachable sums (new 1-positions), but the dynamic string data structure requires materializing inserted content (e.g., zero-padding of length p_j via make_string/concat) whose total cost across all jobs may be Θ(P) = Θ(Σp_j), not O(d_max). The paper does not demonstrate that OR/merge operations can be performed charging only new 1-bits rather than total string length.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "Reviewer A initially rated retraction-worthy but downgraded in steelman, acknowledging the theorem is 'not proved rather than disproved' — a lazy or compressed implementation might exist. Reviewer B upgraded from major-revision to retraction-worthy in steelman, but the upgrade relied on assuming the worst case for the data structure. Since the paper's main contribution is exactly this bound, and it is unestablished as written, but we cannot definitively prove impossibility, MAJOR-REVISION is the conservative classification. The paper would need to either fully specify the data structure operations and prove the bound, or acknowledge the gap.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The construction of the shifted indicator string (concatenating 0^{p_j} with x_{L_{j-1}}) and subsequent alignment to a fixed-length universe [0..u-1] lacks a precise invariant. Split/truncate steps are sketched but not formalized, and it is unclear how strings of varying lengths are maintained and merged correctly across iterations.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.65,
+      "justification": "Reviewer A initially rated major-revision, then considered downgrading to minor in steelman. Reviewer B's related findings about OR vagueness and alignment support the concern at major-revision level. The correctness of the entire implementation depends on these string semantics. While possibly fixable, the current exposition does not demonstrate correctness.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The dynamic programming recurrence defining S_j is not fully presented (missing Eq. 3b, 3c), and indexing is inconsistent (e.g., 'split S_j into two parts... obtain L_{j-1}, R_{j-1}'). This makes the algorithm unverifiable.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.6,
+      "justification": "Reviewer A rated major-revision, then considered downgrading in steelman. Reviewer B noted a related issue (missing references). For a theory paper whose contribution is an algorithmic improvement, the inability to verify the core recurrence is a significant gap, though likely fixable. Maintaining major-revision as the recurrence is central to correctness.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Per-job split/concat operations on the dynamic string data structure each cost O(log d_max), giving an O(n log d_max) term that is not explicitly accounted for. While Õ notation absorbs polylog factors, the analysis should state this clearly.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.75,
+      "justification": "Reviewer B raised this at major-revision but the Õ notation explicitly absorbs polylogarithmic factors, making this a reporting clarity issue rather than a correctness flaw. Reviewer A's steelman also noted this is subsumed by the larger materialization cost concern.",
+      "source": "prover_b",
+      "survived_steelman": false
+    },
+    {
+      "finding": "Lemma 3.2 contains notation errors (summation index i vs. j, inconsistent set indexing) that obscure the amortization argument.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Both reviewers noted this. Appears typographical rather than substantive. Does not independently threaten conclusions.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The initialization cost for constructing 0^u is stated as O(log^2 u) but the described procedure (repeated self-concatenation) should yield O(log u) concatenations.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.7,
+      "justification": "Minor complexity-reporting inconsistency. Does not affect central claims.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Schedule retrieval is claimed to follow 'in a similar way' without demonstration for the new implementation.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.75,
+      "justification": "Completeness issue, not a core validity concern. Standard for algorithmic papers to defer reconstruction details.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The monotonicity invariant (S_j ⊇ S_{j-1}) under deadline trimming is not explicitly argued, though it likely holds due to jobs being sorted by non-decreasing deadlines.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Both reviewers noted this. Likely holds but should be stated. Does not threaten conclusions.",
+      "source": "prover_b",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Bibliography references are incomplete or inconsistently numbered, making it difficult to verify claims against prior work.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Reporting issue only. Does not affect methodological correctness.",
+      "source": "prover_b",
+      "survived_steelman": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 1,
+    "MAJOR-REVISION": 3,
+    "MINOR": 6
+  },
+  "protocol": {
+    "level": "L2",
+    "agreement": 0.62,
+    "snr": 2.5333333333333337,
+    "theta_accept": 0.9,
+    "theta_noise": 0.15
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.97,
+    "reasoning": "The manuscript’s central claim—an \\u1ef9(n + d_max)-time refinement of Fischer and Wennmann’s algorithm—appears unsupported as written because the proposed implementation omits a necessary cost term for creating the newly inserted indicator bits. The key amortization argument only bounds the number of new 1-positions, but the dynamic-string framework cited requires make_string on the inserted material, whose cost depends on the total inserted length. Since the construction of x_{\\u1e9cS_j} from x_{L_{j-1}} by concatenating zeros does not by itself create the changed 1-bits relative to x_{S_{j-1}}, the manuscript does not establish that bitwise-OR updates can be realized in \\u1ef9(number of new positions) total time under the reduced universe size. In addition, the multi-machine extension is asserted at a high level without specifying how the required multidimensional representation and operations are supported, so that result is not justified. There are also correctness/reporting gaps around indexing and the recurrence definition, but these are secondary relative to the unsupported runtime claim.",
+    "findings": [
+      {
+        "finding": "The main \\u1ef9(n + d_max) runtime claim is not established because the analysis bounds only \\u2211_j |\\u1e9cS_j \\\\ S_{j-1}|, but does not account for the cost of materializing the inserted indicator bits/strings needed by the dynamic-string OR implementation.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This is the core theorem of the paper. The manuscript relies on Fischer and Wennmann’s dynamic-string machinery, where new content must be inserted via make_string (or an equivalent operation with cost proportional to inserted length). The proof only shows each feasible sum becomes newly reachable at most once, but it does not show that the required newly created string content has total length O(d_max), nor that OR can be implemented without paying for the positions of the inserted 1s. If this cost is actually larger—as it is in the original P-based analysis—then the claimed improvement to \\u1ef9(n + d_max) fails, invalidating the central contribution."
+      },
+      {
+        "finding": "The construction of \\u1e9cS_j = L_{j-1} + p_j via concat(0^{p_j}, x_{L_{j-1}}) is insufficient to represent the shifted set as an indicator string of fixed length u without a precise argument about alignment and trimming, and the manuscript does not show that the resulting string can be OR-merged with x_{S_{j-1}} while preserving exact semantics.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The correctness of the data-structure implementation depends on exact string semantics. Concatenating a zero-prefix with x_{L_{j-1}} creates a longer string whose positions must correspond exactly to the shifted indicator vector over [0..u-1]. The manuscript sketches a split/truncate step but omits the full invariant ensuring equal string lengths and proper alignment at every iteration. This may be fixable, but as written the implementation-level correctness is not demonstrated."
+      },
+      {
+        "finding": "The multi-machine extension is asserted without a valid methodological derivation. The paper claims the trimming strategy can be applied 'point-wise' to vectors in [0..P]^m and that an 'adapted multi-dimensional dynamic string data structure' remains the same as in Fischer and Wennmann [5], but no representation or operation costs are specified.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This is a separate headline result: \\u1ef9(n + d_max^m) for constant m. The manuscript provides only a one-paragraph analogy and a counting lemma, but no actual multidimensional data-structure construction, no proof that split/concat/OR operations are supported with the claimed complexity, and no recurrence details for the m-machine DP. If confirmed, the multi-machine theorem is unsupported and should be removed or completely reworked."
+      },
+      {
+        "finding": "Key dynamic-programming definitions are missing or inconsistent. The manuscript refers to Eq. (3b) and Eq. (3c), but the recurrence defining S_j is not actually presented in the provided text, and later notation mixes S_j and S_{j-1} in ways that suggest indexing mistakes ('split S_j into two parts ... obtain L_{j-1}, R_{j-1}').",
+        "severity": "MAJOR-REVISION",
+        "justification": "For a methodological paper, the formal recurrence and exact indexing are essential to verify correctness. The current exposition makes it impossible to fully audit whether the implementation matches the DP. This may be only a presentation issue, but if the indexing confusion reflects the actual proof, conclusions could change."
+      },
+      {
+        "finding": "Lemma 3.2 contains notation errors (summing over i while using j inside; sets indexed inconsistently), which obscure the amortization argument.",
+        "severity": "MINOR",
+        "justification": "These appear to be typographical/reporting issues rather than substantive flaws, but they impede verification. If corrected carefully, the lemma may still state the intended bound; by itself this does not overturn conclusions."
+      },
+      {
+        "finding": "The initialization cost for constructing 0^u is misstated. Repeated self-concatenation after inserting w=0 yields O(log u) concatenations, so the claimed O(log^2 u) bound is odd unless additional hidden costs are intended; more importantly, deterministic/randomized costs should be stated consistently with the cited data structure.",
+        "severity": "MINOR",
+        "justification": "This is a minor complexity-reporting inconsistency and would not affect the main claim unless it reflects broader misunderstanding of the data structure."
+      },
+      {
+        "finding": "The claim that schedule retrieval follows 'in a similar way' is unsupported for the new implementation.",
+        "severity": "MINOR",
+        "justification": "This affects completeness rather than the optimal-value algorithm. Even if reconstruction details are omitted, the primary optimization result could still stand. However, a proof or explicit reduction would be needed for a full paper."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "The manuscript claims an Õ(n + dmax)-time algorithm for the 1‖∑pjUj problem based on a 'refined implementation' of Fischer and Wennmann's algorithm. However, the core methodological claim rests on a flawed premise about the dynamic string data structure's capabilities and the feasibility of the proposed 'split' and 'OR' operations without incurring costs that violate the claimed bound. The paper also fails to provide a concrete data structure for the multi-machine extension, making that part of the claim unsupported. These errors are not minor; they undermine the central algorithmic contribution and conclusions.",
+    "findings": [
+      {
+        "finding": "The algorithm claims to use the dynamic string data structure to perform operations (split, concat, bitwise OR) on strings of length u = dmax+1 in O(log u) time, but the operations required (e.g., bitwise OR for merging, offset shifting via concatenation with zero-padding) are not fully specified or standard for the data structure as described. The description of merging via 'bit-wise OR' is vague and no mechanism is provided for how this is done without rebuilding the entire string or performing O(u) work.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The core algorithmic step of merging sets (bitwise OR) is not clearly implementable within the stated time bounds. If the OR operation cannot be done in sublinear time per iteration, the overall O(n + dmax) claim collapses. This is not a retraction-worthy error because a more careful implementation might salvage the idea, but the current description is insufficient and could change the result."
+      },
+      {
+        "finding": "The manuscript claims that the key bound in Lemma 3.2 (sum of |S̃_j \\ S_{j-1}| ≤ dmax+1) leads to an O(n + dmax) total time. However, the algorithm must also perform splits and concatenations for every job (n times), even if the number of new insertions is small. Each split and concat operation on the dynamic string data structure costs O(log s) where s is total string length (here up to dmax). This gives an O(n log dmax) term, which combined with the O(dmax) insertions gives O(n log dmax + dmax), not Õ(n + dmax) unless log factors are suppressed. The authors incorrectly omit the cost per operation on every job.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The claimed Õ(n + dmax) running time ignores the multiplicative log factor from performing O(n) operations on the data structure, each costing at least O(log dmax). While Õ notation absorbs polylog factors, the claimed form 'Õ(n + dmax)' is ambiguous and the analysis does not account for the per-job overhead that could dominate if n >> dmax. This could change the conclusions about optimality."
+      },
+      {
+        "finding": "The multi-machine extension (Section 4) is entirely sketchy. The paper states that the same algorithm can be applied 'point-wise' with a 'multi-dimensional dynamic string data structure,' but no such data structure is described, cited, or proven to exist. The claimed lemma sum across all vectors (dmax+1)^m would require managing m-dimensional indicator strings, which is not a trivial extension of 1D dynamic strings.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The multi-machine result is a key claimed contribution, but it is not supported by any algorithmic details or references. The existence of an efficient multi-dimensional dynamic string data structure capable of the required operations is not established, and the analysis assumes it works in the same way as the 1D case. This renders the multi-machine claim fundamentally unsupported, invalidating that part of the paper's conclusions."
+      },
+      {
+        "finding": "The proof of Lemma 3.2 relies on the invariant that once a value x enters the set, it remains for all subsequent jobs. However, this invariant only holds if the sets S_j are monotonically non-decreasing (i.e., S_j ⊇ S_{j-1}). The dynamic programming definition (Equations 3a-3c) does produce monotonic sets, but the algorithm's 'trimming' by deadlines may discard some values. The authors assume that filtering by deadlines (trimming) does not break the invariant, but this is not argued explicitly.",
+        "severity": "MINOR",
+        "justification": "The invariant likely holds because trimmed values are those > dj, and future deadlines are non-decreasing (jobs are sorted by deadline). However, the paper should clarify this to avoid confusion. It would not change the conclusion but is a gap in rigor."
+      },
+      {
+        "finding": "The manuscript repeatedly refers to 'Fischer and Wennmann's algorithm' and their dynamic string data structure but provides no citation to their work (reference [5] appears in text but is not included in the bibliography). The paper also lists references [9], [10], [11] at the end, but the in-text citations do not match (e.g., [9] appears before [5] in the text). This suggests a draft with incompletely integrated references.",
+        "severity": "MINOR",
+        "justification": "While this is a minor reporting issue, it makes the manuscript difficult to verify against the claimed prior work. It does not affect the methodological correctness per se, but it reduces clarity."
+      }
+    ]
+  },
+  "judge": {
+    "agreement_score": 0.62,
+    "severity_agreement": "Partial disagreement. Both agree the multi-machine extension is unsupported and retraction-worthy, but A flags the main runtime claim as retraction-worthy while B rates it as major-revision.",
+    "shared_findings": [
+      "The multi-machine extension lacks proper justification and data-structure support (A's finding 3, B's finding 3)",
+      "The core runtime claim relies on insufficient accounting for OR/merge operations using the dynamic string data structure (A's finding 1, B's finding 1, 2)",
+      "Key definitions and indexing are incomplete or inconsistent (A's finding 4, B's finding 4)"
+    ],
+    "severity_disputes": [
+      "Finding 1 in A (runtime claim) rated RETRACTION-WORTHY vs Finding 1 in B rated MAJOR-REVISION",
+      "Finding 2 in A (construction/alignment) rated MAJOR-REVISION vs B's related findings 1 and 2 rated MAJOR-REVISION (no dispute on severity level, but different granularity)"
+    ],
+    "unique_to_a": [
+      "Cost of materializing inserted indicator bits via make_string not accounted for",
+      "Initialization cost misstatement (O(log^2 u) vs O(log u))",
+      "Schedule retrieval claim unsupported",
+      "Lemma 3.2 notation errors"
+    ],
+    "unique_to_b": [
+      "Per-job split/concat cost ignored, leading to missing O(n log dmax) term",
+      "Missing bibliography references and citation inconsistencies",
+      "Explicit concern about trimming invariant not fully argued"
+    ]
+  },
+  "steelman_a": {
+    "steelman_for_other": "The strongest case for the other reviewer is that my original assessment may have been too quick to classify some issues as definitively fatal rather than presently unproven. In particular, for the 1-machine result, one can argue the manuscript does not yet demonstrate the claimed Õ(n + d_max) implementation, but it also does not conclusively prove that such an implementation is impossible. If the dynamic-string framework can support lazy materialization, shared zero-runs, or an OR operation that charges only for touched/nonzero regions, then the missing cost term I highlighted might be an exposition gap rather than a false theorem. On that view, the paper has a serious proof/implementation defect, but not necessarily a retraction-level impossibility result. The other reviewer’s framing is strongest when it says: the manuscript fails to specify the exact data-structure operations and thus fails to justify the bound, but a more careful implementation might still exist.\n\nA second strong point in the other review is about asymptotic accounting. Even if my core concern about inserted-bit materialization were repairable, the paper still seems to perform split/concat-style operations for every job, each with logarithmic overhead in the dynamic-string structure. Since the claim is in Õ-notation, these log factors may be suppressible, but the manuscript should explicitly account for them. If the text informally presents the result as essentially linear without clearly stating the hidden polylogarithmic dependence, that is a real complexity-reporting problem. This supports the other reviewer’s view that some of the issue is misanalysis or under-specification rather than outright collapse.\n\nThe strongest case for lowering severity is therefore: for the single-machine theorem, the paper may be \"not proved\" rather than \"disproved.\" The manuscript as written does not justify the main theorem, but absent a formal lower bound or a contradiction with the cited data structure, one could say major revision is the safer label.\n\nWhere the other reviewer is especially persuasive on severity is the multi-machine extension. There the paper does not merely omit a few details; it appears to leap from a 1D dynamic string representation to an m-dimensional one without any actual construction, operation definitions, or complexity proof. If no cited multidimensional structure exists and none is developed, then that claim is not just under-explained but unsupported in a way that likely invalidates that entire result. So their retraction-worthy rating there is strong and aligns with my own.\n\nMore broadly, the other reviewer’s position can be steelmanned as follows: the manuscript’s main defect is not necessarily that the authors’ idea is impossible, but that every place where complexity hinges on nontrivial data-structure behavior is handled by handwaving. In a theory paper whose main contribution is exactly an improved runtime bound, that level of under-specification can itself be outcome-determinative. Thus several findings I marked as fatal might more conservatively be labeled major-revision because they show the theorem is currently unsupported, not definitely false.",
+    "severity_i_now_upgrade": [],
+    "severity_i_now_downgrade": [
+      "Finding 1: I would now consider downgrading the single-machine runtime finding from RETRACTION-WORTHY to MAJOR-REVISION, because the manuscript clearly fails to prove the Õ(n + d_max) bound, but from the current record I cannot fully exclude that a corrected lazy/materialized implementation could salvage the theorem.",
+      "Finding 2: I would consider downgrading the alignment/indicator-string construction issue from MAJOR-REVISION to MINOR if the recurrence and invariants are otherwise repaired, because this may be mostly an exposition/formalization gap rather than an independent methodological flaw.",
+      "Finding 4: I would consider downgrading the missing/inconsistent recurrence/indexing issue from MAJOR-REVISION to MINOR-to-MAJOR depending on the full manuscript; if the intended DP is standard and only garbled in presentation, it may not threaten conclusions by itself."
+    ],
+    "findings_i_still_defend": [
+      "Finding 3 (multi-machine extension) as RETRACTION-WORTHY: I still stand by this. The manuscript appears to claim a distinct theorem for constant m without supplying the central object needed to state or analyze the algorithm: a multidimensional representation supporting the required operations with the claimed complexity. That is not a patch-level omission; it leaves the theorem unsupported at its core.",
+      "Finding 1 at least as a serious central flaw: even if downgraded to MAJOR-REVISION, I strongly defend the substance of the criticism. The current amortization argument does not match the stated implementation costs, and the main theorem is not established as written.",
+      "Finding 7 (schedule retrieval) as MINOR: this remains a completeness issue, not a core-validity issue.",
+      "Finding 5 (notation errors in Lemma 3.2) as MINOR: these still look like reporting defects unless they conceal a deeper logical mistake.",
+      "Finding 6 (initialization-cost inconsistency) as MINOR: still a small complexity-reporting issue, not central."
+    ],
+    "new_errors_noticed": [
+      "There may be an additional mismatch between what Lemma 3.2 bounds and what the dynamic-string OR/update primitive actually needs: even if newly reachable sums are charged once, the implementation may still need to traverse or rebuild structural nodes corresponding to long zero-runs introduced by shifting/trimming. This is related to my first finding but is a distinct structural-cost concern.",
+      "The manuscript may be conflating two different universes: the deadline-trimmed universe [0..d_j] at iteration j and a fixed global universe [0..u-1] with u=d_max+1. If strings are kept at fixed length u while the proof reasons about trimmed sets, there must be an invariant connecting masked-out suffixes to the DP state; I do not recall seeing this made explicit.",
+      "If OR is assumed to be available as a primitive on dynamic strings, the manuscript should specify whether its cost depends on total string length, number of edits, or compressed representation size. The proof seems to assume the most favorable version without citation or derivation.",
+      "There may also be a claim-scope problem: if the title/abstract present both the 1-machine and multi-machine results as established contributions, then even if the 1-machine theorem were salvageable, the unsupported multi-machine theorem alone may require rejection/withdrawal of the paper in its present form."
+    ]
+  },
+  "steelman_b": {
+    "steelman_for_other": "The other reviewer correctly identifies a deeper and more fundamental flaw in the runtime claim than I did. Their first finding strikes at the heart: the manuscript only bounds the number of new 1-positions (feasible sums) added per iteration, but does not bound the total *length of the inserted bit-string material* that must be created to represent those positions. In a dynamic string data structure, inserting a run of consecutive zeros (or ones) requires an operation whose cost scales with the length of the inserted material, not just the number of 1-bits within it. For example, shifting `x_{L_{j-1}}` by `p_j` via concatenation with `0^{p_j}` creates a new string of length `u` (dmax+1). Even if only 1 new 1-bit appears, the inserted material `0^{p_j}` is of length `p_j`, which could be O(dmax). The amortization argument only counts new 1-positions, but the data structure's make_string (or equivalent) cost would be O(p_j) per job, summing to O(n log dmax + ndmax) in the worst case—destroying the claimed O(n + dmax). This makes the algorithmic result not merely incomplete but *impossible* under the cited data structure's model. Therefore their 'RETRACTION-WORTHY' rating for this finding is more justified than my 'MAJOR-REVISION', because no amount of revision can salvage a runtime bound that ignores a dominant cost term. Their severity on the multi-machine extension is also stronger: they correctly note that no multidimensional data structure exists in the literature with the required properties, whereas I only called it 'sketchy'. My own severity was too lenient on the core runtime claim.",
+    "severity_i_now_upgrade": [
+      "Finding 1 (main runtime claim) should be upgraded from MAJOR-REVISION to RETRACTION-WORTHY. The other reviewer's argument that the inserted zero-padding length is unbounded per job is a fatal flaw that cannot be fixed without a fundamentally different algorithmic approach.",
+      "Finding 2 (per-job overhead) is actually a subpoint of Finding 1 and should also be RETRACTION-WORTHY, as the log factor is not the main issue—the linear p_j factor is.",
+      "Finding 3 (multi-machine extension) was already RETRACTION-WORTHY; I maintain that severity.",
+      "Finding 4 (invariant) remains MINOR.",
+      "Finding 5 (references) remains MINOR."
+    ],
+    "severity_i_now_downgrade": [
+      "No findings from my original review should be downgraded. My severity ratings were already too lenient in some cases (see upgrades above), but none were too harsh."
+    ],
+    "findings_i_still_defend": [
+      "Finding 4 (invariant MINOR): This is a correct identification of a missing argument, but it can be easily fixed and does not affect the core flaw. I defend this as MINOR.",
+      "Finding 5 (references MINOR): Correct reporting gap, not affecting correctness. I defend this as MINOR."
+    ],
+    "new_errors_noticed": [
+      "The other reviewer's Finding 1 exposes an error I missed: the inserted zero-prefix length p_j is unbounded across jobs, and the dynamic string data structure's make_string operation would incur cost proportional to p_j per job, not per new 1-bit. This makes the claimed O(n + dmax) impossible under any reasonable model of the data structure.",
+      "The other reviewer's Finding 2 (alignment/trimming) reveals that my own Finding 1 (bitwise OR vagueness) was too shallow. The deeper problem is that concatenating a prefix of zeros and then splitting creates strings of varying lengths that must be aligned to a fixed universe size u, requiring additional operations not accounted for.",
+      "I notice that the other reviewer's Finding 4 (DP definition missing) is a more severe version of my Finding 5 (references): the paper lacks the actual recurrence that defines S_j, making the entire DP structure unverifiable. This should have been a MAJOR-REVISION at minimum for reproducibility reasons.",
+      "The other reviewer's Finding 7 (schedule retrieval unsupported) is correct but minor; however, combined with the other flaws, it adds to the pattern of unsupported claims."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "Both reviewers agree the paper has serious methodological deficiencies. The central runtime claim (Õ(n + d_max) for 1-machine) is not established because the amortization argument only counts new 1-positions but does not account for the cost of materializing the inserted string content (zero-padding of length p_j per job) required by the dynamic string data structure. Reviewer A initially rated this retraction-worthy but in steelman acknowledged it might be 'not proved rather than disproved,' downgrading to major-revision. Reviewer B initially rated it major-revision but after steelman upgraded to retraction-worthy. The key question is whether the flaw is a provable impossibility or merely an undemonstrated claim. Since the paper's contribution IS the runtime bound, and the bound is not established as written, but we cannot definitively rule out that a clever lazy/compressed representation might salvage it, the conservative classification is MAJOR-REVISION for the 1-machine result. For the multi-machine extension, both reviewers independently rate it retraction-worthy and neither downgrades in steelman — no data structure is specified, no operations are defined, no complexity is proven. This is fundamentally unsupported. Together, these flaws mean the paper's conclusions cannot be accepted as stated.",
+    "findings": [
+      {
+        "finding": "The multi-machine extension (Section 4) claims Õ(n + d_max^m) time for constant m but provides no multidimensional data structure construction, no operation definitions, no complexity proofs. The result is asserted by analogy with the 1D case in a single paragraph.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.93,
+        "justification": "Both reviewers independently classified this as retraction-worthy. Neither downgraded during steelman. The paper claims a distinct theorem without supplying the central algorithmic object needed to state or analyze it. No cited multidimensional dynamic string structure exists with the required properties. This is not an exposition gap — it is a completely unsupported claim that constitutes a headline contribution of the paper.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The main Õ(n + d_max) runtime claim for the 1-machine problem is not established. The amortization argument (Lemma 3.2) bounds only the number of newly reachable sums (new 1-positions), but the dynamic string data structure requires materializing inserted content (e.g., zero-padding of length p_j via make_string/concat) whose total cost across all jobs may be Θ(P) = Θ(Σp_j), not O(d_max). The paper does not demonstrate that OR/merge operations can be performed charging only new 1-bits rather than total string length.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.78,
+        "justification": "Reviewer A initially rated retraction-worthy but downgraded in steelman, acknowledging the theorem is 'not proved rather than disproved' — a lazy or compressed implementation might exist. Reviewer B upgraded from major-revision to retraction-worthy in steelman, but the upgrade relied on assuming the worst case for the data structure. Since the paper's main contribution is exactly this bound, and it is unestablished as written, but we cannot definitively prove impossibility, MAJOR-REVISION is the conservative classification. The paper would need to either fully specify the data structure operations and prove the bound, or acknowledge the gap.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The construction of the shifted indicator string (concatenating 0^{p_j} with x_{L_{j-1}}) and subsequent alignment to a fixed-length universe [0..u-1] lacks a precise invariant. Split/truncate steps are sketched but not formalized, and it is unclear how strings of varying lengths are maintained and merged correctly across iterations.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.65,
+        "justification": "Reviewer A initially rated major-revision, then considered downgrading to minor in steelman. Reviewer B's related findings about OR vagueness and alignment support the concern at major-revision level. The correctness of the entire implementation depends on these string semantics. While possibly fixable, the current exposition does not demonstrate correctness.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The dynamic programming recurrence defining S_j is not fully presented (missing Eq. 3b, 3c), and indexing is inconsistent (e.g., 'split S_j into two parts... obtain L_{j-1}, R_{j-1}'). This makes the algorithm unverifiable.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.6,
+        "justification": "Reviewer A rated major-revision, then considered downgrading in steelman. Reviewer B noted a related issue (missing references). For a theory paper whose contribution is an algorithmic improvement, the inability to verify the core recurrence is a significant gap, though likely fixable. Maintaining major-revision as the recurrence is central to correctness.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Per-job split/concat operations on the dynamic string data structure each cost O(log d_max), giving an O(n log d_max) term that is not explicitly accounted for. While Õ notation absorbs polylog factors, the analysis should state this clearly.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.75,
+        "justification": "Reviewer B raised this at major-revision but the Õ notation explicitly absorbs polylogarithmic factors, making this a reporting clarity issue rather than a correctness flaw. Reviewer A's steelman also noted this is subsumed by the larger materialization cost concern.",
+        "source": "prover_b",
+        "survived_steelman": false
+      },
+      {
+        "finding": "Lemma 3.2 contains notation errors (summation index i vs. j, inconsistent set indexing) that obscure the amortization argument.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "Both reviewers noted this. Appears typographical rather than substantive. Does not independently threaten conclusions.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The initialization cost for constructing 0^u is stated as O(log^2 u) but the described procedure (repeated self-concatenation) should yield O(log u) concatenations.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.7,
+        "justification": "Minor complexity-reporting inconsistency. Does not affect central claims.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Schedule retrieval is claimed to follow 'in a similar way' without demonstration for the new implementation.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.75,
+        "justification": "Completeness issue, not a core validity concern. Standard for algorithmic papers to defer reconstruction details.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The monotonicity invariant (S_j ⊇ S_{j-1}) under deadline trimming is not explicitly argued, though it likely holds due to jobs being sorted by non-decreasing deadlines.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "Both reviewers noted this. Likely holds but should be stated. Does not threaten conclusions.",
+        "source": "prover_b",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Bibliography references are incomplete or inconsistently numbered, making it difficult to verify claims against prior work.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Reporting issue only. Does not affect methodological correctness.",
+        "source": "prover_b",
+        "survived_steelman": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 13002,
+    "duration_s": 132.38,
+    "n_api_calls": 6,
+    "cost_usd": 0.2957,
+    "total_input_tokens": 22919,
+    "total_output_tokens": 7127,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4173,
+        "output_tokens": 1254,
+        "cost_usd": 0.0229725,
+        "duration_s": 28.03,
+        "label": "paper_014/gd/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3998,
+        "output_tokens": 1198,
+        "cost_usd": 0.00239726,
+        "duration_s": 16.33,
+        "label": "paper_014/gd/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2696,
+        "output_tokens": 367,
+        "cost_usd": 0.00113162,
+        "duration_s": 5.41,
+        "label": "paper_014/gd/judge"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2876,
+        "output_tokens": 1312,
+        "cost_usd": 0.02031,
+        "duration_s": 26.67,
+        "label": "paper_014/gd/steelman_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2924,
+        "output_tokens": 953,
+        "cost_usd": 0.0018377800000000002,
+        "duration_s": 13.72,
+        "label": "paper_014/gd/steelman_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 6252,
+        "output_tokens": 2043,
+        "cost_usd": 0.247005,
+        "duration_s": 42.22,
+        "label": "paper_014/gd/arbiter"
+      }
+    ]
+  }
+}
