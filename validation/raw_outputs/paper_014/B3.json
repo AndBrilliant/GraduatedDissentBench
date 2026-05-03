@@ -1,0 +1,235 @@
+{
+  "condition": "B3",
+  "paper_id": "paper_014",
+  "verdict": "flagged",
+  "confidence": 0.95,
+  "reasoning": "Both reviewers independently identified serious problems with the manuscript's core algorithmic contribution. The central claims—an Õ(n + d_max) algorithm for the single-machine case and an Õ(n + d_max^m) algorithm for the multi-machine case—are insufficiently supported by the presentation. The algorithm description lacks the precision needed to verify correctness: string lengths are inconsistent across operations, boundary cases are unhandled, and the mapping from DP recurrence to data structure operations is not fully specified. The running-time analysis only bounds insertion count, not the total cost of all data structure operations. The multi-machine extension is essentially asserted without a proper recurrence, data structure specification, or correctness proof. While some of these issues may be individually repairable, taken together they leave the paper's main contributions unsupported as written. The single-machine string-length inconsistency and the multi-machine extension each rise to a level where the claimed results cannot be verified from the manuscript, though we temper the most severe classifications where repair seems plausible.",
+  "findings": [
+    {
+      "finding": "The dynamic-string representation has internal inconsistencies regarding fixed string length. After splitting at position d_j - p_j, the resulting substring has length d_j - p_j + 1, not u = d_max + 1. Subsequent concat and split operations assume a common universe of size d_max + 1 but the actual string lengths do not match, making key algorithmic steps ill-defined.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.85,
+      "justification": "This affects the central algorithmic construction. Without a valid and consistent representation of the indicator strings under split/shift/merge, the core single-machine algorithm is not established. Both reviewers noted this: Reviewer A identified the specific length mismatch, and Reviewer B noted the operations are underspecified to the point of being unverifiable. The issue is fundamental to the paper's main contribution, though a careful rewrite with explicit padding/alignment conventions could potentially repair it.",
+      "source": "both"
+    },
+    {
+      "finding": "The multi-machine extension (Pm||∑pjUj) is not justified. No recurrence for the m-dimensional DP state is given, the 'point-wise trimming' strategy is asserted without proof of correctness, the required multi-dimensional dynamic string data structure is not shown to exist, and the persistence property (Lemma 4.1) is not proved for the multi-machine case.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers flagged this independently. The m-machine result is a headline contribution but rests on unsupported assertions. Feasibility on m identical machines is not a coordinate-wise independent condition, so 'point-wise' adaptation requires substantial justification that is entirely absent. The multi-dimensional data structure needed is not established in the literature or in this manuscript.",
+      "source": "both"
+    },
+    {
+      "finding": "The running-time analysis does not account for the total cost of all dynamic-string operations. Lemma 3.2 bounds total insertions (new 1-bits) by d_max + 1, but the algorithm performs O(n) split, concat, and OR operations whose per-operation costs are polylogarithmic. The total cost of these structural operations is not analyzed, and it is not shown that the insertion bound controls the total data structure cost.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers identified this gap. The claimed Õ(n + d_max) bound may still hold if the per-job overhead is O(polylog), giving Õ(n) for structural operations plus Õ(d_max) for insertions, but this decomposition is not proved. The actual complexity could be Õ(n log d_max + d_max) or similar. This weakens the main claim but does not necessarily invalidate it.",
+      "source": "both"
+    },
+    {
+      "finding": "The proof of Lemma 3.2 (persistence of elements in S_j) is flawed or incomplete. The DP explicitly trims elements above d_j at each step, so an element x added at step j could be removed at a later step k where d_k < x. The claim that elements persist once added requires a more careful argument, possibly leveraging the EDD ordering.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Reviewer B identified a specific logical gap. Under EDD ordering, d_j is non-decreasing, which would ensure persistence, but this critical fact is not stated or used in the proof. If the EDD ordering assumption is implicit, the lemma may be correct but the proof needs to be explicit about this dependency.",
+      "source": "prover_b"
+    },
+    {
+      "finding": "Boundary case handling is missing: when p_j > d_j, the split position d_j - p_j is negative, and the algorithm does not specify behavior. Such jobs require special handling (e.g., L_{j-1} = ∅).",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "This is likely repairable with a simple convention (if p_j > d_j, the job cannot contribute to any feasible completion within its deadline, so L_{j-1} = ∅), but the omission leaves the algorithm undefined on valid inputs.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "No pseudocode or formal algorithm listing is provided. The entire algorithmic contribution is described in prose with references to external works. The actual DP equations (3b, 3c) that the implementation refines are not fully presented in the manuscript.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Both reviewers noted this. For an algorithmic paper whose contribution is a delicate implementation refinement, the absence of pseudocode and complete DP equations makes the central claims unverifiable. This is more than a presentation issue—it prevents assessment of correctness.",
+      "source": "both"
+    },
+    {
+      "finding": "Indexing and notation inconsistencies throughout the manuscript (switching between S_j and S_{j-1}, index variable conflicts between i and j, and definition of the objective with J vs J*).",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "These do not change conclusions by themselves but reduce verifiability and compound the other issues.",
+      "source": "prover_a"
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 2,
+    "MAJOR-REVISION": 4,
+    "MINOR": 1
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.98,
+    "reasoning": "The manuscript’s main claim—an Õ(n + d_max) implementation of the Fischer–Wennmann DP—does not appear to be methodologically supported as written. The key algorithmic step relies on splitting and shifting indicator strings while preserving a fixed universe size u = d_max + 1, but the construction is inconsistent about string lengths and split positions, and the running-time proof counts only newly inserted states while omitting the cost of the dynamic-string OR/merge operations that are central in the cited framework. More seriously, the extension to multiple machines is asserted without a valid recurrence or justification: feasibility in the m-machine case is not captured by independently trimming each coordinate, and “point-wise” adaptation is not enough to preserve correctness. These issues affect the core correctness and complexity claims rather than peripheral presentation.",
+    "findings": [
+      {
+        "finding": "The single-machine implementation is not specified correctly enough to justify correctness of the claimed string operations. In particular, the split position d_j - p_j can be negative when p_j > d_j, but the algorithm treats split(x, d_j - p_j) as always valid. Such jobs require special handling (e.g., L_{j-1}=∅), which is not provided.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If unaddressed, the algorithm is undefined on valid inputs. This may be repairable with a boundary-case convention, so by itself it need not invalidate the entire result, but the proof as presented is incomplete."
+      },
+      {
+        "finding": "The dynamic-string representation is internally inconsistent about fixed string length. After splitting x_{S_{j-1}} at d_j - p_j, the object called x_{L_{j-1}} has length d_j - p_j + 1, not u = d_max + 1. Then concat(0^{p_j}, x_{L_{j-1}}) yields a string of length d_j + 1, so splitting it at position u is generally impossible when u > d_j + 1. The manuscript treats all these strings as if they lived in a common fixed-length universe without explaining the necessary padding/alignment.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This is a core implementation error in the central algorithm. Without a valid way to represent shifts and unions on a common index set of size d_max+1, the claimed refinement of Fischer–Wennmann is not established. The primary algorithmic contribution is therefore unsupported as written."
+      },
+      {
+        "finding": "The running-time analysis does not justify the claimed Õ(n + d_max) bound because Lemma 3.2 only bounds the total number of newly introduced 1-bits, not the total cost of all dynamic-string operations used each iteration, especially the bitwise OR/merge operations. The manuscript says OR can be implemented as in Fischer and Wennmann [5], but that prior analysis depends on the number of inserted blocks/states under their own representation; this transfer is not proved here.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The complexity claim may still be true, but the current proof does not establish it. Since the main novelty is an improved running time, failure to account for all operation costs materially weakens the paper’s main conclusion."
+      },
+      {
+        "finding": "The proof of Lemma 3.2 is too informal to support the cost bound in the dynamic-string model. It shows each reachable processing time x can become newly reachable at most once, but does not prove that the number of structural edits/nodes created in the string data structure is proportional to the number of such x values. Dynamic string costs are not obviously controlled solely by cardinalities of set differences.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the data-structure cost is not tightly coupled to |\\tilde S_j \\setminus S_{j-1}|, the claimed total near-linear dependence on d_max does not follow. This could potentially be repaired, but the current argument is insufficient."
+      },
+      {
+        "finding": "The multiple-machine extension is not methodologically justified. The manuscript asserts that one can ‘apply our trimming strategy point-wise’ to vectors in [0..P]^m and that the entries are ‘independent’, but feasibility on m identical machines is not a coordinate-wise independent condition. The recurrence for S_j in the m-machine case is not given, and no proof is provided that simple coordinate-wise trimming preserves all feasible states.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This directly affects a headline result, namely the claimed Õ(n + d_max^m)-time algorithm for P_m||∑p_jU_j. As written, the extension is essentially an unsupported assertion; if false, that main theorem cannot be sustained."
+      },
+      {
+        "finding": "Lemma 4.1 for the m-machine case relies on the same monotonicity argument as the single-machine case, but without a valid definition of the transition \\widetilde S_j and without proving that once a vector state appears it persists under the multi-machine DP. This persistence is not automatic in a higher-dimensional scheduling recurrence.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The complexity bound for the multi-machine result rests entirely on this lemma. Without a correct recurrence and persistence proof, the theorem is unsupported."
+      },
+      {
+        "finding": "The manuscript omits the actual DP equations (‘Eq. (3b)’, ‘Eq. (3c)’) on which the refined implementation depends. Since correctness hinges on exact set transitions and deletions, the reader cannot verify that the modified construction really computes the same S_j as the original algorithm.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is more than a presentation issue because the paper’s contribution is a delicate implementation change to an existing DP. Without the formal recurrence in the manuscript, the central equivalence claim is not checkable."
+      },
+      {
+        "finding": "There are several indexing/notation inconsistencies that obscure correctness: e.g., defining the objective with constraints ‘for all j ∈ J’ after introducing J* ⊆ [n], switching between S_j and S_{j-1} in the description of the split, and summing over i while using j in Lemma 3.2. These are not merely cosmetic because they affect the exact meaning of the recurrence and proof.",
+        "severity": "MINOR",
+        "justification": "These issues alone would not change the conclusions, but they materially reduce verifiability and should be corrected in revision."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "The manuscript claims a breakthrough algorithmic result (Õ(n + dmax)-time algorithm for 1||∑pjUj), but the core algorithmic procedure is presented only at an extremely high level, lacking the necessary detail to verify its correctness. The crucial steps—splitting the indicator string, computing the shifted and trimmed version, and merging via bit-wise OR—are described in a few sentences without pseudocode, precise data structure calls, or proof that the operations maintain correctness (i.e., that the resulting set S_j equals the intended DP state). Additionally, the analysis claims a bound on total insertions that ignores the cost of repeated splits and concatenations; the dynamic string operations per job are stateful and cumulative, and the claimed total time Õ(n + dmax) is not justified by the logic given. The extension to multiple machines (m) is similarly hand-waved, and it is not shown that the multi-dimensional analogue of the dynamic string data structure exists or operates in the claimed time. These omissions make the algorithm's claimed efficiency and correctness unverifiable, which is a fundamental flaw for a paper whose central contribution is an algorithmic improvement.",
+    "findings": [
+      {
+        "finding": "The algorithm description is critically underspecified. The manuscript describes splitting and concatenating indicator strings using a dynamic string data structure, but does not provide pseudocode or a clear step-by-step mapping between the DP recurrence (Eqs. 3a-3c) and the data structure operations. For example, how exactly is the bitwise OR for merging S_{j-1} and shifted L_{j-1} performed using the data structure? The reference to Fischer and Wennmann [5] is insufficient because the key innovation claimed here is a different implementation that limits set size to dmax; the reader cannot verify that the sequence of operations yields the correct S_j.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "Without a verifiable algorithmic description, the central claim of achieving Õ(n + dmax) time cannot be assessed. The paper's main conclusion (a new algorithm with improved running time) rests on an incomplete description, making the result unsupported by the presentation."
+      },
+      {
+        "finding": "The running time analysis ignores the cumulative cost of split/concat operations across all jobs. Lemma 3.2 bounds the total number of 'insertions' (elements added to S_j) by dmax+1, but the algorithm requires O(n) split and concat operations (one or more per job). Each such operation, while polylogarithmic in total string length u = dmax+1, still contributes O(n log^{1+o(1)} u) time. The claim of Õ(n + dmax) time would require that the total overhead of data structure operations is Õ(n) + Õ(dmax), but the analysis only addresses insertion count, not operation count. Even with the insertion bound, the per-job splits and concatenations would yield Õ(n * polylog(dmax)) time, which may not simplify to Õ(n + dmax) unless dmax is very large relative to n.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The claimed running time is not rigorously derived. The missing analysis of operation count could mean the actual time is Õ(n log dmax) or worse, which might still be acceptable but is not provided. This could change the claimed optimality if the hidden polylog factors are significant."
+      },
+      {
+        "finding": "The extension to multiple machines (m) is not properly justified. The manuscript claims that the same trimming strategy works 'point-wise' for each of m entries, and that a 'multi-dimensional dynamic string data structure' exists. Neither the existence of such a data structure nor its performance (e.g., supporting operations on strings of length (dmax+1)^m in polylog time) is established. The bound of (dmax+1)^m on total insertions is trivially combinatorial, but the algorithmic mechanism to achieve that bound is not described.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The multi-machine result is a claimed extension of the single-machine algorithm. If the algorithmic details are missing and the data structure required for the multi-dimensional case is not shown to exist, the claim of Õ(n + d^m_max) time is unfounded. This directly invalidates a part of the paper's contribution."
+      },
+      {
+        "finding": "No pseudocode or algorithm listing is provided. The manuscript relies entirely on prose description and references to other works. For a technical algorithmic paper, this is a serious reporting gap.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Without a precise algorithm, reproducibility is impossible. This is a fundamental requirement for publication in algorithmic venues. The paper cannot be evaluated or used by other researchers."
+      },
+      {
+        "finding": "The proof of Lemma 3.2 is incomplete. It states: 'for any x in [0..dmax], once x in S̃_j \\ S_{j-1}, then x in S_j, ..., S_n'. This claim assumes that elements are never removed from S_j, but the DP in Eq. (3c) explicitly keeps elements only up to d_j, which varies per job. An element x added at step j could be > d_k for some later k > j, and thus would not remain in S_k. The lemma's conclusion (total insertions ≤ dmax+1) may still be true, but the given justification is flawed.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The proof of the central bound on insertions contains a logical error. If the reasoning is incorrect, the claimed time complexity may be unsupported. This requires a corrected proof or a different argument."
+      }
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "Both reviewers independently identified serious problems with the manuscript's core algorithmic contribution. The central claims—an Õ(n + d_max) algorithm for the single-machine case and an Õ(n + d_max^m) algorithm for the multi-machine case—are insufficiently supported by the presentation. The algorithm description lacks the precision needed to verify correctness: string lengths are inconsistent across operations, boundary cases are unhandled, and the mapping from DP recurrence to data structure operations is not fully specified. The running-time analysis only bounds insertion count, not the total cost of all data structure operations. The multi-machine extension is essentially asserted without a proper recurrence, data structure specification, or correctness proof. While some of these issues may be individually repairable, taken together they leave the paper's main contributions unsupported as written. The single-machine string-length inconsistency and the multi-machine extension each rise to a level where the claimed results cannot be verified from the manuscript, though we temper the most severe classifications where repair seems plausible.",
+    "findings": [
+      {
+        "finding": "The dynamic-string representation has internal inconsistencies regarding fixed string length. After splitting at position d_j - p_j, the resulting substring has length d_j - p_j + 1, not u = d_max + 1. Subsequent concat and split operations assume a common universe of size d_max + 1 but the actual string lengths do not match, making key algorithmic steps ill-defined.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.85,
+        "justification": "This affects the central algorithmic construction. Without a valid and consistent representation of the indicator strings under split/shift/merge, the core single-machine algorithm is not established. Both reviewers noted this: Reviewer A identified the specific length mismatch, and Reviewer B noted the operations are underspecified to the point of being unverifiable. The issue is fundamental to the paper's main contribution, though a careful rewrite with explicit padding/alignment conventions could potentially repair it.",
+        "source": "both"
+      },
+      {
+        "finding": "The multi-machine extension (Pm||∑pjUj) is not justified. No recurrence for the m-dimensional DP state is given, the 'point-wise trimming' strategy is asserted without proof of correctness, the required multi-dimensional dynamic string data structure is not shown to exist, and the persistence property (Lemma 4.1) is not proved for the multi-machine case.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers flagged this independently. The m-machine result is a headline contribution but rests on unsupported assertions. Feasibility on m identical machines is not a coordinate-wise independent condition, so 'point-wise' adaptation requires substantial justification that is entirely absent. The multi-dimensional data structure needed is not established in the literature or in this manuscript.",
+        "source": "both"
+      },
+      {
+        "finding": "The running-time analysis does not account for the total cost of all dynamic-string operations. Lemma 3.2 bounds total insertions (new 1-bits) by d_max + 1, but the algorithm performs O(n) split, concat, and OR operations whose per-operation costs are polylogarithmic. The total cost of these structural operations is not analyzed, and it is not shown that the insertion bound controls the total data structure cost.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers identified this gap. The claimed Õ(n + d_max) bound may still hold if the per-job overhead is O(polylog), giving Õ(n) for structural operations plus Õ(d_max) for insertions, but this decomposition is not proved. The actual complexity could be Õ(n log d_max + d_max) or similar. This weakens the main claim but does not necessarily invalidate it.",
+        "source": "both"
+      },
+      {
+        "finding": "The proof of Lemma 3.2 (persistence of elements in S_j) is flawed or incomplete. The DP explicitly trims elements above d_j at each step, so an element x added at step j could be removed at a later step k where d_k < x. The claim that elements persist once added requires a more careful argument, possibly leveraging the EDD ordering.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Reviewer B identified a specific logical gap. Under EDD ordering, d_j is non-decreasing, which would ensure persistence, but this critical fact is not stated or used in the proof. If the EDD ordering assumption is implicit, the lemma may be correct but the proof needs to be explicit about this dependency.",
+        "source": "prover_b"
+      },
+      {
+        "finding": "Boundary case handling is missing: when p_j > d_j, the split position d_j - p_j is negative, and the algorithm does not specify behavior. Such jobs require special handling (e.g., L_{j-1} = ∅).",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "This is likely repairable with a simple convention (if p_j > d_j, the job cannot contribute to any feasible completion within its deadline, so L_{j-1} = ∅), but the omission leaves the algorithm undefined on valid inputs.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "No pseudocode or formal algorithm listing is provided. The entire algorithmic contribution is described in prose with references to external works. The actual DP equations (3b, 3c) that the implementation refines are not fully presented in the manuscript.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Both reviewers noted this. For an algorithmic paper whose contribution is a delicate implementation refinement, the absence of pseudocode and complete DP equations makes the central claims unverifiable. This is more than a presentation issue—it prevents assessment of correctness.",
+        "source": "both"
+      },
+      {
+        "finding": "Indexing and notation inconsistencies throughout the manuscript (switching between S_j and S_{j-1}, index variable conflicts between i and j, and definition of the objective with J vs J*).",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "These do not change conclusions by themselves but reduce verifiability and compound the other issues.",
+        "source": "prover_a"
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 13002,
+    "duration_s": 79.03,
+    "n_api_calls": 3,
+    "cost_usd": 0.2012,
+    "total_input_tokens": 11597,
+    "total_output_tokens": 4249,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4173,
+        "output_tokens": 1324,
+        "cost_usd": 0.0236725,
+        "duration_s": 26.92,
+        "label": "paper_014/b3/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3998,
+        "output_tokens": 1276,
+        "cost_usd": 0.0024830600000000005,
+        "duration_s": 17.48,
+        "label": "paper_014/b3/prover_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 3426,
+        "output_tokens": 1649,
+        "cost_usd": 0.175065,
+        "duration_s": 34.63,
+        "label": "paper_014/b3/arbiter"
+      }
+    ]
+  }
+}

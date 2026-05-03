@@ -1,0 +1,444 @@
+{
+  "condition": "GD",
+  "paper_id": "2405.07197v2",
+  "verdict": "flagged",
+  "confidence": 0.93,
+  "reasoning": "Both reviewers independently converge on the same core problem: the manuscript's central empirical claim of 'superior performance through fair comparisons with PyZX' is not supported by the evidence as presented. The experimental methodology is absent (no hardware/software specs, no benchmark selection criteria, no statistical measures, no fairness controls), the central comparison table appears missing or inaccessible, and causal attributions for performance gains lack ablation support. The steelman exchange resolved the key severity dispute: the missing Table I is best classified as MAJOR-REVISION rather than RETRACTION-WORTHY, since its absence likely reflects manuscript truncation/formatting rather than data fabrication, and the underlying results could plausibly exist and be supplied. However, the cumulative weight of multiple MAJOR-REVISION issues — missing experimental protocol, undefined fairness methodology, absent variance reporting, potential benchmark selection bias, and unsupported causal claims — means the comparative performance conclusions cannot currently be trusted. The paper's framework/architecture contributions may have independent value, but the empirical superiority claims require substantial revision.",
+  "findings": [
+    {
+      "finding": "The core comparative claim of 'superior performance through fair comparisons with PyZX' is unsupported: no hardware specifications, software versions, execution settings, number of runs, timeout/memory-limit definitions, or any experimental protocol is described.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.95,
+      "justification": "Both reviewers flagged this independently as MAJOR-REVISION and neither downgraded during steelman. The absence of experimental setup documentation renders the reported performance numbers uninterpretable and unreproducible. However, this is a reporting omission rather than evidence of impossibility or fabrication, so it is repairable with proper documentation and re-experimentation.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "No evidence that 'fair comparisons' were actually fair: no documentation of equivalent input formats, optimization targets, termination criteria, or configuration parity between Qsyn and PyZX. The comparison may conflate framework engineering advantages with algorithmic differences.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.93,
+      "justification": "Both reviewers identified this. Reviewer B considered upgrading toward RETRACTION-WORTHY but ultimately maintained MAJOR-REVISION. The claim of 'fairness' is a strong assertion requiring evidentiary support; without it, the comparison could be apples-to-oranges. However, this is fixable by redesigning the comparison or narrowing the claims.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The central comparison table (Table I) is referenced but appears missing or inaccessible in the manuscript text, leaving the paper's primary empirical evidence absent.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "This was the key severity dispute: Reviewer B initially rated RETRACTION-WORTHY, Reviewer A rated MAJOR-REVISION. During steelman, Reviewer B downgraded to MAJOR-REVISION, accepting that the absence is likely a manuscript formatting/truncation artifact rather than a data integrity problem. The manuscript appears textually incomplete (placeholders, truncated sentences), supporting this interpretation. The paper's conclusions are unsupported as presented, but the fix is to include the table, not to retract.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "No statistical measures or variance reporting: single runs appear implied with no mean, standard deviation, confidence intervals, or repeated trials for runtime and memory measurements.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "Both reviewers flagged this. Reviewer A initially rated MINOR but upgraded to MAJOR-REVISION during steelman when recognizing that performance is the paper's centerpiece. Reviewer B initially rated MAJOR-REVISION but acknowledged potential downgrade for deterministic tools with large effect sizes. Given that the effect sizes are unknown (table missing) and performance is central to the claims, MAJOR-REVISION is the appropriate conservative classification.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "No ablation studies separating the contributions of specific design choices (compact ZX-diagram representation, early-stopping strategy, gadget-removal changes, tableau integration) to the reported performance improvements.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Both reviewers flagged this. Reviewer B considered downgrading for a systems paper but ultimately maintained MAJOR-REVISION because the paper makes specific causal attributions. For a methods paper claiming that particular design decisions cause performance gains, attribution without ablation is a significant gap.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Benchmark selection appears potentially biased: only a few named circuits are highlighted, no full benchmark suite or inclusion criteria are described, and cases where PyZX hits TLE/MLE are presented without defined thresholds, creating selection bias toward favorable cases for Qsyn.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Reviewer A flagged cherry-picking; Reviewer B's steelman exchange recognized this as a 'selection bias in comparison design' error they had missed. Reporting only circuits where the competitor fails creates an inherently biased comparison. Without the full results across all benchmarks, the claimed superiority may not generalize.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "TLE (Time Limit Exceeded) and MLE (Memory Limit Exceeded) outcomes are used as evidence of PyZX's inferiority without defining the timeout thresholds, memory limits, or machine specifications, making censored benchmarking data uninterpretable.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Identified by both reviewers and reinforced during steelman. A tool hitting an undefined timeout on unknown hardware does not establish intrinsic inferiority. This is a specific instance of the broader experimental protocol deficiency but merits separate attention because censored data interpretation requires explicit threshold documentation.",
+      "source": "emergent",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Circuit quality metrics (RZ-count, depth) are compared without defining the optimization objective hierarchy, tie-breaking rules, gate set normalization, or whether measurements were taken after equivalent decomposition steps.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Primarily flagged by Reviewer A; reinforced by emergent observation during steelman that metric non-equivalence could make quality comparisons meaningless. Without a canonical evaluation pipeline applied identically to both tools' outputs, the reported differences may not be comparing equivalent objects.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The manuscript appears textually incomplete or corrupted (placeholder texts like '[AUTHOR_1]', '[JOURNAL]', duplicated funding text, truncated sentences), suggesting it was improperly prepared for submission.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers noted this. While concerning for submission quality, it does not by itself invalidate scientific claims. However, it contextualizes the missing Table I as likely a formatting artifact rather than a data integrity issue.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Claims about developer-friendliness, extensibility, and software quality practices (CI/CD, regression testing) lack objective evaluation criteria, user studies, or comparison rubrics.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Flagged by Reviewer A as MINOR. These are qualitative claims peripheral to the central technical contribution. Lack of formal evaluation is common in systems papers and does not affect the validity of synthesis results.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "No discussion of limitations, conditions where Qsyn might perform worse, or comparison with other state-of-the-art tools beyond PyZX.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Flagged by Reviewer B. Reviewer B considered upgrading during steelman but this remains a common reporting gap. It limits the completeness of the evaluation but does not invalidate presented results.",
+      "source": "prover_b",
+      "survived_steelman": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 8,
+    "MINOR": 3
+  },
+  "protocol": {
+    "level": "L2",
+    "agreement": 0.85,
+    "snr": 1.0000000000000002,
+    "theta_accept": 0.9,
+    "theta_noise": 0.15
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "The manuscript is primarily a systems/framework paper, so many claims are qualitative. However, its central empirical claim of 'superior performance through fair comparisons with PyZX' is not methodologically supportable from the text provided because the benchmarking methodology, datasets, hardware/software environment, timeout/memory policies, and statistical/experimental controls are not described. In addition, several strong causal claims about why Qsyn outperforms PyZX are asserted without ablation or controlled evidence. While this is not enough to conclude outright invalidity of the whole paper, it does mean the comparative-performance conclusions require major revision before they can be trusted. There are also substantial reporting and reproducibility deficiencies.",
+    "findings": [
+      {
+        "finding": "The core comparative claim that Qsyn demonstrates 'superior performance through fair comparisons with PyZX' is unsupported because the manuscript provides no benchmark methodology: no hardware specs, software versions, execution settings, circuit selection protocol, number of runs, timeout/memory-limit definitions, or variance reporting.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the paper's benchmarking conclusions could change materially because observed runtime/memory differences may be due to environment, configuration, or selection effects rather than the framework itself. This does not prove the conclusions are false, but they are not methodologically established as presented."
+      },
+      {
+        "finding": "The comparison is described as 'fair' but there is no evidence that PyZX and Qsyn were configured equivalently or optimized comparably, despite Qsyn incorporating algorithmic revisions beyond being merely a framework implementation.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If Qsyn modifies the underlying ZX-based algorithms while PyZX is used in default or different settings, the comparison conflates framework engineering with algorithmic changes. This could substantially alter the interpretation of 'Qsyn is superior' and requires revision of experimental design or claim scope."
+      },
+      {
+        "finding": "The manuscript attributes better circuit statistics to 'Qsyn’s integration of ZX-calculus and Tableau combined methods' without ablation studies separating the effects of representation choices, early stopping, gadget-removal changes, and tableau integration.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Without ablations, the causal explanation for the reported gains is unverified. The overall performance claim might still hold, but the mechanism and contribution attribution could be wrong, which is important for a methods paper."
+      },
+      {
+        "finding": "The performance evidence is incomplete: Table I is referenced, but the manuscript excerpt does not report the actual table contents, sample sizes, aggregate metrics, or per-benchmark outcomes in a form that allows methodological assessment.",
+        "severity": "MAJOR-REVISION",
+        "justification": "A central empirical result cannot be evaluated without the underlying data presentation. If the table is missing or incomplete in the manuscript, reviewers cannot verify whether the claimed superiority is consistent, selective, or based on a few outliers."
+      },
+      {
+        "finding": "There is no indication that runtime and memory measurements were repeated across runs or assessed for variability, which is especially relevant for systems benchmarking.",
+        "severity": "MINOR",
+        "justification": "Lack of variance estimates weakens confidence in the measurements, but for deterministic command-line tools it may not fundamentally alter conclusions if the effects are large. This is a common but still important reporting gap."
+      },
+      {
+        "finding": "The benchmark selection appears potentially cherry-picked: only a few named circuits are highlighted (e.g., gf2^128, hwb12, urf4) without describing the full benchmark suite or inclusion criteria.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If benchmarks were selectively chosen or highlighted, the superiority claim may not generalize. This could change conclusions about comparative performance, though it would not automatically invalidate the entire paper."
+      },
+      {
+        "finding": "Claims of lower RZ-counts and shallower circuits are made without defining the exact optimization objective hierarchy, tie-breaking rules, or whether all metrics were measured before/after equivalent decomposition steps.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Circuit statistics can depend strongly on representation and post-processing conventions. Without standardized measurement methodology, cross-tool comparisons may be misleading and could change the claimed optimization advantage."
+      },
+      {
+        "finding": "The manuscript mixes claims about a developer-friendly framework with claims about improved synthesis algorithms, but does not disentangle whether the contribution is software engineering infrastructure, algorithmic novelty, or both.",
+        "severity": "MINOR",
+        "justification": "This primarily affects clarity of contribution framing rather than validity. However, it contributes to interpretability problems in the comparative evaluation."
+      },
+      {
+        "finding": "The paper makes strong claims about developer-friendliness, extensibility, and software quality practices (CI/CD, regression testing, linting) but provides no objective evaluation criteria, user study, maintenance metrics, or comparison rubric against other frameworks.",
+        "severity": "MINOR",
+        "justification": "These qualitative claims may be reasonable but are not rigorously substantiated. This weakens the evidence for usability claims, though it does not affect the technical correctness of synthesis results."
+      },
+      {
+        "finding": "The manuscript appears textually incomplete or corrupted (e.g., '[AUTHOR_1]', '[JOURNAL]', duplicated funding text, and a truncated sentence 'This representation unification eliminates').",
+        "severity": "MINOR",
+        "justification": "These issues suggest the submission is incomplete and impede review, but they do not by themselves invalidate the scientific claims. They should be corrected before publication."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.85,
+    "reasoning": "The manuscript contains several serious methodological and reporting omissions that undermine the validity of its central performance claims. The comparison with PyZX lacks necessary rigor: no hardware/software environment details, no error bars or variance reporting, no statistical testing, and no description of the benchmarks used (number of runs, circuit families, etc.). Additionally, the manuscript does not clearly separate the claimed contributions of the framework from the empirical evaluation, and the abstract's promise of 'fair comparisons' is not supported by the evidence presented. These issues are not minor reporting gaps — they affect the interpretability and reproducibility of the core results.",
+    "findings": [
+      {
+        "finding": "No reporting of experimental setup: missing software versions, hardware specifications, compiler/optimization flags, or environment details for the runtime and memory comparisons.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Without this information, the runtime and memory comparisons cannot be independently verified or reproduced. The central claim of 'superior performance' is unsubstantiated without a documented, reproducible experimental setup."
+      },
+      {
+        "finding": "No statistical measures reported: single runs appear to be implied, with no mean, standard deviation, or confidence intervals for runtime and memory measurements.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Runtime and memory measurements are inherently variable. Without any indication of variance (e.g., multiple trials with error bars), the reported numbers could be misleading outliers. This directly affects the credibility of the efficiency claims."
+      },
+      {
+        "finding": "No description of the benchmark circuits or workload: the manuscript names circuits (gf2^128, hwb12, urf4) but provides no details about their size, gate count, qubit count, or source. The criteria for 'TLE' and 'MLE' are undefined.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The reader cannot assess whether the comparison is fair or representative. The claimed superiority on circuits where PyZX hits limits is unverifiable without knowing the timeout and memory limit thresholds and the circuit characteristics."
+      },
+      {
+        "finding": "The comparison table (Table I) is referenced but appears to be missing from the manuscript text provided — only a placeholder line exists.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The central empirical evidence for the paper's main claim is absent. Without the actual data table, the conclusions about efficiency and optimization cannot be supported at all."
+      },
+      {
+        "finding": "No description of how 'fair comparisons' were ensured: e.g., same input formats, same optimization goals, same termination criteria between Qsyn and PyZX.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the comparison is not controlled for these factors, the reported performance difference could be due to methodological bias (e.g., one tool does less work or terminates earlier). This undermines the core comparative claim."
+      },
+      {
+        "finding": "Manuscript claims 'superior performance' and 'implementation advantages' but provides no ablation or controlled experiments to attribute improvements to specific design choices (e.g., 'compact ZX-diagram representation' or 'early-stopping strategy').",
+        "severity": "MAJOR-REVISION",
+        "justification": "Without isolating which component caused the improvement, the claimed contributions are untested. A reader cannot tell if the advantage comes from better algorithms, engineering optimizations, or accidental differences."
+      },
+      {
+        "finding": "Missing acknowledgments of limitations: no discussion of conditions where Qsyn might perform worse, no generalizability caveats, no comparison with other state-of-the-art tools beyond PyZX.",
+        "severity": "MINOR",
+        "justification": "This is a common reporting gap. It does not invalidate the presented results but limits the completeness of the evaluation."
+      }
+    ]
+  },
+  "judge": {
+    "agreement_score": 0.85,
+    "severity_agreement": "Generally agree on MAJOR-REVISION severity for most key issues, but disagree on one finding: Review A flags a missing table as MAJOR-REVISION, while Review B flags the same issue as RETRACTION-WORTHY.",
+    "shared_findings": [
+      "Missing experimental setup (hardware, software, environment details)",
+      "No statistical measures or variance reporting (single runs, no error bars)",
+      "Incomplete benchmark description (circuit details, selection criteria, timeout/memory limits)",
+      "Missing Table I / incomplete empirical data presentation",
+      "Lack of controlled fair comparison methodology between Qsyn and PyZX",
+      "No ablation studies to attribute improvements to specific design choices"
+    ],
+    "severity_disputes": [
+      "Missing Table I: A rates it MAJOR-REVISION, B rates it RETRACTION-WORTHY"
+    ],
+    "unique_to_a": [
+      "Claims about developer-friendliness, CI/CD, software quality lacking objective evaluation",
+      "Textual incompleteness/corruption issues (e.g., [AUTHOR_1], duplicated text, truncated sentence)",
+      "Lack of definition for optimization objective hierarchy and tie-breaking rules",
+      "Mixing of framework vs. algorithmic contributions not disentangled"
+    ],
+    "unique_to_b": [
+      "Missing acknowledgments of limitations and conditions where Qsyn might perform worse"
+    ]
+  },
+  "steelman_a": {
+    "steelman_for_other": "The strongest case for the other reviewer is that the manuscript’s headline empirical claim is not merely underreported but presently unevaluable in a way that may approach fundamental non-support. The paper appears to sell a central result: Qsyn achieves superior runtime/memory/circuit-quality performance via 'fair comparisons with PyZX.' If the manuscript does not actually provide the benchmark table contents, experimental protocol, benchmark definitions, timeout/memory thresholds, software/hardware environment, or evidence that both tools were run under equivalent objectives and settings, then the reader cannot inspect the evidentiary basis for the main claim at all. In that framing, this is not just a reproducibility weakness; it is an absence of the minimal information needed to determine whether the comparison measures the same task across systems. If Qsyn and PyZX are not normalized to the same input representation, optimization targets, stopping criteria, and post-processing conventions, the comparison could be apples-to-oranges, making the claimed superiority potentially uninterpretable. Likewise, if the only support for the main claim is a missing or placeholder Table I, then the article’s principal conclusion is unsupported by accessible evidence in the submitted text. One can therefore steelman the other reviewer’s harsher severity by arguing that the manuscript, as presented, fails the key test for its core empirical conclusion: the data and methods as shown do not permit that conclusion to be validated. In particular, the missing table can be viewed as especially serious because the paper’s central comparative evidence is absent rather than merely incomplete. The other reviewer’s move to mark that issue as RETRACTION-WORTHY can be defended if one interprets 'as presented' strictly: without the actual results table, there is no empirical substrate in the manuscript for the superiority claim, so the claim cannot currently be supported by the data as presented.",
+    "severity_i_now_upgrade": [
+      "The performance evidence is incomplete: Table I is referenced, but the manuscript excerpt does not report the actual table contents, sample sizes, aggregate metrics, or per-benchmark outcomes in a form that allows methodological assessment. I would upgrade this from MAJOR-REVISION to potentially RETRACTION-WORTHY if the full submission truly lacks the central comparison table rather than the excerpt merely omitting it. If the table is absent in the manuscript itself, the paper’s main empirical conclusion is unsupported by presented evidence.",
+      "There is no indication that runtime and memory measurements were repeated across runs or assessed for variability, which is especially relevant for systems benchmarking. I would upgrade this from MINOR to MAJOR-REVISION in a stricter benchmarking standard when performance is the paper’s centerpiece, especially if claimed improvements are not massive and measurements include memory/runtime under realistic system noise. Absence of variance reporting can materially affect confidence in superiority claims.",
+      "Claims of lower RZ-counts and shallower circuits are made without defining the exact optimization objective hierarchy, tie-breaking rules, or whether all metrics were measured before/after equivalent decomposition steps. I still think MAJOR-REVISION is right, but I see the stronger case that this is among the most serious problems because without measurement standardization, the comparative quality metrics may not be commensurable at all."
+    ],
+    "severity_i_now_downgrade": [
+      "I would likely downgrade none with high confidence, but I am less certain about treating the apparently incomplete/corrupted manuscript text as only MINOR if the corruption affects empirical sections rather than front matter. If placeholders/truncations are confined to metadata or copy-editing artifacts, MINOR remains correct; if they truncate methodological details or results, they should be upgraded rather than downgraded."
+    ],
+    "findings_i_still_defend": [
+      "The core comparative claim that Qsyn demonstrates 'superior performance through fair comparisons with PyZX' is unsupported because the manuscript provides no benchmark methodology: no hardware specs, software versions, execution settings, circuit selection protocol, number of runs, timeout/memory-limit definitions, or variance reporting. Severity: MAJOR-REVISION. I still defend this because the deficiency could materially change conclusions, but in principle it is repairable with proper reporting and rerunning, so not automatically RETRACTION-WORTHY unless deeper inconsistencies emerge.",
+      "The comparison is described as 'fair' but there is no evidence that PyZX and Qsyn were configured equivalently or optimized comparably, despite Qsyn incorporating algorithmic revisions beyond being merely a framework implementation. Severity: MAJOR-REVISION. This is a core internal-validity problem, but still one that could be fixed by redesigning and re-scoping the comparison.",
+      "The manuscript attributes better circuit statistics to 'Qsyn’s integration of ZX-calculus and Tableau combined methods' without ablation studies separating the effects of representation choices, early stopping, gadget-removal changes, and tableau integration. Severity: MAJOR-REVISION. Strong causal attribution without controlled evidence is a serious but revisable methods issue.",
+      "The benchmark selection appears potentially cherry-picked: only a few named circuits are highlighted (e.g., gf2^128, hwb12, urf4) without describing the full benchmark suite or inclusion criteria. Severity: MAJOR-REVISION. If benchmark selection is selective, conclusions may not generalize; still, this is not definitive invalidation without further evidence.",
+      "The manuscript mixes claims about a developer-friendly framework with claims about improved synthesis algorithms, but does not disentangle whether the contribution is software engineering infrastructure, algorithmic novelty, or both. Severity: MINOR. This affects framing and interpretability more than validity.",
+      "The paper makes strong claims about developer-friendliness, extensibility, and software quality practices (CI/CD, regression testing, linting) but provides no objective evaluation criteria, user study, maintenance metrics, or comparison rubric against other frameworks. Severity: MINOR. These are weakly substantiated qualitative claims, but they are peripheral to the central technical contribution.",
+      "The manuscript appears textually incomplete or corrupted (e.g., '[AUTHOR_1]', '[JOURNAL]', duplicated funding text, and a truncated sentence 'This representation unification eliminates'). Severity: MINOR, with the caveat that if these defects affect methods/results sections, severity should increase."
+    ],
+    "new_errors_noticed": [
+      "A fresh reading suggests a possible category error in the paper’s central comparison: if Qsyn includes algorithmic changes relative to PyZX, then the manuscript may be comparing a new method plus new implementation against an existing tool, while rhetorically attributing gains to the framework. This is not just lack of ablation; it may be a mis-specified experimental claim about what is being compared.",
+      "The phrase 'fair comparisons' may itself be an overclaim requiring evidentiary support. Even if the raw numbers are correct, claiming fairness without documenting equivalence conditions is a potentially misleading assertion that should be explicitly narrowed or substantiated.",
+      "If TLE/MLE outcomes are used as evidence of superiority without defined thresholds and machine specs, then censored outcomes are uninterpretable. A tool hitting a timeout on one machine or under one memory cap does not establish intrinsic inferiority. This should have been called out more explicitly as a methodological error around censored benchmarking data.",
+      "There may be an unaddressed issue of metric non-equivalence for circuit statistics: RZ-count and depth can depend on gate set normalization, simplification passes, and decomposition conventions. Without a canonical evaluation pipeline applied identically to both outputs, reported quality differences may not be comparing the same object.",
+      "If the manuscript emphasizes selected named benchmarks instead of reporting all attempted runs, there is also a risk of survivorship bias or selective omission of cases where Qsyn underperforms. I noted cherry-picking, but the stronger framing is incomplete outcome reporting.",
+      "The absence of comparison to other state-of-the-art tools beyond PyZX may not itself be a fatal flaw, but if the manuscript claims broad superiority or practical state of the art, then the evaluation scope is mismatched to the claim and should be narrowed."
+    ]
+  },
+  "steelman_b": {
+    "steelman_for_other": "The other reviewer correctly emphasizes that this is primarily a systems/framework paper, which shifts the burden of proof. In such papers, strong empirical claims about 'superior performance' are less central than the architecture/design contributions, yet the most severe methodological criticisms should be calibrated to the paper's own stated goals. The other reviewer's position that the core comparative claim is 'unsupported' rather than 'retraction-worthy' is more defensible because: (1) the absence of experimental details does not prove the results are wrong—it only means they cannot be trusted as presented; (2) Table I being unreachable in the provided manuscript excerpt is a submission truncation issue, not necessarily a data fabrication or integrity problem; (3) the paper could plausibly fix all reported issues with a major revision adding benchmarks, error bars, and ablations, which is exactly what 'major revision' means. The other reviewer's reasoning that 'missing benchmark methodology does not prove falsity' is methodologically sound—failing to report details is a different epistemic category than reporting impossible or contradictory results. Their grading of the missing table as MAJOR-REVISION rather than RETRACTION-WORTHY is arguably more proportionate, as the table's absence may be a manuscript formatting error rather than a willful omission. Additionally, the other reviewer's identification that some findings (like missing benchmark descriptions and hardware specs) would be MAJOR-REVISION in a systems paper but potentially RETRACTION-WORTHY in a clinical trial shows appropriate contextual calibration of severity.",
+    "severity_i_now_upgrade": [
+      "finding 1 (no experimental setup): I originally rated MAJOR-REVISION but now see this could be argued as RETRACTION-WORTHY if the paper's entire contribution hinges on the runtime/memory comparison—without any setup documentation, the reported numbers are essentially uninterpretable. However, the other reviewer's position that this is MAJOR-REVISION because the paper could add this information is reasonable. I would upgrade to a 'highly severe MAJOR-REVISION' rather than retraction.",
+      "finding 5 (no description of fair comparisons): I originally rated MAJOR-REVISION but now see this as potentially fundamental—if the comparison methodology is undefined, the central comparative claim cannot be evaluated at all. This approaches RETRACTION-WORTHY territory for the comparative portion of the paper, though not the whole manuscript.",
+      "finding 7 (missing limitations): I originally MINOR, but the other reviewer's framing helps me see that the absence of any discussion of conditions where Qsyn performs worse is more significant in a systems paper claiming superiority—this is at least MODERATE, possibly HIGH severity if the paper makes strong generalizability claims."
+    ],
+    "severity_i_now_downgrade": [
+      "finding 4 (missing Table I): I originally rated RETRACTION-WORTHY, but the other reviewer's perspective makes me reconsider. If the table is simply missing from the provided manuscript excerpt due to formatting/truncation (as the other reviewer notes the manuscript appears textually incomplete), then this is a submission artifact rather than a fundamental data problem. I now see this as MAJOR-REVISION—the authors must provide the table, but its absence in the review copy does not mean the central conclusions are necessarily false. The other reviewer's grading of MAJOR-REVISION is more appropriate.",
+      "finding 6 (no ablation studies): I originally rated MAJOR-REVISION, but the other reviewer correctly notes that for a systems paper, full ablations may not be required for every claimed advantage—engineering contributions are often holistic. This could be downgraded to MINOR if the paper's primary contribution is the framework itself rather than the attribution of specific improvements.",
+      "finding 2 (no statistical measures): I originally MAJOR-REVISION, but for deterministic tools with large effect sizes, single runs may be acceptable in systems benchmarking. The other reviewer's MINOR grading is defensible if the runtime differences are orders of magnitude rather than marginal."
+    ],
+    "findings_i_still_defend": [
+      "finding 1 (no experimental setup) as MAJOR-REVISION: I maintain this is severe but fixable with documentation—there is no evidence of fraud, just omission.",
+      "finding 3 (no benchmark description) as MAJOR-REVISION: The undefined TLE/MLE criteria and missing circuit characteristics remain serious but curable issues.",
+      "finding 5 (no fair comparison methodology) as MAJOR-REVISION: This is critical but not outright fatal—the authors could clarify their controlled settings.",
+      "finding 6 (no ablation for causal claims) as MAJOR-REVISION: For a methods paper making causal attributions, this remains a significant gap even if downgraded for a systems paper."
+    ],
+    "new_errors_noticed": [
+      "The other reviewer's finding about cherry-picked benchmarks highlights a subtle error I missed: by only reporting results on circuits where PyZX fails (TLE/MLE), the paper creates an inherently biased comparison—it selects only cases favorable to Qsyn and ignores circuits where PyZX might perform better. This 'selection bias in comparison design' is a methodological error I should have flagged.",
+      "The text appears corrupted with placeholder texts like '[AUTHOR_1]' and '[JOURNAL]'—this is not just a formatting issue but suggests the manuscript was improperly anonymized or incompletely prepared for submission, which is a submission integrity concern.",
+      "The other reviewer correctly notes the paper conflates framework engineering with algorithmic innovation without disentangling them—this is a 'contribution clarity error' where the paper claims credit for both but provides evidence for neither independently.",
+      "Neither of us adequately flagged that the paper's claim of 'fair comparisons' while using different algorithms (ZX-calculus vs Tableau combined) is logically inconsistent—you cannot compare frameworks fairly if one uses fundamentally different algorithms, unless the claim is about framework-level performance (which then needs justification for why algorithmic differences are 'fair')."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.93,
+    "reasoning": "Both reviewers independently converge on the same core problem: the manuscript's central empirical claim of 'superior performance through fair comparisons with PyZX' is not supported by the evidence as presented. The experimental methodology is absent (no hardware/software specs, no benchmark selection criteria, no statistical measures, no fairness controls), the central comparison table appears missing or inaccessible, and causal attributions for performance gains lack ablation support. The steelman exchange resolved the key severity dispute: the missing Table I is best classified as MAJOR-REVISION rather than RETRACTION-WORTHY, since its absence likely reflects manuscript truncation/formatting rather than data fabrication, and the underlying results could plausibly exist and be supplied. However, the cumulative weight of multiple MAJOR-REVISION issues — missing experimental protocol, undefined fairness methodology, absent variance reporting, potential benchmark selection bias, and unsupported causal claims — means the comparative performance conclusions cannot currently be trusted. The paper's framework/architecture contributions may have independent value, but the empirical superiority claims require substantial revision.",
+    "findings": [
+      {
+        "finding": "The core comparative claim of 'superior performance through fair comparisons with PyZX' is unsupported: no hardware specifications, software versions, execution settings, number of runs, timeout/memory-limit definitions, or any experimental protocol is described.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.95,
+        "justification": "Both reviewers flagged this independently as MAJOR-REVISION and neither downgraded during steelman. The absence of experimental setup documentation renders the reported performance numbers uninterpretable and unreproducible. However, this is a reporting omission rather than evidence of impossibility or fabrication, so it is repairable with proper documentation and re-experimentation.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "No evidence that 'fair comparisons' were actually fair: no documentation of equivalent input formats, optimization targets, termination criteria, or configuration parity between Qsyn and PyZX. The comparison may conflate framework engineering advantages with algorithmic differences.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.93,
+        "justification": "Both reviewers identified this. Reviewer B considered upgrading toward RETRACTION-WORTHY but ultimately maintained MAJOR-REVISION. The claim of 'fairness' is a strong assertion requiring evidentiary support; without it, the comparison could be apples-to-oranges. However, this is fixable by redesigning the comparison or narrowing the claims.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The central comparison table (Table I) is referenced but appears missing or inaccessible in the manuscript text, leaving the paper's primary empirical evidence absent.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.82,
+        "justification": "This was the key severity dispute: Reviewer B initially rated RETRACTION-WORTHY, Reviewer A rated MAJOR-REVISION. During steelman, Reviewer B downgraded to MAJOR-REVISION, accepting that the absence is likely a manuscript formatting/truncation artifact rather than a data integrity problem. The manuscript appears textually incomplete (placeholders, truncated sentences), supporting this interpretation. The paper's conclusions are unsupported as presented, but the fix is to include the table, not to retract.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "No statistical measures or variance reporting: single runs appear implied with no mean, standard deviation, confidence intervals, or repeated trials for runtime and memory measurements.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.78,
+        "justification": "Both reviewers flagged this. Reviewer A initially rated MINOR but upgraded to MAJOR-REVISION during steelman when recognizing that performance is the paper's centerpiece. Reviewer B initially rated MAJOR-REVISION but acknowledged potential downgrade for deterministic tools with large effect sizes. Given that the effect sizes are unknown (table missing) and performance is central to the claims, MAJOR-REVISION is the appropriate conservative classification.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "No ablation studies separating the contributions of specific design choices (compact ZX-diagram representation, early-stopping strategy, gadget-removal changes, tableau integration) to the reported performance improvements.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Both reviewers flagged this. Reviewer B considered downgrading for a systems paper but ultimately maintained MAJOR-REVISION because the paper makes specific causal attributions. For a methods paper claiming that particular design decisions cause performance gains, attribution without ablation is a significant gap.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Benchmark selection appears potentially biased: only a few named circuits are highlighted, no full benchmark suite or inclusion criteria are described, and cases where PyZX hits TLE/MLE are presented without defined thresholds, creating selection bias toward favorable cases for Qsyn.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Reviewer A flagged cherry-picking; Reviewer B's steelman exchange recognized this as a 'selection bias in comparison design' error they had missed. Reporting only circuits where the competitor fails creates an inherently biased comparison. Without the full results across all benchmarks, the claimed superiority may not generalize.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "TLE (Time Limit Exceeded) and MLE (Memory Limit Exceeded) outcomes are used as evidence of PyZX's inferiority without defining the timeout thresholds, memory limits, or machine specifications, making censored benchmarking data uninterpretable.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.88,
+        "justification": "Identified by both reviewers and reinforced during steelman. A tool hitting an undefined timeout on unknown hardware does not establish intrinsic inferiority. This is a specific instance of the broader experimental protocol deficiency but merits separate attention because censored data interpretation requires explicit threshold documentation.",
+        "source": "emergent",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Circuit quality metrics (RZ-count, depth) are compared without defining the optimization objective hierarchy, tie-breaking rules, gate set normalization, or whether measurements were taken after equivalent decomposition steps.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Primarily flagged by Reviewer A; reinforced by emergent observation during steelman that metric non-equivalence could make quality comparisons meaningless. Without a canonical evaluation pipeline applied identically to both tools' outputs, the reported differences may not be comparing equivalent objects.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The manuscript appears textually incomplete or corrupted (placeholder texts like '[AUTHOR_1]', '[JOURNAL]', duplicated funding text, truncated sentences), suggesting it was improperly prepared for submission.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers noted this. While concerning for submission quality, it does not by itself invalidate scientific claims. However, it contextualizes the missing Table I as likely a formatting artifact rather than a data integrity issue.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Claims about developer-friendliness, extensibility, and software quality practices (CI/CD, regression testing) lack objective evaluation criteria, user studies, or comparison rubrics.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Flagged by Reviewer A as MINOR. These are qualitative claims peripheral to the central technical contribution. Lack of formal evaluation is common in systems papers and does not affect the validity of synthesis results.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "No discussion of limitations, conditions where Qsyn might perform worse, or comparison with other state-of-the-art tools beyond PyZX.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Flagged by Reviewer B. Reviewer B considered upgrading during steelman but this remains a common reporting gap. It limits the completeness of the evaluation but does not invalidate presented results.",
+        "source": "prover_b",
+        "survived_steelman": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 5436,
+    "duration_s": 129.36,
+    "n_api_calls": 6,
+    "cost_usd": 0.2976,
+    "total_input_tokens": 16164,
+    "total_output_tokens": 7332,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 1355,
+        "output_tokens": 1084,
+        "cost_usd": 0.0142275,
+        "duration_s": 23.67,
+        "label": "2405.07197v2/gd/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 1380,
+        "output_tokens": 860,
+        "cost_usd": 0.0013186,
+        "duration_s": 12.53,
+        "label": "2405.07197v2/gd/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2230,
+        "output_tokens": 325,
+        "cost_usd": 0.0009596000000000001,
+        "duration_s": 5.01,
+        "label": "2405.07197v2/gd/judge"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2399,
+        "output_tokens": 1606,
+        "cost_usd": 0.0220575,
+        "duration_s": 28.01,
+        "label": "2405.07197v2/gd/steelman_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2458,
+        "output_tokens": 1299,
+        "cost_usd": 0.0020925600000000003,
+        "duration_s": 19.41,
+        "label": "2405.07197v2/gd/steelman_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 6342,
+        "output_tokens": 2158,
+        "cost_usd": 0.25698,
+        "duration_s": 40.73,
+        "label": "2405.07197v2/gd/arbiter"
+      }
+    ]
+  }
+}

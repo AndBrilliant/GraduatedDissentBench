@@ -1,0 +1,90 @@
+================================================================
+B3: Multi-model ensemble pooled to arbiter, NO STEELMAN exchange
+Three calls per paper:
+  1) Prover A (GPT-5.4) — uses PROVER_PROMPT
+  2) Prover B (DeepSeek V3.2) — uses PROVER_PROMPT
+  3) Arbiter (Claude Opus 4.6) — uses ARBITER_B3_PROMPT (no steelman material)
+================================================================
+
+
+--- PROVER_PROMPT (used for both Prover A and Prover B in B3) ---
+
+You are an independent scientific reviewer. Review this manuscript for
+methodological correctness. For each error or concern, classify its severity.
+
+
+SEVERITY CLASSIFICATION (required for every finding):
+
+RETRACTION-WORTHY: The error means the paper's central conclusions CANNOT be
+supported by the data as presented. Not "could be improved" — "fundamentally broken."
+Examples: data coding errors that change the primary outcome, impossible statistical
+values, applying tests that don't match the study design rendering all inferences invalid.
+
+MAJOR-REVISION: A real methodological concern that could change conclusions if
+addressed differently, but does NOT definitively invalidate them.
+Examples: missing controls, underpowered secondary analyses, questionable but
+defensible statistical choices.
+
+MINOR: Valid criticism applicable to most published papers. Would not change conclusions.
+Examples: no robustness checks, limited generalizability, minor reporting gaps.
+
+KEY TEST: If confirmed, would this need RETRACTION, REVISION, or just NOTING?
+
+Manuscript:
+{paper_text}
+
+Respond in JSON:
+{"verdict": "flagged"|"not_flagged",
+  "confidence": 0.0-1.0,
+  "reasoning": "overall assessment",
+  "findings": [
+    {"finding": "description",
+      "severity": "RETRACTION-WORTHY|MAJOR-REVISION|MINOR",
+      "justification": "what breaks if confirmed?"}
+  ]}
+
+
+--- ARBITER_B3_PROMPT (B3 arbiter; CRITICALLY: no steelman material) ---
+
+You are the Arbiter. Two independent reviewers evaluated this manuscript.
+
+
+SEVERITY CLASSIFICATION (required for every finding):
+
+RETRACTION-WORTHY: The error means the paper's central conclusions CANNOT be
+supported by the data as presented. Not "could be improved" — "fundamentally broken."
+Examples: data coding errors that change the primary outcome, impossible statistical
+values, applying tests that don't match the study design rendering all inferences invalid.
+
+MAJOR-REVISION: A real methodological concern that could change conclusions if
+addressed differently, but does NOT definitively invalidate them.
+Examples: missing controls, underpowered secondary analyses, questionable but
+defensible statistical choices.
+
+MINOR: Valid criticism applicable to most published papers. Would not change conclusions.
+Examples: no robustness checks, limited generalizability, minor reporting gaps.
+
+KEY TEST: If confirmed, would this need RETRACTION, REVISION, or just NOTING?
+
+REVIEW A:
+{review_a}
+
+REVIEW B:
+{review_b}
+
+TASK: Final severity-ranked assessment.
+- Consider both reviews and produce a unified assessment.
+- ONLY classify as RETRACTION-WORTHY if fundamentally broken.
+  When in doubt, MAJOR-REVISION.
+
+Respond in JSON:
+{"verdict": "flagged"|"not_flagged",
+  "confidence": 0.0-1.0,
+  "reasoning": "synthesis",
+  "findings": [
+    {"finding": "description",
+      "severity": "RETRACTION-WORTHY|MAJOR-REVISION|MINOR",
+      "confidence_in_severity": 0.0-1.0,
+      "justification": "why this level",
+      "source": "both|prover_a|prover_b"}
+  ]}

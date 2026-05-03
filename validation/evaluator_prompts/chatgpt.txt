@@ -1,0 +1,35 @@
+Clone this repository: [GITHUB_URL]
+Then read validation/README.md and validation/VALIDATION.md.
+
+Your task is to independently verify the reported aggregate results of a
+multi-model scientific error detection benchmark on 20 papers from SPOT
+(Son et al., 2025). Reported numbers in the README:
+  B1 25%, B2 20%, B3 25%, GD 35% (strict pass@1).
+
+Verify by:
+  - Audit every true positive — for each (paper, condition) with TP ≥ 1,
+    confirm the model finding actually describes the same error the SPOT
+    team annotated.
+  - Verify every B3-vs-GD discordant pair: there are 3 papers GD detected
+    but B3 didn't, and 1 paper B3 detected but GD didn't.
+  - Run the scoring script in validation/scoring/ and confirm the
+    aggregates reproduce.
+  - Diff the four prompt files in validation/prompts/ — B1 must lack
+    severity vocabulary, B2 must include it, B3's arbiter must have no
+    steelman material, GD's arbiter must include steelman material.
+  - Spot-check 5 ground-truth rows against the public SPOT dataset on
+    HuggingFace (amphora/SPOT-MetaData).
+  - Investigate the anonymization asymmetry the README flags: 10 papers
+    anonymized, 10 not, with all conditions performing substantially
+    better on the anonymized subset.
+
+Save your report as validation/reports/chatgpt_report.md using the
+template at the end of validation/README.md.
+
+Be adversarial — your job is to find scoring errors, prompt
+contamination, ground-truth misrepresentation, or unsound aggregation.
+Assume the results are wrong until you have specifically verified each
+piece.
+
+End with a single-line verdict: CONFIRMED / ISSUES FOUND / CRITICAL
+PROBLEM.

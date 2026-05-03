@@ -1,0 +1,386 @@
+{
+  "condition": "GD",
+  "paper_id": "2408.04316v2",
+  "verdict": "flagged",
+  "confidence": 0.88,
+  "reasoning": "Both reviewers independently flag the manuscript for serious concerns. The most critical issue—a potential sign/orientation inconsistency in the central Theorem 2.2—was identified by Review A as RETRACTION-WORTHY but subsequently downgraded by Review A itself during steelmanning to MAJOR-REVISION, acknowledging that convention/transcription ambiguity cannot be excluded without access to the exact manuscript conventions and implemented code. Review B initially missed this issue but acknowledged its seriousness upon reflection. Both reviewers agree that the proof of Theorem 2.4 (the bridge from W to IRK matrix inversion) is incomplete or insufficiently justified, and that the numerical validation is circular or inadequate. The combination of a potentially incorrect central formula, an incomplete proof for the main application, and validation that cannot detect systematic errors constitutes a serious set of concerns warranting major revision. However, since Review A itself conceded the RETRACTION-WORTHY classification was likely overstated given convention ambiguity, and because the underlying mathematics may be correct even if the presentation is flawed, the overall assessment is MAJOR-REVISION for the most serious findings rather than RETRACTION-WORTHY.",
+  "findings": [
+    {
+      "finding": "Potential sign/orientation inconsistency in Theorem 2.2 for W = V^{-1}HV. The stated off-diagonal formula uses denominator (c_j - c_i) and ratio λ_j/λ_i, but direct derivation under standard Vandermonde conventions may yield the opposite sign/transpose orientation. If the formula is wrong as stated, all downstream results (algorithms, IRK inverse identification) are affected.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.72,
+      "justification": "Review A originally classified this as RETRACTION-WORTHY but downgraded to MAJOR-REVISION during steelmanning, acknowledging that the discrepancy could stem from convention/transcription ambiguity rather than a fundamental theorem error. Review B did not independently identify this but agreed it was serious upon reflection. Without confirming the exact manuscript conventions and checking whether the implemented algorithms match the stated or corrected formula, RETRACTION-WORTHY cannot be justified. However, this remains the most serious concern: if the formula is genuinely wrong (not just a convention mismatch), it would invalidate the paper's central contribution. The uncertainty warrants MAJOR-REVISION with high priority for verification.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Incomplete and potentially flawed proof of Theorem 2.4 linking W_n^T to A^{-1} for IRK matrices. The derivation contains a logical leap from equation (2.19) to the final result, notation/dimension overloading (c_0 as scalar vs. vector, D_n vs. C_n confusion), and does not explicitly demonstrate why the lower-right block of W^T equals A^{-1}.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers independently identified this as a major concern. Review A flagged notation/matrix inconsistencies in (2.18)-(2.19); Review B flagged the logical leap in the proof. Both rated MAJOR-REVISION. This is the paper's main application claim and the proof as written is insufficient to support it. The result may be true (and may follow from known results or a corrected derivation), but the paper's own contribution of proving this link is methodologically broken as presented.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Numerical validation is circular/inadequate. The accuracy benchmark uses quadruple-precision output of the same algorithm family as 'exact' reference (equation 4.2), and the identity check W_n^T A ≈ I presupposes the correctness of the theorem being validated. No independent reference solution, backward error analysis, or residual norms (e.g., ||VW - HV||, ||AW_n^T - I|| against independently computed A^{-1}) are provided.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers flagged this concern independently and both rated it MAJOR-REVISION. The circularity is especially problematic given the potential sign error in Theorem 2.2: the same systematic error would propagate to the higher-precision computation, making it undetectable. This does not prove the results wrong but means the evidence for correctness is inadequate. Standard numerical methodology requires independent verification.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Internal inconsistency in Lemma 2.1 / equation (2.7) regarding product index sets. The text gives the i≠j case as prod_{k≠j}(c_j - c_k), while specialization requires prod_{k≠i,j}(c_j - c_k). Only the latter is compatible with differentiating ψ(x) = ∏_{k≠i}(x - c_k).",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.7,
+      "justification": "Identified by Review A and acknowledged by Review B during steelmanning as a concrete error in the derivation chain. If present in the manuscript, this undermines the proof of Theorem 2.2. May be a typo that is easily correctable, but it reduces confidence in the rigor of the proof chain.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Claims that algorithms are 'highly efficient and accurate' are not substantiated by stability analysis, condition-aware error bounds, or proper residual diagnostics. The paper acknowledges instability/overflow issues for Algorithm 3.1 and cancellation for Algorithms 3.2-3.3 but does not provide formal stability guarantees.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.75,
+      "justification": "Review A rated this MAJOR-REVISION; Review B downgraded to MINOR during steelmanning, noting that overclaiming without full stability analysis is common in numerical papers and does not invalidate results. Review A's steelman did not change the rating but acknowledged it was close to the MINOR boundary. The finding is valid but does not change the paper's conclusions if the formulas themselves are correct.",
+      "source": "prover_a",
+      "survived_steelman": false
+    },
+    {
+      "finding": "No BIM-specific numerical experiments despite BIM being prominently mentioned in abstract and introduction as a motivating application.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Identified as a new observation during steelmanning by Review A. The paper claims applicability to BIM matrices but provides no direct experimental validation for this use case. This is a scope/completeness issue rather than a correctness concern.",
+      "source": "emergent",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Lack of explicit definition of how W_n is extracted from W in the numerical validation section, and gap between theory (distinct real or complex nodes) and algorithms (restricted to ordered real nodes).",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers noted related clarity/reporting gaps. These are presentation issues that would not change conclusions but should be addressed for reproducibility and completeness.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Nonstandard generalized binomial coefficient notation and exact flop-count reporting without clear computational model.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers rated these as MINOR. They are standard clarity and reporting concerns that do not affect the paper's conclusions.",
+      "source": "both",
+      "survived_steelman": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 4,
+    "MINOR": 4
+  },
+  "protocol": {
+    "level": "L2",
+    "agreement": 0.65,
+    "snr": 2.3333333333333335,
+    "theta_accept": 0.9,
+    "theta_noise": 0.15
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.92,
+    "reasoning": "The manuscript appears to contain substantial mathematical and methodological problems in its core derivations and validation strategy. The most serious issue is an index/orientation inconsistency in the explicit formula for W = V^{-1}HV: the theorem as stated gives the off-diagonal denominator as (c_j-c_i), but direct derivation from barycentric/Lagrange interpolation for V^{-1}HV with the stated Vandermonde convention yields the transpose sign/orientation, i.e. denominator (c_i-c_j). This is not a cosmetic sign issue: it affects the claimed identification of W_n^T with A^{-1} and the correctness of the numerical algorithms based on formula (3.1). There are also internal inconsistencies in Lemma 2.1 / equation (2.7) as transcribed, and the numerical validation is circular because quadruple precision output is treated as “exact” instead of being checked against exact identities or backward error. These issues are serious enough that the manuscript should be flagged for major correction, and if the central theorem is indeed misstated in the paper rather than only in the provided text, the main conclusions would not be supported as written.",
+    "findings": [
+      {
+        "finding": "Core sign/orientation inconsistency in Theorem 2.2 for W = V^{-1}HV. The stated off-diagonal formula uses (c_j-c_i)^{-1} * prod_{k≠j}(c_j-c_k)/prod_{k≠i}(c_i-c_k), but direct computation for the stated Vandermonde convention gives the opposite orientation/sign, equivalent to denominator (c_i-c_j) and ratio λ_i/λ_j rather than λ_j/λ_i.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This is the paper’s central explicit formula. If the theorem is wrong as stated, then the claimed exact inverse formulas for IRK/BIM matrices and all three algorithms based on (3.1)/(3.5) are computing the wrong matrix (or its negative/transpose variant). That would invalidate the principal conclusions, not merely require polishing."
+      },
+      {
+        "finding": "Internal inconsistency between Lemma 2.1 / equation (2.7) and its specialization at x=c_j. In the provided text, one line gives the i≠j case as prod_{k≠j}(c_j-c_k), while the later specialization gives prod_{k≠i,j}(c_j-c_k). Only the latter is compatible with differentiating ψ(x)=∏_{k≠i}(x-c_k).",
+        "severity": "MAJOR-REVISION",
+        "justification": "If this inconsistency is present in the manuscript, the proof chain for Theorem 2.2 is unreliable. It may be repairable, but the current derivation cannot be trusted until every index set is corrected and checked."
+      },
+      {
+        "finding": "The proof of Theorem 2.4 contains likely notation/matrix inconsistencies: equation (2.18) states H^T = F [[0,c_0^T],[c_0,C_n]] but the subsequent multiplication in (2.19) uses D_n instead of C_n, and dimensions/roles of c_0 as scalar versus vector are overloaded.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This affects the derivation connecting W^T to A^{-1}. The theorem may still be true, but the proof as written is not methodologically sound unless these block identities are dimensionally and symbolically corrected."
+      },
+      {
+        "finding": "Validation of numerical accuracy is weak/circular: W^q (quadruple precision output of the same algorithm family) is treated as ‘exact’ in (4.2). No independent reference solution, residual check (e.g., ||WV^{-1}-?|| or ||VW-HV||), or backward error is used.",
+        "severity": "MAJOR-REVISION",
+        "justification": "A higher-precision run of the same method is not an exact benchmark and can conceal systematic derivation or implementation errors. This could materially change claims of ‘highly accurate’ algorithms, especially in the presence of cancellation/overflow discussed by the authors."
+      },
+      {
+        "finding": "The claim that the algorithms are ‘highly efficient and accurate’ is not substantiated by stability analysis or condition-aware error assessment. The paper itself notes instability/overflow of Algorithm 3.1 and severe cancellation in diagonal entries for Algorithms 3.2–3.3, yet the evaluation relies mainly on runtime and comparison to higher precision.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This overstates the evidence. The conclusion about numerical reliability could change once proper residuals, scaling tests, and condition-dependent error bounds are examined."
+      },
+      {
+        "finding": "The manuscript says ‘W has better structure than Vandermonde matrix although it is singular,’ but W = V^{-1}HV is similar to H. Since H is nilpotent and singular, this statement is true but potentially misleading in the context of discussing inversion/accuracy; no structural property is formalized to justify the stability claims of Algorithms 3.2–3.3.",
+        "severity": "MINOR",
+        "justification": "This is mostly an exposition issue; it does not by itself invalidate results, but the manuscript should clearly articulate what structural property is exploited and why it helps numerically."
+      },
+      {
+        "finding": "The complexity accounting is reported as exact flop counts (e.g., 11n^2+12n, 7n^2+15n, 7n^2+9n) without a clear computational model, and some counts appear to ignore costs of divisions, branching, memory movement, and possible extended-precision expense.",
+        "severity": "MINOR",
+        "justification": "This does not change asymptotic O(n^2) claims, but exact operation-count claims should be presented more carefully or softened."
+      },
+      {
+        "finding": "The numerical experiments do not directly verify the defining identity W = V^{-1}HV or the application identity W_n^T = A^{-1} across the tested examples using residual norms such as ||VW-HV||, ||AW_n^T-I||, and conditioning diagnostics.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Such residual checks are the appropriate methodological validation for a new explicit matrix formula. Without them, correctness claims rely too heavily on internal consistency and software comparisons."
+      },
+      {
+        "finding": "Generalized binomial coefficient notation \\binom{c_n}{c_i} is nonstandard and potentially confusing; more importantly, formulas involving it depend on node ordering and sign conventions, but these dependencies are not always stated when the notation is reused in Theorems/Corollaries.",
+        "severity": "MINOR",
+        "justification": "Primarily a clarity/reporting concern, though it becomes more important because sign/orientation already appears problematic elsewhere."
+      },
+      {
+        "finding": "The manuscript restricts Algorithms 3.2 and 3.3 to ordered real nodes c(0)<...<c(n), whereas the main theory is stated for distinct real or complex c_i. The gap between theory and algorithm applicability is not clearly delineated.",
+        "severity": "MINOR",
+        "justification": "This limits generalizability rather than invalidating the main theorem. The paper should distinguish clearly between symbolic formula validity and numerically stable algorithmic regimes."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.9,
+    "reasoning": "The manuscript presents a mathematically sound derivation of an explicit formula and fast O(n²) algorithms for computing the inverse of a specific class of matrices (W = V⁻¹HV) and their applications to IRK and BIM matrices. However, the manuscript contains a critical methodological flaw regarding the proof of Theorem 2.4 (the link to IRK matrices) and a potential gap in the numerical validation that undermines the claimed applicability of the algorithms to the motivating practical problems. The central derivations for the matrix W itself appear correct, but the bridge to the main application (IRK inversion) is not adequately justified, and the numerical tests fail to validate the most important claim (computing A⁻¹ for IRK matrices) against a standard reference.",
+    "findings": [
+      {
+        "finding": "Incomplete and potentially incorrect derivation for the inverse of the IRK matrix (Theorem 2.4). The proof attempts to show that the submatrix Wₙᵀ (from W) equals A⁻¹ for the IRK coefficient matrix A. The derivation in equation (2.19) derives an expression for Wᵀ, and then states 'Combining (2.16), (2.19), and Theorem 2.2 completes the proof.' However, the key connection is not explicitly shown. The proof does not directly demonstrate why the lower-right n×n block of Wᵀ (which is VₙDₙVₙ⁻¹Cₙ⁻¹) is indeed the inverse of A = CₙVₙDₙ⁻¹Vₙ⁻¹. The step from (2.19) to the final result is a logical leap that is not justified in the provided text. The theorem claims specific formulas for (A⁻¹)ᵢⱼ which need to be verified against the derived expression. The presented proof is insufficient to support these non-trivial formulas.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the proof for Theorem 2.4 is incomplete or incorrect, then the central claim of the paper—that the inverse of the IRK matrix can be obtained as a submatrix of W—is not properly established. This would not require retraction if the formula itself can be proven correct (it likely is, based on known results), but the paper's own contribution of 'proving' this link is methodologically broken. The conclusion that the explicit formula for W provides A⁻¹ is a key selling point and must be rigorously justified. If the proof is flawed, the paper would need significant revision to include a complete, correct derivation."
+      },
+      {
+        "finding": "Numerical validation does not verify the primary claim for IRK and BIM matrices. The numerical experiments in Section 4 only validate the formula for W by comparing Wₙᵀ * A to I (Tables 1 and 2). While this checks the identity WₙᵀA = I (assuming the link from Theorem 2.4 is correct), it does not independently verify that the computed Wₙᵀ is the true inverse of A for the IRK coefficients. A robust test would directly compare the elements of the computed Wₙᵀ against a high-precision computation of A⁻¹ from the definition (e.g., using the Mathematica command for A and then inverting it with high precision). The test in (4.1) implicitly assumes the link holds. If the link is flawed, the test is meaningless for the practical problem. Furthermore, the manuscript motivates the work by needing A⁻¹ for preconditioning (equations 1.3, 1.4), but the algorithms for W are not specifically evaluated for computing BIM matrix inverses at all, even though BIM matrices are mentioned in the abstract and introduction.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The numerical section fails to test the core practical application of the paper. The paper claims the algorithms produce A⁻¹ for IRK matrices, but the validation is circular (checking the identity WₙᵀA = I is equivalent to checking the identity from Theorem 2.4, not testing the algorithm against the ground truth). A direct comparison of the computed inverse against a reference inverse (e.g., from a direct solve or a known library) is a standard requirement. Without this, the paper's conclusion that the algorithms are accurate for computing IRK inverses is unsupported. This is a major revision as it requires re-running experiments and potentially re-interpreting the results."
+      },
+      {
+        "finding": "Lack of definition of 'Wₙ' in the numerical validation section (4.1). The text defines W in (1.1) with a block structure (w₁₁, w₁ᵀ, w₂, Wₙ). In Section 4.1, the test uses 'Wₙᵀ A = I', but the relationship between the submatrix Wₙ from (1.1) and the IRK matrix A for the specific node sets (Examples 1 and 2) is not explicitly restated before the test. While Theorem 2.4 provides the formula for A⁻¹, the text for the numerical test simply says 'the submatrix Wₙᵀ is exactly the inverse of the IRK matrix A when choosing cᵢ as in Examples 1 and 2.' This is acceptable as a statement, but the text in the experiment section does not specify how Wₙ is extracted from the computed W (i.e., which rows/columns correspond to the IRK nodes, since the IRK matrix is n×n and W is (n+1)×(n+1)). This is a minor oversight.",
+        "severity": "MINOR",
+        "justification": "The omission is a reporting gap. The reader can infer that Wₙ corresponds to the last n rows and n columns (or first, given c₀=0), but it should be explicitly stated. This would not change the results but is a clarity issue."
+      },
+      {
+        "finding": "Potential for overflow in Algorithm 3.2 is a robustness issue, not a methodological error. The paper correctly identifies this limitation and proposes Algorithm 3.3 to address it. The numerical results in Table 3 confirm that Algorithm 3.2 fails for n=10000 in Example 1, while Algorithm 3.3 does not. This is a well-analyzed and resolved implementation detail.",
+        "severity": "MINOR",
+        "justification": "This is a valid technical observation about numerical stability. The authors acknowledge the issue, analyze its cause, and provide a superior alternative (Algorithm 3.3). This is a strength of the paper, not a flaw. It is classified as minor because it highlights a limitation of an algorithm, which is standard scientific practice."
+      }
+    ]
+  },
+  "judge": {
+    "agreement_score": 0.65,
+    "severity_agreement": "Partially. Both flag the manuscript, but only Review A identifies a finding as RETRACTION-WORTHY (the sign/orientation inconsistency in Theorem 2.2). Review B does not assign any finding that severe, instead rating its most critical issue as MAJOR-REVISION. They disagree on whether the core theorem error warrants retraction or only major revision.",
+    "shared_findings": [
+      "The link between W and A^{-1} (Theorem 2.4) is insufficiently justified or incomplete.",
+      "Numerical validation fails to directly verify the application identity (IRK/BIM inversion) against an independent reference."
+    ],
+    "severity_disputes": [
+      "Finding on Theorem 2.2 sign/orientation error: Review A rates RETRACTION-WORTHY; Review B does not mention this error.",
+      "Finding on Theorem 2.4 proof gap: Review A rates MAJOR-REVISION; Review B also rates MAJOR-REVISION (no dispute here).",
+      "Finding on numerical validation being circular: Review A rates MAJOR-REVISION; Review B rates MAJOR-REVISION (no dispute)."
+    ],
+    "unique_to_a": [
+      "Core sign/orientation inconsistency in Theorem 2.2 for W = V^{-1}HV.",
+      "Internal inconsistency in Lemma 2.1/equation (2.7) with specialization at x=c_j.",
+      "Notation/matrix inconsistencies in Theorem 2.4 proof (equation (2.18)-(2.19)).",
+      "Weak/circular validation using higher-precision run of same method (Section 4).",
+      "Overstated stability and efficiency claims without proper residual or condition diagnostics.",
+      "Statement about W being singular and structured but not formalized.",
+      "Exact flop count accounting without clear model.",
+      "Numerical experiments missing residual checks for defining identity W = V^{-1}HV.",
+      "Nonstandard binomial coefficient notation and sign convention issues.",
+      "Restriction of algorithms to ordered real nodes vs. general theory."
+    ],
+    "unique_to_b": [
+      "Incomplete derivation for IRK matrix inverse (Theorem 2.4) as a logical leap.",
+      "Numerical validation fails to directly compare computed W_n^T against independently computed A^{-1}.",
+      "Lack of explicit definition of W_n extraction in numerical section (reporting gap).",
+      "Potential overflow in Algorithm 3.2 is well-analyzed and resolved (minor)."
+    ]
+  },
+  "steelman_a": {
+    "steelman_for_other": "The strongest case for the other reviewer is that the manuscript’s mathematical core may well be substantially correct, and the most defensible criticism is about the application bridge and validation rather than the explicit formula for W itself. In particular:\n\n1. The apparent sign/orientation issue in Theorem 2.2 may be a transcription or convention mismatch rather than a fatal theorem error. For Vandermonde-like matrices, formulas for V^{-1}HV are notoriously sensitive to whether V_{ij}=c_i^{j-1} or c_j^{i-1}, whether indices start at 0 or 1, whether one writes row-vs-column interpolation bases, and whether barycentric weights are defined as λ_i=1/∏_{k≠i}(c_i-c_k) or its reciprocal. Under one convention, the off-diagonal term naturally appears with (c_i-c_j) in the denominator and λ_i/λ_j; under the transpose convention it appears as (c_j-c_i) with λ_j/λ_i. If the manuscript’s matrix orientation differs from the one I implicitly reconstructed, then what I called a ‘core sign inconsistency’ could collapse to a notational ambiguity. That would demote the issue from a theorem-destroying error to a clarity/proof-checking issue.\n\n2. Even if there is a mismatch in the displayed formula, the paper’s central computational contribution could still survive. The actual algorithms in Section 3 may have been derived from recurrence relations, product updates, or a correctly oriented implementation rather than blindly from the displayed symbolic formula. If so, a typo in the theorem statement would be serious but repairable by erratum or revision, not retraction-worthy. The paper’s practical claims would remain potentially valid if the code and tables correspond to the correct matrix.\n\n3. Theorem 2.4 is a more natural locus of major concern than Theorem 2.2. The manuscript’s real selling point is not merely an explicit formula for W=V^{-1}HV but its use to invert IRK matrices. If the derivation linking W_n^T to A^{-1} is incomplete, notation-confused, or logically abrupt, then the main application is insufficiently justified even if the W formula is fine. This is exactly the sort of issue that warrants major revision: the authors may be able to add a complete block-matrix proof without changing the actual result.\n\n4. The numerical section is weak in a way that matters directly to claims of applicability. Comparing against quadruple precision output of the same computational family, or checking identities that presuppose the theorem being tested, is not a robust validation strategy. A proper high-precision reference inverse, residual norms, and backward error would be expected. But this weakness usually supports MAJOR-REVISION, not RETRACTION-WORTHY, because poor validation does not prove the result false; it shows the evidence is inadequate.\n\n5. The other reviewer’s severity framing is attractive because it aligns with the key test: if confirmed, would the issue require retraction or revision? For the IRK proof gap and numerical-validation circularity, the answer is clearly revision. For the alleged Theorem 2.2 sign problem, unless one can exclude all convention/transcription explanations and show the implemented algorithms and tabulated outputs necessarily compute the wrong object, the safer severity is also major revision.\n\n6. In short, the best charitable reading is: the manuscript likely contains real proof-writing and validation deficiencies, especially in the bridge to IRK/BIM applications, but the underlying mathematics may still be correct and salvageable. Therefore the other reviewer’s emphasis on MAJOR-REVISION rather than theorem-fatal severity is a disciplined and defensible position.",
+    "severity_i_now_upgrade": [],
+    "severity_i_now_downgrade": [
+      "Core sign/orientation inconsistency in Theorem 2.2 for W = V^{-1}HV: RETRACTION-WORTHY -> MAJOR-REVISION. On reflection, this could be due to a convention/transcription mismatch, and without confirming the manuscript’s exact Vandermonde orientation and the actual implemented formulas, I cannot justify the strongest severity.",
+      "Validation of numerical accuracy is weak/circular: remains MAJOR-REVISION, but I would narrow the claim. The problem is inadequate and partially circular validation, not necessarily that all numerical conclusions are invalid."
+    ],
+    "findings_i_still_defend": [
+      "Internal inconsistency between Lemma 2.1 / equation (2.7) and its specialization at x=c_j: MAJOR-REVISION. Even if repairable, it undermines confidence in the proof chain as written.",
+      "The proof of Theorem 2.4 contains likely notation/matrix inconsistencies: MAJOR-REVISION. This remains the strongest substantive concern because it affects the bridge from W to A^{-1}.",
+      "Numerical experiments do not directly verify the defining identity W = V^{-1}HV or the application identity W_n^T = A^{-1} with proper residuals/conditioning diagnostics: MAJOR-REVISION.",
+      "Claim that algorithms are 'highly efficient and accurate' is insufficiently substantiated by stability-aware evidence: MAJOR-REVISION, though this is close to a strong MINOR depending on journal standards.",
+      "Statement about W having 'better structure' although singular: MINOR.",
+      "Exact flop-count reporting without clear cost model: MINOR.",
+      "Generalized binomial notation and sign/order dependence not clearly managed: MINOR.",
+      "Gap between theory for distinct real/complex nodes and algorithms restricted to ordered real nodes: MINOR."
+    ],
+    "new_errors_noticed": [
+      "My original RETRACTION-WORTHY label may have overreached because I did not separate three possibilities: (a) theorem statement wrong, (b) theorem statement right under manuscript convention, (c) theorem statement typo but algorithms/code correct. Those have very different severities.",
+      "I may have conflated 'formula for W is wrong' with 'identification of W_n^T with A^{-1} is wrong'. The latter can fail even if the former is correct, and vice versa; the review should disentangle them.",
+      "The numerical-circularity criticism should be phrased more carefully. Checking W_n^T A ≈ I is not meaningless; it is a valid inverse residual test. What is circular is using the same theorem-derived construction without an independent reference when the theorem-to-application bridge itself is under question.",
+      "I may have understated that the other reviewer’s focus on Theorem 2.4 is methodologically cleaner: it targets the practical claim actually motivating the paper, rather than relying on a possibly convention-sensitive objection to Theorem 2.2.",
+      "Fresh perspective suggests one additional concern: if the algorithms are advertised for BIM as well as IRK, the paper should include at least one direct BIM inversion/use-case experiment. The current evidence may be too IRK-centric for the abstract-level claim.",
+      "Another fresh concern: the manuscript should distinguish algebraic exactness of the explicit formula from numerical stability of evaluating it. Some of my original points blended these two levels."
+    ]
+  },
+  "steelman_b": {
+    "steelman_for_other": "The other reviewer's strongest argument is the identification of a potential sign/orientation inconsistency in Theorem 2.2 (the central explicit formula for W = V^{-1}HV). If the denominator is indeed (c_j-c_i) when it should be (c_i-c_j), or if the ratio λ_j/λ_i is swapped, then every subsequent result—including the proof of Theorem 2.4 linking W to A^{-1} for IRK matrices, the three algorithms built on formula (3.1), and the numerical validation that implicitly depends on this sign convention—would be systematically wrong. This is not a minor oversight; it is a foundational mathematical error that would propagate to all claimed contributions. The other reviewer correctly notes that direct computation using barycentric interpolation and the stated Vandermonde convention (V_{ij} = c_j^{i-1}) does not yield the formula as written, which suggests either the theorem statement contains a critical sign/transpose error or the conventions are not consistently defined. Unlike my original criticism (which focused on the incompleteness of the proof for Theorem 2.4), the other reviewer's objection challenges the very formula that the paper is built upon. If confirmed, this would indeed warrant retraction because the paper's central conclusion—that the explicit formula provides the correct inverse—would be false. The other reviewer also correctly notes that the validation is circular: using quadruple precision of the same algorithm as a 'reference' is not independent verification. My original review accepted the internal consistency of the derivation of W as 'mathematically sound,' but the other reviewer shows that this assumption may be unwarranted. Additionally, the internal inconsistency in Lemma 2.1/equation (2.7) (missing indices in product) further undermines confidence in the derivation chain. These combined issues make a strong case that the paper is fundamentally broken, not just incomplete in its proof presentation.",
+    "severity_i_now_upgrade": [
+      "Core sign/orientation inconsistency in Theorem 2.2 for W = V^{-1}HV (I originally had this as 'not flagged' because I assumed the derivation of W was sound). I now agree with the other reviewer that this should be RETRACTION-WORTHY or at least MAJOR-REVISION. If the sign is wrong, all subsequent work fails. I upgrade to at least MAJOR-REVISION, and potentially RETRACTION-WORTHY pending confirmation of the sign error in the actual manuscript.",
+      "Validation of numerical accuracy is weak/circular (I originally rated this MAJOR-REVISION). The other reviewer correctly stresses that using quadruple precision of the same algorithm is not an exact benchmark. I now believe this is potentially RETRACTION-WORTHY if the sign/orientation error is present, because the validation would not detect a systematic sign error in the algorithm. Even without the sign error, the circular validation is stronger grounds for revision than I originally credited. I upgrade to MAJOR-REVISION (still not retraction-worthy alone, but more serious than I stated)."
+    ],
+    "severity_i_now_downgrade": [
+      "Incomplete and potentially incorrect derivation for the inverse of the IRK matrix (Theorem 2.4) — I originally rated MAJOR-REVISION. However, the other reviewer suggests the whole IRK connection may be moot if Theorem 2.2 is wrong. If Theorem 2.2 is correct, my original criticism (lack of explicit steps) is still valid but becomes secondary to the sign issue. I downgrade to MINOR if Theorem 2.2 is confirmed correct, because the proof incompleteness is actually a presentation gap that could be filled. But if Theorem 2.2 is wrong, this finding is irrelevant. Since I am now uncertain about Theorem 2.2, I keep this at MAJOR-REVISION conditionally, but acknowledge it might be downgraded.",
+      "The claim that the algorithms are 'highly efficient and accurate' is not substantiated by stability analysis (I originally rated MAJOR-REVISION). The other reviewer argues this is overstatement. I now think this is more of an MINOR to MAJOR-REVISION boundary issue. I downgrade to MINOR because overclaiming without full stability analysis is common in numerical papers and does not invalidate results; it just requires tempering language.",
+      "Complexity accounting issues (I originally rated MINOR, which I keep). The other reviewer also rates this MINOR. No change."
+    ],
+    "findings_i_still_defend": [
+      "Lack of definition of 'W_n' in numerical validation (MINOR) — I still consider this a minor reporting gap. The other reviewer does not directly address this, but it is a valid observation regardless of other issues.",
+      "Potential for overflow in Algorithm 3.2 (MINOR) — I still consider this a properly handled technical detail, not a flaw. The other reviewer does not contest this.",
+      "The numerical experiments do not directly verify the defining identity W = V^{-1}HV (MAJOR-REVISION) — The other reviewer echoes this concern, and I still believe it is a methodological gap that requires independent residual checks. I stand by MAJOR-REVISION on this point.",
+      "Generalized binomial coefficient notation (MINOR) — I still consider this a clarity issue. The other reviewer also rates it MINOR.",
+      "Restriction to ordered real nodes (MINOR) — I still consider this a limitation that should be stated clearly. The other reviewer agrees MINOR."
+    ],
+    "new_errors_noticed": [
+      "The sign/orientation inconsistency in Theorem 2.2 is a genuine potential error I did not catch in my original review. I now see that deriving W = V^{-1}HV using the Vandermonde convention V_{ij} = c_j^{i-1} and the matrix H (with superdiagonal entries 1, 2, ..., n) could indeed yield a different sign pattern than stated. The off-diagonal formula with denominator (c_j-c_i) versus (c_i-c_j) changes the transpose/negative relationship, which would affect the identification with A^{-1}. I need to verify this with direct computation before finalizing the severity.",
+      "The internal inconsistency in Lemma 2.1/equation (2.7) with missing index j in the product (prod_{k≠i,j} vs. prod_{k≠j}) is a concrete error in the derivation that I missed. If present in the manuscript, this undermines the proof of Theorem 2.2.",
+      "Equation (2.18)-(2.19) dimension overloading (c_0 as scalar versus vector, mixing D_n and C_n) is a potential confusion I did not flag. This could be a typesetting error or a genuine flaw.",
+      "I now notice that the other reviewer's criticism about the validation being circular is more fundamental than I appreciated: using quadruple precision of the same algorithm does not guard against systematic sign errors in the formula. My original review should have flagged this more strongly."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.88,
+    "reasoning": "Both reviewers independently flag the manuscript for serious concerns. The most critical issue—a potential sign/orientation inconsistency in the central Theorem 2.2—was identified by Review A as RETRACTION-WORTHY but subsequently downgraded by Review A itself during steelmanning to MAJOR-REVISION, acknowledging that convention/transcription ambiguity cannot be excluded without access to the exact manuscript conventions and implemented code. Review B initially missed this issue but acknowledged its seriousness upon reflection. Both reviewers agree that the proof of Theorem 2.4 (the bridge from W to IRK matrix inversion) is incomplete or insufficiently justified, and that the numerical validation is circular or inadequate. The combination of a potentially incorrect central formula, an incomplete proof for the main application, and validation that cannot detect systematic errors constitutes a serious set of concerns warranting major revision. However, since Review A itself conceded the RETRACTION-WORTHY classification was likely overstated given convention ambiguity, and because the underlying mathematics may be correct even if the presentation is flawed, the overall assessment is MAJOR-REVISION for the most serious findings rather than RETRACTION-WORTHY.",
+    "findings": [
+      {
+        "finding": "Potential sign/orientation inconsistency in Theorem 2.2 for W = V^{-1}HV. The stated off-diagonal formula uses denominator (c_j - c_i) and ratio λ_j/λ_i, but direct derivation under standard Vandermonde conventions may yield the opposite sign/transpose orientation. If the formula is wrong as stated, all downstream results (algorithms, IRK inverse identification) are affected.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.72,
+        "justification": "Review A originally classified this as RETRACTION-WORTHY but downgraded to MAJOR-REVISION during steelmanning, acknowledging that the discrepancy could stem from convention/transcription ambiguity rather than a fundamental theorem error. Review B did not independently identify this but agreed it was serious upon reflection. Without confirming the exact manuscript conventions and checking whether the implemented algorithms match the stated or corrected formula, RETRACTION-WORTHY cannot be justified. However, this remains the most serious concern: if the formula is genuinely wrong (not just a convention mismatch), it would invalidate the paper's central contribution. The uncertainty warrants MAJOR-REVISION with high priority for verification.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Incomplete and potentially flawed proof of Theorem 2.4 linking W_n^T to A^{-1} for IRK matrices. The derivation contains a logical leap from equation (2.19) to the final result, notation/dimension overloading (c_0 as scalar vs. vector, D_n vs. C_n confusion), and does not explicitly demonstrate why the lower-right block of W^T equals A^{-1}.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers independently identified this as a major concern. Review A flagged notation/matrix inconsistencies in (2.18)-(2.19); Review B flagged the logical leap in the proof. Both rated MAJOR-REVISION. This is the paper's main application claim and the proof as written is insufficient to support it. The result may be true (and may follow from known results or a corrected derivation), but the paper's own contribution of proving this link is methodologically broken as presented.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Numerical validation is circular/inadequate. The accuracy benchmark uses quadruple-precision output of the same algorithm family as 'exact' reference (equation 4.2), and the identity check W_n^T A ≈ I presupposes the correctness of the theorem being validated. No independent reference solution, backward error analysis, or residual norms (e.g., ||VW - HV||, ||AW_n^T - I|| against independently computed A^{-1}) are provided.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.88,
+        "justification": "Both reviewers flagged this concern independently and both rated it MAJOR-REVISION. The circularity is especially problematic given the potential sign error in Theorem 2.2: the same systematic error would propagate to the higher-precision computation, making it undetectable. This does not prove the results wrong but means the evidence for correctness is inadequate. Standard numerical methodology requires independent verification.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Internal inconsistency in Lemma 2.1 / equation (2.7) regarding product index sets. The text gives the i≠j case as prod_{k≠j}(c_j - c_k), while specialization requires prod_{k≠i,j}(c_j - c_k). Only the latter is compatible with differentiating ψ(x) = ∏_{k≠i}(x - c_k).",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.7,
+        "justification": "Identified by Review A and acknowledged by Review B during steelmanning as a concrete error in the derivation chain. If present in the manuscript, this undermines the proof of Theorem 2.2. May be a typo that is easily correctable, but it reduces confidence in the rigor of the proof chain.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Claims that algorithms are 'highly efficient and accurate' are not substantiated by stability analysis, condition-aware error bounds, or proper residual diagnostics. The paper acknowledges instability/overflow issues for Algorithm 3.1 and cancellation for Algorithms 3.2-3.3 but does not provide formal stability guarantees.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.75,
+        "justification": "Review A rated this MAJOR-REVISION; Review B downgraded to MINOR during steelmanning, noting that overclaiming without full stability analysis is common in numerical papers and does not invalidate results. Review A's steelman did not change the rating but acknowledged it was close to the MINOR boundary. The finding is valid but does not change the paper's conclusions if the formulas themselves are correct.",
+        "source": "prover_a",
+        "survived_steelman": false
+      },
+      {
+        "finding": "No BIM-specific numerical experiments despite BIM being prominently mentioned in abstract and introduction as a motivating application.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "Identified as a new observation during steelmanning by Review A. The paper claims applicability to BIM matrices but provides no direct experimental validation for this use case. This is a scope/completeness issue rather than a correctness concern.",
+        "source": "emergent",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Lack of explicit definition of how W_n is extracted from W in the numerical validation section, and gap between theory (distinct real or complex nodes) and algorithms (restricted to ordered real nodes).",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers noted related clarity/reporting gaps. These are presentation issues that would not change conclusions but should be addressed for reproducibility and completeness.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Nonstandard generalized binomial coefficient notation and exact flop-count reporting without clear computational model.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers rated these as MINOR. They are standard clarity and reporting concerns that do not affect the paper's conclusions.",
+        "source": "both",
+        "survived_steelman": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 32498,
+    "duration_s": 159.76,
+    "n_api_calls": 6,
+    "cost_usd": 0.3448,
+    "total_input_tokens": 41796,
+    "total_output_tokens": 8520,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 12294,
+        "output_tokens": 1492,
+        "cost_usd": 0.045655,
+        "duration_s": 34.71,
+        "label": "2408.04316v2/gd/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 11395,
+        "output_tokens": 1480,
+        "cost_usd": 0.00470465,
+        "duration_s": 22.1,
+        "label": "2408.04316v2/gd/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3231,
+        "output_tokens": 562,
+        "cost_usd": 0.00149057,
+        "duration_s": 9.13,
+        "label": "2408.04316v2/gd/judge"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3459,
+        "output_tokens": 1507,
+        "cost_usd": 0.0237175,
+        "duration_s": 30.01,
+        "label": "2408.04316v2/gd/steelman_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3459,
+        "output_tokens": 1515,
+        "cost_usd": 0.0026004300000000004,
+        "duration_s": 22.82,
+        "label": "2408.04316v2/gd/steelman_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7958,
+        "output_tokens": 1964,
+        "cost_usd": 0.26667,
+        "duration_s": 40.99,
+        "label": "2408.04316v2/gd/arbiter"
+      }
+    ]
+  }
+}

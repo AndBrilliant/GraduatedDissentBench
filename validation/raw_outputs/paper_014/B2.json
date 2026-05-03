@@ -1,0 +1,140 @@
+{
+  "condition": "B2",
+  "paper_id": "paper_014",
+  "verdict": "flagged",
+  "confidence": 0.98,
+  "reasoning": "The manuscript's core claim—an Õ(n + d_max)-time algorithm via a refined implementation of Fischer and Wennmann's method—is not methodologically supported as written. The central issue is that the proposed dynamic-string implementation implicitly requires operations (especially bitwise OR / merge and multi-dimensional extension) whose cost depends on the number of changed bits or on machinery from the prior paper, but the manuscript does not show that these costs remain bounded by Õ(n + d_max) under the new representation. In addition, the multi-machine extension is asserted far too casually and appears to ignore nontrivial scheduling-state constraints. There are also several correctness/reporting inconsistencies. Overall, the paper may contain a salvageable idea for the single-machine case, but the manuscript does not currently establish its main theorem rigorously.",
+  "findings": [
+    {
+      "finding": "The main Õ(n + d_max)-time claim is not actually proved because the cost of the merge operation S_j = \\tilde S_j \\cup S_{j-1} is not analyzed under the new representation; the manuscript simply says bitwise OR 'can be implemented in the same way as by Fischer and Wennmann [5]'.",
+      "severity": "RETRACTION-WORTHY",
+      "justification": "This is the core algorithmic step executed in every iteration. The running-time proof only bounds \\sum_j |\\tilde S_j \\setminus S_{j-1}|, but does not show that the OR/merge cost in the dynamic-string framework depends only on newly inserted 1s rather than on string length u or other hidden parameters. Since the claimed improvement from Õ(P) to Õ(d_max) rests entirely on this cost accounting, failure of this step invalidates the central complexity result."
+    },
+    {
+      "finding": "The manuscript does not establish that split/concat/OR on indicator strings of fixed length u = d_max+1 preserve the same amortized accounting used in [5]; it imports the previous analysis without proving that all prerequisites still hold after changing the trimming/shifting scheme.",
+      "severity": "MAJOR-REVISION",
+      "justification": "The result may still be true, but the proof is incomplete. A refined implementation can alter the number and structure of represented substrings/nodes in the dynamic string data structure. Without a full potential/amortized argument, the claimed total time does not follow from Lemma 3.2 alone."
+    },
+    {
+      "finding": "The multi-machine extension appears unsupported and likely incorrect as stated. The paper claims one can 'apply our trimming strategy point-wise' to vectors in [0..P]^m and obtain Õ(n + d_max^m), but gives no valid recurrence or proof that point-wise trimming preserves exactly the feasible states for P_m||\\sum p_j U_j.",
+      "severity": "RETRACTION-WORTHY",
+      "justification": "For multiple machines, feasibility is not captured merely by each coordinate being at most d_j independently unless the DP state definition and transition are carefully specified. The phrase 'the i-th entry corresponds to the i-th machine' is insufficient; one must account for assignment of each new job to one machine, symmetry/duplication issues, and the exact vector recurrence. As written, the multi-machine theorem is unproved and may be false under the proposed simplification. This breaks one of the paper's stated main results."
+    },
+    {
+      "finding": "The manuscript claims schedule retrieval follows 'since the sets themselves are after each iteration the same as in Fischer and Wennmann’s algorithm,' but no witness-maintenance or traceback mechanism is described for the modified implementation.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Computing only the optimal value is different from reconstructing an optimal subset/schedule. In compressed dynamic representations, witness recovery often needs extra bookkeeping. This omission does not necessarily invalidate the value computation, but it does leave one explicit claim unproved."
+    },
+    {
+      "finding": "There is a likely indexing/sign error in the split operation and interval handling around d_j - p_j. The algorithm says split x_{S_{j-1}} at position d_j - p_j to obtain L_{j-1}=S_{j-1}\\cap[0..d_j-p_j] and R_{j-1}=S_{j-1}\\cap(d_j-p_j..d_j], but with usual string split conventions one must be careful whether the split index is inclusive or exclusive. The text mixes [0..i], (i..|x|], and substring notation ambiguously.",
+      "severity": "MAJOR-REVISION",
+      "justification": "An off-by-one error here changes which sums are allowed to be shifted by p_j. That can alter correctness of the DP transition. This is fixable, but the current presentation is not reliable enough to verify correctness."
+    },
+    {
+      "finding": "The paper's initialization of 0^u by self-concatenating 'log u times' is inaccurate unless u is a power of two; more generally one needs a binary decomposition or another explicit construction.",
+      "severity": "MINOR",
+      "justification": "This is a technical reporting error and easy to repair. It does not affect the high-level claim if corrected."
+    },
+    {
+      "finding": "The set representation paragraph says 'We represent a set S \\subseteq [n] by its corresponding indicator string x_S \\in {0,1}^u', but throughout S_j is a subset of [0..P] or [0..d_max].",
+      "severity": "MINOR",
+      "justification": "This is a notational inconsistency, not a substantive flaw, but it complicates verification of the argument."
+    },
+    {
+      "finding": "Lemma 3.2 uses inconsistent indices: the summation is written over i in [n] but the summand is |\\tilde S_j \\setminus S_{j-1}|. Similar notation slips occur elsewhere.",
+      "severity": "MINOR",
+      "justification": "This appears editorial rather than conceptual, but precise indexing is essential in algorithm analyses and should be corrected."
+    },
+    {
+      "finding": "The manuscript relies on monotonicity ('once x \\in \\tilde S_j \\setminus S_{j-1}, then x \\in S_j,\\ldots,S_n') to bound insertions, but does not separately justify that later trimming by smaller deadlines never occurs. This depends critically on jobs being processed in nondecreasing deadline order.",
+      "severity": "MAJOR-REVISION",
+      "justification": "The property is probably intended and may hold under EDF ordering, but it should be explicitly stated and used. Without this, the counting argument in Lemma 3.2 is incomplete."
+    },
+    {
+      "finding": "The dynamic-string operations listed do not include bitwise OR, yet OR is a key primitive in the implementation. The manuscript says it 'can be implemented in the same way as by Fischer and Wennmann [5]' without defining the cost model or operation interface.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Because the claimed asymptotic improvement hinges on the exact cost of this nonprimitive operation, omitting its definition and analysis is a substantive gap, not just exposition."
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 2,
+    "MAJOR-REVISION": 5,
+    "MINOR": 3
+  },
+  "raw_review": {
+    "verdict": "flagged",
+    "confidence": 0.98,
+    "reasoning": "The manuscript's core claim—an Õ(n + d_max)-time algorithm via a refined implementation of Fischer and Wennmann's method—is not methodologically supported as written. The central issue is that the proposed dynamic-string implementation implicitly requires operations (especially bitwise OR / merge and multi-dimensional extension) whose cost depends on the number of changed bits or on machinery from the prior paper, but the manuscript does not show that these costs remain bounded by Õ(n + d_max) under the new representation. In addition, the multi-machine extension is asserted far too casually and appears to ignore nontrivial scheduling-state constraints. There are also several correctness/reporting inconsistencies. Overall, the paper may contain a salvageable idea for the single-machine case, but the manuscript does not currently establish its main theorem rigorously.",
+    "findings": [
+      {
+        "finding": "The main Õ(n + d_max)-time claim is not actually proved because the cost of the merge operation S_j = \\tilde S_j \\cup S_{j-1} is not analyzed under the new representation; the manuscript simply says bitwise OR 'can be implemented in the same way as by Fischer and Wennmann [5]'.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This is the core algorithmic step executed in every iteration. The running-time proof only bounds \\sum_j |\\tilde S_j \\setminus S_{j-1}|, but does not show that the OR/merge cost in the dynamic-string framework depends only on newly inserted 1s rather than on string length u or other hidden parameters. Since the claimed improvement from Õ(P) to Õ(d_max) rests entirely on this cost accounting, failure of this step invalidates the central complexity result."
+      },
+      {
+        "finding": "The manuscript does not establish that split/concat/OR on indicator strings of fixed length u = d_max+1 preserve the same amortized accounting used in [5]; it imports the previous analysis without proving that all prerequisites still hold after changing the trimming/shifting scheme.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The result may still be true, but the proof is incomplete. A refined implementation can alter the number and structure of represented substrings/nodes in the dynamic string data structure. Without a full potential/amortized argument, the claimed total time does not follow from Lemma 3.2 alone."
+      },
+      {
+        "finding": "The multi-machine extension appears unsupported and likely incorrect as stated. The paper claims one can 'apply our trimming strategy point-wise' to vectors in [0..P]^m and obtain Õ(n + d_max^m), but gives no valid recurrence or proof that point-wise trimming preserves exactly the feasible states for P_m||\\sum p_j U_j.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "For multiple machines, feasibility is not captured merely by each coordinate being at most d_j independently unless the DP state definition and transition are carefully specified. The phrase 'the i-th entry corresponds to the i-th machine' is insufficient; one must account for assignment of each new job to one machine, symmetry/duplication issues, and the exact vector recurrence. As written, the multi-machine theorem is unproved and may be false under the proposed simplification. This breaks one of the paper's stated main results."
+      },
+      {
+        "finding": "The manuscript claims schedule retrieval follows 'since the sets themselves are after each iteration the same as in Fischer and Wennmann’s algorithm,' but no witness-maintenance or traceback mechanism is described for the modified implementation.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Computing only the optimal value is different from reconstructing an optimal subset/schedule. In compressed dynamic representations, witness recovery often needs extra bookkeeping. This omission does not necessarily invalidate the value computation, but it does leave one explicit claim unproved."
+      },
+      {
+        "finding": "There is a likely indexing/sign error in the split operation and interval handling around d_j - p_j. The algorithm says split x_{S_{j-1}} at position d_j - p_j to obtain L_{j-1}=S_{j-1}\\cap[0..d_j-p_j] and R_{j-1}=S_{j-1}\\cap(d_j-p_j..d_j], but with usual string split conventions one must be careful whether the split index is inclusive or exclusive. The text mixes [0..i], (i..|x|], and substring notation ambiguously.",
+        "severity": "MAJOR-REVISION",
+        "justification": "An off-by-one error here changes which sums are allowed to be shifted by p_j. That can alter correctness of the DP transition. This is fixable, but the current presentation is not reliable enough to verify correctness."
+      },
+      {
+        "finding": "The paper's initialization of 0^u by self-concatenating 'log u times' is inaccurate unless u is a power of two; more generally one needs a binary decomposition or another explicit construction.",
+        "severity": "MINOR",
+        "justification": "This is a technical reporting error and easy to repair. It does not affect the high-level claim if corrected."
+      },
+      {
+        "finding": "The set representation paragraph says 'We represent a set S \\subseteq [n] by its corresponding indicator string x_S \\in {0,1}^u', but throughout S_j is a subset of [0..P] or [0..d_max].",
+        "severity": "MINOR",
+        "justification": "This is a notational inconsistency, not a substantive flaw, but it complicates verification of the argument."
+      },
+      {
+        "finding": "Lemma 3.2 uses inconsistent indices: the summation is written over i in [n] but the summand is |\\tilde S_j \\setminus S_{j-1}|. Similar notation slips occur elsewhere.",
+        "severity": "MINOR",
+        "justification": "This appears editorial rather than conceptual, but precise indexing is essential in algorithm analyses and should be corrected."
+      },
+      {
+        "finding": "The manuscript relies on monotonicity ('once x \\in \\tilde S_j \\setminus S_{j-1}, then x \\in S_j,\\ldots,S_n') to bound insertions, but does not separately justify that later trimming by smaller deadlines never occurs. This depends critically on jobs being processed in nondecreasing deadline order.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The property is probably intended and may hold under EDF ordering, but it should be explicitly stated and used. Without this, the counting argument in Lemma 3.2 is incomplete."
+      },
+      {
+        "finding": "The dynamic-string operations listed do not include bitwise OR, yet OR is a key primitive in the implementation. The manuscript says it 'can be implemented in the same way as by Fischer and Wennmann [5]' without defining the cost model or operation interface.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Because the claimed asymptotic improvement hinges on the exact cost of this nonprimitive operation, omitting its definition and analysis is a substantive gap, not just exposition."
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 13002,
+    "duration_s": 27.23,
+    "n_api_calls": 1,
+    "cost_usd": 0.0248,
+    "total_input_tokens": 4173,
+    "total_output_tokens": 1439,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4173,
+        "output_tokens": 1439,
+        "cost_usd": 0.0248225,
+        "duration_s": 27.23,
+        "label": "paper_014/b2/review"
+      }
+    ]
+  }
+}

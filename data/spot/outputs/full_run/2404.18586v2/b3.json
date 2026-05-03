@@ -1,0 +1,340 @@
+{
+  "condition": "B3",
+  "paper_id": "2404.18586v2",
+  "verdict": "flagged",
+  "confidence": 0.92,
+  "reasoning": "Both reviewers independently converge on the same central concern: the manuscript's core protocol relies on physically implementing a partial-transpose-induced map via Gaussian teleportation, but the partial transpose is not a completely positive (CP) map. The key question is whether the authors have found a legitimate workaround (e.g., the partial transpose is never applied as a standalone channel but only appears within a larger composition that is CPTP) or whether they have made a fundamental error by treating a non-physical operation as implementable. After careful consideration, the manuscript does not provide a rigorous proof that the overall composed map is CPTP. Lemma 4 derives the covariance-level transformation for the 'partial transpose of a Gaussian channel' without establishing that this corresponds to a valid physical channel. The protocol in Theorem 5 chains together operations including B₂ (which involves the non-symplectic conjugation Z₂), and while there exist known constructions where non-CP maps appear as intermediate steps in valid protocols (e.g., entanglement witnesses, structural physical approximations), the manuscript does not demonstrate this is the case here. The reliance on ideal infinite-squeezing EPR states further obscures whether a physical implementation exists. However, I note some residual uncertainty: it is conceivable that the teleportation-based construction does yield a valid CPTP map when the full circuit is considered (the partial transpose acts only on an ancilla mode that is traced out or measured), and the manuscript may simply fail to prove this rather than it being impossible. Given this uncertainty, the most critical finding is classified as MAJOR-REVISION rather than RETRACTION-WORTHY, but the cluster of related issues collectively represents a serious threat to the paper's validity.",
+  "findings": [
+    {
+      "finding": "The protocol relies on implementing a partial-transpose-induced channel transformation (B_i operation from Lemma 4) as a physical Gaussian operation. The partial transpose is not CP, and the manuscript does not rigorously demonstrate that the overall composed circuit (teleportation + beam splitters + partial-transpose conjugation) yields a valid CPTP map for arbitrary input states. Lemma 4's proof conflates covariance-level matrix algebra with physical channel validity.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.7,
+      "justification": "Both reviewers flag this as the central issue. Reviewer B calls it retraction-worthy, Reviewer A rates it retraction-worthy for Lemma 4. However, there is a meaningful possibility that the full composed protocol is CPTP even though intermediate steps involve non-CP operations—this is not uncommon in quantum information protocols. The manuscript's failure is in not proving complete positivity of the overall map, which could potentially be remedied. Since we cannot definitively confirm the protocol is impossible (as opposed to merely unproven), this warrants MAJOR-REVISION rather than retraction. If independent verification confirms the composed map is not CPTP, this would escalate to retraction-worthy.",
+      "source": "both"
+    },
+    {
+      "finding": "The protocol requires ideal infinitely-squeezed EPR states as essential resources. No rigorous finite-squeezing analysis is provided—only the qualitative statement that fidelity is 'sufficiently high when 1−tanh(r)=o(1).' Without explicit error bounds, the practical and even in-principle validity of the noise-polarization claim is unsubstantiated for any physical implementation.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "If the exact result depends on unphysical infinite squeezing and no finite-resource approximation bounds are given, the central claim of a practical Gaussian QEC protocol is unsupported. This is a standard but serious gap that could be addressed with additional analysis.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The proof of Theorem 5 contains notation inconsistencies and non-reproducible steps. Channel-level and matrix-level symbols are mixed, superscript arguments are used inconsistently (e.g., N^{polar}(r) as both matrix and channel label), and expressions like B₂², Z₂² are used without clear definition. The derivation cannot be independently verified as written.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "A non-reproducible proof of the main theorem could conceal errors in the channel algebra. Combined with the CP concern above, this significantly undermines confidence in the result. Potentially fixable if a correct derivation exists.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The claim of 'circumventing' Gaussian QEC/distillation no-go theorems is not substantiated by a formal comparison to the assumptions and conclusions of those theorems (particularly [31]). The manuscript simultaneously claims consistency with the no-go theorem and a practical advantage, without precisely delineating which assumptions are relaxed or which figure of merit is improved.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Both reviewers note this issue. Without a rigorous theorem-level comparison, the headline claim is potentially misleading. If the protocol secretly uses non-Gaussian or non-physical resources, the claimed circumvention is vacuous.",
+      "source": "both"
+    },
+    {
+      "finding": "The entanglement distillation corollary assumes Alice and Bob can locally prepare ideal EPR pairs, which is a very strong and effectively unphysical assumption that can trivialize resource accounting in a distillation setting.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "This affects the significance and correct interpretation of the distillation claim. The conclusion may hold in a formal model, but the resource comparison is incomplete.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The claim that the protocol 'remains unaffected by initial states, allowing extension to non-Gaussian states' is made without proof. No analysis is provided that the full map (with approximate resources, teleportation, and postprocessing) preserves the claimed behavior for non-Gaussian inputs.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "This broadens the scope of the claim well beyond what is demonstrated. It could be false even if the Gaussian-state result were correct.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The covariance matrix is defined as γ_{jk} = tr(ρ x̂_j x̂_k) rather than the standard symmetrized form. For noncommuting quadratures this produces a non-symmetric matrix, which is inconsistent with the standard Gaussian channel formalism γ → MγM^T + N used throughout.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.65,
+      "justification": "This could propagate errors through the entire Gaussian channel formalism. However, it may be a notational oversight that doesn't affect the actual calculations if the authors implicitly use the symmetrized version. Needs clarification.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The concatenation with the GKP two-mode squeezing code is presented without derivation, relying on imported results from [20]. The manuscript does not justify that its polarized-noise channel satisfies the assumptions needed to apply those formulas.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.7,
+      "justification": "If the formulas are applied outside their valid regime, the claimed practical benefit of concatenation could be incorrect.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The physicality constraint (CP condition relating M and N) for Gaussian channels is not stated, despite the manuscript manipulating non-symplectic transforms where this condition is most relevant.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "For the specific additive-noise channel used, the map is physical. But the omission is concerning given the paper's reliance on non-standard transformations.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The teleportation derivation uses non-normalizable ideal EPR states and quadrature eigenstates without limiting arguments or rigged-Hilbert-space formalism.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Common in physics literature. Would not independently invalidate conclusions but contributes to the overall lack of rigor.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Numerous notation inconsistencies, malformed equations, and garbled appendix text impair reproducibility.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Presentation issues that do not independently change conclusions but significantly hinder verification.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The statement that 'entanglement degradation of the polarized channel is not decreased' is asserted without proof or derivation.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "An unsubstantiated claim that would not independently invalidate the main result but represents a reporting gap.",
+      "source": "prover_b"
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 8,
+    "MINOR": 4
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.97,
+    "reasoning": "The manuscript contains multiple methodological and mathematical problems that directly affect its central claim: that a fully Gaussian, local-resource protocol can realize a partial-transpose-based channel transformation and thereby achieve Gaussian QEC / Gaussian entanglement distillation beyond standard no-go limitations. The most serious issues are that the key implemented map appears to rely on ideal infinitely squeezed EPR states (nonphysical resources), uses partial transpose as if it were an implementable physical operation without a complete CPTP analysis, and the derivation of the main theorem is internally inconsistent in notation and channel composition. These are not just presentation problems: if confirmed, they undermine whether the claimed protocol is physically realizable and whether the main noise-polarization conclusion follows at all. Additional problems include incomplete treatment of finite squeezing, imprecise Gaussian-state covariance definitions, and unsupported claims about no-go circumvention and extension to non-Gaussian states.",
+    "findings": [
+      {
+        "finding": "The protocol’s key ingredient uses ideal infinitely squeezed EPR states as an essential resource, yet the main claims are framed as a practical Gaussian QEC/distillation protocol using only local Gaussian resources. Infinite squeezing is unphysical and corresponds to non-normalizable states, so the exact implementation of the claimed map is not physically realizable as presented.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the exact theorem depends on an unphysical idealization, the claimed protocol is not operationally established. This may or may not be salvageable by a rigorous finite-squeezing analysis, but as written the central practical conclusion is unsupported."
+      },
+      {
+        "finding": "The manuscript treats implementation of a channel ‘partial transpose’ via teleportation as if it were a valid physical Gaussian operation, but partial transpose is not completely positive. The paper does not rigorously show that the overall composed map implemented in the circuit is CPTP for arbitrary inputs/resources, despite central reliance on this construction.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The main result hinges on physically implementing a nonsymplectic conjugation/partial-transpose-induced map. If the implemented transformation is not a valid physical channel, then the core QEC/noise-polarization/distillation conclusions cannot be supported."
+      },
+      {
+        "finding": "Lemma 4 is not a valid proof that the partial transpose of a Gaussian channel is represented by simply conjugating both M and N with Z_i. The argument conflates operator transpose, state partial transpose, Heisenberg evolution, and covariance transformation, and does not establish complete positivity or even a valid channel action on arbitrary Gaussian states.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "Theorem 5 depends on the B_i operation introduced from Lemma 4. If Lemma 4 is not rigorously correct as a physical channel statement, then the main theorem’s construction is fundamentally unsupported."
+      },
+      {
+        "finding": "The proof of Theorem 5 is internally inconsistent in notation and channel composition. For example, it writes \\(\\mathcal{G}_{1,2}^{I,\\mathcal{N}^{polar}(r)}\\) although the superscript second argument should be a noise matrix, mixes channel-level and matrix-level symbols, and uses expressions like \\(\\tilde{\\mathcal{G}}_{1,2}^{B_2}\\), \\(B_2^2\\), and \\(Z_2^2\\) unclearly. The derivation as given is not reproducible from the stated formalism.",
+        "severity": "MAJOR-REVISION",
+        "justification": "A non-reproducible proof of the main theorem could conceal an error in the channel algebra. This could change the conclusions, though it may be fixable if a correct derivation exists."
+      },
+      {
+        "finding": "The central claim of ‘circumventing’ the Gaussian QEC/distillation no-go theorems is not methodologically substantiated. The manuscript asserts consistency with the no-go theorem because entanglement degradation is not decreased, but then simultaneously claims a less noisy communication mode / distilled EPR pair. The relevant figure of merit and relation to the theorem in [31] are not formally analyzed.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Without a precise theorem-level comparison to the no-go assumptions and target performance metric, the headline claim may be misleading or false. This affects interpretation of the main contribution."
+      },
+      {
+        "finding": "The entanglement distillation corollary assumes Alice and Bob can locally prepare ideal EPR pairs. This is a very strong and effectively unphysical assumption that can trivialize or at least radically alter resource accounting in a distillation setting.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If ideal local EPR preparation is allowed, the significance of the distillation claim changes substantially. The conclusion may still hold in a formal model, but the methodological framing and resource comparison are incomplete."
+      },
+      {
+        "finding": "Finite-squeezing effects are not analyzed rigorously. The manuscript admits that summing the series is challenging and merely states that the fidelity is ‘sufficiently high when 1−tanh(r)=o(1).’ No explicit error bound, convergence rate, or effect on the final noise-polarization/QEC performance is provided.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Since the exact protocol depends on infinite squeezing, a finite-resource error analysis is necessary to support any physically meaningful conclusion. Without it, the practical validity of the main result is unknown."
+      },
+      {
+        "finding": "The covariance matrix is defined as \\(\\gamma_{jk}=\\mathrm{tr}(\\rho \\hat x_j \\hat x_k)\\) for zero-mean states, rather than the standard symmetrized second moments. For noncommuting quadratures this can produce a nonsymmetric matrix and differs from standard Gaussian-state conventions.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is not merely cosmetic because the whole Gaussian-channel formalism \\(\\gamma \\mapsto M\\gamma M^T+N\\) standardly assumes the symmetrized covariance matrix. Using an unconventional definition without consistent re-derivation can invalidate subsequent matrix manipulations."
+      },
+      {
+        "finding": "The statement ‘the noisy single-mode Gaussian channel under consideration is defined by \\(\\mathcal N^{\\sigma^2}=\\mathcal G^{I,\\sigma^2 I}\\)’ omits the physicality constraint required for Gaussian channels (the complete-positivity condition relating M and N). Similar omissions occur throughout for general \\(\\mathcal G^{M,N}\\).",
+        "severity": "MINOR",
+        "justification": "This is a reporting/theoretical completeness issue; for the additive-noise channel chosen the map may still be physical. But the manuscript should state the CP condition, especially because it later manipulates non-symplectic transforms."
+      },
+      {
+        "finding": "The teleportation/Kraus-operator derivation is mathematically formal but uses non-normalizable ideal EPR states and quadrature eigenstates without a proper rigged-Hilbert-space or limiting argument. Equalities involving bras/kets of idealized states are used as exact identities.",
+        "severity": "MINOR",
+        "justification": "Common in physics exposition, but given that the paper’s novelty depends on exact teleportation identities, the lack of rigor matters somewhat. By itself this would not invalidate conclusions if finite-squeezing bounds were later supplied."
+      },
+      {
+        "finding": "Lemma 1 / Appendix C derives beam-splitter conjugation of displacement operators only heuristically from covariance transformations. A cleaner operator derivation is needed because later recovery operations depend on exact operator identities, not just second-moment evolution.",
+        "severity": "MINOR",
+        "justification": "Likely fixable and probably not conclusion-changing on its own."
+      },
+      {
+        "finding": "The manuscript claims the protocol ‘remains unaffected by the initial states, allowing extension to non-Gaussian states,’ but provides no proof that the full implemented map—including teleportation with approximate EPR resources and postprocessing—preserves the claimed behavior beyond Gaussian inputs.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This extrapolation broadens the scope of the claim beyond what is demonstrated. It could be false even if the Gaussian-state result were correct."
+      },
+      {
+        "finding": "The concatenation with the GKP two-mode squeezing code (Eqs. 15–17) is presented without derivation in the manuscript body and appears to rely entirely on imported results from [20]. The manuscript does not fully justify how its own polarized-noise channel satisfies the assumptions needed to apply those formulas.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If those formulas are applied outside their valid regime, the claimed practical benefit of concatenation could be incorrect."
+      },
+      {
+        "finding": "There are numerous notation and transcription inconsistencies (e.g., \\(\\mathbf N^{polar}(r)\\) used as both matrix and channel label, mismatched symbols, malformed equations, duplicated/garbled appendix text).",
+        "severity": "MINOR",
+        "justification": "These issues impair reproducibility and confidence, but alone do not force a change in conclusions."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.85,
+    "reasoning": "The manuscript contains several critical methodological errors that likely invalidate its central claims. The primary issue is a fundamental misunderstanding of the partial transpose operation in continuous-variable systems. The authors treat partial transpose as a physically realizable operation via Gaussian resources, which contradicts well-established no-go theorems. Additionally, the 'CV partial bouncing' lemma (Lemma 3) is applied in a way that conflates operator-level transposition with physical processes, and the 'noise-polarization' protocol relies on this to produce a channel that is not completely positive. The proof of Lemma 4 also contains a critical algebraic error where the partial transpose is incorrectly applied to the covariance matrix transformation. These issues collectively undermine the core results of the paper.",
+    "findings": [
+      {
+        "finding": "The authors claim to implement the partial transpose operation on a quantum channel using only local Gaussian resources (CV gate teleportation with EPR states and beam splitters). This is fundamentally impossible because the partial transpose is not a completely positive (CP) map, and therefore cannot be realized by any physical operation, Gaussian or otherwise. The claim violates the fundamental structure of quantum mechanics.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The central conclusion that one can 'efficiently construct a two-mode noise-polarized channel from two noisy Gaussian channels' relies entirely on being able to implement the partial transpose operation. If the partial transpose cannot be physically implemented, the entire proposed QEC protocol collapses. This is not a minor oversight; it is a violation of a basic principle of quantum theory."
+      },
+      {
+        "finding": "Lemma 3 (CV partial bouncing) states that (I_i ⊗ W_{j,k1}) |ζ_EPR⟩_{i,j} ⊗ |ψ⟩ = (W^T_{i,k1} ⊗ I_j) |ζ_EPR⟩_{i,j} ⊗ |ψ⟩ for any two-mode operator W. This equation equates the action of a physical operator on the left with the action of the partial transpose of that operator on the right. While the mathematical equality may hold for the specific state |ζ_EPR⟩, the authors then treat the right-hand side as if it represents a physically realizable operation (i.e., they claim they can 'implement' the partial transpose via the left-hand side). This conflates a mathematical identity on a particular entangled state with a physical process. The left-hand side is a physical operation, but it does not imply that one can physically realize the map W^T.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The entire protocol for 'engineering Gaussian channels' and 'noise-polarization' (Theorem 5) is built on the assumption that the partial transpose operation can be physically realized. The lemma only shows a mathematical equivalence on a specific state, not that the partial transpose channel can be implemented. This is a category error that invalidates the subsequent derivation."
+      },
+      {
+        "finding": "In the proof of Lemma 4, the authors attempt to derive the covariance matrix transformation for the partial transpose of a Gaussian operation. They write: γ(ρ) → Z_i M Z_i γ(ρ) Z_i M Z_i + Z_i N Z_i. However, this derivation is flawed. The partial transpose is an anti-linear operation, and its action on density operators does not translate to a simple conjugation of the symplectic matrix M by Z_i in the sense of a physical transformation. The mapping B_i (Equation 14) is not a valid Gaussian operation because Z_i is not a symplectic matrix (as the authors note), but more importantly, the partial transpose of a completely positive map is not necessarily a physical map. The transformation derived does not correspond to a valid quantum channel.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The derivation of the noise-polarized channel's covariance matrix (N^{polar}(r)) depends on the formula from Lemma 4. If Lemma 4 is incorrect, the central result of Theorem 5 is unsubstantiated. This is a methodological error that could potentially change the conclusions if addressed, but it's possible the algebra might be coerced into a correct statement about a different mathematical object. However, the physical interpretation is wrong, so it's likely retraction-worthy."
+      },
+      {
+        "finding": "The 'noise-polarization' protocol described in Theorem 5 and Figure 4 claims to produce a composite channel that is 'noise-polarized' with different noise variances on the two modes (e^{-2r}σ² and e^{2r}σ²). The composite channel involves the block B₂, which implements the partial transpose of a beam splitter (B^T). As argued above, this is not a physical operation. The resulting channel G^{I, N^{polar}(r)} is likely not a completely positive map, making the whole protocol unphysical.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The main result of the paper—a functional Gaussian QEC protocol—depends on the noise-polarization channel being physically realizable. If the channel is not CP (which follows from the impossibility of implementing the partial transpose), then the protocol does not exist as described. This is a fatal error."
+      },
+      {
+        "finding": "The authors claim their result does not contravene the Gaussian no-go theorems (e.g., [31]). However, the no-go theorems state that under local Gaussian operations and classical communication (LOCC), one cannot distill entanglement or perform error correction. The proposed protocol uses a non-physical operation (partial transpose) to circumvent this. While they acknowledge that the partial transpose is 'nonsymplectic,' they do not recognize that this makes it physically impossible. The claim of 'not contravening' the theorem is misleading because the protocol simply assumes access to a forbidden resource.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is less severe than the direct physical impossibility, as it's more of a misinterpretation of the implications. However, it misrepresents the relationship of their work to established results, which would require a major revision to clarify that their protocol requires non-Gaussian/non-physical resources if it were valid."
+      },
+      {
+        "finding": "The discussion states 'the entanglement degradation of the polarized channel is not decreased.' This is stated without proof or derivation, and given the nature of the partial transpose operation, it is unclear what this means physically. The partial transpose of a state can change its entanglement properties in complicated ways, and claiming it is 'not decreased' for this specific protocol without a rigorous analysis is unsupported.",
+        "severity": "MINOR",
+        "justification": "This is a reporting gap. The claim might be true, but it's not justified in the manuscript. It would not invalidate the main conclusions if the protocol were correct, but it is an unsubstantiated assertion."
+      }
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.92,
+    "reasoning": "Both reviewers independently converge on the same central concern: the manuscript's core protocol relies on physically implementing a partial-transpose-induced map via Gaussian teleportation, but the partial transpose is not a completely positive (CP) map. The key question is whether the authors have found a legitimate workaround (e.g., the partial transpose is never applied as a standalone channel but only appears within a larger composition that is CPTP) or whether they have made a fundamental error by treating a non-physical operation as implementable. After careful consideration, the manuscript does not provide a rigorous proof that the overall composed map is CPTP. Lemma 4 derives the covariance-level transformation for the 'partial transpose of a Gaussian channel' without establishing that this corresponds to a valid physical channel. The protocol in Theorem 5 chains together operations including B₂ (which involves the non-symplectic conjugation Z₂), and while there exist known constructions where non-CP maps appear as intermediate steps in valid protocols (e.g., entanglement witnesses, structural physical approximations), the manuscript does not demonstrate this is the case here. The reliance on ideal infinite-squeezing EPR states further obscures whether a physical implementation exists. However, I note some residual uncertainty: it is conceivable that the teleportation-based construction does yield a valid CPTP map when the full circuit is considered (the partial transpose acts only on an ancilla mode that is traced out or measured), and the manuscript may simply fail to prove this rather than it being impossible. Given this uncertainty, the most critical finding is classified as MAJOR-REVISION rather than RETRACTION-WORTHY, but the cluster of related issues collectively represents a serious threat to the paper's validity.",
+    "findings": [
+      {
+        "finding": "The protocol relies on implementing a partial-transpose-induced channel transformation (B_i operation from Lemma 4) as a physical Gaussian operation. The partial transpose is not CP, and the manuscript does not rigorously demonstrate that the overall composed circuit (teleportation + beam splitters + partial-transpose conjugation) yields a valid CPTP map for arbitrary input states. Lemma 4's proof conflates covariance-level matrix algebra with physical channel validity.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.7,
+        "justification": "Both reviewers flag this as the central issue. Reviewer B calls it retraction-worthy, Reviewer A rates it retraction-worthy for Lemma 4. However, there is a meaningful possibility that the full composed protocol is CPTP even though intermediate steps involve non-CP operations—this is not uncommon in quantum information protocols. The manuscript's failure is in not proving complete positivity of the overall map, which could potentially be remedied. Since we cannot definitively confirm the protocol is impossible (as opposed to merely unproven), this warrants MAJOR-REVISION rather than retraction. If independent verification confirms the composed map is not CPTP, this would escalate to retraction-worthy.",
+        "source": "both"
+      },
+      {
+        "finding": "The protocol requires ideal infinitely-squeezed EPR states as essential resources. No rigorous finite-squeezing analysis is provided—only the qualitative statement that fidelity is 'sufficiently high when 1−tanh(r)=o(1).' Without explicit error bounds, the practical and even in-principle validity of the noise-polarization claim is unsubstantiated for any physical implementation.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "If the exact result depends on unphysical infinite squeezing and no finite-resource approximation bounds are given, the central claim of a practical Gaussian QEC protocol is unsupported. This is a standard but serious gap that could be addressed with additional analysis.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "The proof of Theorem 5 contains notation inconsistencies and non-reproducible steps. Channel-level and matrix-level symbols are mixed, superscript arguments are used inconsistently (e.g., N^{polar}(r) as both matrix and channel label), and expressions like B₂², Z₂² are used without clear definition. The derivation cannot be independently verified as written.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "A non-reproducible proof of the main theorem could conceal errors in the channel algebra. Combined with the CP concern above, this significantly undermines confidence in the result. Potentially fixable if a correct derivation exists.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "The claim of 'circumventing' Gaussian QEC/distillation no-go theorems is not substantiated by a formal comparison to the assumptions and conclusions of those theorems (particularly [31]). The manuscript simultaneously claims consistency with the no-go theorem and a practical advantage, without precisely delineating which assumptions are relaxed or which figure of merit is improved.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Both reviewers note this issue. Without a rigorous theorem-level comparison, the headline claim is potentially misleading. If the protocol secretly uses non-Gaussian or non-physical resources, the claimed circumvention is vacuous.",
+        "source": "both"
+      },
+      {
+        "finding": "The entanglement distillation corollary assumes Alice and Bob can locally prepare ideal EPR pairs, which is a very strong and effectively unphysical assumption that can trivialize resource accounting in a distillation setting.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "This affects the significance and correct interpretation of the distillation claim. The conclusion may hold in a formal model, but the resource comparison is incomplete.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "The claim that the protocol 'remains unaffected by initial states, allowing extension to non-Gaussian states' is made without proof. No analysis is provided that the full map (with approximate resources, teleportation, and postprocessing) preserves the claimed behavior for non-Gaussian inputs.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "This broadens the scope of the claim well beyond what is demonstrated. It could be false even if the Gaussian-state result were correct.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "The covariance matrix is defined as γ_{jk} = tr(ρ x̂_j x̂_k) rather than the standard symmetrized form. For noncommuting quadratures this produces a non-symmetric matrix, which is inconsistent with the standard Gaussian channel formalism γ → MγM^T + N used throughout.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.65,
+        "justification": "This could propagate errors through the entire Gaussian channel formalism. However, it may be a notational oversight that doesn't affect the actual calculations if the authors implicitly use the symmetrized version. Needs clarification.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "The concatenation with the GKP two-mode squeezing code is presented without derivation, relying on imported results from [20]. The manuscript does not justify that its polarized-noise channel satisfies the assumptions needed to apply those formulas.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.7,
+        "justification": "If the formulas are applied outside their valid regime, the claimed practical benefit of concatenation could be incorrect.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "The physicality constraint (CP condition relating M and N) for Gaussian channels is not stated, despite the manuscript manipulating non-symplectic transforms where this condition is most relevant.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "For the specific additive-noise channel used, the map is physical. But the omission is concerning given the paper's reliance on non-standard transformations.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "The teleportation derivation uses non-normalizable ideal EPR states and quadrature eigenstates without limiting arguments or rigged-Hilbert-space formalism.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Common in physics literature. Would not independently invalidate conclusions but contributes to the overall lack of rigor.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Numerous notation inconsistencies, malformed equations, and garbled appendix text impair reproducibility.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Presentation issues that do not independently change conclusions but significantly hinder verification.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "The statement that 'entanglement degradation of the polarized channel is not decreased' is asserted without proof or derivation.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "An unsubstantiated claim that would not independently invalidate the main result but represents a reporting gap.",
+        "source": "prover_b"
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 37834,
+    "duration_s": 109.05,
+    "n_api_calls": 3,
+    "cost_usd": 0.3008,
+    "total_input_tokens": 31867,
+    "total_output_tokens": 5663,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 14513,
+        "output_tokens": 1839,
+        "cost_usd": 0.0546725,
+        "duration_s": 37.33,
+        "label": "2404.18586v2/b3/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 12910,
+        "output_tokens": 1500,
+        "cost_usd": 0.005135700000000001,
+        "duration_s": 25.39,
+        "label": "2404.18586v2/b3/prover_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 4444,
+        "output_tokens": 2324,
+        "cost_usd": 0.24096,
+        "duration_s": 46.33,
+        "label": "2404.18586v2/b3/arbiter"
+      }
+    ]
+  }
+}

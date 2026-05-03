@@ -1,0 +1,46 @@
+{
+  "models": {
+    "GPT-5.4": {
+      "api_id": "gpt-5.4",
+      "provider": "OpenAI",
+      "endpoint": "https://api.openai.com/v1/chat/completions",
+      "max_completion_tokens": 4096,
+      "temperature": "provider default (1.0)",
+      "role": "Prover A; sole reviewer for B1 and B2"
+    },
+    "DeepSeek V3.2": {
+      "api_id": "deepseek-chat",
+      "provider": "DeepSeek",
+      "endpoint": "https://api.deepseek.com/chat/completions",
+      "max_tokens": 4096,
+      "temperature": "provider default (1.0)",
+      "role": "Prover B; judge in graduated dissent"
+    },
+    "Claude Opus 4.6": {
+      "api_id": "claude-opus-4-6",
+      "provider": "Anthropic",
+      "endpoint": "https://api.anthropic.com/v1/messages",
+      "max_tokens": 4096,
+      "temperature": "provider default (1.0)",
+      "role": "Arbiter in B3 and GD"
+    },
+    "GPT-5.4 (judge in scoring)": {
+      "api_id": "gpt-5.4",
+      "provider": "OpenAI",
+      "max_completion_tokens": 4096,
+      "temperature": 0,
+      "role": "LLM-as-judge for matching predictions to SPOT annotations"
+    }
+  },
+  "thresholds": {
+    "theta_accept": 0.9,
+    "theta_noise": 0.15,
+    "comment": "Graduated dissent escalation: L0 if agreement>=0.90, L1 if SNR=(1-agreement)/theta_noise<1, L2 otherwise (steelman exchange triggered)."
+  },
+  "data_sources": {
+    "spot_metadata": "https://huggingface.co/datasets/amphora/SPOT-MetaData",
+    "spot_parsed": "https://huggingface.co/datasets/amphora/SPOT",
+    "spot_evaluation_code": "https://github.com/guijinSON/SPOT"
+  },
+  "id_mapping_note": "Original SPOT DOIs were renamed paper_001..paper_020 (alphabetic order) for this validation package; the mapping is in config/id_mapping.csv."
+}

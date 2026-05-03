@@ -1,0 +1,450 @@
+{
+  "condition": "GD",
+  "paper_id": "2409.01021v2",
+  "verdict": "flagged",
+  "confidence": 0.88,
+  "reasoning": "Both reviewers independently flagged the paper and converged on several core concerns. The most serious issue is the internal inconsistency of the tensor algebra in the aggregation network (Eqs. 5-8), which both reviewers identified and which survived steelmanning from both sides. Reviewer A defended this as MAJOR-REVISION throughout, while Reviewer B escalated it to RETRACTION-WORTHY after steelmanning—but Reviewer A, who originally raised the concern, explicitly did not escalate it, noting it 'may be a presentation error rather than a fatal flaw in the executed code.' Following the principle that when doubt exists the finding should be MAJOR-REVISION rather than RETRACTION-WORTHY, I classify it as MAJOR-REVISION with high confidence. The training group formation ambiguity is another high-confidence MAJOR-REVISION finding: both reviewers raised variants of this concern, and Reviewer A defended it through steelmanning. The computational feasibility gap, the underspecified condensation operator, the auxiliary loss supervision framing, and the training data fairness concerns are additional MAJOR-REVISION items with moderate-to-high confidence. Several minor issues round out the assessment. No single finding is definitively retraction-worthy on current evidence, but the accumulation of major issues means the paper requires substantial revision before its central claims can be considered reliable.",
+  "findings": [
+    {
+      "finding": "Core tensor formulations in the aggregation network (Eqs. 5-8) are internally inconsistent. The hyperassociation tensor is defined as 7D, but subsequent 2D convolution operations have mismatched indexing and dimensional specifications. The claimed dimensional reductions do not follow rigorously from the stated operations. This makes the central architectural contribution impossible to verify or reproduce from the paper alone.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers identified this issue. Reviewer A consistently rated it MAJOR-REVISION and defended that rating through steelmanning. Reviewer B escalated to RETRACTION-WORTHY after steelmanning, but Reviewer A—who raised the concern originally—explicitly noted it may be a presentation error rather than proof the experiments are invalid. Since we cannot confirm the implementation is wrong (only that the description is wrong/unclear), and the original raiser maintained MAJOR-REVISION, this stays MAJOR-REVISION. However, it is the highest-priority revision item because the entire method hinges on this formulation.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Training group formation protocol is unspecified. The paper does not explain how groups of N=6 related images are sampled from datasets with variable numbers of images per class, how variable-length groups are handled, or whether training and inference group sizes match. For a method that builds N×N inter-image associations, this is a core experimental design detail.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Reviewer A raised this and defended it through steelmanning. Reviewer B raised a related concern about data leakage and escalated it to RETRACTION-WORTHY after steelmanning, but the escalation was speculative ('if groups are formed arbitrarily...then the entire premise is broken'). Without evidence that groups were actually formed incorrectly, this remains a serious omission requiring clarification, not a confirmed fatal flaw. MAJOR-REVISION is appropriate.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Hyperassociation tensor computational feasibility is not convincingly demonstrated. Memory footprint, runtime, and how the full dense tensor is materialized or streamed are not reported. The paper only reports MACs for the aggregation submodule, not the full model including correspondence estimation and OCC loss overhead.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "Both reviewers raised aspects of this. Reviewer A defended it as MAJOR-REVISION through steelmanning (feasibility of the core contribution). Reviewer B initially rated it MAJOR-REVISION but downgraded to MINOR after steelmanning, calling it a 'reporting gap.' The truth is likely in between: for a method whose central novelty is dense groupwise hyperassociations, not specifying whether the tensor can actually be formed as described is more than a minor reporting gap, but it is not proof the method fails. MAJOR-REVISION.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The condensation operator (Eq. 15) does not specify how non-integer coordinates are handled (rounding vs. bilinear sampling), whether gradients pass through the selection, or boundary handling. This is central to the CAC and OCC modules.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Raised by Reviewer A and defended through steelmanning. Reviewer B acknowledged missing this entirely and agreed it was a valid concern. Different sampling choices materially affect both correctness and performance of the condensation mechanism.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The auxiliary correspondence loss (OCC) uses ground-truth segmentation masks to gate the cycle-consistency objective (Eq. 16), but the paper frames the correspondence module as learning from raw associations. This weakens the novelty claim and the fairness of comparisons to unsupervised correspondence methods.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.7,
+      "justification": "Reviewer A raised this as MAJOR-REVISION but then downgraded toward MINOR during steelmanning, noting that supervised CoSOD already uses masks. Reviewer B did not originally raise it but escalated it to MAJOR-REVISION after steelmanning. The finding survived in both directions but with reduced confidence. Since the main task is supervised anyway, the issue is primarily about framing and fairness of comparison rather than validity of the segmentation results. MAJOR-REVISION is appropriate but at lower confidence.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Training data pipeline fairness: the paper uses a synthesis strategy for DUTS class and trains multiple variants without sufficiently detailing whether all compared methods used the same synthesized data, preprocessing, and group construction.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.72,
+      "justification": "Raised by Reviewer A and defended through steelmanning. If the training data pipeline differs materially from prior work, performance advantages may partly reflect data preparation rather than model superiority. Reviewer B raised a related but distinct concern about train-test overlap. Both are valid data-protocol concerns.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Hyperparameter K=9 in CAC controls the sparsity of the condensed hyperassociation tensor and directly affects both efficiency claims and association quality. No sensitivity analysis is provided.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.65,
+      "justification": "Reviewer B originally rated MINOR but upgraded to MAJOR-REVISION after steelmanning, recognizing that K directly controls a critical architectural trade-off. Reviewer A did not specifically raise this but it connects to broader concerns about underspecified design choices. The upgrade is reasonable given K's importance to the central contribution.",
+      "source": "prover_b",
+      "survived_steelman": true
+    },
+    {
+      "finding": "OCC loss averages over all i,j pairs including self-pairs (i=j), where cycle consistency is trivial. No exclusion of diagonal terms is mentioned, potentially diluting or biasing the auxiliary training signal.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Raised by Reviewer A as MINOR and maintained through steelmanning. Including self-pairs is unlikely by itself to overturn segmentation conclusions. Should be clarified and ideally ablated.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Numerous notation and equation-editing problems throughout the manuscript (duplicated passages, undefined symbols, inconsistent naming, garbled text) reduce reproducibility and clarity.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers noted presentation issues. Reviewer A rated MINOR and acknowledged overlap with the major tensor-equation finding. These are primarily reporting-quality issues that do not independently imply invalid results.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "No variance estimates, repeated runs, or statistical significance tests are reported for the benchmark comparisons or ablation studies.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers noted this. It is a common reporting gap that does not invalidate the results, especially given the consistency of improvements across multiple datasets and metrics.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Heuristic initialization for correspondence uses argmax over summed layerwise associations without justifying summation across layers with potentially different scales/distributions.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.75,
+      "justification": "Raised by Reviewer A as MINOR and softened further during steelmanning. Reviewer B acknowledged it as valid after steelmanning. It is a defensible design choice unlikely to fundamentally invalidate results.",
+      "source": "prover_a",
+      "survived_steelman": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 7,
+    "MINOR": 4
+  },
+  "protocol": {
+    "level": "L2",
+    "agreement": 0.42,
+    "snr": 3.866666666666667,
+    "theta_accept": 0.9,
+    "theta_noise": 0.15
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.87,
+    "reasoning": "The manuscript appears technically interesting, but there are multiple methodological and reporting problems that prevent confident assessment of correctness. The most serious issues are internal inconsistencies in the tensor algebra and aggregation equations, unclear/possibly invalid training-evaluation protocol regarding group formation and batch size, and use of ground-truth masks inside the auxiliary correspondence loss without adequately clarifying whether this creates privileged supervision beyond standard CoSOD training. These issues do not definitively prove the main empirical conclusions are false, but they are substantial enough that the paper requires major methodological clarification and likely revision before being considered reliable.",
+    "findings": [
+      {
+        "finding": "Core tensor formulations in the aggregation network are internally inconsistent, making the method difficult to reproduce and possibly mathematically ill-defined. In Eq. (5) the mapping is from a 7D hyperassociation tensor to association features, but the subsequent Eqs. (6)-(8) apply 2D convolutions over slices whose indexing/dimensions do not consistently match the claimed source/target dimensions. Eq. (8) is especially problematic: the left-hand side fixes index i but the right-hand side applies C2 to A_s^2(i,:,: , j,h_j,w_j,:), which is described as a tensor of shape N x H_s x W_s x C'_s in the text using ':' over the first dimensions, contradicting the equation. The paper then states that after several layers the target H_s x W_s dimension is eliminated, yielding F_s^{A'} in R^{N x H_s x W_s x N x C}, but the preceding operations do not rigorously show this reduction.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If these equations reflect implementation mistakes, the claimed architecture may not be what was actually trained, and the ablations/mechanistic claims could change. However, this is not definitively retraction-worthy because it may be a presentation error rather than a fatal flaw in the executed code."
+      },
+      {
+        "finding": "The hyperassociation tensor dimensionality and computational feasibility are not convincingly specified. A_s is defined as R^{N x H_s x W_s x N x H_s x W_s x L_s}, i.e. a full 6D all-pairs pixel relation over image groups. For input groups of N=6 images at 256x256, even moderate feature-map resolutions make this tensor enormous. The manuscript reports only aggregation-network MACs (91.38G -> 77.19G) but not memory footprint, runtime, or how the full tensor is materialized/streamed. Since the entire proposal relies on dense groupwise hyperassociations, feasibility is a methodological issue, not just engineering detail.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the tensor cannot practically be formed as described, the method description is misleading and key claims about full-pixel PAG versus CAC are not adequately supported. Still, the paper could remain valid if the authors clarify an efficient implementation."
+      },
+      {
+        "finding": "The training setup is ambiguous about how image groups are formed and whether the batch size N=6 corresponds to semantic groups or arbitrary mini-batch samples. CoSOD methods depend critically on grouping related images. The manuscript says the input is a group of related images {I_i}_{i=1}^N and that the batch size is set to N=6, but does not explain how groups of variable dataset size are sampled, padded, truncated, or partitioned during training and inference. This omission is especially serious because the method builds N-by-N associations and averages over the second N dimension.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If groups are incorrectly constructed, the central inter-image association learning claims could materially change. This is a methodological concern that could alter conclusions, though it does not by itself prove the reported results are invalid."
+      },
+      {
+        "finding": "The auxiliary correspondence loss uses ground-truth object masks during training to gate the cycle-consistency objective, but the supervision implications are underexplained. Eq. (16) multiplies images by G_i^s, the resized ground-truth mask, so the correspondence learner is explicitly told which pixels are co-salient. Because the proposed CAC/OCC modules are presented as a pretext/self-supervised way to improve correspondence and CoSOD, the use of segmentation labels to localize the auxiliary loss weakens that characterization and may unfairly advantage the method relative to prior unsupervised correspondence approaches cited as baselines.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This does not invalidate the segmentation task itself, since CoSOD training is supervised anyway, but it could materially affect the novelty and the fairness of comparisons regarding correspondence learning and auxiliary loss design."
+      },
+      {
+        "finding": "The OCC loss averages over all i,j including i=j pairs in Eq. (16). For self-pairs, cycle consistency is trivial or qualitatively different from cross-image correspondence, yet the loss normalization is 1/N^2 and no exclusion of diagonal terms is mentioned.",
+        "severity": "MINOR",
+        "justification": "Including self-pairs could dilute or bias the auxiliary signal, but it is unlikely by itself to overturn the main segmentation conclusions. It should be clarified and, ideally, ablated."
+      },
+      {
+        "finding": "The manuscript claims fair comparison with prior methods by following their training dataset combinations, but it also uses a synthesis strategy for DUTS class and trains multiple variants (DC, C9, DC+C9, DC+CS) without sufficiently detailing whether all compared methods used the same synthesized data, preprocessing, and group construction. This weakens the fairness of SOTA comparisons.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the training data pipeline differs materially from prior work, reported performance advantages may partly reflect data preparation rather than model superiority. This could change comparative conclusions."
+      },
+      {
+        "finding": "The reported ablation design uses a strong custom baseline (FPN + R2R) rather than the plain backbone alone, which is acceptable, but the paper does not provide variance estimates, repeated runs, or statistical stability for the often modest incremental gains of CAC and OCC. Given the complexity of the pipeline, single-run improvements may not be robust.",
+        "severity": "MINOR",
+        "justification": "Lack of uncertainty estimates is common and usually would not overturn conclusions, but it limits confidence in the smaller reported gains."
+      },
+      {
+        "finding": "There are numerous notation and equation-editing problems suggesting insufficient methodological vetting: duplicated/garbled passages, misplaced text ('where (k_c,k_c) is the center position...' repeated after Eq. 16), undefined symbols, and inconsistent naming (F, F^P, mathbb{F}^P; F_s^{A'} shape uses C then C_s; 'l-2 normalized' clearly meant l2-normalized). These errors make it hard to determine the exact implemented method.",
+        "severity": "MINOR",
+        "justification": "These are primarily reporting-quality issues, but because they affect reproducibility they should be corrected. On their own they do not imply invalid results."
+      },
+      {
+        "finding": "The condensation operator in Eq. (15) is described as index selection using coordinates n_s^j that are produced by adding learned continuous offsets to pixel locations, but the manuscript does not specify how non-integer coordinates are handled (rounding vs bilinear sampling), whether gradients pass through the selection, or boundary handling. This is central to CAC and OCC because correspondence learning depends on differentiable warping/selection behavior.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Different sampling choices can materially change both correctness and performance of the proposed condensation mechanism. The omission prevents methodological verification."
+      },
+      {
+        "finding": "The heuristic initialization for correspondence picks the argmax over summed layerwise associations, but the paper never justifies summation across layers with potentially different scales/distributions, nor whether associations are normalized across layers before summation. Since CAC depends on this initialization for generating initial condensed hyperassociations, this choice could bias the whole correspondence pipeline.",
+        "severity": "MINOR",
+        "justification": "This is a questionable design choice, but it is still a defensible heuristic and unlikely to fundamentally invalidate the main claims without further evidence."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.85,
+    "reasoning": "The manuscript presents a novel method (CONDA) for co-salient object detection by learning deep association features from raw inter-image associations. The methodology is technically sound and the experiments are extensive, with appropriate ablation studies and comparisons to state-of-the-art methods. However, there are several methodological concerns that need clarification or correction: (1) the handling of dimensions in the hyperassociation tensor (6D vs 7D) is inconsistent, (2) the computational burden metrics (MACs) are reported only for the PAG baseline but not for the full model with CAC, (3) some reporting gaps (e.g., random seed, hyperparameter tuning details) are present. None of these issues appear to fundamentally invalidate the central conclusions, but some require clarification for reproducibility.",
+    "findings": [
+      {
+        "finding": "Inconsistent dimensionality of hyperassociation tensor: The paper states hyperassociation as 6D (Section 1, last paragraph) but in the technical description (Equation 4 and surrounding text) it is defined as 7D: N × H_s × W_s × N × H_s × W_s × L_s. This is a discrepancy that could confuse readers and affect reproducibility.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This inconsistency is not purely cosmetic—it could indicate a misunderstanding of the data structure or a error in notation. If the actual implementation uses a different dimensionality than reported, the method may be misrepresented or harder to reproduce. However, the core method (aggregation on hyperassociations) likely works regardless of the exact notation, so the central conclusions are not invalidated, but a correction is essential."
+      },
+      {
+        "finding": "Incomplete reporting of computational cost: The paper reports MACs for the full-pixel PAG (91.38G) and for the CAC version (77.19G), but does not report the MACs for the full model including the correspondence estimation and the overhead of the OCC loss. Additionally, the MACs are only measured for the aggregation networks, not the entire model.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The paper claims CAC reduces computational burden, but the reported reduction (from 91.38G to 77.19G) is only for a submodule, not the full model. If the correspondence estimation (Equation 12-15) adds significant computation, the overall benefit might be smaller or even negative. This could affect the validity of the claim about practicality/efficiency. However, the primary contribution (deep association learning) is not undermined; only the efficiency claim needs better support."
+      },
+      {
+        "finding": "Missing details on hyperparameter selection and random seeds: The paper sets K=9 in CAC but does not report any sensitivity analysis or how this value was chosen. Also, no mention of random seeds or the number of runs for stochastic training, which is critical for reproducibility in deep learning.",
+        "severity": "MINOR",
+        "justification": "This is a common reporting gap in many papers. It does not invalidate the results, but it reduces reproducibility confidence. The results are likely robust, but a brief sensitivity analysis (e.g., K=5, 7, 9, 11) would strengthen the paper."
+      },
+      {
+        "finding": "Potential data leakage in the training protocol: The paper trains on DUTS class, COCO-9k, and COCO-SEG, and evaluates on CoCA, CoSal2015, and CoSOD3k. It does not explicitly state whether there is any overlap between training and evaluation datasets. For example, COCO-9k is a subset of COCO, and CoCA/CoSOD3k may contain images from COCO as well. If overlaps exist, the evaluation could be inflated.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If significant overlap exists, the reported state-of-the-art results (especially on CoCA) could be partially due to memorization rather than generalization. The authors should either verify no overlap or discuss the potential impact. This could affect the credibility of the claimed superiority over other methods."
+      },
+      {
+        "finding": "Lack of statistical significance testing: The paper compares its method to others using point estimates (e.g., S_m, E_xi, F_beta) but does not report any confidence intervals or perform statistical tests (e.g., paired t-tests). Given the relatively small number of groups in some datasets (e.g., 80 groups in CoCA), this is a notable omission.",
+        "severity": "MINOR",
+        "justification": "This is a common issue in computer vision papers. The improvements are large and consistent across datasets, so it is unlikely that statistical noise changes the conclusion. However, for rigorous validation, some form of uncertainty quantification would be beneficial."
+      },
+      {
+        "finding": "OCC loss uses SSIM on masked images; potential for zero-gradient regions: The OCC loss (Equation 16) computes SSIM between masked warped images. Since the mask is binary, large background regions will have zero values, potentially causing zero gradients in those areas. This is not discussed.",
+        "severity": "MINOR",
+        "justification": "This is a practical concern, but modern deep learning frameworks handle zero gradients gracefully (no update on those pixels). It is unlikely to cause training instability, but the authors could clarify that the loss is only computed over the masked region (which they implicitly do). No impact on conclusions."
+      }
+    ]
+  },
+  "judge": {
+    "agreement_score": 0.42,
+    "severity_agreement": "They disagree on which findings are retraction-worthy. Neither review finds any issue retraction-worthy, but Review A flags several MAJOR-REVISION issues that it considers potentially fatal to claims (e.g., tensor inconsistency, group formation ambiguity, privileged supervision), while Review B treats similar or related issues (e.g., dimensionality inconsistency) as less critical. Review B finds all issues correctable without challenging core validity.",
+    "shared_findings": [
+      "Hyperassociation tensor dimensionality inconsistency (6D vs 7D or 7D with indexing errors)",
+      "Computational feasibility / MACs reporting incomplete for full model",
+      "Reproducibility and notation problems"
+    ],
+    "severity_disputes": [
+      "Hyperassociation tensor dimensionality: A rates as MAJOR-REVISION, B rates as MAJOR-REVISION (same severity but A's justification is more severe about potential implementation mismatch)",
+      "Computational cost reporting: A rates as MAJOR-REVISION, B rates as MAJOR-REVISION (same severity but A extends to feasibility of memory/runtime, B only concerns incomplete MACs for full model)",
+      "Training group formation / data leakage: A rates as MAJOR-REVISION, B rates as MAJOR-REVISION (same severity but different specific concerns: A about group construction, B about training-evaluation overlap)",
+      "Auxiliary correspondence loss / privileged supervision: A rates as MAJOR-REVISION, B does not mention this at all (implicit disagreement on severity)",
+      "Notation/equation errors: A rates as MINOR, B rates some as MAJOR-REVISION (the dimensionality issue in A is also notation-related, but A treats it as more severe)"
+    ],
+    "unique_to_a": [
+      "Core tensor equations internally inconsistent and mathematically ill-defined",
+      "Hyperassociation tensor feasibility (memory footprint, streaming) not specified",
+      "Ambiguous group formation and batch size semantics for CoSOD",
+      "Auxiliary correspondence loss uses ground-truth masks, creating privileged supervision",
+      "OCC loss includes self-pairs (i=j) without exclusion",
+      "Training data synthesis pipeline not detailed, weakening fairness of comparisons",
+      "No variance estimates for ablation gains",
+      "Condensation operator interpolation method not specified",
+      "Heuristic initialization for correspondence not justified"
+    ],
+    "unique_to_b": [
+      "Missing details on hyperparameter selection (K=9) and random seeds",
+      "Potential data leakage from training/evaluation dataset overlap",
+      "Lack of statistical significance testing",
+      "OCC loss SSIM zero-gradient regions not discussed"
+    ]
+  },
+  "steelman_a": {
+    "steelman_for_other": "The strongest case for the other reviewer is that most of the manuscript’s problems are best interpreted as serious presentation/reproducibility defects rather than evidence that the experiments are invalid. In that reading, the paper’s central empirical claim is modest and testable: a co-salient object detector using deep inter-image association features performs well on standard benchmarks. The experiments are broad, the gains appear consistent across multiple datasets/metrics, and the architecture concept is plausible enough that notation flaws alone should not be treated as fatal. \n\nMore specifically on severity: (1) the 6D/7D hyperassociation issue can be steelmanned as a notation mismatch caused by whether the feature-level axis L_s is counted as part of the tensor dimensionality; that is important to fix, but not evidence the method is impossible. (2) The confusing equations in the aggregation module may reflect poor manuscript editing, omitted reshapes/permutations, or abuse of tensor notation common in vision papers; if code exists and results are stable, this is a major revision for clarity and reproducibility, not grounds to say conclusions fail. (3) The computational-feasibility concern can be narrowed: authors may never instantiate the full dense tensor in memory, instead using chunking, top-k condensation, or implicit correlation kernels. Since they already report some MAC reductions, the issue is incomplete efficiency reporting rather than impossibility of execution. (4) The use of ground-truth masks in the OCC auxiliary loss is not necessarily privileged beyond the supervised CoSOD setting, because the main task already uses segmentation masks; therefore the fair criticism is not ‘invalid supervision’ but ‘the correspondence module is less self-/weakly-supervised than implied.’ That weakens framing/novelty more than empirical correctness. (5) Group-construction ambiguity is a real concern, but many CoSOD works use fixed-size sampled groups during training and canonical groups during inference; if authors followed common practice, omitted details would hurt reproducibility without implying the benchmark results are wrong. (6) Missing seed/sensitivity/statistical reporting and partial MAC accounting are classic minor-to-major revision issues. \n\nSo the other reviewer’s position can be summarized as: there are enough inconsistencies and omissions to flag the paper, but the current record does not show a definitive methodological collapse. The likely remedy is substantial revision with corrected equations, explicit implementation details, full efficiency accounting, and clearer framing of the auxiliary loss—not rejection on the basis that the findings cannot be supported at all.",
+    "severity_i_now_upgrade": [],
+    "severity_i_now_downgrade": [
+      "The auxiliary correspondence loss uses ground-truth object masks during training to gate the cycle-consistency objective, but the supervision implications are underexplained. I would now lean MINOR rather than MAJOR-REVISION on validity grounds: this is mainly a novelty/fairness/framing issue because supervised CoSOD already uses masks; unless the paper explicitly claims unsupervised correspondence learning, it does not fundamentally threaten the segmentation results.",
+      "The heuristic initialization for correspondence picks the argmax over summed layerwise associations... I might even soften this further within MINOR as a design-choice critique rather than a methodological problem likely to change conclusions.",
+      "The reported ablation design uses a strong custom baseline ... no variance estimates. Still MINOR, and I would note I may have implicitly overstated its importance relative to the larger reproducibility issues.",
+      "There are numerous notation and equation-editing problems... I still think this is at least MINOR, but some of what I folded into this item overlaps with the major aggregation-equation concern; as a standalone item it may be mostly editorial and could be framed more narrowly."
+    ],
+    "findings_i_still_defend": [
+      "Core tensor formulations in the aggregation network are internally inconsistent — MAJOR-REVISION. I still defend this because the inconsistency is not just 6D vs 7D naming; the indexing and claimed dimensional reductions do not line up, making the implemented operation unclear. This could change mechanistic claims and reproducibility, but does not yet prove the experiments are false.",
+      "Hyperassociation tensor dimensionality/computational feasibility unclear — MAJOR-REVISION. Even if efficient implementation exists, the current description leaves a central part of the method under-specified. Since the contribution hinges on groupwise dense associations, this needs substantive correction.",
+      "Training setup/group formation ambiguity — MAJOR-REVISION. For CoSOD, how groups are sampled/formed is core experimental design, not a minor omitted detail. Different grouping protocols can materially alter results.",
+      "OCC loss averages over all i,j including self-pairs — MINOR. This remains a legitimate but non-fatal concern that should be clarified/ablated.",
+      "Fairness of comparison with synthesized data / training pipeline mismatch — MAJOR-REVISION. If their data construction differs from prior work, comparative claims may be inflated; that is more than a cosmetic reporting gap.",
+      "Condensation operator underspecified for non-integer coordinates, gradients, boundary handling — MAJOR-REVISION. This is central to CAC/OCC behavior and must be spelled out for correctness/reproducibility."
+    ],
+    "new_errors_noticed": [
+      "The other reviewer’s point about possible train-test overlap/data leakage via COCO-derived sources is worth adding as a MAJOR-REVISION check. I did not raise it originally, and if overlap exists it could affect comparative performance claims.",
+      "Efficiency accounting should distinguish submodule MACs from end-to-end model cost more explicitly. I mentioned feasibility, but not the narrower issue that the claimed practical gain may be overstated because only aggregation-network MACs are reported.",
+      "There may be a framing inconsistency between presenting OCC/CAC as correspondence learning from raw associations and then relying on supervised masks to define where correspondence consistency matters. Even if not a validity issue, the manuscript should more carefully delimit the claim.",
+      "A fresh read suggests some concerns I treated separately may be partially redundant: the 6D/7D inconsistency, malformed equations, and notation/editing problems are related. In a final review I would consolidate them to avoid double-counting.",
+      "The paper may need explicit clarification of whether inference uses fixed dataset-provided groups or sliding/randomly assembled groups, and whether training group size N=6 matches test-time group size. Train-test mismatch here could be a substantive methodological issue."
+    ]
+  },
+  "steelman_b": {
+    "steelman_for_other": "The other reviewer's strongest argument is that the core mathematical formulation of the hyperassociation tensor and the aggregation network (Eq. 5-8) contains fundamental algebraic inconsistencies that go beyond mere notation errors. Specifically, the claim that a 7D tensor can be processed via 2D convolutions on slices with mismatched dimensions (N vs H_s × W_s being conflated) suggests the architecture as described is not mathematically well-defined. If the actual implementation resolves these contradictions differently than the paper states, then every single result—all ablations, all comparisons to SOTA—rests on an architecture that the paper misrepresents. This is more severe than a 'typo' because it undermines everything downstream: the association features, the correspondence learning, and the entire co-saliency pipeline. Additionally, the other reviewer correctly identifies that the training group formation (how N=6 groups of related images are sampled from datasets with variable numbers of images per class) is completely unspecified, and without this, the entire inter-image association mechanism is ungrounded. Combined, these two issues make the paper unreproducible at a foundational level, which in many venues would warrant a desk reject. The other reviewer's severity ratings of MAJOR-REVISION for these two points could be argued as RETRACTION-WORTHY because if the tensor equations are wrong or the group construction is ad-hoc, the core contribution—deep association learning from inter-image associations—may not work as claimed.",
+    "severity_i_now_upgrade": [
+      "Inconsistent dimensionality of hyperassociation tensor (original: MAJOR-REVISION → RETRACTION-WORTHY): I now believe this is more severe. The 6D vs 7D discrepancy is trivial, but the other reviewer's deeper objection about the algebraic inconsistency in Eq. 5-8 is critical. If the mapping from 7D tensor to 2D convolutions is mathematically ill-specified, the method description is not just unclear—it is wrong. This makes the central architectural claims impossible to verify, which invalidates the entire empirical contribution.",
+      "Missing details on hyperparameter selection and random seeds (original: MINOR → MAJOR-REVISION): I concede this is more severe than I originally thought. The other reviewer notes that K=9 in CAC is not just a 'hyperparameter'—it directly controls the sparsity/condensation of the hyperassociation tensor. Without any sensitivity analysis, one cannot know if the reported efficiency gains (91.38G → 77.19G) are artifacts of a particular K chosen by cherry-picking after seeing results. This could affect the central efficiency claim.",
+      "Potential data leakage in training protocol (original: MAJOR-REVISION → RETRACTION-WORTHY): The other reviewer's point about training group formation is even more damning than dataset overlap. If groups are formed arbitrarily (e.g., by sampling N=6 images from random classes) rather than truly related groups (e.g., all images of same object class), then the entire premise of 'inter-image association learning' is broken. This is not a minor oversight—it means the method never actually learned what it claims to learn. This would require retraction if confirmed.",
+      "OCC loss uses SSIM on masked images; potential for zero-gradient regions (original: MINOR → MAJOR-REVISION): The other reviewer correctly identifies that the OCC loss includes self-pairs (i=j), which are trivially cycle-consistent. This means the loss signal is diluted by N diagonal terms out of N^2 pairs. More critically, the use of ground-truth masks inside the loss (Eq. 16) means the correspondence learner is explicitly shown which pixels to focus on. This is not 'minor'—it is a form of privileged information that breaks the claimed self-supervised nature of the correspondence module. This could invalidate the novelty claim and the fairness of comparisons to unsupervised correspondence methods."
+    ],
+    "severity_i_now_downgrade": [
+      "Incomplete reporting of computational cost (original: MAJOR-REVISION → MINOR): Upon reflection, the other reviewer's point about memory/runtime is valid, but the paper does report MACs for the aggregation networks, which is standard practice. The omission of full-model MACs is a reporting gap, not a methodological flaw. It does not change any conclusion about method correctness or effectiveness—only about practical deployability. This deserves a minor note, not a major revision.",
+      "Lack of statistical significance testing (original: MINOR → NO SEVERITY NEEDED?): I still think MINOR is appropriate, but the other reviewer's silence on this point suggests they agree it's not a core issue. I'll keep it as MINOR.",
+      "Potential data leakage in training protocol (original: MAJOR-REVISION → MINOR?): Actually, I'm upgrading this, not downgrading. Let me correct: I already upgraded it above. No downgrade for this.",
+      "OCC loss uses SSIM on masked images; potential for zero-gradient regions (original: MINOR → NO CHANGE?): The other reviewer's critique about self-pairs is more severe than my original gradient concern. I'm upgrading, not downgrading.",
+      "Missing details on hyperparameter selection and random seeds (original: MINOR → NO CHANGE?): I already upgraded this. No further action."
+    ],
+    "findings_i_still_defend": [
+      "Inconsistent dimensionality of hyperassociation tensor (original: MAJOR-REVISION → now RETRACTION-WORTHY after upgrade): I stand by the upgraded severity because the algebraic inconsistency goes to the heart of the method.",
+      "Incomplete reporting of computational cost (original: MAJOR-REVISION → now MINOR after downgrade): I still believe this is a valid criticism but agree with the other reviewer's implicit judgment that it's secondary.",
+      "Missing details on hyperparameter selection and random seeds (original: MINOR → now MAJOR-REVISION after upgrade): I now agree this is more important because K controls a critical architectural trade-off.",
+      "Potential data leakage in training protocol (original: MAJOR-REVISION → now RETRACTION-WORTHY after upgrade): I now see the group formation issue as potentially fatal, not just an overlap concern.",
+      "Lack of statistical significance testing (original: MINOR → still MINOR): No change here.",
+      "OCC loss uses SSIM on masked images; potential for zero-gradient regions (original: MINOR → still MINOR? Actually upgraded to MAJOR-REVISION): I upgrade this to MAJOR-REVISION because of the self-pair and ground-truth mask issues raised by the other reviewer."
+    ],
+    "new_errors_noticed": [
+      "The correspondence initialization (argmax over summed layerwise associations) is not justified for cross-layer scale differences. The other reviewer's point about normalization across layers is valid and was not in my original review.",
+      "The condensation operator (Eq. 15) handling of non-integer coordinates is underspecified, potentially making the correspondence warping non-differentiable or incorrect. I missed this entirely.",
+      "The paper does not clarify whether groups are formed with or without replacement, or how variable-length groups (e.g., a class with only 3 images) are handled. This is a fundamental engineering detail that could silently produce invalid training.",
+      "The other reviewer correctly notes that the ablation design uses a custom baseline (FPN + R2R) rather than the standard COSNet or similar, making comparisons to prior work apples-to-oranges even within the paper's ablations. I missed this issue of baseline comparability."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.88,
+    "reasoning": "Both reviewers independently flagged the paper and converged on several core concerns. The most serious issue is the internal inconsistency of the tensor algebra in the aggregation network (Eqs. 5-8), which both reviewers identified and which survived steelmanning from both sides. Reviewer A defended this as MAJOR-REVISION throughout, while Reviewer B escalated it to RETRACTION-WORTHY after steelmanning—but Reviewer A, who originally raised the concern, explicitly did not escalate it, noting it 'may be a presentation error rather than a fatal flaw in the executed code.' Following the principle that when doubt exists the finding should be MAJOR-REVISION rather than RETRACTION-WORTHY, I classify it as MAJOR-REVISION with high confidence. The training group formation ambiguity is another high-confidence MAJOR-REVISION finding: both reviewers raised variants of this concern, and Reviewer A defended it through steelmanning. The computational feasibility gap, the underspecified condensation operator, the auxiliary loss supervision framing, and the training data fairness concerns are additional MAJOR-REVISION items with moderate-to-high confidence. Several minor issues round out the assessment. No single finding is definitively retraction-worthy on current evidence, but the accumulation of major issues means the paper requires substantial revision before its central claims can be considered reliable.",
+    "findings": [
+      {
+        "finding": "Core tensor formulations in the aggregation network (Eqs. 5-8) are internally inconsistent. The hyperassociation tensor is defined as 7D, but subsequent 2D convolution operations have mismatched indexing and dimensional specifications. The claimed dimensional reductions do not follow rigorously from the stated operations. This makes the central architectural contribution impossible to verify or reproduce from the paper alone.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers identified this issue. Reviewer A consistently rated it MAJOR-REVISION and defended that rating through steelmanning. Reviewer B escalated to RETRACTION-WORTHY after steelmanning, but Reviewer A—who raised the concern originally—explicitly noted it may be a presentation error rather than proof the experiments are invalid. Since we cannot confirm the implementation is wrong (only that the description is wrong/unclear), and the original raiser maintained MAJOR-REVISION, this stays MAJOR-REVISION. However, it is the highest-priority revision item because the entire method hinges on this formulation.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Training group formation protocol is unspecified. The paper does not explain how groups of N=6 related images are sampled from datasets with variable numbers of images per class, how variable-length groups are handled, or whether training and inference group sizes match. For a method that builds N×N inter-image associations, this is a core experimental design detail.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Reviewer A raised this and defended it through steelmanning. Reviewer B raised a related concern about data leakage and escalated it to RETRACTION-WORTHY after steelmanning, but the escalation was speculative ('if groups are formed arbitrarily...then the entire premise is broken'). Without evidence that groups were actually formed incorrectly, this remains a serious omission requiring clarification, not a confirmed fatal flaw. MAJOR-REVISION is appropriate.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Hyperassociation tensor computational feasibility is not convincingly demonstrated. Memory footprint, runtime, and how the full dense tensor is materialized or streamed are not reported. The paper only reports MACs for the aggregation submodule, not the full model including correspondence estimation and OCC loss overhead.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.78,
+        "justification": "Both reviewers raised aspects of this. Reviewer A defended it as MAJOR-REVISION through steelmanning (feasibility of the core contribution). Reviewer B initially rated it MAJOR-REVISION but downgraded to MINOR after steelmanning, calling it a 'reporting gap.' The truth is likely in between: for a method whose central novelty is dense groupwise hyperassociations, not specifying whether the tensor can actually be formed as described is more than a minor reporting gap, but it is not proof the method fails. MAJOR-REVISION.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The condensation operator (Eq. 15) does not specify how non-integer coordinates are handled (rounding vs. bilinear sampling), whether gradients pass through the selection, or boundary handling. This is central to the CAC and OCC modules.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Raised by Reviewer A and defended through steelmanning. Reviewer B acknowledged missing this entirely and agreed it was a valid concern. Different sampling choices materially affect both correctness and performance of the condensation mechanism.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The auxiliary correspondence loss (OCC) uses ground-truth segmentation masks to gate the cycle-consistency objective (Eq. 16), but the paper frames the correspondence module as learning from raw associations. This weakens the novelty claim and the fairness of comparisons to unsupervised correspondence methods.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.7,
+        "justification": "Reviewer A raised this as MAJOR-REVISION but then downgraded toward MINOR during steelmanning, noting that supervised CoSOD already uses masks. Reviewer B did not originally raise it but escalated it to MAJOR-REVISION after steelmanning. The finding survived in both directions but with reduced confidence. Since the main task is supervised anyway, the issue is primarily about framing and fairness of comparison rather than validity of the segmentation results. MAJOR-REVISION is appropriate but at lower confidence.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Training data pipeline fairness: the paper uses a synthesis strategy for DUTS class and trains multiple variants without sufficiently detailing whether all compared methods used the same synthesized data, preprocessing, and group construction.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.72,
+        "justification": "Raised by Reviewer A and defended through steelmanning. If the training data pipeline differs materially from prior work, performance advantages may partly reflect data preparation rather than model superiority. Reviewer B raised a related but distinct concern about train-test overlap. Both are valid data-protocol concerns.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Hyperparameter K=9 in CAC controls the sparsity of the condensed hyperassociation tensor and directly affects both efficiency claims and association quality. No sensitivity analysis is provided.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.65,
+        "justification": "Reviewer B originally rated MINOR but upgraded to MAJOR-REVISION after steelmanning, recognizing that K directly controls a critical architectural trade-off. Reviewer A did not specifically raise this but it connects to broader concerns about underspecified design choices. The upgrade is reasonable given K's importance to the central contribution.",
+        "source": "prover_b",
+        "survived_steelman": true
+      },
+      {
+        "finding": "OCC loss averages over all i,j pairs including self-pairs (i=j), where cycle consistency is trivial. No exclusion of diagonal terms is mentioned, potentially diluting or biasing the auxiliary training signal.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "Raised by Reviewer A as MINOR and maintained through steelmanning. Including self-pairs is unlikely by itself to overturn segmentation conclusions. Should be clarified and ideally ablated.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Numerous notation and equation-editing problems throughout the manuscript (duplicated passages, undefined symbols, inconsistent naming, garbled text) reduce reproducibility and clarity.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers noted presentation issues. Reviewer A rated MINOR and acknowledged overlap with the major tensor-equation finding. These are primarily reporting-quality issues that do not independently imply invalid results.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "No variance estimates, repeated runs, or statistical significance tests are reported for the benchmark comparisons or ablation studies.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers noted this. It is a common reporting gap that does not invalidate the results, especially given the consistency of improvements across multiple datasets and metrics.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Heuristic initialization for correspondence uses argmax over summed layerwise associations without justifying summation across layers with potentially different scales/distributions.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.75,
+        "justification": "Raised by Reviewer A as MINOR and softened further during steelmanning. Reviewer B acknowledged it as valid after steelmanning. It is a defensible design choice unlikely to fundamentally invalidate results.",
+        "source": "prover_a",
+        "survived_steelman": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 43206,
+    "duration_s": 154.34,
+    "n_api_calls": 6,
+    "cost_usd": 0.3704,
+    "total_input_tokens": 41043,
+    "total_output_tokens": 8744,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 11892,
+        "output_tokens": 1655,
+        "cost_usd": 0.04628,
+        "duration_s": 30.85,
+        "label": "2409.01021v2/gd/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 11606,
+        "output_tokens": 1202,
+        "cost_usd": 0.004455820000000001,
+        "duration_s": 17.91,
+        "label": "2409.01021v2/gd/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3136,
+        "output_tokens": 590,
+        "cost_usd": 0.00149572,
+        "duration_s": 8.83,
+        "label": "2409.01021v2/gd/judge"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3315,
+        "output_tokens": 1286,
+        "cost_usd": 0.0211475,
+        "duration_s": 24.6,
+        "label": "2409.01021v2/gd/steelman_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3364,
+        "output_tokens": 1633,
+        "cost_usd": 0.0027045800000000003,
+        "duration_s": 24.43,
+        "label": "2409.01021v2/gd/steelman_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7730,
+        "output_tokens": 2378,
+        "cost_usd": 0.2943,
+        "duration_s": 47.71,
+        "label": "2409.01021v2/gd/arbiter"
+      }
+    ]
+  }
+}

@@ -1,0 +1,259 @@
+{
+  "condition": "B3",
+  "paper_id": "2409.01021v2",
+  "verdict": "flagged",
+  "confidence": 0.88,
+  "reasoning": "Both reviewers independently converge on several significant methodological concerns, particularly around (1) non-differentiability of the correspondence estimation pipeline and unclear gradient flow, (2) internal inconsistencies or ambiguities in the mathematical specification of core components, and (3) feasibility and reproducibility gaps regarding the 6D hyperassociation tensor. No single issue definitively proves the central empirical conclusions are impossible (i.e., retraction-worthy), but the accumulation of major concerns—especially the gradient flow problem through argmax operations and the unclear specification of how the 6D tensor is handled in practice—means the method as described cannot be reliably reproduced or verified. These collectively warrant a MAJOR-REVISION verdict.",
+  "findings": [
+    {
+      "finding": "Non-differentiability of correspondence estimation pipeline (argmax-based selection) with no explanation of how gradients flow back through discrete operations during end-to-end training. This affects the claimed learnability of the CAC/OCC correspondence modules and the pretext task's ability to improve feature representations.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers independently identified this as a core concern. If gradients cannot flow through the argmax to update backbone features, the correspondence pretext task is effectively decoupled from representation learning, undermining a central claim. However, it is possible (though undisclosed) that the implementation uses a straight-through estimator, soft argmax, or stop-gradient design. Without access to code, this cannot be confirmed as definitively broken—hence MAJOR-REVISION rather than RETRACTION-WORTHY.",
+      "source": "both"
+    },
+    {
+      "finding": "Internal inconsistencies in the aggregation network equations (especially Eq. 8), where the left-hand side fixes source image index i but the right-hand side ranges over all source images. The mathematical specification of the core method is dimensionally ambiguous or incorrect.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "If the equations as published do not match the implementation, the method cannot be reproduced from the paper. This is a significant specification error for the central methodological contribution. It does not prove results are fabricated, but it means the described method is not well-defined.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The 6D hyperassociation tensor (N × H × W × N × H × W × L) is computationally infeasible to materialize explicitly for realistic feature map sizes, yet no explanation of how it is handled in practice (implicit computation, blocking, etc.) is provided. The reported MACs suggest a practical shortcut exists but is undisclosed.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "This is a critical reproducibility gap. If the tensor is not materialized as described, the actual computation differs from what is specified, making the method non-reproducible. However, the low reported MACs suggest the implementation is feasible—the paper simply fails to describe how, which is a reporting failure rather than evidence of invalid results.",
+      "source": "prover_b"
+    },
+    {
+      "finding": "The OCC loss uses ground-truth segmentation masks to restrict correspondence learning to co-salient pixels, but this is framed as an unsupervised/self-supervised correspondence constraint. Additionally, it is unclear whether this loss backpropagates into the backbone features.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Using ground-truth masks in the auxiliary loss is a methodological mischaracterization that affects fairness of comparison. Combined with the gradient flow ambiguity, the actual training signal from OCC is unclear. This affects the validity of claims about OCC's contribution but does not invalidate the main CoSOD results since segmentation labels are already used for the primary task.",
+      "source": "both"
+    },
+    {
+      "finding": "The correspondence loss (Eq. 16) may include self-pairs (i=j), creating trivial identity mappings that artificially reduce the auxiliary loss and weaken the claimed cross-image correspondence learning.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.7,
+      "justification": "If self-pairs are included, OCC may be partially optimized through trivial within-image correspondences, inflating apparent effectiveness. This could change conclusions about OCC's contribution in the ablation study, though the overall method may still work.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Training protocol details are insufficient: group formation/sampling strategy for N=6 batches, OCC loss weight relative to BCE/IoU losses, and exact baseline implementation details are not specified.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.72,
+      "justification": "For a method that models inter-image relations, the grouping strategy is methodologically important and can significantly affect results. Combined with missing loss weights and baseline details, this is a substantial reproducibility concern, though individually each gap is closer to minor.",
+      "source": "both"
+    },
+    {
+      "finding": "The computational efficiency claims (reduction from PAG to CAC) are insufficiently supported, as the cost of correspondence estimation, pre-condensation, warping, and OCC losses are not clearly included in the MAC accounting.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "This is primarily a reporting completeness issue that does not affect the accuracy results. The efficiency claim may be overstated but this would not change the core scientific conclusions.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Several mathematical notations are imprecise (e.g., symbol reuse, inconsistent formatting, missing shape tracking between full and condensed hyperassociations), and no robustness analysis is provided for claimed failure modes.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "These are presentation and completeness issues common in many papers. They hinder readability and reproducibility but do not invalidate empirical claims.",
+      "source": "prover_a"
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 6,
+    "MINOR": 2
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.92,
+    "reasoning": "The manuscript appears technically interesting, but there are several substantive methodological and reporting problems that prevent a clean assessment of correctness. The most serious issues are internal inconsistencies in the mathematical specification of the aggregation module, likely misuse or at least underspecification of non-differentiable indexing/argmax-based correspondence selection within an end-to-end trained system, and ambiguous evaluation/training protocol details that affect fairness and reproducibility. I do not see a clear single fatal flaw proving the central empirical conclusions are impossible, but the paper has enough methodological ambiguity and possible implementation-specification mismatch to require major revision before its claims can be trusted.",
+    "findings": [
+      {
+        "finding": "The aggregation network equations are internally inconsistent in tensor indexing and dimensions, especially Eq. (8). The left-hand side fixes the source image index i in A_s^3(i,:,: ,j,h_j,w_j,:), but the right-hand side applies C_2 to A_s^2(:, :, :, j, h_j, w_j, :) which ranges over all source images, not just i. This is dimensionally and operationally inconsistent, making the actual aggregation procedure unclear.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the published equations are correct, the method is not mathematically well-defined and cannot be reproduced. If the implementation differs from the paper, the manuscript mis-specifies the core method. This may or may not change the empirical conclusions, but it affects the validity and reproducibility of the central methodological contribution."
+      },
+      {
+        "finding": "The correspondence-estimation pipeline relies on argmax-based selection of initial correspondence pixels and then index-based condensation (Eqs. 11–15), but the manuscript does not explain how gradients flow through these discrete operations during end-to-end training.",
+        "severity": "MAJOR-REVISION",
+        "justification": "CAC and OCC are presented as trainable components whose correspondence estimates are improved by supervision, yet argmax and hard indexing are non-differentiable. If no differentiable surrogate or stop-gradient design is used, the claimed supervision path from OCC to correspondence estimation is unclear or incorrect. This could materially affect the claimed effectiveness of CAC/OCC, though it does not definitively invalidate the reported results without inspecting the implementation."
+      },
+      {
+        "finding": "The OCC loss uses ground-truth masks during training to restrict correspondence learning to co-salient pixels. This introduces additional supervised information into the auxiliary correspondence task, but the manuscript frames OCC as an unsupervised/self-supervised correspondence constraint.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Using ground-truth segmentation masks to gate the correspondence loss is not unsupervised in the ordinary sense. This is a methodological mischaracterization and could affect fairness when comparing to methods that do not exploit labels in this auxiliary manner. It does not invalidate the main CoSOD setting, since segmentation labels are already used for the main task, but the supervision claim should be corrected and comparisons/discussion adjusted."
+      },
+      {
+        "finding": "The manuscript averages correspondence loss over all i,j pairs including i=j in Eq. (16), but semantic correspondence and cycle consistency are conceptually intended across different images. Including self-pairs may create trivial identity mappings that artificially reduce the auxiliary loss.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If self-pairs are indeed included during training, OCC may be partially optimized through trivial within-image correspondences, weakening the claimed interpretation and possibly inflating performance. Excluding i=j could change the auxiliary training signal and conclusions about OCC effectiveness."
+      },
+      {
+        "finding": "The paper claims computational burden reduction from full-pixel PAG to CAC, but the reported MAC reduction (91.38G to 77.19G) appears modest given the large conceptual reduction from HxW to KxK associations. The accounting excludes or does not clearly include the cost of correspondence estimation, pre-condensation, warping, and OCC losses.",
+        "severity": "MINOR",
+        "justification": "This is primarily a reporting/fairness issue regarding efficiency claims. It would not by itself invalidate the accuracy results, but the practical-efficiency conclusion is insufficiently supported without full compute accounting."
+      },
+      {
+        "finding": "The evaluation protocol is not fully reproducible: group formation/sampling for training with batch size N=6 is not specified, despite CoSOD performance depending strongly on how related image groups are constructed and sampled during optimization.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Because the method models inter-image relations over groups, the exact sampling protocol is methodologically important. Different grouping or padding/truncation strategies can change performance. Lack of this detail undermines reproducibility and could alter conclusions if implemented differently."
+      },
+      {
+        "finding": "Fairness of comparison is only partially established. The model is trained on different combinations of datasets to align with prior work, but it is unclear whether image resolution, backbone initialization, data augmentation, test-time group construction, and post-processing are matched across baselines.",
+        "severity": "MINOR",
+        "justification": "This is a common benchmarking concern. It does not show the results are wrong, but it weakens strong superiority claims unless the comparison conditions are clearly harmonized."
+      },
+      {
+        "finding": "The manuscript repeatedly asserts that raw associations are 'unreliable' and that deep association features are 'more robust,' but no controlled robustness analysis is presented for the claimed failure modes (e.g., large appearance variation, foreground-background similarity).",
+        "severity": "MINOR",
+        "justification": "This affects claim strength rather than methodological correctness. The core benchmark results may still hold, but the mechanistic interpretation is under-supported."
+      },
+      {
+        "finding": "Several mathematical definitions are imprecise or malformed, including use of 'l-2 normalized' instead of 'ℓ2-normalized,' inconsistent symbol reuse (e.g., F_s^A defined twice in adjacent text), and transitions between full hyperassociations and condensed hyperassociations without precise shape tracking.",
+        "severity": "MINOR",
+        "justification": "These issues mainly hinder readability and reproducibility. They do not by themselves negate the empirical claims, but they should be corrected in revision."
+      },
+      {
+        "finding": "The use of bilinear interpolation as a downsampling operator within a high-dimensional association tensor is unusual, but no justification or ablation is provided against alternative aggregation/downsampling schemes. This may blur sharp correspondence structure.",
+        "severity": "MINOR",
+        "justification": "Potentially suboptimal design choice, but not evidence of invalid inference. At most it affects completeness of methodological validation."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.75,
+    "reasoning": "The manuscript proposes a novel deep association learning framework for co-salient object detection (CoSOD). While the core ideas are innovative, the methodological presentation contains several significant gaps and potential errors. There is a critical concern about the learning mechanism for the correspondence estimation offsets (Equations 12-13): the paper uses the initial aggregated association features (which already depend on the initial correspondences determined by argmax) to predict offsets via a linear layer, but it does not explain how the gradient flows back to update the initial correspondence selection or the backbone features that determine the raw similarity map. This effectively means the correspondence estimation might be learned only from the linear layer without affecting the feature representations that were used to create the high-level similarity maps, potentially making the 'pretext task' decoupled from the main loss. Additionally, the complexity of the 6D hyperassociation tensor and the associated aggregation network (Equations 6-9) is described at a high level, but there is a risk that the proposed architecture is not faithfully implemented as described (e.g., the residual dimensions and channel manipulations are ambiguous). The computational cost (MACs) reported (91.38G) seems reasonable, but the overhead of the full-pixel 6D tensor on memory is not discussed; if the 6D tensor is created explicitly, it would be prohibitively large (N x H x W x N x H x W x L), even with small features. This suggests an implementation trick (e.g., not materializing the full tensor) is likely used but not described, which is a reporting gap that could affect reproducibility. The ablation study (Table 1) shows clear improvements, supporting the claims. However, the above issues regarding the learnability of the correspondence module and the feasibility of the 6D operation are serious enough to warrant a MAJOR-REVISION, as they question whether the method can be reproduced as described.",
+    "findings": [
+      {
+        "finding": "The learning mechanism for the correspondence offset prediction (Equation 12-13) is circular or non-causal. The offsets are predicted using the initial aggregated association features (F_s^{A'}), which are computed from a condensed hyperassociation that was itself obtained via an argmax (a non-differentiable operation) over the raw similarity map. The paper does not explain how gradients flow back through this chain to update the backbone features that produce the raw similarity maps, which is essential for the 'pretext task' to actually improve the feature representations. This suggests the correspondence learning might be limited to a shallow linear layer, severely limiting its impact.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the offset prediction cannot backpropagate to the feature extraction layers, then the entire 'semantic correspondence' pretext task is effectively a post-processing step and cannot learn to improve feature quality. This would invalidate a core claim of the paper (introducing a pretext task to delve deeper into CoSOD)."
+      },
+      {
+        "finding": "The hyperassociation tensor A_s (Equation 4) is described as a 6D tensor: N x H_s x W_s x N x H_s x W_s x L_s. Materializing such a tensor explicitly, even for small feature maps (e.g., 64x64) and a modest batch size (N=6), would be computationally infeasible (e.g., 6*64*64*6*64*64*L bytes). The paper does not explain how this tensor is handled in practice (e.g., via implicit computation, scan operations, or blocked processing). This is a severe reporting gap that makes the method potentially non-reproducible.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the method relies on an implicit computation that is not disclosed, other researchers cannot verify or build upon the work. The claimed MACs (91.38G) are low, suggesting a practical shortcut exists, but its absence from the text is a critical omission."
+      },
+      {
+        "finding": "The connection between the OCC loss (Equation 16) and the gradient flow for the correspondence estimation is ambiguous. The OCC loss is defined on the warped images (using the masks), but it is not explicitly stated whether this loss is backpropagated through the offset prediction network O() and, crucially, back into the feature extraction backbone via the condensation and aggregation steps. The paper implies this is used to refine correspondences, but a clear computational graph is missing.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the OCC loss is not backpropagated into the core network (backbone and feature enhancement), then it is a separate loss that might not influence the main task features effectively. This would weaken the claimed benefits of OCC."
+      },
+      {
+        "finding": "The baseline model (FPN + R2R) is described only as 'enhanced with the Region-to-Region correlation module'. The GCoNet+ paper (which introduced R2R) might have a specific implementation, but the paper does not detail how R2R was integrated or whether it was re-implemented. This makes the ablation study difficult to evaluate, as the baseline performance might be suboptimal.",
+        "severity": "MINOR",
+        "justification": "This is a common issue in ablation studies, but a reference or brief description of the baseline setup would improve reproducibility. The absolute gains are still valid, but the relative contribution of PAG vs. a stronger baseline is unknown."
+      },
+      {
+        "finding": "The training strategy for the OCC loss is not fully specified. It is used as an additional loss, but its weight relative to the BCE and IoU losses for the main task is not provided. The trade-off between the two task losses is critical for practical training.",
+        "severity": "MINOR",
+        "justification": "This is a typical reporting oversight. It does not invalidate the method but is necessary for reproducibility."
+      }
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.88,
+    "reasoning": "Both reviewers independently converge on several significant methodological concerns, particularly around (1) non-differentiability of the correspondence estimation pipeline and unclear gradient flow, (2) internal inconsistencies or ambiguities in the mathematical specification of core components, and (3) feasibility and reproducibility gaps regarding the 6D hyperassociation tensor. No single issue definitively proves the central empirical conclusions are impossible (i.e., retraction-worthy), but the accumulation of major concerns—especially the gradient flow problem through argmax operations and the unclear specification of how the 6D tensor is handled in practice—means the method as described cannot be reliably reproduced or verified. These collectively warrant a MAJOR-REVISION verdict.",
+    "findings": [
+      {
+        "finding": "Non-differentiability of correspondence estimation pipeline (argmax-based selection) with no explanation of how gradients flow back through discrete operations during end-to-end training. This affects the claimed learnability of the CAC/OCC correspondence modules and the pretext task's ability to improve feature representations.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers independently identified this as a core concern. If gradients cannot flow through the argmax to update backbone features, the correspondence pretext task is effectively decoupled from representation learning, undermining a central claim. However, it is possible (though undisclosed) that the implementation uses a straight-through estimator, soft argmax, or stop-gradient design. Without access to code, this cannot be confirmed as definitively broken—hence MAJOR-REVISION rather than RETRACTION-WORTHY.",
+        "source": "both"
+      },
+      {
+        "finding": "Internal inconsistencies in the aggregation network equations (especially Eq. 8), where the left-hand side fixes source image index i but the right-hand side ranges over all source images. The mathematical specification of the core method is dimensionally ambiguous or incorrect.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "If the equations as published do not match the implementation, the method cannot be reproduced from the paper. This is a significant specification error for the central methodological contribution. It does not prove results are fabricated, but it means the described method is not well-defined.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "The 6D hyperassociation tensor (N × H × W × N × H × W × L) is computationally infeasible to materialize explicitly for realistic feature map sizes, yet no explanation of how it is handled in practice (implicit computation, blocking, etc.) is provided. The reported MACs suggest a practical shortcut exists but is undisclosed.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.82,
+        "justification": "This is a critical reproducibility gap. If the tensor is not materialized as described, the actual computation differs from what is specified, making the method non-reproducible. However, the low reported MACs suggest the implementation is feasible—the paper simply fails to describe how, which is a reporting failure rather than evidence of invalid results.",
+        "source": "prover_b"
+      },
+      {
+        "finding": "The OCC loss uses ground-truth segmentation masks to restrict correspondence learning to co-salient pixels, but this is framed as an unsupervised/self-supervised correspondence constraint. Additionally, it is unclear whether this loss backpropagates into the backbone features.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Using ground-truth masks in the auxiliary loss is a methodological mischaracterization that affects fairness of comparison. Combined with the gradient flow ambiguity, the actual training signal from OCC is unclear. This affects the validity of claims about OCC's contribution but does not invalidate the main CoSOD results since segmentation labels are already used for the primary task.",
+        "source": "both"
+      },
+      {
+        "finding": "The correspondence loss (Eq. 16) may include self-pairs (i=j), creating trivial identity mappings that artificially reduce the auxiliary loss and weaken the claimed cross-image correspondence learning.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.7,
+        "justification": "If self-pairs are included, OCC may be partially optimized through trivial within-image correspondences, inflating apparent effectiveness. This could change conclusions about OCC's contribution in the ablation study, though the overall method may still work.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Training protocol details are insufficient: group formation/sampling strategy for N=6 batches, OCC loss weight relative to BCE/IoU losses, and exact baseline implementation details are not specified.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.72,
+        "justification": "For a method that models inter-image relations, the grouping strategy is methodologically important and can significantly affect results. Combined with missing loss weights and baseline details, this is a substantial reproducibility concern, though individually each gap is closer to minor.",
+        "source": "both"
+      },
+      {
+        "finding": "The computational efficiency claims (reduction from PAG to CAC) are insufficiently supported, as the cost of correspondence estimation, pre-condensation, warping, and OCC losses are not clearly included in the MAC accounting.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "This is primarily a reporting completeness issue that does not affect the accuracy results. The efficiency claim may be overstated but this would not change the core scientific conclusions.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Several mathematical notations are imprecise (e.g., symbol reuse, inconsistent formatting, missing shape tracking between full and condensed hyperassociations), and no robustness analysis is provided for claimed failure modes.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "These are presentation and completeness issues common in many papers. They hinder readability and reproducibility but do not invalidate empirical claims.",
+        "source": "prover_a"
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 43206,
+    "duration_s": 73.43,
+    "n_api_calls": 3,
+    "cost_usd": 0.2138,
+    "total_input_tokens": 26918,
+    "total_output_tokens": 4135,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 11892,
+        "output_tokens": 1301,
+        "cost_usd": 0.04274,
+        "duration_s": 24.36,
+        "label": "2409.01021v2/b3/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 11606,
+        "output_tokens": 1298,
+        "cost_usd": 0.00456142,
+        "duration_s": 19.91,
+        "label": "2409.01021v2/b3/prover_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 3420,
+        "output_tokens": 1536,
+        "cost_usd": 0.1665,
+        "duration_s": 29.15,
+        "label": "2409.01021v2/b3/arbiter"
+      }
+    ]
+  }
+}

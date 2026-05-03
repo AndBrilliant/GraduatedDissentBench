@@ -1,0 +1,240 @@
+{
+  "condition": "B1",
+  "paper_id": "10.1038_s41598-025-91235-1",
+  "verdict": "flagged",
+  "confidence": 0.96,
+  "reasoning": "The manuscript has several methodological strengths, notably the integration of ligand-based modeling, experimental follow-up, and MD-based mechanistic exploration. However, the core QSAR/ML methodology is undermined by serious issues in dataset size, model validation, reporting consistency, and likely overfitting. The study uses only 27 compounds with a 21/6 train/test split, yet develops RF and ANN models and reports extremely strong test performance, including an ANN RMSE as low as 0.05 on six test compounds. This is not convincing without much stronger validation. There are also internal inconsistencies in reported metrics (abstract vs results), incorrect or unclear formulae (pIC50 equation), problematic hyperparameter choices (e.g., min_samples_split = 1 for RF table), and absence of key QSAR best-practice checks such as y-randomization, applicability domain analysis, repeated/nested cross-validation, uncertainty quantification, and transparent descriptor preprocessing. Experimental validation is useful but limited: enzyme inhibition appears mostly as single-concentration screening for the selected compounds, antiviral efficacy is affected by solubility, and mechanistic claims about binding are based on one lead without direct corroboration of covalent chemistry. Overall, the manuscript should be flagged for methodological weakness despite some promising interdisciplinary design.",
+  "findings": [
+    {
+      "finding": "Strength: The study combines QSAR/ML prediction, biochemical assay, cytotoxicity, antiviral cell assay, and LB-PaCS-MD, which is a stronger translational workflow than a purely in silico paper."
+    },
+    {
+      "finding": "Strength: Use of an external prospective set of 13 newly synthesized analogs for prediction before assay is a positive design feature and goes beyond simple internal model fitting."
+    },
+    {
+      "finding": "Strength: The authors use a defined train/test split method (Kennard–Stone) rather than arbitrary splitting, which is reasonable for chemical space coverage."
+    },
+    {
+      "finding": "Strength: Descriptor collinearity was at least partially checked using correlation matrices and VIF, which is appropriate for the MLR model."
+    },
+    {
+      "finding": "Strength: Experimental follow-up included not only enzyme inhibition but also cytotoxicity and cell-based antiviral testing, increasing biological relevance."
+    },
+    {
+      "finding": "Major weakness: The QSAR dataset is extremely small (27 compounds total; 21 training, 6 test), making RF and especially ANN models highly prone to overfitting and unstable performance estimates."
+    },
+    {
+      "finding": "Major weakness: The ANN architecture appears too flexible for the sample size (4 input features, three hidden layers of five neurons each) and is likely overparameterized relative to 21 training compounds."
+    },
+    {
+      "finding": "Major weakness: Reported ANN test performance is implausibly strong for this dataset size (RMSE 0.05 in Results; 0.09 in Abstract), suggesting either overfitting, data leakage, or unstable evaluation."
+    },
+    {
+      "finding": "Major weakness: There are inconsistencies in reported model metrics. The abstract reports training R² values of 0.83, 0.82, and 0.92 for MLR, RF, and ANN, whereas the results section reports MLR training R² = 0.69 and ANN training R² = 0.89."
+    },
+    {
+      "finding": "Major weakness: The pIC50 conversion equation is incorrect as written. pIC50 should be -log10(IC50 in M), not 1/IC50(M). This raises concerns about methodological rigor and reporting accuracy."
+    },
+    {
+      "finding": "Major weakness: The manuscript does not report repeated cross-validation performance for the final QSAR models in a robust way. Mention of n-fold CV/grid search is insufficient without explicit folds, scores, variance, and separation of tuning from evaluation."
+    },
+    {
+      "finding": "Major weakness: There is no evidence of nested cross-validation. Hyperparameter optimization and performance evaluation on a tiny dataset without nesting can strongly bias results upward."
+    },
+    {
+      "finding": "Major weakness: No y-randomization/permutation testing is reported, which is a standard QSAR safeguard against chance correlations, especially with small datasets and many descriptors."
+    },
+    {
+      "finding": "Major weakness: No applicability domain assessment is described, despite using the ANN to predict 13 new analogs. Without leverage/domain analysis or distance-based domain definition, external predictions are difficult to trust."
+    },
+    {
+      "finding": "Major weakness: Descriptor preprocessing is insufficiently described. It is unclear whether descriptors were scaled/normalized, whether constant/near-constant descriptors were removed, and how descriptor leakage across train/test was prevented."
+    },
+    {
+      "finding": "Major weakness: Feature selection methodology may be unstable. GFA and Gini-based importance on a tiny dataset can produce non-robust descriptor sets, and no stability analysis of selected descriptors is shown."
+    },
+    {
+      "finding": "Major weakness: Gini importance is known to be biased under some conditions; the manuscript does not justify its use versus alternatives such as permutation importance or SHAP-style analyses."
+    },
+    {
+      "finding": "Major weakness: The RF hyperparameter table includes min_samples_split = 1, which is invalid in standard scikit-learn implementations, indicating either reporting error or implementation confusion."
+    },
+    {
+      "finding": "Major weakness: The manuscript relies heavily on RMSE and R², but omits several QSAR-recommended validation statistics such as Q², external validation coefficients, CCC, MAE, and Tropsha/Golbraikh criteria."
+    },
+    {
+      "finding": "Major weakness: The external validation on three compounds from another study is too small to meaningfully establish generalizability."
+    },
+    {
+      "finding": "Major weakness: The manuscript claims the 13 predicted compounds had pIC50 values within the range of the training data, but this is not a substitute for proper applicability-domain analysis."
+    },
+    {
+      "finding": "Experimental weakness: Enzyme inhibition of the new compounds appears initially assessed at a single concentration (100 µM), which is only suitable for screening and insufficient to establish comparative potency."
+    },
+    {
+      "finding": "Experimental weakness: The strongest reported compound P8 still leaves 64.5% enzymatic activity at 100 µM, implying only ~35.5% inhibition at that concentration; calling it a strong or notable inhibitor is overstated."
+    },
+    {
+      "finding": "Experimental weakness: Cell-based antiviral results are confounded by poor solubility/crystal formation at higher concentrations, making EC50 interpretation uncertain and weakening biological conclusions."
+    },
+    {
+      "finding": "Experimental weakness: The paper mentions testing against 'four strains of SARS-CoV-2 Mpro,' which is conceptually incorrect wording; likely they mean viral strains, not protease strains. This reporting imprecision affects interpretability."
+    },
+    {
+      "finding": "Experimental weakness: Selectivity is incompletely characterized. Cytotoxicity in Vero E6 cells is useful, but no broader counterscreens or host-target specificity assays are reported."
+    },
+    {
+      "finding": "Computational weakness: The LB-PaCS-MD work is performed only for one compound (P8), limiting broader mechanistic support for the QSAR-derived structure-activity conclusions."
+    },
+    {
+      "finding": "Computational weakness: The binding-path analysis starts with ligand placement far from the protein and ranks snapshots by Se–C145 distance, which may bias sampling toward a preconceived covalent mechanism rather than unbiased binding discovery."
+    },
+    {
+      "finding": "Computational weakness: The mechanistic interpretation emphasizes Se–S interactions and covalent inhibition, but no QM/MM reaction profiling, covalent docking validation, or experimental evidence of covalent adduct formation for P8 is provided."
+    },
+    {
+      "finding": "Computational weakness: Free-energy landscape and Markov state model details are insufficiently reported for reproducibility, including lag times, state definitions, convergence diagnostics, and uncertainty estimates."
+    },
+    {
+      "finding": "Reporting weakness: Reproducibility is limited because the dataset is only available on request, and the manuscript does not provide code, model weights, descriptor matrices, or exact train/test identities in the main text."
+    },
+    {
+      "finding": "Reporting weakness: Numerous placeholders and editing artifacts ([AUTHOR_1], [DATE], [JOURNAL]) remain, indicating poor manuscript preparation and reducing confidence in methodological care."
+    },
+    {
+      "finding": "Reporting weakness: Some equations and definitions are incorrect or unclear, including the R² expression as written and the description of Gini importance where '0 representing the lowest and best possible importance' is nonsensical."
+    },
+    {
+      "finding": "Interpretive weakness: The conclusion that ANN is the 'best-obtained model' is not sufficiently justified given tiny sample size, inconsistent metrics, and lack of rigorous anti-overfitting validation."
+    }
+  ],
+  "severity_counts": null,
+  "raw_review": {
+    "verdict": "flagged",
+    "confidence": 0.96,
+    "reasoning": "The manuscript has several methodological strengths, notably the integration of ligand-based modeling, experimental follow-up, and MD-based mechanistic exploration. However, the core QSAR/ML methodology is undermined by serious issues in dataset size, model validation, reporting consistency, and likely overfitting. The study uses only 27 compounds with a 21/6 train/test split, yet develops RF and ANN models and reports extremely strong test performance, including an ANN RMSE as low as 0.05 on six test compounds. This is not convincing without much stronger validation. There are also internal inconsistencies in reported metrics (abstract vs results), incorrect or unclear formulae (pIC50 equation), problematic hyperparameter choices (e.g., min_samples_split = 1 for RF table), and absence of key QSAR best-practice checks such as y-randomization, applicability domain analysis, repeated/nested cross-validation, uncertainty quantification, and transparent descriptor preprocessing. Experimental validation is useful but limited: enzyme inhibition appears mostly as single-concentration screening for the selected compounds, antiviral efficacy is affected by solubility, and mechanistic claims about binding are based on one lead without direct corroboration of covalent chemistry. Overall, the manuscript should be flagged for methodological weakness despite some promising interdisciplinary design.",
+    "findings": [
+      {
+        "finding": "Strength: The study combines QSAR/ML prediction, biochemical assay, cytotoxicity, antiviral cell assay, and LB-PaCS-MD, which is a stronger translational workflow than a purely in silico paper."
+      },
+      {
+        "finding": "Strength: Use of an external prospective set of 13 newly synthesized analogs for prediction before assay is a positive design feature and goes beyond simple internal model fitting."
+      },
+      {
+        "finding": "Strength: The authors use a defined train/test split method (Kennard–Stone) rather than arbitrary splitting, which is reasonable for chemical space coverage."
+      },
+      {
+        "finding": "Strength: Descriptor collinearity was at least partially checked using correlation matrices and VIF, which is appropriate for the MLR model."
+      },
+      {
+        "finding": "Strength: Experimental follow-up included not only enzyme inhibition but also cytotoxicity and cell-based antiviral testing, increasing biological relevance."
+      },
+      {
+        "finding": "Major weakness: The QSAR dataset is extremely small (27 compounds total; 21 training, 6 test), making RF and especially ANN models highly prone to overfitting and unstable performance estimates."
+      },
+      {
+        "finding": "Major weakness: The ANN architecture appears too flexible for the sample size (4 input features, three hidden layers of five neurons each) and is likely overparameterized relative to 21 training compounds."
+      },
+      {
+        "finding": "Major weakness: Reported ANN test performance is implausibly strong for this dataset size (RMSE 0.05 in Results; 0.09 in Abstract), suggesting either overfitting, data leakage, or unstable evaluation."
+      },
+      {
+        "finding": "Major weakness: There are inconsistencies in reported model metrics. The abstract reports training R² values of 0.83, 0.82, and 0.92 for MLR, RF, and ANN, whereas the results section reports MLR training R² = 0.69 and ANN training R² = 0.89."
+      },
+      {
+        "finding": "Major weakness: The pIC50 conversion equation is incorrect as written. pIC50 should be -log10(IC50 in M), not 1/IC50(M). This raises concerns about methodological rigor and reporting accuracy."
+      },
+      {
+        "finding": "Major weakness: The manuscript does not report repeated cross-validation performance for the final QSAR models in a robust way. Mention of n-fold CV/grid search is insufficient without explicit folds, scores, variance, and separation of tuning from evaluation."
+      },
+      {
+        "finding": "Major weakness: There is no evidence of nested cross-validation. Hyperparameter optimization and performance evaluation on a tiny dataset without nesting can strongly bias results upward."
+      },
+      {
+        "finding": "Major weakness: No y-randomization/permutation testing is reported, which is a standard QSAR safeguard against chance correlations, especially with small datasets and many descriptors."
+      },
+      {
+        "finding": "Major weakness: No applicability domain assessment is described, despite using the ANN to predict 13 new analogs. Without leverage/domain analysis or distance-based domain definition, external predictions are difficult to trust."
+      },
+      {
+        "finding": "Major weakness: Descriptor preprocessing is insufficiently described. It is unclear whether descriptors were scaled/normalized, whether constant/near-constant descriptors were removed, and how descriptor leakage across train/test was prevented."
+      },
+      {
+        "finding": "Major weakness: Feature selection methodology may be unstable. GFA and Gini-based importance on a tiny dataset can produce non-robust descriptor sets, and no stability analysis of selected descriptors is shown."
+      },
+      {
+        "finding": "Major weakness: Gini importance is known to be biased under some conditions; the manuscript does not justify its use versus alternatives such as permutation importance or SHAP-style analyses."
+      },
+      {
+        "finding": "Major weakness: The RF hyperparameter table includes min_samples_split = 1, which is invalid in standard scikit-learn implementations, indicating either reporting error or implementation confusion."
+      },
+      {
+        "finding": "Major weakness: The manuscript relies heavily on RMSE and R², but omits several QSAR-recommended validation statistics such as Q², external validation coefficients, CCC, MAE, and Tropsha/Golbraikh criteria."
+      },
+      {
+        "finding": "Major weakness: The external validation on three compounds from another study is too small to meaningfully establish generalizability."
+      },
+      {
+        "finding": "Major weakness: The manuscript claims the 13 predicted compounds had pIC50 values within the range of the training data, but this is not a substitute for proper applicability-domain analysis."
+      },
+      {
+        "finding": "Experimental weakness: Enzyme inhibition of the new compounds appears initially assessed at a single concentration (100 µM), which is only suitable for screening and insufficient to establish comparative potency."
+      },
+      {
+        "finding": "Experimental weakness: The strongest reported compound P8 still leaves 64.5% enzymatic activity at 100 µM, implying only ~35.5% inhibition at that concentration; calling it a strong or notable inhibitor is overstated."
+      },
+      {
+        "finding": "Experimental weakness: Cell-based antiviral results are confounded by poor solubility/crystal formation at higher concentrations, making EC50 interpretation uncertain and weakening biological conclusions."
+      },
+      {
+        "finding": "Experimental weakness: The paper mentions testing against 'four strains of SARS-CoV-2 Mpro,' which is conceptually incorrect wording; likely they mean viral strains, not protease strains. This reporting imprecision affects interpretability."
+      },
+      {
+        "finding": "Experimental weakness: Selectivity is incompletely characterized. Cytotoxicity in Vero E6 cells is useful, but no broader counterscreens or host-target specificity assays are reported."
+      },
+      {
+        "finding": "Computational weakness: The LB-PaCS-MD work is performed only for one compound (P8), limiting broader mechanistic support for the QSAR-derived structure-activity conclusions."
+      },
+      {
+        "finding": "Computational weakness: The binding-path analysis starts with ligand placement far from the protein and ranks snapshots by Se–C145 distance, which may bias sampling toward a preconceived covalent mechanism rather than unbiased binding discovery."
+      },
+      {
+        "finding": "Computational weakness: The mechanistic interpretation emphasizes Se–S interactions and covalent inhibition, but no QM/MM reaction profiling, covalent docking validation, or experimental evidence of covalent adduct formation for P8 is provided."
+      },
+      {
+        "finding": "Computational weakness: Free-energy landscape and Markov state model details are insufficiently reported for reproducibility, including lag times, state definitions, convergence diagnostics, and uncertainty estimates."
+      },
+      {
+        "finding": "Reporting weakness: Reproducibility is limited because the dataset is only available on request, and the manuscript does not provide code, model weights, descriptor matrices, or exact train/test identities in the main text."
+      },
+      {
+        "finding": "Reporting weakness: Numerous placeholders and editing artifacts ([AUTHOR_1], [DATE], [JOURNAL]) remain, indicating poor manuscript preparation and reducing confidence in methodological care."
+      },
+      {
+        "finding": "Reporting weakness: Some equations and definitions are incorrect or unclear, including the R² expression as written and the description of Gini importance where '0 representing the lowest and best possible importance' is nonsensical."
+      },
+      {
+        "finding": "Interpretive weakness: The conclusion that ANN is the 'best-obtained model' is not sufficiently justified given tiny sample size, inconsistent metrics, and lack of rigorous anti-overfitting validation."
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 38372,
+    "duration_s": 33.14,
+    "n_api_calls": 1,
+    "cost_usd": 0.0419,
+    "total_input_tokens": 9967,
+    "total_output_tokens": 1702,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 9967,
+        "output_tokens": 1702,
+        "cost_usd": 0.0419375,
+        "duration_s": 33.14,
+        "label": "10.1038_s41598-025-91235-1/b1/review"
+      }
+    ]
+  }
+}

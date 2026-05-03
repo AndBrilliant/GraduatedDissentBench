@@ -1,0 +1,362 @@
+**Long Li¹, Nian Liu³,*, Dingwen Zhang¹, Zhongyu Li⁴, Salman Khan³,⁵,  
+Rao Anwer³, Hisham Cholakkal³, Junwei Han¹,²,*, and  
+Fahad Shahbaz Khan³,⁶**
+
+¹ Northwestern Polytechnical University  
+² Institute of Artificial Intelligence, Hefei Comprehensive National Science Center  
+³ Mohamed bin Zayed University of Artificial Intelligence  
+⁴ Xi'an Jiaotong University  
+⁵ Australian National University  
+⁶ CVL, Linköping University
+
+**Abstract.** Inter-image association modeling is crucial for co-salient object detection. Despite satisfactory performance, previous methods still have limitations on sufficient inter-image association modeling. Because most of them focus on image feature optimization under the guidance of heuristically calculated raw inter-image associations. They directly rely on raw associations which are not reliable in complex scenarios, and their image feature optimization approach is not explicit for inter-image association modeling. To alleviate these limitations, this paper proposes a deep association learning strategy that deploys deep networks on raw associations to explicitly transform them into deep association features. Specifically, we first create hyperassociations to collect dense pixel-pair-wise raw associations and then deploy deep aggregation networks on them. We design a progressive association generation module for this purpose with additional enhancement of the hyperassociation calculation. More importantly, we propose a correspondence-induced association condensation module that introduces a pretext task, *i.e.* semantic correspondence estimation, to condense the hyperassociations for computational burden reduction and noise elimination. We also design an object-aware cycle consistency loss for high-quality correspondence estimations. Experimental results in three benchmark datasets demonstrate the remarkable effectiveness of our proposed method with various training settings. The code is available at: https://github.com/dragonlee258079/CONDA.
+
+**Keywords:** Co-salient Object Detection · Deep Association Learning
+
+Co-Salient Object Detection (CoSOD) aims to segment salient objects that appear commonly across a group of related images. Compared to traditional Salient
+
+*Corresponding authors: {liunian228, junweihan2010}@gmail.com*
+
+Figure 1: Difference of raw-association-based image feature optimization strategy (a) and our proposed deep association learning strategy (b)
+
+Fig. 1: Difference of raw-association-based image feature optimization strategy (a) and our proposed deep association learning strategy (b). Our deep association learning deploys deep learning networks on raw associations to achieve deep association features. We also present visual samples of our calculated raw associations (Raw Asso.), optimized image feature (Opt. Fea.), and our generated deep association features (Asso. Fea.) in (c).
+
+Object Detection (SOD) [19–23, 26, 49, 50, 52], CoSOD is a more challenging task because it requires sufficient inter-image association modeling [9].
+
+Recently, many advanced works [8, 13, 16, 33, 38, 41, 46, 47, 51] have emerged and achieved impressive performance. These methods first use related image features to acquire raw inter-image associations (also called consensus representations), and then leverage them as guidance to optimize each image feature, as shown in Figure 1 (a). This approach enables the final image feature to implicitly capture inter-image cues, thereby achieving the purpose of inter-image association modeling. However, we find this raw-association-based feature optimization strategy still has two limitations: i) they directly rely on raw associations, which are acquired in heuristic manners, such as pixel-wise [8, 33, 41, 51], region-wise [16, 46], or image-wise [13] similarity measurements. Although high-quality raw associations can be derived from high-level semantic information in image features, their revelation of common saliency regions still relies on similarity measures, which are unreliable when encountering complex scenarios, such as significant differences between co-salient objects or high foreground-background similarity. ii) the primary focus of building their deep models is on optimizing image features. Compared to directly modeling association relationship, image feature optimization is not an explicit approach for inter-image association modeling and will increase the learning difficulty.
+
+To alleviate these limitations, we propose a deep association learning strategy for CoSOD, as shown in Figure 1 (b). Instead of directly using raw associations to optimize image features, we deploy deep networks on raw associations to learn deep association features. This is a more explicit strategy for inter-image association modeling. Moreover, our deep association features can capture high-level inter-image association knowledge, making them more robust in complex scenarios than raw associations, as shown in Figure 1 (c). Technically, we start by collecting all pixel-wise raw associations across the entire image group as hyperassociations. Then, we propose a Progressive Association Generation (PAG)
+
+module to transform hyperassociations into deep association features. PAG progressively generates association features on varying scales, allowing us to use previous association features to enhance the hyperassociation calculation at the next scale, thereby improving the association quality from the very beginning.
+
+Although deep association learning strategy allows more sufficient inter-image association modeling, it significantly increases the computational burden and reduces the practicality of this approach. Additionally, this study finds that it is not necessary to utilize all pixel associations to generate deep association features. In fact, there are even some noisy pixels that negatively impact the quality of the deep association features. Therefore, we propose a method based on Correspondence-induced Association Condensation (CAC) to condense the original full-pixel hyperassociations. This not only alleviates the computational burden but also further enhances the quality of deep association features.
+
+Specifically, CAC performs the condensation operation by selectively associating pixels that have semantic correspondence in other images, as well as their surrounding contextual pixels, thereby creating lightweight yet more accurate hyperassociations. Here, we introduce a pretext task, i.e. semantic correspondence estimation, into the CoSOD, not only improving the model performance but also delving deeper into the essence of CoSOD. Co-salient objects inherently possess object-level semantic correspondence. However, in this paper, we aim to further explore the finer pixel-level correspondence. Although highly accurate correspondence estimation remains a challenge, we believe it will pave a new way for CoSOD research. We also provide an object-aware cycle consistency (OCC) loss to aid in learning correspondences within co-salient pixels.
+
+In summary, the contributions of this paper are as follows:
+
+Recently, there has been a surge of excellent methods for CoSOD [8,10,13,16,33,38,41–43,45–47,51]. These methods initially acquire raw inter-image associations
+
+with related image features and then utilize them to optimize each image feature. Most methods generate pixel-wise [8,33,41,51], region-wise [16,46], and image-wise [13] raw associations through similarity-based manners, e.g. inner product calculations between image features. Even for transformer-based methods [16,33], they also rely on inner product calculation to produce attention maps [36] as raw associations. The image feature optimization manners include spatial or channel calibration [8,13,51], dynamic convolution [41,46], feature fusion [16,41], and cross-attention [16,33], etc. However, they lack the learning of high-level association knowledge and heavily focus on optimized image features. Unlike them, this paper proposes a new research direction that deploys deep networks on associations to achieve deep association features for CoSOD.
+
+Apart from CoSOD, other tasks necessitating the consideration of inter-image relationships, such as few-shot segmentation [25,27,28,39], stereo matching [2,40], video semantic segmentation [34], etc. These tasks have made significant advancements recently by effectively modeling inter-image relations. Most of these methods [2,4,12,27,39,40] initially create cost volumes to capture dense inter-image pixel-wise similarities and subsequently use various modules to convert these hyper volumes into task-specific features. Our approach distinguishes itself from prior methods in three aspects. Firstly, most of them create 4D cost volumes between two images while we create 6D hyperassociations between all related images. Secondly, they calculate hyper volumes based on original image features, whereas we propose PAG to progressively enhance image features for better hyperassociation calculation. Last and most importantly, they rely on the full-pixel cost volume. We consider the condensation of hyperassociations using semantic correspondences to eliminate noisy pixel associations.
+
+Semantic correspondence estimation [24] aims to establish reliable pixel correspondences between different instances of the same object category. Most works performed this task using fully supervised training [14,24]. Some recent works have utilized unsupervised learning with photometric, forward-backward consistency, and warp-supervision losses [30,35,48]. However, they implement these losses on the entire image, where background pixels may affect the performance. In this paper, we introduce this task to condense hyperassociations for Co-SOD and tailor the cycle consistency loss by only applying it to co-salient pixels, hence effectively avoiding the influence of background and extraneous objects.
+
+As shown in Figure 2, CONDA integrates the deep association learning process into an FPN framework. Specifically, given a group of related images \(\{I_i\}_{i=1}^N\), we
+
+first input them into a VGG-16 [32] backbone to collect its intermediate features for PAG and FPN decoding. In detail, we collect all features of the last three stages for PAG and the last feature of each stage for the FPN decoder as follows:
+
+\[
+\mathbb{F}^P = \{F_{s,l} \mid s \in \{3, \cdots, 5\}, l \in \{1, \cdots, L_s\}\},
+\]
+\[
+\mathbb{F}^D = \{F_{s,L_s} \mid s \in \{1, \cdots, 5\}\},
+\]
+
+where \(\mathbb{F}^P\) and \(\mathbb{F}^D\) are the feature collections for PAG and FPN decoder, respectively. \(F_{s,l} \in \mathbb{R}^{N \times H_s \times W_s \times C_s}\) represents the VGG feature of the \(l\)-th layer in the \(s\)-th stage. There are in total \(L_s\) layers in the \(s\)-th stage. \(H_s\), \(W_s\) and \(C_s\) represent the height, width, and channel of the \(s\)-th stage, respectively.
+
+Then, we input \(\mathbb{F}^P\) into PAG to calculate hyperassociations and generate deep association features \(\{F_s^A \in \mathbb{R}^{N \times H_s \times W_s \times C_s}\}_{s=3}^5\). Finally, these association features will be fused with \(\mathbb{F}^D\) for the FPN decoder process, formulated as:
+
+\[
+F_{s,L_s} = F_{s,L_s} + \phi(F_s^A), \quad s = 3, \cdots, 5,
+\]
+\[
+F = \text{Decoder}(\{F_{s,L_s}\}_{s=1}^5),
+\]
+
+where \(\phi\) is a convolution layer. \(F \in \mathbb{R}^{N \times H \times W \times C}\) is the final feature for the final co-saliency prediction. We adopt BCE and IoU losses for supervision.
+
+The rest of this section will introduce PAG with full-pixel hyperassociation and the condensation of hyperassociations by plugging the Correspondence-induced Association Condensation (CAC) module into PAG.
+
+Our deep association learning involves two steps: 1) acquiring the raw hyper-associations \(\{A_s\}_{s=3}^5\) from three stages; 2) employing aggregation networks on \(\{A_s\}_{s=3}^5\) to obtain association features \(\{F_s^A\}_{s=3}^5\).
+
+Earlier methods [4, 11, 31] directly utilize the original backbone features, i.e. \(F^P\), to calculate inter-image interactions, such as the so-called cost volume. We argue that hyperassociations derived straight from backbone features might obstruct further improvement of deep association learning, given that the current backbone is pre-trained without any consideration for inter-image associations.
+
+To alleviate this problem, we propose the PAG module to progressively generate pyramid association features so that we can utilize the high-level association feature, e.g. \(F_{s+1}^A\) from the \((s+1)\)-th stage, to enhance the neighbouring low-level VGG features in \(F^P\), e.g. \(F_{s,l}\), for attaining association-enhanced features \(\hat{F}_{s,l}\), based on which we can calculate high-quality hyperassociations \(A_s\) in the \(s\)-th stage. After that, we execute the subsequent aggregation networks on \(A_s\) to achieve association features \(F_s^A\), which will continue to enhance the VGG features of the next stage and carry out progressive association generation. The whole process of our PAG can be formulated as follows:
+
+\[
+A_s = \mathrm{HAC}\left(\{\hat{F}_{s,l}\}_{l=1}^{L_s}\right),
+\]
+\[
+F_s^A = \mathrm{Agg}(A_s), \tag{3}
+\]
+\[
+\{\hat{F}_{s-1,l}\}_{l=1}^{L_{s-1}} = \mathrm{Enh}\left(\{F_{s-1,l}\}_{l=1}^{L_{s-1}}; F_s^A\right),
+\]
+
+where \(s\) ranges from 5 to 3 and \(\{\hat{F}_{5,l}\}_{l=1}^{L_5} = \{F_{5,l}\}_{l=1}^{L_5}\). The HAC, Agg, and Enh represent the hyperassociation calculation, aggregation network, and association-induced feature enhancement, respectively. Next, we explain them in detail.
+
+**Hyperassociation Calculation.** For each stage, we first compute the raw associations at each layer using the inner product between \(l\)-2 normalized association-enhanced features of \(N\) related images. After that, we stack the raw associations of all layers to form the final hyperassociation of this stage. The hyperassociation for the s-th stage, i.e. \(A_s \in \mathbb{R}^{N \times H_s \times W_s \times N \times H_s \times W_s \times L_s}\), can be calculated via:
+
+\[
+A_s = \mathrm{HAC}\left(\{\hat{F}_{s,l}\}_{l=1}^{L_s}\right),
+\]
+\[
+= \mathrm{Stack}\left(\left\{\mathrm{ReLU}\left(\frac{\hat{F}_{s,l} \cdot \hat{F}_{s,l}^\top}{\|\hat{F}_{s,l}\|\|\hat{F}_{s,l}^{\top}\|}\right)\right\}_{l=1}^{L_s}\right), \tag{4}
+\]
+
+where \(\hat{F}_{s,l} \cdot \hat{F}_{s,l}^{\top} \in \mathbb{R}^{N \times H_s \times W_s \times N \times H_s \times W_s}\). The \(\top\) indicates transposing the last dimension and the first three dimensions. \(\|\cdot\|\) represents the \(l\)-2 norm. We employ ReLU to suppress noisy association values.
+
+**Aggregation Network.** The raw hyperassociation \(A_s \in \mathbb{R}^{N \times H_s \times W_s \times N \times H_s \times W_s \times L_s}\) is a hypercube with a nested structure, where each pixel position is characterized by a 4D tensor \((N \times H_s \times W_s \times L_s)\). Each 4D tensor documents the associations of the respective pixel with all other pixels in \(N\) related images.
+
+clarity, we designate the first and second \( N \times H_s \times W_s \) dimensions in \( A_s \) as the source and target dimensions, respectively. Although these 4D tensors are crucial for exploring the consensus information for co-saliency detection, they essentially comprise pixel-to-pixel similarity values, seen in (4), which may be suboptimal and unreliable in complex scenarios. Therefore, we propose using deep networks to transform these pixel-wise similarities into deep association features with contextual and high-order association knowledge. This has never been explored in previous CoSOD methods. This is implemented via context aggregations on \( A_s \) to squeeze these 4D tensors as \( C_s \)-dimensional vectors, formulated as:
+
+\[
+N \times H_s \times W_s \times N \times H_s \times W_s \times L_s \rightarrow N \times H_s \times W_s \times C_s.
+\] 
+(5)
+
+In detail, we first deploy several association aggregation layers on \( A_s \) to progressively aggregate context information, enlarging \( L_s \) as \( C_s \), and eliminate the target \( H_s \times W_s \) dimension in 4D tensors. Each aggregation layer consists of 2D convolution layers and a downsampling operation. Specifically, focusing on the first aggregation layer for technical explanation, we first aggregate context information in the target \( H_s \times W_s \) dimension by applying a 2D convolution layer on all 4D tensors. The operations on the 4D tensor at pixel position \( (h_i, w_i) \) in image \( I_i \) can be formulated as:
+
+\[
+A_s^1(i, h_i, w_i, j, :, :, :) = C_1(A_s(i, h_i, w_i, j, :, :, :)), \quad j = 1, \cdots, N,
+\]
+(6)
+
+where \( C_1 \) is a \( 3 \times 3 \) 2D convolution layer. Here, \( j \) is the index of other related images in the 4D tensor, and \( A_s(i, h_i, w_i, j, :, :, :) \in \mathbb{R}^{H_s \times W_s \times L_s} \) illustrates the associations between the pixel \( (h_i, w_i) \) in \( I_i \) and all pixels in image \( I_j \). This interpretation applies to other similar symbols.
+
+Then, a downsampling operation \( D \), i.e. bilinear interpolation, is applied on \( A_s^1 \) to reduce the spatial dimension of the 4D tensor by a scaling factor:
+
+\[
+A_s^2(i, h_i, w_i, j, :, :, :) = D(A_s^1(i, h_i, w_i, j, :, :, :)),
+\]
+(7)
+
+where \( A_s^2(i, h_i, w_i, j, :, :, :) \in \mathbb{R}^{H'_s \times W'_s \times C'_s}\), \( H'_s \) and \( W'_s \) are downsampled height and width. \( C'_s \) is the channel number after convolution \( C_1 \).
+
+Finally, we also aggregate context information in the source \( H_s \times W_s \) dimension. Specifically, we extract the values along the source dimension and channel dimension in \( A_s^2 \) to form 4D tensors and apply a 2D convolution layer on them. For instance, \( A_s^2(:, :, :, j, h_j, w_j, :) \in \mathbb{R}^{N \times H_s \times W_s \times C'_s} \) is such a 4D tensor, where \( (h_j, w_j) \) is a pixel position in the target dimension. This can be formulated as:
+
+\[
+A_s^3(i, :, :, j, h_j, w_j, :) = C_2(A_s^2(i, :, :, j, h_j, w_j, :)), \quad i = 1, \cdots, N,
+\]
+(8)
+
+where \( C_2 \) is a \( 3 \times 3 \) 2D convolution layer. \( i \) is the related image index.
+
+After several association aggregation layers, as shown in (6)-(8), we can achieve the aggregated association features with the target \( H_s \times W_s \) dimension eliminated, denoted as \( F_{s}^{A'} \in \mathbb{R}^{N \times H_s \times W_s \times N \times C} \). Subsequently, we average \( F_{s}^{A'} \) on its second \( N \) dimension and obtain the final association features.
+
+Association-induced Feature Enhancement. Once we have obtained association feature $F_s^A$ of the s-th stage, we will use it to enhance the VGG feature of the $(s-1)$-th stage, i.e. $\{F_{s-1, l}\}_{l=1}^{L_{s-1}}$. Specifically, we upsample $F_s^A$ to align the spatial size of features in the $(s-1)$-th stage, and then add it to $\{F_{s-1, l}\}_{l=1}^{L_{s-1}}$ followed by a convolution layer, formulated as:
+
+$$F_s^A \in \mathbb{R}^{N \times H_s \times W_s \times C},$$
+formulated as:
+
+$$F_s^A = \frac{1}{N} \sum_{j=1}^N F_s^{A'}(:,:,:,j,:). \tag{9}$$
+
+$$\hat{F}_{s-1, l} = C_3(F_{s-1, l} + U(F_s^A)),$$
+\tag{10}
+
+where $C_3$ and $U$ represent a 2D convolution layer and the bilinear upsampling operation, respectively.
+
+Although PAG based on full-pixel hyperassociations can deliver satisfactory performance in CoSOD, it also introduces substantial computational overhead. Additionally, we argue that for each pixel in an image, it is unnecessary to gather its associations with all pixels of other related images to form hyperassociations. Some pixel associations may even impair the final performance, such as those between ambiguous regions. To this end, this subsection try to condense the original full-pixel hyperassociations to retain only informative pixel associations.
+
+This subsection will focus on explaining the condensation of pixel associations of a pixel (e.g. $(h_i, w_i)$ in $I_i$) to ones of the other images (e.g. image $I_j$), i.e. $A_s(i, h_i, w_i, j, :,:,:)\in \mathbb{R}^{H_s \times W_s \times L_s}$, as shown in Figure 3. We will simplify the symbol $A_s(i, h_i, w_i, j, :,:,:)$ as $a_s^j$ in the subsequent text for convenience.
+
+Specifically, CAC opts to select $K \times K$ ($K < H_s, K < W_s$) informative pixel associations from $a_s^j$ to form its condensed representation, i.e. $\tilde{a}_s^j \in \mathbb{R}^{K \times K \times L_s}$. Thus, the entire condensed hyperassociation can be symbolized as $\tilde{A}_s \in \mathbb{R}^{N \times H_s \times W_s \times N \times K \times K \times L_s}$.
+
+K×K×Ls. To ensure the proper selection of K×K pixels, we introduce a pre-text task, i.e. semantic correspondence estimation [14,24]. This allows us to first locate the corresponding pixel of (hi, wi) in image Ij, i.e. (hj, wj), and then combine (hj, wj) with its surrounding pixels as the K×K pixel set. We design this approach based on the observation that the co-salient objects across N related images belong to the same semantic category, and the pixels within them should have semantic correspondences to each other, as shown in Figure 4. Therefore, the introduction of semantic correspondence in CAC not only improves the CoSOD performance but also delves deeper into the core nature of the CoSOD task. As far as we know, this is the first work to use semantic correspondence in the CoSOD task.
+
+Correspondence Estimation. To estimate the correspondence pixel (hj, wj) in Ij for (hi, wi), we first identify an initial pixel (h^0_j, w^0_j) via a heuristic approach. Subsequently, we produce a spatial offset to refine (h^0_j, w^0_j) into (hj, wj). To achieve this purpose, all initial correspondence pixels should be utilized to form the initial condensed hyperassociations, with which the initial deep association features can be generated for spatial offset prediction.
+
+Specifically, we pick out (h^0_j, w^0_j) that has the largest feature similarity value with (hi, wi). Since we have calculated the feature similarities in a^j_s, the (h^0_j, w^0_j) can be obtained as follows:
+
+$$
+\bar{a}^j_s = \sum_{l=1}^{L_s} a^j_s(:,:,l),
+$$
+
+$$
+(h^0_j, w^0_j) = \text{argmax}_{x,y}(\bar{a}^j_s(x,y)),
+$$
+
+where $\bar{a}^j_s \in \mathbb{R}^{H_s \times W_s}$ is a similarity matrix obtained by eliminating the last dimension of $a^j_s \in \mathbb{R}^{H_s \times W_s \times L_s}$ through summation. argmax returns the coordinate of the maximum value.
+
+Next, we select K × K pixels within the square region centered around the initial pixels, e.g. (h^0_j, w^0_j), to construct the initial condensed hyperassociation $\tilde{A}'_s$. Then, we can feed it into the aggregation network, described in Sec 3.1, and achieve the initial aggregated association features $F^{A'}_s \in \mathbb{R}^{N \times H_s \times W_s \times N \times C_s}$. It can be regarded as the association features of each pixel to N other related images. We utilize the feature of (hi, wi) to Ij, i.e. $F^{A'}_s(i, h_i, w_i, j, :) \in \mathbb{R}^{C_s}$, to predict the offsets for (hj, wj) via a linear layer, formulated as:
+
+$$
+\Delta^j_s = O(F^{A'}_s(i, h_i, w_i, j, :)),
+$$
+
+where O is a linear layer for offset generation. $\Delta^j_s \in \mathbb{R}^{K \times K \times 2}$ consists of K × K offsets, besides the center offset $\Delta^j_s(k_c, k_c, :)$ for correspondence estimation, i.e. refining (h^0_j, w^0_j) as (hj, wj), we also generate other offsets for surrounding pixel selection. Thus, the corresponding pixel (hj, wj) can be obtained by adding the offset to the initial pixel (h^0_j, w^0_j), formulated as:
+
+$$
+(h_j, w_j) = (h^0_j, w^0_j) + \Delta^j_s(k_c, k_c, :),
+$$
+
+Condensation Operation. Given the estimated correspondence pixel $(h_j, w_j)$ and other offsets in $\Delta_s^j$, we can obtain the surrounding pixels and combine them with $(h_j, w_j)$ to form $K \times K$ pixel set. Their coordinates are stored in $n_s^j \in \mathbb{R}^{K\times K\times 2}$. This process can be formulated as:
+
+\[
+n_s^j(x, y, :) = (h_j, w_j) + \Delta_s^j(x, y, :), \quad x, y \in \{1, \cdots, K\};\ x, y \neq k_c,
+\]
+\[
+n_s^j(k_c, k_c, :) = (h_j, w_j),
+\tag{14}
+\]
+
+where $(k_c, k_c)$ is the center position of $K \times K$ square.
+
+Finally, we can perform the condensation operation via the index selection on $a_s^j$, formulated as:
+
+\[
+\tilde{a}_s^j = a_s^j(n_s^j),
+\tag{15}
+\]
+
+where $\tilde{a}_s^j$ is the condensed representation of $a_s^j$, i.e. pixel associations of $(h_i, w_i)$ to image $I_j$. Furthermore, we also illustrate the condensation for pixel associations of $(h_i, w_i)$ to all images, i.e. $a_s \in \mathbb{R}^{N\times H_s \times W_s \times L_s}$, in Figure 2. By applying such a condensation process to all pixel associations, we can obtain the final condensed hyperassociation $\tilde{A}_s$.
+
+To achieve accurate correspondence estimations, applying effective supervisions on them is necessary. As explicit semantic correspondence annotations are not available, we can only rely on unsupervised losses by imposing correspondence-related constraints on estimated correspondences. Previous unsupervised approaches apply constraints to all pixels [30, 35, 48], including those on the background and extraneous objects that don’t have mutual correspondences, hence harming the model effectiveness. To avoid this problem, we propose an object-aware constraint to only access losses on the co-salient pixels.
+
+We propose an Object-aware Cycle Consistency (OCC) loss for the supervision of correspondence estimations in CoSOD. The cycle consistency can be explained as: if a co-salient pixel $(h_i, w_i)$ of image $I_i$ corresponds to the pixel $(h_j, w_j)$ in image $I_j$, then the pixel $(h_j, w_j)$ should also semantically correspond to pixel $(h_i, w_i)$.
+
+Based on this cycle consistency constraint, we adopt image warping operations to conduct the OCC loss. Specifically, we first warp the image $I_i^s$ (a resized $I_i$ to align the scales in the s-th stage) as $I_{i \rightarrow j}^s$ using the $I_i^s \rightarrow I_j^s$ correspondence estimations. Next, we warp $I_{i \rightarrow j}^s$ backward to $I_{i \rightarrow j \rightarrow i}^s$ using $I_j^s \rightarrow I_i^s$ correspondence estimations. Finally, we can utilize the SSIM loss between $I_i^s$ and $I_{i \rightarrow j \rightarrow i}^s$ to measure the cycle consistency for mutual correspondence pixels in $I_i^s$ and $I_j^s$. Moreover, to ensure the constraints are only conducted on co-salient objects, we mask the images with their ground truth masks, formulated as:
+
+\[
+\mathcal{L}_s^C = \frac{1}{N^2} \sum_{i=1}^N \sum_{j=1}^N \mathcal{L}_{SSIM}(I_i^s \cdot G_i^s, I_{i \rightarrow j \rightarrow i}^s \cdot G_i^s),
+\tag{16}
+\]
+where $(k_c, k_c)$ is the center position of $K \times K$ square.
+
+To construct the training data, we follow [51] to use different combinations of three commonly used training datasets, i.e. DUTS class [47] (8250 images of 291 groups), COCO-9k [18] (9213 images of 65 groups), and COCO-SEG [37] (200,000 images of 78 groups), for a fair comparison with other state-of-the-art (SOTA) works. We also implement the synthesis strategy for the DUTS class dataset following [46].
+
+We follow [8] to evaluate our model on three benchmark datasets, i.e. CoCA [47] (1295 images of 80 groups), CoSal2015 [44] (2015 images of 50 groups), and CoSOD3k [7] (3316 images of 160 groups). We adopt four widely-used metrics for the quantitative evaluation, i.e. Structure-measure ($S_m$) [5], Maximum enhanced-alignment measure ($E_\xi$) [6], Maximum F-measure ($F_\beta$) [1], and Mean Absolute Error ($M$) [3].
+
+For training specifics, we employ the data augmentation strategy in [21] and use 256 × 256 as the input size for the network. We employ the Adam optimizer [15] with $\beta_1 = 0.9$ and $\beta_2 = 0.99$ to optimize the network. We train our CONDA model for 300 epochs, starting with an initial learning rate of $1e-4$, which is divided by 10 at the 60,000$^{th}$ iteration. Our experiments are implemented based on PyTorch [29] on a single Tesla A40 GPU, with the batchsize set to $N = 6$. The hyperparameter $K$ in CAC is set to 9.
+
+where $G_i^s$ is the resized ground truth of image $I_i$. The total OCC loss $\mathcal{L}^C$ is the sum of three stages, formulated as: $\mathcal{L}^C = \mathcal{L}_3^C + \mathcal{L}_4^C + \mathcal{L}_5^C$. More details can be found in the supplementary materials.
+
+We conduct ablation studies on the most challenging CoCA [47] dataset. To construct the baseline, we use the FPN [17] (with VGG-16 as encoder) as the
+
+foundational segmentation network and enhance it with the Region-to-Region correlation module (R2R) [16] to simply capture inter-image connections. Then, as shown in Table 1, we incrementally incorporate PAG, CAC, and OCC into the baseline for effectiveness analysis. We trained all ablation models with the DUTS class and COCO9k datasets.
+
+Effectiveness of PAG. PAG first uses intermediate image features from the FPN encoder to calculate full-pixel hyperassociations. Then, aggregation networks are applied to generate deep association features for the decoder process. PAG effectively utilizes deep learning to model pair-wise pixel associations, achieving higher-level association knowledge compared to previous image feature optimization strategies. As shown in the 3rd line of Table 1, PAG shows significant performance boosts compared to the baseline model, with respective gains of 3.72%, 4.80%, 7.30%, and 1.31% in $S_m$, $E_\xi$, $F_\beta$, and $\mathcal{M}$.
+
+Furthermore, to validate our approach of progressively enhancing image features with the previously generated association feature for improving hyperassociation calculation, we conduct an ablation experiment called Separate Association Generation (SAG) where association features are generated for three stages without image feature enhancements. As shown in the 2nd & 3rd lines in Table 1, PAG outperforms SAG, indicating that our progressive enhancement design can obtain better hyperassociation.
+
+Effectiveness of CAC. CAC aims to condense full-pixel hyperassociations in PAG by selecting corresponding pixels and their surrounding contexts. Results in the 3rd & 5th lines of Table 1 show that introducing the CAC module improves the performance. Moreover, it reduces the multiply-accumulate operations (MACs) of aggregation networks from 91.38G in the full-pixel PAG to 77.19G¹. This indicates that utilizing correspondence estimation to condense the hyperassociations not only effectively reduces the computational burden but also helps obtain more accurate pixel associations.
+
+We also analyze CAC in detail. As deep association features are necessary for reliable correspondence estimation, CAC first pre-condenses the hyperasso-
+
+¹ We input a group of 6 related 256x256 images to measure MACs.
+
+ciations using a maximum similarity approach to obtain initial deep association features and then performs further condensation based on the correspondences predicted by these initial deep association features. The hyperassociation condensation process with only the pre-condensation operation is called Similarity-induced Association Condensation (SAC). In Table 1, SAC only brings slight performance improvements due to the heuristic nature of the correspondence estimation. Nevertheless, SAC can provide the initial association feature for CAC to predict reliable correspondence.
+
+Effectiveness of OCC. OCC provides self-supervision for CAC to enable more precise correspondence estimation. Results in the 5th&7th lines of Table 1 show OCC further improves the performance by leveraging more precise correspondence estimations to condense hyperassociations effectively. In addition, we conducted an ablation experiment to validate our object-aware design in CAC by replacing OCC with full-pixel cycle consistency (FCC) loss. Comparing the 5th&6th lines of Table 1, FCC leads to a notable performance decrease due to background pixels disrupting the correspondence learning.
+
+Visualization of Correspondence Estimations. We present some visual samples of correspondence estimations for some co-salient pixels in Figure 4. Our semantic correspondence estimations are meaningful and can effectively depict the common attributes of co-salient objects at the pixel level.
+
+We compare our model with eight recent SOTA methods, i.e. GICD [47], ICNet [13], GCoNet [8], CADC [46], DCFM [41], DMT [16], UGEM [38], and GCoNet+ [51]. We directly utilize their officially released saliency maps for comparison. To ensure fairness, we trained our model with different combinations of three training datasets, following [51], to align with other compared methods. We
+
+denote three training datasets, i.e. DUTS class [47], COCO9k [18], and COCO-SEG [37], as DC, C9, and CS, respectively, for convenience. Our training sets include DC, C9, DC+C9, DC+CS. As shown in Table 2, we can observe that our model achieves the best performance with each training set in most benchmark datasets. What is even more exciting is that we achieve excellent results in the most challenging CoCA dataset, surpassing the second-best models by large margins, e.g. 2.5% $S_m$, 2.5% $E_\xi$, and 4.8% $F_\beta$ with the DC+CS training set.
+
+We also present visual comparisons in Figure 5. Our model can accurately detect co-salient objects in complex scenarios, such as irregularly shaped accordions accompanied by extraneous objects (people). However, other models easily fail to accurately segment co-salient objects.
+
+This paper proposes a deep association learning strategy for CoSOD that directly embeds hyperassociations into deep association features. Correspondence estimation is also introduced to condense hyperassociations, enabling the exploration of pixel-level correspondences for CoSOD. We also utilize an object-aware cycle consistency loss to further refine correspondence estimations. Extensive experiments have verified the effectiveness of our method.
+
+Acknowledgments. This work was supported in part by Key-Area Research and Development Program of Guangdong Province under Grant 2021B0101200001, the National Natural Science Foundation of China under Grant 62136007, 62036011, U20B2065, 6202781, 62036005, the Key R&D Program of Shaanxi Province under Grant 2021ZDLGY01-08, and the MBZUAI-WIS Joint Program for AI Research under Grants WIS P008 and P009.
+
+# References
+
+1. Achanta, R., Hemami, S., Estrada, F., Susstrunk, S.: Frequency-tuned salient region detection. In: IEEE Conf. Comput. Vis. Pattern Recog. pp. 1597–1604 (2009)
+
+2. Chen, W., Xu, H., Zhou, Z., Liu, Y., Sun, B., Kang, W., Xie, X.: Cost-former: Cost transformer for cost aggregation in multi-view stereo. arXiv preprint arXiv:2305.10320 (2023)
+
+3. Cheng, M.M., Warrell, J., Lin, W.Y., Zheng, S., Vineet, V., Crook, N.: Efficient salient region detection with soft image abstraction. In: Int. Conf. Comput. Vis. pp. 1529–1536 (2013)
+
+4. Cho, S., Hong, S., Jeon, S., Lee, Y., Sohn, K., Kim, S.: CATS: Cost aggregation transformers for visual correspondence. In: IEEE Conf. Comput. Vis. Pattern Recog. pp. 9011–9023 (2021)
+
+5. Fan, D.P., Cheng, M.M., Liu, Y., Li, T., Borji, A.: Structure-measure: A new way to evaluate foreground maps. In: Int. Conf. Comput. Vis. pp. 4548–4557 (2017)
+
+6. Fan, D.P., Gong, C., Cao, Y., Ren, B., Cheng, M.M., Borji, A.: Enhanced-alignment measure for binary foreground map evaluation. In: IJCAI. pp. 698–704 (2018)
+
+7. Fan, D.P., Li, T., Lin, Z., Ji, G.P., Zhang, D., Cheng, M.M., Fu, H., Shen, J.: Re-thinking co-salient object detection. IEEE Trans. Pattern Anal. Mach. Intell. 44(8), 4339–4354 (2021)
+
+8. Fan, Q., Fan, D.P., Fu, H., Tang, C.K., Shao, L., Tai, Y.W.: Group collaborative learning for co-salient object detection. In: IEEE Conf. Comput. Vis. Pattern Recog. pp. 12288–12298 (2021)
+
+9. Fu, H., Cao, X., Tu, Z.: Cluster-based co-saliency detection. IEEE Trans. Image Process. 22(10), 3766–3778 (2013)
+
+10. Han, J., Cheng, G., Li, Z., Zhang, D.: A unified metric learning-based framework for co-saliency detection. IEEE Trans. Circuits Syst. Video Technol. 28(10), 2473–2483 (2017)
+
+11. Hong, S., Cho, S., Nam, J., Lin, S., Kim, S.: Cost aggregation with 4D convolutional Swin Transformer for few-shot segmentation. In: Eur. Conf. Comput. Vis. pp. 108–126 (2022)
+
+12. Hong, S., Nam, J., Cho, S., Hong, S., Jeon, S., Min, D., Kim, S.: Neural matching fields: Implicit representation of matching fields for visual correspondence. In: IEEE Conf. Comput. Vis. Pattern Recog. pp. 13512–13526 (2022)
+
+13. Jin, W.D., Xu, J., Cheng, M.M., Zhang, Y., Guo, W.: ICNet: Intra-saliency correlation network for co-saliency detection. Adv. Neural Inf. Process. Syst. (2020)
+
+14. Kim, S., Min, J., Cho, M.: TransforMatcher: Match-to-match attention for semantic correspondence. In: IEEE Conf. Comput. Vis. Pattern Recog. pp. 8697–8707 (2022)
+
+15. Kingma, D.P., Ba, J.: Adam: A method for stochastic optimization. arXiv preprint arXiv:1412.6980 (2014)
+
+16. Li, L., Han, J., Zhang, N., Liu, N., Khan, S., Cholakkal, H., Anwer, R.M., Khan, F.S.: Discriminative co-saliency and background mining transformer for co-salient object detection. In: IEEE Conf. Comput. Vis. Pattern Recog. pp. 7247–7256 (2023)
+
+17. Lin, T.Y., Dollár, P., Girshick, R., He, K., Hariharan, B., Belongie, S.: Feature pyramid networks for object detection. In: IEEE Conf. Comput. Vis. Pattern Recog. pp. 2117–2125 (2017)
+
+18. Lin, T.Y., Maire, M., Belongie, S., Hays, J., Perona, P., Ramanan, D., Dollár, P., Zitnick, C.L.: Microsoft COCO: Common objects in context. In: Eur. Conf. Comput. Vis. pp. 740–755 (2014)
+
+16      L Li et al.
+
+19. Liu, J.J., Hou, Q., Cheng, M.M., Feng, J., Jiang, J.: A simple pooling-based design for real-time salient object detection. In: IEEE Conf. Comput. Vis. Pattern Recog. pp. 3917–3926 (2019)
+
+20. Liu, N., Han, J.: Dhsnet: Deep hierarchical saliency network for salient object detection. In: IEEE Conf. Comput. Vis. Pattern Recog. pp. 678–686 (2016)
+
+21. Liu, N., Han, J., Yang, M.H.: Picanet: Learning pixel-wise contextual attention for saliency detection. In: IEEE Conf. Comput. Vis. Pattern Recog. pp. 3089–3098 (2018)
+
+22. Liu, N., Luo, Z., Zhang, N., Han, J.: VST++: Efficient and stronger visual saliency transformer. IEEE Trans. Pattern Anal. Mach. Intell. (2024)
+
+23. Liu, N., Zhang, N., Wan, K., Shao, L., Han, J.: Visual saliency transformer. In: Int. Conf. Comput. Vis. pp. 4722–4732 (2021)
+
+24. Liu, Y., Zhu, L., Yamada, M., Yang, Y.: Semantic correspondence as an optimal transport problem. In: IEEE Conf. Comput. Vis. Pattern Recog. pp. 4463–4472 (2020)
+
+25. Liu, Y., Liu, N., Yao, X., Han, J.: Intermediate prototype mining transformer for few-shot semantic segmentation. 35, 38020–38031 (2022)
+
+26. Luo, Z., Liu, N., Zhao, W., Yang, X., Zhang, D., Fan, D.P., Khan, F., Han, J.: VSCODE: General visual salient and camouflaged object detection with 2D prompt learning. In: IEEE Conf. Comput. Vis. Pattern Recog. (2024)
+
+27. Min, J., Kang, D., Cho, M.: Hypercorrelation squeeze for few-shot segmentation. In: Int. Conf. Comput. Vis. pp. 6941–6952 (2021)
+
+28. Moon, S., Sohn, S.S., Zhou, H., Yoon, S., Pavlovic, V., Khan, M.H., Kapadia, M.: HM: Hybrid masking for few-shot segmentation. In: Eur. Conf. Comput. Vis. pp. 506–523. Springer (2022)
+
+29. Paszke, A., Gross, S., Massa, F., Lerer, A., Bradbury, J., Chanan, G., Killeen, T., Lin, Z., Gimelshein, N., Antiga, L., et al.: PyTorch: An imperative style, high-performance deep learning library. 32 (2019)
+
+30. Shen, X., Darmon, F., Efros, A.A., Aubry, M.: RANSAC-Flow: Generic two-stage image alignment. In: Eur. Conf. Comput. Vis. pp. 618–637. Springer (2020)
+
+31. Shi, X., Huang, Z., Bian, W., Li, D., Zhang, M., Cheung, K.C., See, S., Qin, H., Dai, J., Li, H.: VideoFlow: Exploiting temporal cues for multi-frame optical flow estimation. arXiv preprint arXiv:2303.08340 (2023)
+
+32. Simonyan, K., Zisserman, A.: Very deep convolutional networks for large-scale image recognition. In: Int. Conf. Learn. Represent. (2015)
+
+33. Su, Y., Deng, J., Sun, R., Lin, G., Su, H., Wu, Q.: A unified transformer framework for group-based segmentation: Co-segmentation, co-saliency detection and video salient object detection. IEEE Trans. Multimedia (2023)
+
+34. Sun, G., Liu, Y., Tang, H., Chhatkuli, A., Zhang, L., Van Gool, L.: Mining relations among cross-frame affinities for video semantic segmentation. In: Eur. Conf. Comput. Vis. pp. 522–539. Springer (2022)
+
+35. Truong, P., Danelljan, M., Yu, F., Van Gool, L.: Warp consistency for unsupervised learning of dense correspondences. In: Int. Conf. Comput. Vis. pp. 10346–10356 (2021)
+
+36. Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A.N., Kaiser, Ł., Polosukhin, I.: Attention is all you need. Adv. Neural Inform. Process. Syst. 30 (2017)
+
+37. Wang, C., Zha, Z.J., Liu, D., Xie, H.: Robust deep co-saliency detection with group semantic. In: AAAI. vol. 33, pp. 8917–8924 (2019)
+
+38. Wu, Y., Song, H., Liu, B., Zhang, K., Liu, D.: Co-salient object detection with uncertainty-aware group exchange-masking. In: IEEE Conf. Comput. Vis. Pattern Recog. pp. 19639–19648 (2023)
+
+39. Xiong, Z., Li, H., Zhu, X.X.: Doubly deformable aggregation of covariance matrices for few-shot segmentation. In: Eur. Conf. Comput. Vis. pp. 133–150. Springer (2022)
+
+40. Xu, G., Wang, X., Ding, X., Yang, X.: Iterative geometry encoding volume for stereo matching. In: IEEE Conf. Comput. Vis. Pattern Recog. pp. 21919–21928 (2023)
+
+41. Yu, S., Xiao, J., Zhang, B., Lim, E.G.: Democracy does matter: Comprehensive feature mining for co-salient object detection. In: IEEE Conf. Comput. Vis. Pattern Recog. pp. 979–988 (2022)
+
+42. Zhang, D., Fu, H., Han, J., Borji, A., Li, X.: A review of co-saliency detection algorithms: Fundamentals, applications, and challenges. ACM Trans. Intell. Syst. Technol. 9(4), 1–31 (2018)
+
+43. Zhang, D., Han, J., Han, J., Shao, L.: Cosaliency detection based on intrasaliency prior transfer and deep intersaliency mining. IEEE Trans. Neural Networks Learn. Syst. 27(6), 1163–1176 (2015)
+
+44. Zhang, D., Han, J., Li, C., Wang, J., Li, X.: Detection of co-salient objects by looking deep and wide. Int. J. Comput. Vis. 120(2), 215–232 (2016)
+
+45. Zhang, D., Meng, D., Han, J.: Co-saliency detection via a self-paced multiple-instance learning framework. IEEE Trans. Pattern Anal. Mach. Intell. 39(5), 865–878 (2016)
+
+46. Zhang, N., Han, J., Liu, N., Shao, L.: Summarize and search: Learning consensus-aware dynamic convolution for co-saliency detection. In: Int. Conf. Comput. Vis. pp. 4167–4176 (2021)
+
+47. Zhang, Z., Jin, W., Xu, J., Cheng, M.M.: Gradient-induced co-saliency detection. In: Eur. Conf. Comput. Vis. pp. 455–472 (2020)
+
+48. Zhao, D., Song, Z., Ji, Z., Zhao, G., Ge, W., Yu, Y.: Multi-scale matching networks for semantic correspondence. In: Int. Conf. Comput. Vis. pp. 3354–3364 (2021)
+
+49. Zhao, J.X., Liu, J.J., Fan, D.P., Cao, Y., Yang, J., Cheng, M.M.: Egnet: Edge guidance network for salient object detection. In: Int. Conf. Comput. Vis. pp. 8779–8788 (2019)
+
+50. Zhao, W., Zhang, J., Li, L., Barnes, N., Liu, N., Han, J.: Weakly supervised video salient object detection. In: IEEE Conf. Comput. Vis. Pattern Recog. pp. 16826–16835 (2021)
+
+51. Zheng, P., Fu, H., Fan, D.P., Fan, Q., Qin, J., Tai, Y.W., Tang, C.K., Van Gool, L.: Gconet+: A stronger group collaborative co-salient object detector. IEEE Trans. Pattern Anal. Mach. Intell. (2023)
+
+52. Zhuge, M., Fan, D.P., Liu, N., Zhang, D., Xu, D., Shao, L.: Salient object detection via integrity learning. IEEE Trans. Pattern Anal. Mach. Intell. 45(3), 3738–3752 (2022)

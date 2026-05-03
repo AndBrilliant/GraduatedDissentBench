@@ -1,0 +1,582 @@
+{
+  "condition": "GD",
+  "paper_id": "10.1038_s41598-025-91235-1",
+  "verdict": "flagged",
+  "confidence": 0.95,
+  "reasoning": "The manuscript has a cascade of methodological and reporting problems that collectively undermine its central claims: that an ANN QSAR model reliably identifies potent SARS-CoV-2 Mpro inhibitors. The most critical issue is the incorrect pIC50 formula as written, which — if applied as stated — would invalidate the entire QSAR analysis. Both reviewers initially rated this RETRACTION-WORTHY, but both also acknowledged during steelman exchange that it could be a typographical error (the reported pIC50 values are more consistent with -log10 than with 1/IC50). Since the paper as written presents a wrong formula without proof it was only a typo, this remains at least a severe error requiring urgent clarification. The contradictory ANN metrics, tiny dataset with flexible models, absent standard QSAR validation, and weak experimental validation of the best compound (P8 showing only ~35% inhibition at 100 μM) further erode confidence. No single issue beyond the pIC50 formula is unambiguously retraction-worthy after steelman scrutiny, but the accumulation of major issues means the paper's conclusions cannot be confidently accepted as presented.",
+  "findings": [
+    {
+      "finding": "The manuscript defines pIC50 as '1 / IC50(M)' instead of the standard -log10(IC50 in M). If this formula was actually used in the modeling, the entire QSAR response variable is wrong and all models, coefficients, and predictions are invalid.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.75,
+      "justification": "Both reviewers rated this RETRACTION-WORTHY initially. During steelman, both acknowledged it could be a typo — the reported pIC50 values (~5-6 range) are more consistent with -log10 than 1/IC50 (which would yield values ~10^5-10^6). However, as written in the manuscript, the formula is wrong, and the burden is on the authors to demonstrate the correct transformation was actually applied. If it was applied as written, the entire core analysis is fundamentally broken. The uncertainty about whether it is a typo vs. actual error prevents full confidence, but the severity of the consequence if real keeps this at RETRACTION-WORTHY with moderate-high confidence.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Contradictory ANN performance metrics: Abstract/early Results report training R² = 0.92 and test RMSE = 0.09, while later text reports training R² = 0.89 and test RMSE = 0.05. These are incompatible.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Review B initially rated RETRACTION-WORTHY but downgraded to MAJOR-REVISION during steelman, acknowledging these could be reporting/assembly errors. Review A rated MAJOR-REVISION throughout. On a 6-compound test set, such differences could reflect different models or splits, meaning the reader cannot determine which ANN was actually selected or whether its claimed superiority holds. This is serious but correctable if the authors can provide raw outputs. Not definitively retraction-worthy as the underlying analysis may still be intact.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The best predicted compound P8 shows only ~35.5% inhibition of Mpro at 100 μM (64.5% activity remaining), which is extremely weak by medicinal chemistry standards and does not support the paper's claims of 'notable inhibitory activity' or 'good potential candidate.'",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Review B initially rated RETRACTION-WORTHY but downgraded during steelman, acknowledging that weak inhibition is not the same as zero activity and that the paper's language is more of an overstatement than a data fabrication. Review A rated MAJOR-REVISION throughout. The experimental validation is the paper's central translational claim, and ~35% inhibition at 100 μM is far below standard lead thresholds (typically IC50 < 10 μM). Without dose-response IC50 data, the practical significance of the discovery claim is substantially unsupported. This is a major weakness but could potentially be addressed with additional experiments.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The QSAR models are built on only 27 compounds (21 train / 6 test) with flexible RF and ANN architectures (including a 4-(5-5-5)-1 ANN), creating severe overfitting risk. No nested cross-validation, y-scrambling/permutation tests, or applicability domain analysis is reported.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers consistently rated this MAJOR-REVISION and neither downgraded during steelman. With a 21-sample training set and a 3-hidden-layer ANN, performance estimates are highly unstable. Model ranking could easily change with a different split. The absence of standard overfitting safeguards (nested CV, permutation tests) means the reported performance is likely inflated. This plausibly changes whether any predictive power genuinely exists.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Feature selection appears to use Gini importance from RF without clear evidence that it was nested within cross-validation or confined to the training set, risking data leakage that would inflate test performance.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Primarily from Review A, with Review B implicitly agreeing via overfitting concerns. On a dataset this small, information leakage from including test compounds in feature selection could strongly alter reported metrics. The manuscript does not explicitly demonstrate a leakage-free workflow.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "No standard QSAR external validation metrics (Q², R²_pred, CCC, concordance correlation) are reported. The external validation uses only 3 compounds with RMSE = 0.35.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers flagged this. Review B emphasized the absence of Tropsha criteria; Review A emphasized the inadequacy of 3-compound external validation. Three data points cannot establish robust external predictivity. The absence of cross-validated Q² means overfitting cannot be ruled out. These are standard QSAR requirements, not optional enhancements.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "Only 7 of 13 predicted analogs were tested experimentally, and the selection rationale is not clearly specified, raising concerns about selective/cherry-picked validation.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "From Review A, with Review B acknowledging during steelman that they missed this entirely. If only favorable or convenient compounds were advanced to testing, apparent prospective success is inflated. The paper's discovery narrative depends on transparent, ideally pre-specified, validation.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The antiviral efficacy data lack clear EC50 values, show non-monotonic dose-response behavior, and the authors themselves note solubility problems. The antiviral claims are not adequately quantified.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers flagged this consistently as MAJOR-REVISION. Without proper EC50 quantification and with acknowledged solubility confounds, the broader claim of antiviral activity against SARS-CoV-2 (as stated in the title) is not supported by the data as presented.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The LB-PaCS-MD simulation treats P8 as a non-covalent ligand, but ebselen derivatives are known to inhibit Mpro via covalent Se-S bond formation with C145. The binding energy and poses from non-covalent simulations may not reflect the actual inhibitory mechanism.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "From Review B, with Review A acknowledging during steelman that this concern is stronger than initially rated if the paper uses the simulation to explain potency. If the operative mechanism is covalent and the simulation is non-covalent, the mechanistic conclusions about binding mode are potentially misleading.",
+      "source": "prover_b",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The MLR model shows train RMSE 0.16 vs test RMSE 0.56, indicating poor generalization even for the simplest model, which signals that the dataset may not support reliable structure-activity inference for any model.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "From Review A, acknowledged by Review B during steelman as a finding they should have flagged. A 3.5-fold train-test RMSE gap in a linear model is a red flag for data quality, descriptor relevance, or split instability. It undermines confidence not just in MLR but in the entire modeling exercise.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The RF hyperparameter table includes 'Min samples split = 1', which is not a valid setting in standard scikit-learn implementations, suggesting the reported methodology may not accurately reflect the actual implementation.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.7,
+      "justification": "From Review A. Initially rated MAJOR-REVISION but downgraded during steelman as potentially just a table typo rather than an implementation error. It undermines reproducibility but absent evidence the invalid setting was actually used, its impact on conclusions is uncertain.",
+      "source": "prover_a",
+      "survived_steelman": false
+    },
+    {
+      "finding": "The Gini importance explanation states that 0 is 'the lowest and best possible importance,' which is conceptually incorrect (higher importance = more useful feature).",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "From Review A, acknowledged by Review B during steelman. This is a methodological explanation error suggesting misunderstanding of the metric, but does not necessarily mean the computations were wrong if the code selected features with highest importance.",
+      "source": "prover_a",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The R² formula as written is nonstandard and possibly incorrect, and the accompanying text appears truncated.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Both reviewers rated this MINOR consistently. Likely a typographical/formatting error rather than a computational one, but it hampers reproducibility and contributes to a broader pattern of sloppy reporting.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The title and several statements broaden the scope from Mpro enzymatic inhibition to antiviral inhibitory activity against SARS-CoV-2, which overstates the evidence.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "From Review A, with Review B acknowledging during steelman that this is stronger than they initially rated. However, it remains primarily a framing/scope issue that should be corrected but does not invalidate the actual data.",
+      "source": "both",
+      "survived_steelman": true
+    },
+    {
+      "finding": "The manuscript contains multiple placeholder text items ([DATE], [JOURNAL]), truncations, and internal inconsistencies that reduce confidence in reporting accuracy and reproducibility.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "From Review A. These individually are minor, but collectively they suggest the manuscript was not carefully finalized. They contribute to the overall pattern of reduced confidence in the accuracy of methodological reporting.",
+      "source": "prover_a",
+      "survived_steelman": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 1,
+    "MAJOR-REVISION": 9,
+    "MINOR": 5
+  },
+  "protocol": {
+    "level": "L2",
+    "agreement": 0.75,
+    "snr": 1.6666666666666667,
+    "theta_accept": 0.9,
+    "theta_noise": 0.15
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.98,
+    "reasoning": "The manuscript contains several serious methodological and reporting problems, chiefly in the QSAR/ML component that underpins the claimed predictive discovery workflow. The most important concerns are: (i) an incorrect definition of pIC50, suggesting either a formula/reporting error or a possible data transformation mistake; (ii) a very small dataset (27 compounds) used to train flexible RF/ANN models with extensive tuning and feature selection, with inadequate validation and likely optimistic performance claims; (iii) inconsistent reported ANN performance metrics across the manuscript; and (iv) weak experimental confirmation of the predicted hits, with only single-concentration enzyme inhibition initially shown and the highlighted compound P8 reducing activity only to 64.5% at 100 µM. These issues do not all prove the conclusions are false, but they substantially weaken the central claim that the ANN QSAR model reliably identified a potent SARS-CoV-2 Mpro inhibitor. If the pIC50 transformation was actually applied as written, the QSAR analysis would be fundamentally invalid. If it is only a typographical error, major revision would still be required because the modeling and validation are not sufficiently robust for the strength of the claims made.",
+    "findings": [
+      {
+        "finding": "The manuscript defines pIC50 incorrectly as pIC50 = (1 / IC50(M)) instead of the standard pIC50 = -log10(IC50 in molar units).",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "If the modeling actually used 1/IC50 rather than -log10(IC50), then the response variable is misdefined and all QSAR coefficients, model fits, test errors, and downstream predictions are invalid. This would directly undermine the paper’s central conclusions. If it is only a typographical mistake, it still requires at least major correction, but as written this is a fundamental error."
+      },
+      {
+        "finding": "The QSAR/ML models are built on only 27 compounds (21 train / 6 test), yet the paper selects descriptors, tunes hyperparameters, and compares MLR, RF, and ANN models, then declares ANN best based on extremely small test sets.",
+        "severity": "MAJOR-REVISION",
+        "justification": "With such a tiny dataset, especially for RF and ANN, performance estimates are highly unstable and prone to overfitting. A 6-compound test set cannot support strong claims of predictive superiority, and model ranking could easily change with a different split. This does not automatically invalidate all conclusions, but it could materially change which model is best and whether any predictive power exists."
+      },
+      {
+        "finding": "Feature selection appears to use Gini importance from RF and then the selected features are used to build/evaluate RF and ANN models, but the manuscript does not clearly establish that feature selection and hyperparameter tuning were nested within cross-validation or confined strictly to the training set.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If feature selection used information from the full dataset, including test compounds, then test performance is contaminated by leakage and the reported predictive accuracy is inflated. On a dataset this small, leakage can strongly alter conclusions. The paper must explicitly demonstrate a leakage-free workflow."
+      },
+      {
+        "finding": "The ANN performance metrics are inconsistent across the manuscript: abstract reports training R² = 0.92 and test RMSE = 0.09, while Results later report training R² = 0.89 and test RMSE = 0.05.",
+        "severity": "MAJOR-REVISION",
+        "justification": "These are not minor rounding differences; they indicate either multiple undocumented models, reporting errors, or analysis inconsistency. If the reported best model metrics are not stable or reproducible, the claimed superiority of ANN is not trustworthy. This could alter the paper’s main model-selection conclusion."
+      },
+      {
+        "finding": "The manuscript reports very strong ANN performance on a tiny dataset with a relatively complex architecture (4-(5-5-5)-1), but provides insufficient safeguards against overfitting and no robust uncertainty analysis.",
+        "severity": "MAJOR-REVISION",
+        "justification": "A three-hidden-layer ANN on 21 training points is highly susceptible to overfitting. Without repeated external validation, y-scrambling/permutation testing, applicability domain assessment, or confidence intervals, the model may fit noise. This could substantially weaken the central prediction claims, though not definitively prove them false."
+      },
+      {
+        "finding": "The external validation for ANN uses only three compounds from another study and assesses performance primarily by RMSE = 0.35, with no fuller validation statistics or confidence bounds.",
+        "severity": "MAJOR-REVISION",
+        "justification": "A 3-compound external set is too small to establish robust external predictivity. The apparent agreement could easily be incidental. Since the manuscript’s practical discovery claim relies on model generalization to new ebselen analogs, this weak external validation could change the conclusions if reassessed."
+      },
+      {
+        "finding": "Model evaluation is inadequate for QSAR standards: the paper relies mainly on R² and RMSE, with no convincing demonstration of robustness such as repeated/repeated nested CV, permutation tests, applicability domain analysis, or standard external-validation diagnostics often expected in QSAR.",
+        "severity": "MAJOR-REVISION",
+        "justification": "These omissions are especially consequential with 27 compounds and high-capacity models. The lack of robustness checks means the predictive claims may be overstated. Conclusions could change after proper validation."
+      },
+      {
+        "finding": "The MLR model is described as 'predictively accurate and acceptable' despite poor test performance relative to train performance (train RMSE 0.16 vs test RMSE 0.56), suggesting weak generalization.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This indicates likely overfitting or instability even in the linear model. While this directly affects the MLR model more than the whole paper, it signals that the dataset may not support strong structure-activity inferences. It undermines confidence in descriptor interpretation and model comparison."
+      },
+      {
+        "finding": "The paper highlights P8 as a promising inhibitor, yet the enzyme assay result presented is only a single-concentration screen at 100 µM where P8 reduces enzymatic activity to 64.5%, which is weak/modest inhibition rather than strong potency.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This does not support the manuscript’s stronger language about 'good potential candidate' or 'notable inhibitory activity' unless followed by proper dose-response IC50 data demonstrating meaningful potency. The experimental validation of the computational prediction is therefore substantially weaker than claimed, potentially changing the practical significance of the conclusions."
+      },
+      {
+        "finding": "The text implies prediction of inhibitory activity was validated experimentally on 13 new analogs, but only 7 compounds were tested biologically, and the selection rationale is not clearly specified.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This creates selective-validation concerns. If only favorable or convenient compounds were advanced, the claimed predictive success of the model may be inflated. The central model-validation narrative depends on transparent prospective testing."
+      },
+      {
+        "finding": "The antiviral/cell-based efficacy section is difficult to interpret quantitatively: EC50 values are said to be calculated by nonlinear regression, but the presented narrative emphasizes log TCID50 reductions and solubility problems rather than clearly reporting EC50 values and reproducibility for the named compounds.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Without clear quantitative antiviral potency values and associated uncertainty, the strength of biological validation is unclear. Since the manuscript claims antiviral inhibitory activity, poor reporting here could materially affect conclusions."
+      },
+      {
+        "finding": "There is a mismatch between target terminology and biological claims: much of the work concerns Mpro enzymatic inhibition, but the title and several statements broaden this to antiviral inhibitory activity against SARS-CoV-2.",
+        "severity": "MINOR",
+        "justification": "This is an overstatement/clarity issue unless strong cell-based antiviral data are clearly shown. It does not by itself invalidate the work, but the wording should be tightened."
+      },
+      {
+        "finding": "The RF hyperparameter table includes 'Min samples split = 1', which is not a valid setting in standard scikit-learn random forest implementations.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This suggests either the grid as reported is inaccurate or the implementation is not as described. If the actual code differed from the manuscript, reproducibility is compromised. It may not invalidate the chosen final model if that setting was not used, but it raises concern about the reliability of the ML methods section."
+      },
+      {
+        "finding": "The manuscript states that Gini importance ranges from 0 to 1 and that 0 is 'the lowest and best possible importance,' which is conceptually incorrect.",
+        "severity": "MINOR",
+        "justification": "This is a methodological explanation error rather than necessarily an analysis error. It suggests misunderstanding of feature importance but does not alone prove the computations are wrong."
+      },
+      {
+        "finding": "The formula given for R² is nonstandard in presentation and the accompanying text is incomplete/truncated, making it unclear whether R² was computed conventionally for all models.",
+        "severity": "MINOR",
+        "justification": "As written, reporting is sloppy and hampers reproducibility. However, this alone would not overturn conclusions unless the actual computations were also wrong."
+      },
+      {
+        "finding": "The molecular simulation section uses LB-PaCS-MD to infer a binding pathway and favorable interactions for P8, but this is not validated against quantitative binding/free-energy benchmarks and appears to analyze only one highlighted compound after experimental selection.",
+        "severity": "MINOR",
+        "justification": "This limits mechanistic strength but does not critically affect the paper’s main empirical claims if presented as exploratory. It is supportive rather than decisive evidence."
+      },
+      {
+        "finding": "The binding interaction energy reported from LigandScout at the global minimum state is used in an interpretive way, but this is not a rigorous physical binding free energy and should not be overinterpreted.",
+        "severity": "MINOR",
+        "justification": "This is a common interpretive issue in computational papers. It should be framed cautiously but does not itself invalidate the study."
+      },
+      {
+        "finding": "The manuscript contains multiple internal inconsistencies, truncations, and placeholder text ([DATE], [JOURNAL]), which reduce confidence in the accuracy of methodological reporting.",
+        "severity": "MINOR",
+        "justification": "These are reporting-quality issues, but in aggregate they raise concern about care in analysis and reproducibility. They do not alone necessitate retraction or major methodological rejection."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "The manuscript contains several serious methodological flaws and reporting inconsistencies that undermine the validity of its central conclusions. The most critical issue is a contradiction in the reported performance metrics for the ANN model, where the text claims an R² of 0.89 for the training set in one paragraph and 0.92 in another, while also reporting contradictory RMSE values for the test set (0.09 vs 0.05). Furthermore, the experimental data show extremely poor inhibition (only 64.5% activity at 100 μM for the 'best' compound P8), which cannot support the claim that it is a 'good potential candidate' based on the MPro assay alone. The study also violates fundamental QSAR validation standards by not reporting key metrics like Q² (cross-validated R²), R²_pred (external prediction R²), or CCC (concordance correlation coefficient), and by not comparing the RMSE values to the standard deviation of the training set. The antiviral efficacy data (log TCID50 reduction) are inconsistent and the authors admit solubility issues, making the EC50 calculations unreliable. These errors collectively mean the paper's central conclusions—that the ANN model is predictive and that compound P8 is a promising lead—cannot be supported by the data as presented.",
+    "findings": [
+      {
+        "finding": "Contradictory performance metrics reported for the ANN model: In the Abstract and Results, R² for training is stated as 0.92 and RMSE for test as 0.09. Later in the text (just before 'To evaluate the predictive ability...'), the authors state R²=0.89 and RMSE=0.05 for the test set. These are incompatible.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The central claim of the paper is that the ANN model is the best predictive model. The reported metrics are inconsistent, meaning the reader cannot determine which (if any) values are correct. This directly invalidates the comparison between models and the basis for using the ANN to predict new compounds."
+      },
+      {
+        "finding": "No external validation metrics reported beyond RMSE. Key QSAR validation statistics (Q², R²_pred, CCC, R²_m) are absent. The standard for QSAR model acceptance (e.g., Tropsha criteria) requires Q² > 0.5 and R²_pred > 0.6, but these are not provided.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Without cross-validated Q², the models may be severely overfitted. The RMSE alone is insufficient to establish predictive power, especially with only 21 training samples and 5-4 descriptors. The models could be memorizing noise."
+      },
+      {
+        "finding": "The experimental enzyme inhibition data for the 'best' compound (P8) shows only 64.5% activity remaining at 100 μM (i.e., ~35.5% inhibition). This is extremely weak and does not support the conclusion that it is a 'good potential candidate'. Standard potency thresholds for a lead compound are typically IC50 < 1-10 μM.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The entire experimental validation hinges on identifying P8 as promising. A compound that inhibits MPro by only ~35% at 100 μM is essentially inactive and would not be considered a viable lead. This directly contradicts the manuscript's central conclusion."
+      },
+      {
+        "finding": "The antiviral efficacy data (Fig 6C) are described as showing '1-2 log TCID50 reduction', but the authors also state that the inhibition was 'reduced in higher concentrations' and that solubility issues were suspected. No EC50 values are reported for this assay, and the data appear inconsistent with a dose-response.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The claim of antiviral activity is not supported by proper quantification (no EC50). The authors themselves note solubility problems and inconsistent results. This section does not provide reliable evidence of antiviral activity."
+      },
+      {
+        "finding": "The pIC50 calculation formula is incorrect. The authors state: 'pIC50 = (1 / IC50 (M))'. The correct formula is pIC50 = -log10(IC50) when IC50 is in molar units, or pIC50 = -log10(IC50 * 10^-9) if using nM? The provided formula (reciprocal) is not a standard logarithmic transformation and would produce nonsensical values (e.g., if IC50=1e-6 M, pIC50 = 1e6, whereas correct pIC50 = 6).",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This is a fundamental data coding error. The entire QSAR model is built on a transformed activity value (pIC50). If the transformation is mathematically wrong, all pIC50 values, model coefficients, and predictions are invalid. This single error invalidates the entire core analysis."
+      },
+      {
+        "finding": "In the Methods, the formula for R² is incorrectly written. The expression given is: Σ (y_pred - ȳ)² / Σ (y_exp - ȳ)². The correct formula should use (y_exp - ȳ)² in the denominator and (y_pred - ȳ)² or (y_exp - y_pred)² in the numerator, depending on the definition.",
+        "severity": "MINOR",
+        "justification": "While this may be a typographical error in the manuscript, it suggests a lack of rigor in reporting statistical methods. It would not change the conclusions if the actual calculation was done correctly, but it needs correction."
+      },
+      {
+        "finding": "Small dataset (N=27) with high-dimensional descriptor space (35 initial descriptors, 5-4 final descriptors) severely increases risk of overfitting. No mention of dimensionality reduction or regularization.",
+        "severity": "MAJOR-REVISION",
+        "justification": "With only 21 training samples, using 4-5 descriptors yields a sample-to-descriptor ratio of ~4:1, which is below the recommended 5-10:1 for MLR. For RF and ANN, this ratio is even more problematic and likely yields inflated performance metrics that do not generalize."
+      },
+      {
+        "finding": "The manuscript uses inappropriate notation for the external validation: they claim 'RMSE of 0.35' for three compounds from Amporndanai et al., but RMSE for 3 data points is misleading and should be reported as individual deviations or at least a mean absolute error.",
+        "severity": "MINOR",
+        "justification": "While not a fatal error, RMSE with n=3 is statistically weak. The conclusion that it 'demonstrates good predictive performance' is not justified from 3 data points."
+      },
+      {
+        "finding": "The LB-PaCS-MD simulation does not appear to model covalent inhibition. ebselen is known to form a covalent Se-S bond with C145 of MPro, but the simulation treats P8 as a non-covalent ligand (COM distance to C145 S atom). The resulting binding energy (-16.15 kcal/mol) may not reflect the actual covalent mechanism.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The primary mechanism of ebselen derivatives is covalent inhibition. The LB-PaCS-MD simulation as described samples non-covalent binding/unbinding, which may not be relevant to the actual inhibitory mechanism. The conclusions about 'binding mode' could be misleading."
+      }
+    ]
+  },
+  "judge": {
+    "agreement_score": 0.75,
+    "severity_agreement": "They partially agree. Both flag the incorrect pIC50 definition and the inconsistent ANN metrics as critical (retraction-worthy or equivalent), but they differ on the experimental validation: Review A treats the weak inhibition of P8 and the dataset size as major issues requiring revision, while Review B considers the weak inhibition of P8 and the metric inconsistency as retraction-worthy. They also agree that the small dataset, lack of proper validation metrics, and overfitting risks are major problems.",
+    "shared_findings": [
+      "Incorrect pIC50 formula (both rate it as a fundamental error; A: RETRACTION-WORTHY, B: RETRACTION-WORTHY)",
+      "Contradictory ANN performance metrics (both note the R² and RMSE discrepancies; A: MAJOR-REVISION, B: RETRACTION-WORTHY)",
+      "Weak experimental validation of P8 (only ~35% inhibition at 100 μM; A: MAJOR-REVISION, B: RETRACTION-WORTHY)",
+      "Small dataset (N=27) with high risk of overfitting (A: MAJOR-REVISION, B: MAJOR-REVISION)",
+      "Lack of proper QSAR validation metrics (e.g., Q², y-scrambling; A: MAJOR-REVISION, B: MAJOR-REVISION)",
+      "Inadequate external validation (3 compounds; A: MAJOR-REVISION, B: MINOR)",
+      "Potential data leakage in feature selection (A: MAJOR-REVISION; B does not explicitly mention this but implies via overfitting concerns)",
+      "Inconsistent antiviral data (EC50 not clearly reported; A: MAJOR-REVISION, B: MAJOR-REVISION)"
+    ],
+    "severity_disputes": [
+      "ANN metric inconsistency: A rates it as MAJOR-REVISION, B rates it as RETRACTION-WORTHY",
+      "Weak P8 inhibition: A rates it as MAJOR-REVISION, B rates it as RETRACTION-WORTHY",
+      "Inadequate external validation (3 compounds): A rates it as MAJOR-REVISION, B rates it as MINOR",
+      "Incorrect R² formula: A rates it as MINOR, B rates it as MINOR (no dispute here, but for completeness noted)",
+      "Covalent mechanism not modeled: unique to B, rate as MAJOR-REVISION; A does not mention",
+      "MLR test performance discrepancy: unique to A, rate as MAJOR-REVISION; B does not mention",
+      "RF hyperparameter error (min samples split = 1): unique to A, rate as MAJOR-REVISION; B does not mention",
+      "Gini importance misunderstanding: unique to A, rate as MINOR; B does not mention"
+    ],
+    "unique_to_a": [
+      "Feature selection may not have been nested within cross-validation (data leakage risk)",
+      "MLR model shows poor test generalization (train RMSE 0.16 vs test 0.56)",
+      "RF hyperparameter table includes invalid setting 'Min samples split = 1'",
+      "Gini importance explanation is conceptually incorrect",
+      "R² formula nonstandard and truncated in presentation",
+      "Only 7 of 13 predicted compounds were tested experimentally (selective validation concern)",
+      "LB-PaCS-MD not validated against free-energy benchmarks",
+      "Placeholder text and internal inconsistencies in manuscript",
+      "Multiple reporting errors (truncations, [DATE], [JOURNAL])"
+    ],
+    "unique_to_b": [
+      "No Q², R²_pred, CCC reported (Tropsha criteria not met) - A mentions robustness checks but not these specific metrics",
+      "Covalent inhibition mechanism not modeled in MD simulation (ebselen binds covalently to C145)",
+      "Antiviral data more explicitly described as inconsistent with dose-response (solubility issues explicitly noted)"
+    ]
+  },
+  "steelman_a": {
+    "steelman_for_other": "The strongest case for the other reviewer is that several problems are not merely weaknesses in rigor but strike directly at whether the paper’s headline conclusions are supportable at all.\n\n1) ANN metric contradictions can be framed as central-conclusion-breaking, not just sloppy reporting.\nThe manuscript’s core comparative claim is that the ANN is the best model and therefore was used to prioritize compounds. If the manuscript gives incompatible ANN performance values in different sections, the reader cannot know which model was actually selected, whether the reported model was reproduced, or whether the superiority claim is real. On a dataset of only 27 compounds, changing a few predictions can materially alter R²/RMSE and even reverse model ranking. Because model selection is the foundation for the claimed predictive discovery workflow, contradictory headline metrics can be argued to invalidate the central justification for using ANN at all unless corrected from raw results/code.\n\n2) The pIC50 issue can be argued as presumptively fatal unless the authors prove it is typographical.\nThe manuscript explicitly defines pIC50 as 1/IC50(M), which is not a harmless notation variant but a different target variable with radically different scale and meaning. If that definition reflects the actual preprocessing, then every fitted model, every coefficient, every error metric, and every prediction is based on the wrong endpoint. Since the QSAR/ML analysis is the paper’s engine, this would make the core analysis fundamentally broken. Under a strict reading of “as presented,” the paper currently asks readers to accept conclusions derived from an apparently invalid response transformation. That supports a retraction-level severity pending proof otherwise.\n\n3) The biological validation of P8 can be cast as incompatible with the paper’s practical claim.\nIf P8 leaves 64.5% enzyme activity at 100 µM, that is only ~35.5% inhibition at a very high concentration. For a paper claiming successful identification of a promising Mpro inhibitor via ML-guided design, this is extremely weak support. If no convincing dose-response IC50 is shown for the highlighted hit, then the paper’s main translational message — that the model identified a meaningful lead — is not supported by the actual experimental evidence. The other reviewer’s strongest severity argument is that the study’s central “success story” collapses if the nominated best compound is effectively weak/inactive by normal medicinal chemistry standards.\n\n4) The combination of tiny sample size, flexible models, weak validation, and selective prospective testing may collectively justify harsher severity than any single item alone.\nThe paper appears to use 27 compounds total, with 21 for training and 6 for test, while performing descriptor selection, hyperparameter tuning, model comparison, and then claiming prospective success. With such a small sample, even small reporting mistakes become central because the whole modeling exercise is near the edge of interpretability. If feature selection and tuning were not fully nested, or if favorable compounds were selectively advanced, then the reported predictive success could be mostly artifact. The other reviewer can argue that this is not just “suboptimal QSAR practice” but a setup where the claimed predictivity is too fragile to be believed.\n\n5) The antiviral claims may be overstated to the point of unsupported.\nThe manuscript title and narrative extend from enzyme inhibition to antiviral activity against SARS-CoV-2, yet the cell-based results seem confounded by solubility issues, unclear EC50 reporting, and non-monotonic behavior. If the antiviral evidence is not quantitatively interpretable, then the broader biological claim is unsupported. This strengthens the case that the paper overclaims beyond what the data can sustain.\n\nIn short, the strongest version of the other reviewer’s position is: the manuscript’s central chain of inference — correct activity transformation -> valid ANN superiority -> reliable prospective prediction -> experimentally supported hit -> biologically meaningful anti-SARS-CoV-2 activity — is broken at multiple key links, and at least two of those links (pIC50 definition and weak/possibly non-supportive hit validation) can be read as fatal under a strict severity standard.",
+    "severity_i_now_upgrade": [],
+    "severity_i_now_downgrade": [
+      "The pIC50-definition finding: I previously marked it RETRACTION-WORTHY, but on reflection the most defensible rating is MAJOR-REVISION unless there is affirmative evidence the wrong transformation was actually used rather than merely written incorrectly. As presented it is potentially fatal, but severity should track confirmed impact, and a typographical/methods-description error remains plausible.",
+      "The MLR 'predictively accurate and acceptable' language finding: I previously marked it MAJOR-REVISION, but this may be better classified as MINOR because it mainly concerns overstatement of one comparator model rather than the paper’s central ANN/P8 claim. It signals weak judgment, but by itself would not change the manuscript’s main conclusion if the rest were sound.",
+      "The external-validation-on-3-compounds finding: I previously marked it MAJOR-REVISION; I still think it is weak, but there is a case it is MINOR-to-MAJOR depending on how heavily the authors rely on it. If treated as merely supplemental support, its small size is not central enough on its own to warrant major severity.",
+      "The RF hyperparameter table 'min samples split = 1' finding: this could be MINOR rather than MAJOR-REVISION if it is just a typo in the table rather than a true implementation detail. It undermines reproducibility, but absent evidence the invalid value was actually used, it may not materially affect conclusions."
+    ],
+    "findings_i_still_defend": [
+      "ANN metric inconsistency = MAJOR-REVISION, not necessarily RETRACTION-WORTHY. I still think the contradiction is serious, but inconsistent reporting alone does not prove the analysis itself is invalid; it could be a manuscript assembly/reporting error correctable with raw outputs.",
+      "Tiny dataset + flexible RF/ANN + small holdout = MAJOR-REVISION. This remains one of the strongest criticisms because it plausibly changes model ranking and predictivity claims, but under the provided standard it does not by itself prove the conclusions cannot be supported.",
+      "Possible leakage in feature selection/tuning workflow = MAJOR-REVISION. If confirmed, it could strongly inflate performance; however, the manuscript’s lack of clarity is not yet proof that leakage occurred.",
+      "Insufficient safeguards against ANN overfitting = MAJOR-REVISION. This is central to trustworthiness of the predictive claim but not dispositive absent direct evidence of failure.",
+      "Inadequate QSAR validation standards/reporting = MAJOR-REVISION. Missing repeated CV, permutation tests, applicability domain, and stronger external diagnostics materially weaken predictive claims.",
+      "P8 single-concentration enzyme result = MAJOR-REVISION. I still would not call it automatically RETRACTION-WORTHY because a weak initial screen does not logically prove the compound lacks value if fuller dose-response or orthogonal data exist elsewhere or were omitted. But as presented it substantially under-supports the manuscript’s enthusiastic language.",
+      "Selective/unclear biological testing of predicted analogs = MAJOR-REVISION. This remains important because it may inflate apparent prospective success.",
+      "Unclear antiviral quantitative reporting = MAJOR-REVISION. The broad antiviral claim is not well supported as reported.",
+      "Target terminology overreach = MINOR. This is still mostly a wording/scope issue unless the antiviral claims are central and unsupported, in which case the broader claim should simply be narrowed.",
+      "Gini-importance explanation error = MINOR. This still reads as a conceptual/reporting mistake more than evidence the actual computation was wrong.",
+      "R² formula/reporting sloppiness = MINOR. Important for reproducibility, but not enough alone to alter conclusions.",
+      "LB-PaCS-MD and LigandScout interpretive overreach = MINOR. These are supportive mechanistic elements, not the basis of the central empirical claim."
+    ],
+    "new_errors_noticed": [
+      "The other reviewer’s own statement about the correct pIC50 formula includes a questionable parenthetical: if IC50 is already in molar units, pIC50 = -log10(IC50); there is no separate 'if using nM? = -log10(IC50 * 10^-9)' unless IC50 is numerically entered in nM and then converted to M. This does not affect the core criticism, but the precise wording matters.",
+      "A fresh severity distinction: the pIC50 issue may need to be split into two separate findings — (a) incorrect written definition of pIC50, and (b) evidence that the wrong transformation was actually used in modeling. Only (b) is clearly RETRACTION-WORTHY; (a) alone is MAJOR-REVISION.",
+      "The manuscript may conflate enzyme activity remaining with percent inhibition in a way that could mislead readers. If any text interprets 64.5% activity as 64.5% inhibition, that would be a substantive reporting error rather than merely weak potency.",
+      "There appears to be a broader reproducibility problem: multiple internal inconsistencies, placeholder text, invalid hyperparameter notation, and conflicting metrics together suggest the possibility that the computational workflow was not frozen/documented properly. That pattern is more serious than each isolated typo and could justify an umbrella MAJOR-REVISION finding on irreproducible methods reporting.",
+      "If the prospective selection from 13 predicted analogs to 7 tested compounds was non-random and not predeclared, this raises a stronger issue of selective outcome reporting/cherry-picking than I emphasized originally. Depending on the manuscript wording, that could warrant a more explicit MAJOR-REVISION finding.",
+      "Given ebselen chemistry, the computational binding narrative may be mechanistically mismatched if the main inhibitory mode is covalent while the simulations are non-covalent. I mentioned this only as minor mechanistic overreach, but if the paper uses the simulation to explain potency differences as though it captures the operative mechanism, that concern may be stronger than I initially rated."
+    ]
+  },
+  "steelman_b": {
+    "steelman_for_other": "The other reviewer's position is that several of my RETRACTION-WORTHY findings are too harsh and could reasonably be downgraded to MAJOR-REVISION. For the contradictory ANN metrics, these could be simple reporting errors or typographical inconsistencies rather than evidence that the model itself is unreproducible; many papers contain such discrepancies that are corrected during revision without invalidating the core findings. For the 64.5% activity remaining for P8, the other reviewer correctly notes that this is 'weak/modest inhibition' rather than definitively inactive — at 100 µM, 35% inhibition could still indicate real but weak binding, and the authors might have intended to claim 'moderate inhibition' rather than 'potent inhibition,' making this a rhetorical overstatement rather than a data impossibility. For the pIC50 formula error, the other reviewer explicitly acknowledges this could be a typographical mistake: 'If it is only a typographical error, major revision would still be required.' A reviewer dedicated to the other position would argue that the formula as written in the methods section might not reflect how the calculations were actually performed, and that authors should be given the benefit of the doubt that they used the standard -log10 transformation in practice. The other reviewer's broader point is that none of these errors definitively prove the conclusions are false — they substantially weaken the claims, but do not rise to the level of 'cannot be supported by the data as presented.' The other reviewer maintains that with corrections to metrics, clarification of the pIC50 formula, and toned-down language about P8, the paper's central workflow (QSAR → prediction → experimental validation) could still be partially salvageable, especially if the authors can show retrospective validation that the pIC50 was computed correctly.",
+    "severity_i_now_upgrade": [
+      "The MLR model showing train RMSE 0.16 vs test RMSE 0.56 (other reviewer's finding about weak generalization) — I originally rated this as captured within my small dataset concern, but the other reviewer properly highlights that this large train-test gap even for a linear model is a red flag for data quality and descriptor relevance. I now see this as more severe than I did, potentially MAJOR-REVISION at minimum.",
+      "The RF hyperparameter table including 'Min samples split = 1' — I overlooked this entirely. The other reviewer correctly identifies this as impossible in standard scikit-learn implementations. While I might not raise it to RETRACTION-WORTHY, it does undermine confidence in the entire ML methodology section more than I initially acknowledged. I now consider this MAJOR-REVISION.",
+      "The mismatch between target terminology (MPro inhibition vs antiviral claims) — I rated this MINOR, but the other reviewer's point that the title and broader claims imply antiviral evidence that is not adequately supported is stronger than I gave credit. This could be MAJOR-REVISION if the authors are overstating their findings in a way that misleads readers about the scope of the work."
+    ],
+    "severity_i_now_downgrade": [
+      "The contradictory ANN performance metrics (R² 0.92 vs 0.89, RMSE 0.09 vs 0.05) — I rated this RETRACTION-WORTHY, but the other reviewer makes a reasonable case that this could be a reporting error or confusion between training and test sets. If the authors can clarify which numbers correspond to which dataset, the core claim of a working ANN model might still stand. I now think this is MAJOR-REVISION, not RETRACTION-WORTHY.",
+      "The pIC50 formula error — I rated this RETRACTION-WORTHY, and the other reviewer agrees it would be RETRACTION-WORTHY if actually used. However, they correctly note that this could be a typo in the methods section rather than a computational error. Given that the pIC50 values reported (e.g., 5.5 for P8) are consistent with standard -log10 transformation (if IC50 ~3.2 µM), and not with 1/IC50 (which would give values on the order of 10^5-10^6), the actual calculations likely used the correct formula. I now downgrade this to MAJOR-REVISION, with the strong caveat that the authors must clarify and correct the formula.",
+      "The 64.5% activity remaining for P8 — I rated this RETRACTION-WORTHY, but the other reviewer's framing as 'weak/modest inhibition' rather than 'inactive' is fair. Many papers describe 30-40% inhibition at 100 µM as 'moderate' activity, and the authors' overstatement is a rhetorical issue rather than a data fabrication. I now downgrade this to MAJOR-REVISION, requiring toned-down conclusions and ideally dose-response data.",
+      "The incorrect R² formula — I rated this MINOR. The other reviewer is more concerned about it as part of a pattern of sloppy reporting. I still consider it MINOR because it's likely a typo in the manuscript rather than a computational error, but I acknowledge the other reviewer's point that it contributes to a pattern of reduced confidence."
+    ],
+    "findings_i_still_defend": [
+      "Small dataset (N=27) with high-dimensional descriptors and no nested CV or leakage safeguards — I rated this MAJOR-REVISION, and I continue to defend this rating. Even the other reviewer agrees this is MAJOR-REVISION. The dataset is too small for reliable ANN/RF training, and the lack of nested cross-validation for feature selection is a well-known source of overfitting that can invalidate predictive claims.",
+      "No external validation metrics beyond RMSE (Q², R²_pred, CCC absent) — I rated this MAJOR-REVISION and continue to defend it. The other reviewer's findings 6 and 7 echo this concern. This is a standard QSAR requirement, not optional.",
+      "The antiviral efficacy data lacking EC50 values and showing solubility issues — I rated this MAJOR-REVISION and continue to defend it. The other reviewer also flags this (finding 11). Without proper quantification, the antiviral claims are unsupported.",
+      "LB-PaCS-MD not modeling covalent inhibition — I rated this MAJOR-REVISION and continue to defend it. The other reviewer rates this MINOR (findings 15-16), but I believe the mechanistic claim is central to the paper's narrative about P8's binding mode. If the mechanism is covalent and the simulation treats it as non-covalent, the interaction energy and poses are likely irrelevant.",
+      "The external validation with only 3 compounds (RMSE=0.35) — I rated this MINOR, but the other reviewer upgrades it to MAJOR-REVISION (finding 6). I now agree with the other reviewer on this point and have moved it to my upgraded list above."
+    ],
+    "new_errors_noticed": [
+      "The RF hyperparameter 'Min samples split = 1' is impossible in scikit-learn — the other reviewer correctly identifies this as a technical impossibility. This suggests the reported hyperparameter grid is inaccurate, or the implementation is not standard. I missed this entirely.",
+      "The train-test split for the MLR model shows train RMSE 0.16 vs test RMSE 0.56 — I noted the small dataset concern but did not separately flag this specific discrepancy as evidence of weak generalization even for the simplest model. The other reviewer correctly highlights this as a signal that the dataset may not support any reliable QSAR model.",
+      "The mismatch between 13 predicted analogs and 7 tested compounds — I missed the selective-validation issue entirely. The other reviewer points out that if only 7 of 13 predictions were tested without clear selection criteria, this introduces confirmation bias. I should have flagged this as MAJOR-REVISION.",
+      "The manuscript's title and broader claims imply antiviral activity when only MPro inhibition data are available — I noted this in passing but did not include it as a formal finding. The other reviewer makes a strong point that this is an overstatement that could mislead readers.",
+      "The Gini importance interpretation error ('lowest is best') — I did not catch this. While it's likely a writing error rather than a computational error, it adds to the pattern of methodological confusion. I would rate this MINOR, but it's a new error I missed.",
+      "The LB-PaCS-MD analysis does not appear in the Methods section describing the simulation parameters — upon re-reading through the other reviewer's lens, the simulation methodology is incompletely described, making it difficult to assess whether the binding pathway sampling was valid. This is another missing methods detail I should have flagged."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "The manuscript has a cascade of methodological and reporting problems that collectively undermine its central claims: that an ANN QSAR model reliably identifies potent SARS-CoV-2 Mpro inhibitors. The most critical issue is the incorrect pIC50 formula as written, which — if applied as stated — would invalidate the entire QSAR analysis. Both reviewers initially rated this RETRACTION-WORTHY, but both also acknowledged during steelman exchange that it could be a typographical error (the reported pIC50 values are more consistent with -log10 than with 1/IC50). Since the paper as written presents a wrong formula without proof it was only a typo, this remains at least a severe error requiring urgent clarification. The contradictory ANN metrics, tiny dataset with flexible models, absent standard QSAR validation, and weak experimental validation of the best compound (P8 showing only ~35% inhibition at 100 μM) further erode confidence. No single issue beyond the pIC50 formula is unambiguously retraction-worthy after steelman scrutiny, but the accumulation of major issues means the paper's conclusions cannot be confidently accepted as presented.",
+    "findings": [
+      {
+        "finding": "The manuscript defines pIC50 as '1 / IC50(M)' instead of the standard -log10(IC50 in M). If this formula was actually used in the modeling, the entire QSAR response variable is wrong and all models, coefficients, and predictions are invalid.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.75,
+        "justification": "Both reviewers rated this RETRACTION-WORTHY initially. During steelman, both acknowledged it could be a typo — the reported pIC50 values (~5-6 range) are more consistent with -log10 than 1/IC50 (which would yield values ~10^5-10^6). However, as written in the manuscript, the formula is wrong, and the burden is on the authors to demonstrate the correct transformation was actually applied. If it was applied as written, the entire core analysis is fundamentally broken. The uncertainty about whether it is a typo vs. actual error prevents full confidence, but the severity of the consequence if real keeps this at RETRACTION-WORTHY with moderate-high confidence.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Contradictory ANN performance metrics: Abstract/early Results report training R² = 0.92 and test RMSE = 0.09, while later text reports training R² = 0.89 and test RMSE = 0.05. These are incompatible.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Review B initially rated RETRACTION-WORTHY but downgraded to MAJOR-REVISION during steelman, acknowledging these could be reporting/assembly errors. Review A rated MAJOR-REVISION throughout. On a 6-compound test set, such differences could reflect different models or splits, meaning the reader cannot determine which ANN was actually selected or whether its claimed superiority holds. This is serious but correctable if the authors can provide raw outputs. Not definitively retraction-worthy as the underlying analysis may still be intact.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The best predicted compound P8 shows only ~35.5% inhibition of Mpro at 100 μM (64.5% activity remaining), which is extremely weak by medicinal chemistry standards and does not support the paper's claims of 'notable inhibitory activity' or 'good potential candidate.'",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Review B initially rated RETRACTION-WORTHY but downgraded during steelman, acknowledging that weak inhibition is not the same as zero activity and that the paper's language is more of an overstatement than a data fabrication. Review A rated MAJOR-REVISION throughout. The experimental validation is the paper's central translational claim, and ~35% inhibition at 100 μM is far below standard lead thresholds (typically IC50 < 10 μM). Without dose-response IC50 data, the practical significance of the discovery claim is substantially unsupported. This is a major weakness but could potentially be addressed with additional experiments.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The QSAR models are built on only 27 compounds (21 train / 6 test) with flexible RF and ANN architectures (including a 4-(5-5-5)-1 ANN), creating severe overfitting risk. No nested cross-validation, y-scrambling/permutation tests, or applicability domain analysis is reported.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers consistently rated this MAJOR-REVISION and neither downgraded during steelman. With a 21-sample training set and a 3-hidden-layer ANN, performance estimates are highly unstable. Model ranking could easily change with a different split. The absence of standard overfitting safeguards (nested CV, permutation tests) means the reported performance is likely inflated. This plausibly changes whether any predictive power genuinely exists.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Feature selection appears to use Gini importance from RF without clear evidence that it was nested within cross-validation or confined to the training set, risking data leakage that would inflate test performance.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Primarily from Review A, with Review B implicitly agreeing via overfitting concerns. On a dataset this small, information leakage from including test compounds in feature selection could strongly alter reported metrics. The manuscript does not explicitly demonstrate a leakage-free workflow.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "No standard QSAR external validation metrics (Q², R²_pred, CCC, concordance correlation) are reported. The external validation uses only 3 compounds with RMSE = 0.35.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers flagged this. Review B emphasized the absence of Tropsha criteria; Review A emphasized the inadequacy of 3-compound external validation. Three data points cannot establish robust external predictivity. The absence of cross-validated Q² means overfitting cannot be ruled out. These are standard QSAR requirements, not optional enhancements.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "Only 7 of 13 predicted analogs were tested experimentally, and the selection rationale is not clearly specified, raising concerns about selective/cherry-picked validation.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "From Review A, with Review B acknowledging during steelman that they missed this entirely. If only favorable or convenient compounds were advanced to testing, apparent prospective success is inflated. The paper's discovery narrative depends on transparent, ideally pre-specified, validation.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The antiviral efficacy data lack clear EC50 values, show non-monotonic dose-response behavior, and the authors themselves note solubility problems. The antiviral claims are not adequately quantified.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers flagged this consistently as MAJOR-REVISION. Without proper EC50 quantification and with acknowledged solubility confounds, the broader claim of antiviral activity against SARS-CoV-2 (as stated in the title) is not supported by the data as presented.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The LB-PaCS-MD simulation treats P8 as a non-covalent ligand, but ebselen derivatives are known to inhibit Mpro via covalent Se-S bond formation with C145. The binding energy and poses from non-covalent simulations may not reflect the actual inhibitory mechanism.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "From Review B, with Review A acknowledging during steelman that this concern is stronger than initially rated if the paper uses the simulation to explain potency. If the operative mechanism is covalent and the simulation is non-covalent, the mechanistic conclusions about binding mode are potentially misleading.",
+        "source": "prover_b",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The MLR model shows train RMSE 0.16 vs test RMSE 0.56, indicating poor generalization even for the simplest model, which signals that the dataset may not support reliable structure-activity inference for any model.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "From Review A, acknowledged by Review B during steelman as a finding they should have flagged. A 3.5-fold train-test RMSE gap in a linear model is a red flag for data quality, descriptor relevance, or split instability. It undermines confidence not just in MLR but in the entire modeling exercise.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The RF hyperparameter table includes 'Min samples split = 1', which is not a valid setting in standard scikit-learn implementations, suggesting the reported methodology may not accurately reflect the actual implementation.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.7,
+        "justification": "From Review A. Initially rated MAJOR-REVISION but downgraded during steelman as potentially just a table typo rather than an implementation error. It undermines reproducibility but absent evidence the invalid setting was actually used, its impact on conclusions is uncertain.",
+        "source": "prover_a",
+        "survived_steelman": false
+      },
+      {
+        "finding": "The Gini importance explanation states that 0 is 'the lowest and best possible importance,' which is conceptually incorrect (higher importance = more useful feature).",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "From Review A, acknowledged by Review B during steelman. This is a methodological explanation error suggesting misunderstanding of the metric, but does not necessarily mean the computations were wrong if the code selected features with highest importance.",
+        "source": "prover_a",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The R² formula as written is nonstandard and possibly incorrect, and the accompanying text appears truncated.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "Both reviewers rated this MINOR consistently. Likely a typographical/formatting error rather than a computational one, but it hampers reproducibility and contributes to a broader pattern of sloppy reporting.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The title and several statements broaden the scope from Mpro enzymatic inhibition to antiviral inhibitory activity against SARS-CoV-2, which overstates the evidence.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "From Review A, with Review B acknowledging during steelman that this is stronger than they initially rated. However, it remains primarily a framing/scope issue that should be corrected but does not invalidate the actual data.",
+        "source": "both",
+        "survived_steelman": true
+      },
+      {
+        "finding": "The manuscript contains multiple placeholder text items ([DATE], [JOURNAL]), truncations, and internal inconsistencies that reduce confidence in reporting accuracy and reproducibility.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "From Review A. These individually are minor, but collectively they suggest the manuscript was not carefully finalized. They contribute to the overall pattern of reduced confidence in the accuracy of methodological reporting.",
+        "source": "prover_a",
+        "survived_steelman": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 38372,
+    "duration_s": 222.15,
+    "n_api_calls": 6,
+    "cost_usd": 0.4743,
+    "total_input_tokens": 43365,
+    "total_output_tokens": 11671,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 10194,
+        "output_tokens": 2132,
+        "cost_usd": 0.046805,
+        "duration_s": 47.52,
+        "label": "10.1038_s41598-025-91235-1/gd/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 10002,
+        "output_tokens": 1658,
+        "cost_usd": 0.00452434,
+        "duration_s": 26.81,
+        "label": "10.1038_s41598-025-91235-1/gd/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4133,
+        "output_tokens": 894,
+        "cost_usd": 0.0020993100000000005,
+        "duration_s": 14.03,
+        "label": "10.1038_s41598-025-91235-1/gd/judge"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4326,
+        "output_tokens": 2034,
+        "cost_usd": 0.031155,
+        "duration_s": 41.21,
+        "label": "10.1038_s41598-025-91235-1/gd/steelman_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4361,
+        "output_tokens": 1870,
+        "cost_usd": 0.00323447,
+        "duration_s": 30.24,
+        "label": "10.1038_s41598-025-91235-1/gd/steelman_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 10349,
+        "output_tokens": 3083,
+        "cost_usd": 0.38646,
+        "duration_s": 62.33,
+        "label": "10.1038_s41598-025-91235-1/gd/arbiter"
+      }
+    ]
+  }
+}

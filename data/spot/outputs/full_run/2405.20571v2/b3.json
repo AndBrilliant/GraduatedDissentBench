@@ -1,0 +1,341 @@
+{
+  "condition": "B3",
+  "paper_id": "2405.20571v2",
+  "verdict": "flagged",
+  "confidence": 0.97,
+  "reasoning": "Both reviewers independently identify the same fundamental flaw: Lemma 4.5's proof conflates conditioning on {S_n ∈ D} with conditioning on the full survival event {S_1 ∈ D, ..., S_n ∈ D}, and this lemma is indispensable for deriving the paper's central result (Theorem 2.1). Both reviewers also flag that Theorem 2.1's explicit eigenvalue formula — the spatial average of the one-step escape probability — is not the principal eigenvalue of the killed semigroup's generator in general. Reviewer A provides an additional structural counterexample (disconnected domains). The cascade of errors from Lemma 4.4 → Lemma 4.5 → Theorem 2.1 → Corollary 2.2 (Faber–Krahn) → Theorem 2.3 means the paper's entire chain of principal results is unsupported. While some individual gaps (sign conventions, incomplete conditions, notation) might be reparable, the core derivation path is fundamentally broken in multiple places simultaneously, and the claimed formula itself appears to be false for general bounded open sets.",
+  "findings": [
+    {
+      "finding": "Lemma 4.5 is incorrectly proved: the proof conflates conditioning on {S_n ∈ D} with conditioning on the full path survival event ∩_{k=1}^n {S_k ∈ D}. The conditional distribution of S_n given the entire path stays in D is not uniform on D and depends on path history. The bounded convergence theorem is applied to a ratio whose denominator involves the full survival event, not merely the marginal event {S_n ∈ D}. The claimed uniform limit is unsubstantiated.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.97,
+      "justification": "Both reviewers independently identify this as the critical error. Lemma 4.5 is the key technical input converting the jump-chain survival probabilities into the explicit eigenvalue formula of Theorem 2.1. Without it, the entire derivation collapses. The error is not a gap that can be filled by adding a sentence — the conditional distribution given full survival is fundamentally different from the conditional distribution given the marginal event, especially for bounded jumps.",
+      "source": "both"
+    },
+    {
+      "finding": "Theorem 2.1's explicit formula λ_1^X(D) = (r/|D|) ∫_D ∫_{D^c} j(y−x) dy dx is the spatial average of the one-step escape rate, not the principal eigenvalue of the killed generator. The generator of the killed compound Poisson semigroup is a nonlocal integral operator with spatially varying killing rate r∫_{D^c} j(y−x) dy, whose principal eigenvalue is not generally equal to the spatial average of this rate. A counterexample structure exists: for domains with weakly connected components, the principal eigenvalue is governed by eigenfunction localization, not the global average.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.93,
+      "justification": "Reviewer A provides both the generator calculation and a counterexample argument showing the formula is likely false in general. The averaging over D produces a quantity that does not coincide with the principal eigenvalue of a nontrivial integral operator except in special (e.g., constant-kernel-on-D) cases. This is the paper's central theorem.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Lemma 4.4's proof contains a scaling error and an incomplete local limit theorem argument. The CLT-based rescaling by 1/√n shrinks D to a point, so the approximation j_n(v/σ√n) ≈ γ(0) only shows the density near 0 dominates, not that the conditional distribution on D becomes uniform. The missing (σ√n)^{-d} normalization factor is dropped without justification. Uniformity in x is claimed but not established.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers flag this lemma. Reviewer A identifies a fatal scaling error (missing normalization factor); Reviewer B identifies the conceptual flaw that the CLT-based argument does not apply in the large deviations regime relevant to {S_n ∈ D} for fixed bounded D. This lemma feeds directly into Lemma 4.5 and hence Theorem 2.1. While a proper local limit theorem might salvage the statement, the proof as written is fundamentally flawed.",
+      "source": "both"
+    },
+    {
+      "finding": "The passage from Lemma 4.5 to uniform bounds on A(x,n,D) in the proof of Theorem 2.1 is not justified. The product decomposition of survival probabilities involves conditional probabilities that depend on path history, not just the current position. Uniform convergence of each factor (even if Lemma 4.5 were correct) does not automatically yield the claimed (α±ε)^{n−N+1} bounds uniformly over all paths and starting points.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers identify this gap. It is downstream of the Lemma 4.5 error but represents an independent logical gap: even a corrected Lemma 4.5 would need additional uniformity arguments to justify the product bound. This could potentially be repaired but requires substantial new work.",
+      "source": "both"
+    },
+    {
+      "finding": "The spectral setup has a sign inconsistency: the generator is described as non-positive definite with eigenvalues λ_n > 0 satisfying both 𝓛φ_n = λ_n φ_n and P_t^D φ_n = e^{-tλ_n} φ_n. These are mutually inconsistent (a non-positive operator with positive eigenvalues cannot generate a semigroup with exponentially decaying eigenvalues in this way).",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "This is likely a sign convention error that could be fixed, but as written it creates ambiguity about which operator's eigenvalues are being computed and whether the formulas are correct. It affects the interpretation of several derivations.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Equation (3.2), λ_1^Y(D) = −lim_{t→∞} log Q_D^Y(t)/t, is used without verifying that the coefficient ∫_D φ_1 dx is nonzero. The spectral expansion Q_D^Y(t) = Σ e^{−tλ_n}(∫_D φ_n)^2 yields the claimed limit only if the leading term has nonzero coefficient.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "For killed semigroups of symmetric processes, the principal eigenfunction is typically strictly positive in D, making ∫_D φ_1 > 0, but this needs to be established under the paper's assumptions. Likely fixable but not addressed.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Corollary 2.2 (Faber–Krahn inequality: balls uniquely minimize the principal eigenvalue among domains of given volume) depends entirely on Theorem 2.1. Since the theorem's formula is unsupported, the Faber–Krahn result is also unsupported. The rearrangement argument at most proves an inequality for the averaged escape integral, not for the principal eigenvalue.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.92,
+      "justification": "This is a central advertised result of the paper. Its validity is entirely derivative of Theorem 2.1, which is itself unsupported.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Theorem 2.3 is incompletely stated in the manuscript: the equivalence conditions are missing their actual items. Additionally, there are notation inconsistencies (A vs 𝒜, D vs E) throughout the equality-case analysis.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "A theorem whose statement is incomplete cannot be evaluated. This may be a transcription error but prevents assessment of the result's correctness.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Condition 4.1 appears incomplete (finite variance and integrability of characteristic function powers are used in Lemma 4.3 but not stated in the condition). The assumptions needed for Theorem 2.1 are therefore underspecified.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "Missing assumptions prevent verification of whether the supporting lemmas actually apply under the stated hypotheses. Likely fixable but requires explicit correction.",
+      "source": "both"
+    },
+    {
+      "finding": "Proposition 4.6's claim about invariance under linear isomorphisms uses an incorrect pushforward density formula (writing j̃ = T ∘ j instead of j̃(y) = j(T⁻¹y)/|det T|).",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.72,
+      "justification": "This affects the equality-case argument but could be repaired with the correct formula. Does not independently invalidate the main results.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Pervasive editorial defects: unfinished proof segments, stray '[AUTHOR_1]' markers, incomplete sentences, numbered fragments inserted mid-section.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "These do not independently change conclusions but severely impede verification and suggest the manuscript was not ready for review.",
+      "source": "both"
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 4,
+    "MAJOR-REVISION": 6,
+    "MINOR": 1
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.98,
+    "reasoning": "The manuscript contains multiple serious methodological/mathematical defects in the core derivation of the principal eigenvalue formula and in several supporting arguments. Most importantly, the stated explicit formula in Theorem 2.1 is inconsistent with a direct small-time generator calculation for killed compound Poisson processes, which yields a pointwise killing rate r∫_{D^c}j(y-x)dy rather than its spatial average. For general domains this average is not the principal eigenvalue. In addition, key lemmas used to justify the theorem are either incorrectly proved or state implausible limits, and there are major logical gaps and internal inconsistencies in the spectral/eigenvalue setup. These issues affect the paper’s central conclusions, including the Faber–Krahn statement derived from the explicit eigenvalue formula.",
+    "findings": [
+      {
+        "finding": "Theorem 2.1 gives an incorrect explicit formula for the principal eigenvalue. For the killed compound Poisson semigroup, a first-order expansion gives P_t^D f(x)=f(x)-rt(1-∫_D j(y-x)dy)f(x)+rt∫_D j(y-x)f(y)dy+o(t), so the generator is a nonlocal integral operator, not multiplication by the spatially averaged escape rate. The claimed formula λ_1^X(D)=(r/|D|)∫_D∫_{D^c}j(y-x)dydx equals only the average one-step escape probability, not generally the top eigenvalue of this operator.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This is the central theorem and foundation for the paper’s main conclusions. If the formula is false, the claimed explicit eigenvalue expression and the derived uniqueness/minimization statements are unsupported."
+      },
+      {
+        "finding": "A direct counterexample structure exists to Theorem 2.1: if D has two weakly connected components separated beyond typical jump range, the principal eigenvalue is governed by the best component/eigenfunction localization, while the manuscript’s formula averages escape rates over all of D. Averaging cannot generally equal the principal eigenvalue of a positive integral operator on disconnected or inhomogeneous domains.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This shows the theorem is not just insufficiently proved but very likely false in general. It invalidates the universality claim for bounded open sets."
+      },
+      {
+        "finding": "Equation/claim (3.2), λ_1^Y(D)=-lim_{t→∞}log Q_D^Y(t)/t, is used without ensuring that the coefficient of the first eigenmode in Q_D^Y(t) is nonzero. Since Q_D^Y(t)=∑ e^{-tλ_n}(∫_D φ_n)^2, the limit equals λ_1 only if ∫_D φ_1≠0, typically relying on positivity of the principal eigenfunction. The manuscript does not establish this under its abstract setup.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the leading coefficient vanishes under the stated general assumptions, the asymptotic identification of λ_1 from Q_D fails. This would undermine the route from spectral heat content to the principal eigenvalue, though it may be repairable under stronger assumptions."
+      },
+      {
+        "finding": "The spectral setup has a sign inconsistency. The text says the generator is non-positive definite and self-adjoint, but then writes 𝓛φ_n^Y=λ_n^Y(D)φ_n^Y while also P_t^Dφ_n^Y=e^{-tλ_n^Y(D)}φ_n^Y with λ_n treated as positive. For a killed symmetric semigroup one typically has 𝓛φ_n=-λ_nφ_n. As written, the eigenvalue convention is internally inconsistent.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is a substantial mathematical inconsistency in the operator formulation. It may be a sign convention issue, but as written it compromises correctness of several derivations and interpretations."
+      },
+      {
+        "finding": "Lemma 4.4 is not correctly derived. After change of variables, the density of S_n should involve the factor (σ√n)^(-d) multiplying j_n(v/(σ√n)); in the final displayed ratio this factor is dropped from both numerator and denominator without explanation. The proof then compares integrals to |D|γ(0), but because of the missing normalization the denominator should scale like |D|γ(0)(σ√n)^(-d), not a positive constant.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "Lemma 4.4 is a key technical input for Theorem 2.1, and the proof contains a fatal scaling error. The claimed conditional convergence is not established by the presented argument."
+      },
+      {
+        "finding": "Lemma 4.4 states convergence of the conditional law of S_n given only {S_n∈D} to the uniform law on D. Even if plausible under local limit assumptions, the proof uses only a CLT around 0 and does not justify the needed ratio asymptotics uniformly in x on translated shrinking windows. The argument is incomplete and relies on replacing j_n(v/(σ√n)) by γ(0) without proper local limit control for the unnormalized densities of S_n.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is a serious gap in a main supporting lemma. It may be fixable with a proper local limit theorem, but not as written."
+      },
+      {
+        "finding": "Lemma 4.5 is essentially unproved and incorrectly justified. The proof invokes the strong Markov property for the discrete jump chain S_n, then inserts an unexplained placeholder '[AUTHOR_1]' and claims a limit by conditioning on S_n∈D, but the event in question is conditioning on the whole path staying in D up to time n. Convergence of the law of S_n given {S_n∈D} does not imply convergence given {S_1,…,S_n∈D}.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This lemma is indispensable to the proof of Theorem 2.1. As stated, the proof does not establish the result, and the asserted conditioning change is methodologically invalid."
+      },
+      {
+        "finding": "In the proof of Theorem 2.1, inequality (4.1) is claimed to hold 'for all n≥N and x∈D', but Lemma 4.5 concerns a conditional probability for the chain started at x, while the factors in the product decomposition depend on the evolving conditional law after survival up to time k−1, not uniformly on the initial x in the simplistic way used. The passage from Lemma 4.5 to a uniform product bound is not rigorously justified.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is a substantive gap in the asymptotic bounds for Q_D^X(t). It could alter the claimed exponential rate and thus the principal eigenvalue formula."
+      },
+      {
+        "finding": "The manuscript repeatedly conflates different notions of 'staying inside D': in the jump decomposition, survival for a compound Poisson process indeed means all post-jump positions up to N_t are in D because paths are constant between jumps. However, later conditional distributions are treated as if conditioning on S_n∈D were equivalent to conditioning on the whole event ∩_{k≤n}{S_k∈D}. This is false and central to Lemma 4.5 and Theorem 2.1.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This confusion directly affects the main asymptotic argument. If conditioning is mishandled, the principal conclusion is unsupported."
+      },
+      {
+        "finding": "Corollary 2.2 claims uniqueness of balls for minimization of λ_1^X(D) from strict rearrangement using Theorem 2.1. Since the theorem itself is unsupported/incorrect, the uniqueness statement for the principal eigenvalue is not established by the paper. At most, the rearrangement proves an inequality for the averaged one-step escape integral.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "A central advertised conclusion depends entirely on the invalid explicit formula. The paper does not independently prove the eigenvalue Faber–Krahn result."
+      },
+      {
+        "finding": "Theorem 2.3 is incomplete as stated in the manuscript excerpt: the equivalence lists after 'If |A|<2^d|D|, then the followings are equivalent:' and for the second regime are missing their actual items. This is a major reporting defect in a principal theorem.",
+        "severity": "MAJOR-REVISION",
+        "justification": "A theorem cannot be assessed or verified if its statement is incomplete. This may be a transcription issue, but as presented it prevents methodological evaluation."
+      },
+      {
+        "finding": "There are multiple notation and formula inconsistencies in Theorem 2.3 and surrounding text: switches between A and 𝒜, D and E, and use of '|𝒜|' where only A was defined. Proposition 4.6 states assumptions involving E although the theorem concerns D. These inconsistencies make the mathematical claims ambiguous.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Ambiguous notation in theorem statements and proofs can change meaning and obstruct verification, especially in equality-characterization arguments."
+      },
+      {
+        "finding": "The claimed invariance of spectral heat content under linear isomorphisms is misstated. The transformed jump density is written as 'tilde j = T ∘ j', which is not the correct pushforward density formula. For a linear map T with |det T|=1, one needs \\tilde j(y)=j(T^{-1}y); more generally a Jacobian factor appears. As written, the proof is mathematically incorrect.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This affects Proposition 4.6's equality-case argument. It may be repairable, but the present argument is wrong."
+      },
+      {
+        "finding": "In Proposition 4.7, the step 'without loss of generality, assume x=0 and 0∈D' is not justified for a statement about A(x,n,D) integrated over x∈D. Translation invariance can remove one of these conditions but must be handled carefully, especially since D−D⊂A is translation-invariant whereas x is an integration variable.",
+        "severity": "MINOR",
+        "justification": "This is a localized proof-writing flaw and likely repairable, but it reflects weak rigor in a key proposition."
+      },
+      {
+        "finding": "Proposition 4.7 contains an invalid simplification in the conditional probability computation: after integrating over y_1,…,y_{k-1}, the expression still depends on y_{k-1}, yet the proof writes '= |D-y_{k-1}|/|A| = |D|/|A|'. The dependence on y_{k-1} disappears only after using D−y_{k-1}⊂A and translation invariance of Lebesgue measure inside the integral; the displayed equality is mathematically malformed.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The intended result may be salvageable, but the current derivation is incorrect and non-rigorous in a central proposition."
+      },
+      {
+        "finding": "The manuscript assumes existence of discrete spectra/transition densities for the killed semigroup in several places, but Theorem 2.1 itself is stated under 'Condition 4.1' only, which in the excerpt does not include these spectral assumptions. Yet the theorem uses (3.2), which depends on the spectral representation. The assumptions needed for the theorem are therefore incomplete or inconsistent.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The theorem may not even be well-posed under the stated assumptions. This is a substantial methodological omission."
+      },
+      {
+        "finding": "Condition 4.1 appears incomplete in the excerpt ('1. J_1 has a symmetric probability density function j(x).' followed by references to condition (2) in (4.1)). The later use of finite variance and integrability of powers of the characteristic function in Lemma 4.3 suggests missing assumptions crucial to the argument.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Missing assumptions can invalidate the claimed scope of the main theorem and prevent checking whether the supporting lemmas apply."
+      },
+      {
+        "finding": "There are pervasive editorial/proof-integrity issues: unfinished proof segments, inserted numbered fragments 1–13 in the middle of Section 4, a stray '[AUTHOR_1]' marker, and incomplete sentences. These defects are severe enough to obstruct verification of the mathematical arguments.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Even if some results were salvageable, the manuscript in its present form is not methodologically reliable or reproducible."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.98,
+    "reasoning": "The manuscript contains a critical mathematical error in Lemma 4.5 that invalidates the central result (Theorem 2.1) and all subsequent consequences (Corollary 2.2, Theorem 2.3). The claimed limit of the conditional probability does not follow from the arguments provided, and the reasoning conflates two distinct conditioning events in a way that does not hold for compound Poisson processes with bounded jumps. This error is fundamental to the derivation of the principal eigenvalue expression, rendering the core innovation unsupported.",
+    "findings": [
+      {
+        "finding": "Lemma 4.5 claims that lim_{n→∞} P_x(S_{n+1} ∈ D | ∩_{k=1}^n {S_k ∈ D}) = (1/|D|) ∫_D P_z(J_1 ∈ D) dz, with uniform convergence. The proof incorrectly uses the bounded convergence theorem on a ratio of probabilities where the denominator does not cancel in the claimed way. Specifically, the step 'as it is conditioned on the event S_n ∈ D in the numerator' is ambiguous: the conditional probability P_x(S_{n+1} ∈ D | ∩_{k=1}^n {S_k ∈ D}) = E_x[ P_{S_n}(J_{n+1} ∈ D) ; ∩_{k=1}^n {S_k ∈ D} ] / P_x(∩_{k=1}^n {S_k ∈ D}). To apply Lemma 4.4, one needs convergence of P_{S_n}(J_{n+1} ∈ D) conditional on S_n ∈ D, but the expectation is over the joint event that all S_k ∈ D for k=1..n, not just S_n ∈ D. The limit of P_{S_n}(J_{n+1} ∈ D) is taken by Lemma 4.4 uniformly in S_n, but the conditional distribution of S_n given the entire history ∩_{k=1}^n {S_k ∈ D} is not uniform on D (it depends on the path). The statement that the limit equals the naive average over D is unsubstantiated; the conditional distribution of S_n given the entire path constraint may be highly non-uniform, especially for bounded jumps. The proof does not address this dependency, and the bounded convergence theorem is applied incorrectly because the function inside the expectation depends on n through the event structure, not just through the random variable S_n.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This error directly undermines Theorem 2.1, which depends on Lemma 4.5 to derive the principal eigenvalue expression. Without a correct limit for the conditional survival probability, the entire eigenvalue formula is unproven. All subsequent results (Corollary 2.2, Theorem 2.3) rely on Theorem 2.1 or its implications, so the paper's central conclusions are not supported by the data/methods as presented."
+      },
+      {
+        "finding": "Lemma 4.4 attempts to show that the conditional distribution of S_n given S_n ∈ D converges to uniform, using a CLT-based argument. However, the proof assumes that the density of S_n/√n converges to a normal, but the rescaling by 1/√n is inappropriate when D is bounded: as n→∞, the event S_n ∈ D becomes exponentially rare (large deviations regime), and the CLT does not apply to the conditional distribution on a fixed compact set. The rescaling used (v/σ√n) shrinks D to a point, so the convergence to uniform is claimed on a set that collapses to zero measure; the argument fails to properly account for the fact that the conditional distribution of S_n given S_n ∈ D does not, in general, become uniform simply because the unconditional distribution spreads out. In particular, the step approximating j_n(v/σ√n) by γ(0) ignores that for v in D (fixed), v/σ√n → 0, so the argument only shows that the density at 0 matters, not that the conditional distribution is uniform. Moreover, the 'uniform in x' claim is not proven; the provided bound uses sup over D-D, but the integrand involves 1_D(x+v), and the supremum over v∈D-x depends on x. The reasoning is flawed and the lemma is not established.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Lemma 4.4 is used to justify the limit in Lemma 4.5. Even if Lemma 4.5 could be fixed, the failure to properly prove the uniform convergence of the conditional distribution to uniform prevents any rigorous derivation of the eigenvalue formula. The paper's central technique depends on this lemma, so a major revision would be needed to either correct it or find an alternative approach."
+      },
+      {
+        "finding": "The paper claims in Section 4 (Proof of Theorem 2.1) that from Lemma 4.5 one obtains bounds on A(x,n,D) as (α±ε)^{n-N+1} for n≥N, uniformly in x. However, Lemma 4.5 only gives a limit for the last conditional probability given the entire history, not a uniform bound for all n. The step where the product is replaced by (α+ε)^{n-N+1} uses a simple multiplicative bound on conditional probabilities, but these probabilities themselves depend on the specific path history; the claimed uniform bound does not follow from pointwise convergence of each factor. The argument would require an ε that works uniformly over all paths, which is not justified.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Even if Lemma 4.5 were correct, the derivation of the bounds on A(x,n,D) for all n≥N requires uniformity that is not established. The proof of the eigenvalue formula (the limit of log Q/t) relies on these bounds to sandwich the limit; without rigorous bounds, the formula is unsubstantiated."
+      },
+      {
+        "finding": "In Proposition 4.6 and Proposition 4.7, the proof that equality of spectral heat contents for some t>0 implies equality for all n in the jump decomposition (i.e., ∫_D A(x,n,D)dx = ∫_{D^*} A^*(x,n,D^*)dx) is not fully justified. The spectral heat content equality for one t>0 does not, in general, force equality of each term in the series expansion in t (the powers (rt)^n/n! are linearly independent as functions of t only if we have equality of coefficients for all n, but here the series involves infinite sums and the claim that equality of the full sum for one nonzero t implies equality of each term is not generally true unless one has analyticity and the series converges for all t; however, the functions e^{-rt}(rt)^n/n! are not linearly independent on a single interval—they form a basis, but one would need equality for all t in an interval to deduce coefficient equality. The paper's argument implicitly assumes this without justification.",
+        "severity": "MINOR",
+        "justification": "This does not directly invalidate the main result if the earlier errors are fixed, but it represents a gap in the proof that could affect the uniqueness claims. It could be corrected by a more careful analytic argument (e.g., using the Laplace transform in t)."
+      },
+      {
+        "finding": "Minor reporting issues: The proof of Lemma 4.4 contains several notational inconsistencies (e.g., missing dx in integrals, undefined E in the statement 'uniform for all x ∈ E', and a reference to Lemma 4.3 which requires Var(J1)<∞ but this is not stated in Condition 4.1).",
+        "severity": "MINOR",
+        "justification": "These issues do not affect the central conclusions but reflect sloppiness that should be corrected during revision."
+      }
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.97,
+    "reasoning": "Both reviewers independently identify the same fundamental flaw: Lemma 4.5's proof conflates conditioning on {S_n ∈ D} with conditioning on the full survival event {S_1 ∈ D, ..., S_n ∈ D}, and this lemma is indispensable for deriving the paper's central result (Theorem 2.1). Both reviewers also flag that Theorem 2.1's explicit eigenvalue formula — the spatial average of the one-step escape probability — is not the principal eigenvalue of the killed semigroup's generator in general. Reviewer A provides an additional structural counterexample (disconnected domains). The cascade of errors from Lemma 4.4 → Lemma 4.5 → Theorem 2.1 → Corollary 2.2 (Faber–Krahn) → Theorem 2.3 means the paper's entire chain of principal results is unsupported. While some individual gaps (sign conventions, incomplete conditions, notation) might be reparable, the core derivation path is fundamentally broken in multiple places simultaneously, and the claimed formula itself appears to be false for general bounded open sets.",
+    "findings": [
+      {
+        "finding": "Lemma 4.5 is incorrectly proved: the proof conflates conditioning on {S_n ∈ D} with conditioning on the full path survival event ∩_{k=1}^n {S_k ∈ D}. The conditional distribution of S_n given the entire path stays in D is not uniform on D and depends on path history. The bounded convergence theorem is applied to a ratio whose denominator involves the full survival event, not merely the marginal event {S_n ∈ D}. The claimed uniform limit is unsubstantiated.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.97,
+        "justification": "Both reviewers independently identify this as the critical error. Lemma 4.5 is the key technical input converting the jump-chain survival probabilities into the explicit eigenvalue formula of Theorem 2.1. Without it, the entire derivation collapses. The error is not a gap that can be filled by adding a sentence — the conditional distribution given full survival is fundamentally different from the conditional distribution given the marginal event, especially for bounded jumps.",
+        "source": "both"
+      },
+      {
+        "finding": "Theorem 2.1's explicit formula λ_1^X(D) = (r/|D|) ∫_D ∫_{D^c} j(y−x) dy dx is the spatial average of the one-step escape rate, not the principal eigenvalue of the killed generator. The generator of the killed compound Poisson semigroup is a nonlocal integral operator with spatially varying killing rate r∫_{D^c} j(y−x) dy, whose principal eigenvalue is not generally equal to the spatial average of this rate. A counterexample structure exists: for domains with weakly connected components, the principal eigenvalue is governed by eigenfunction localization, not the global average.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.93,
+        "justification": "Reviewer A provides both the generator calculation and a counterexample argument showing the formula is likely false in general. The averaging over D produces a quantity that does not coincide with the principal eigenvalue of a nontrivial integral operator except in special (e.g., constant-kernel-on-D) cases. This is the paper's central theorem.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Lemma 4.4's proof contains a scaling error and an incomplete local limit theorem argument. The CLT-based rescaling by 1/√n shrinks D to a point, so the approximation j_n(v/σ√n) ≈ γ(0) only shows the density near 0 dominates, not that the conditional distribution on D becomes uniform. The missing (σ√n)^{-d} normalization factor is dropped without justification. Uniformity in x is claimed but not established.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.88,
+        "justification": "Both reviewers flag this lemma. Reviewer A identifies a fatal scaling error (missing normalization factor); Reviewer B identifies the conceptual flaw that the CLT-based argument does not apply in the large deviations regime relevant to {S_n ∈ D} for fixed bounded D. This lemma feeds directly into Lemma 4.5 and hence Theorem 2.1. While a proper local limit theorem might salvage the statement, the proof as written is fundamentally flawed.",
+        "source": "both"
+      },
+      {
+        "finding": "The passage from Lemma 4.5 to uniform bounds on A(x,n,D) in the proof of Theorem 2.1 is not justified. The product decomposition of survival probabilities involves conditional probabilities that depend on path history, not just the current position. Uniform convergence of each factor (even if Lemma 4.5 were correct) does not automatically yield the claimed (α±ε)^{n−N+1} bounds uniformly over all paths and starting points.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers identify this gap. It is downstream of the Lemma 4.5 error but represents an independent logical gap: even a corrected Lemma 4.5 would need additional uniformity arguments to justify the product bound. This could potentially be repaired but requires substantial new work.",
+        "source": "both"
+      },
+      {
+        "finding": "The spectral setup has a sign inconsistency: the generator is described as non-positive definite with eigenvalues λ_n > 0 satisfying both 𝓛φ_n = λ_n φ_n and P_t^D φ_n = e^{-tλ_n} φ_n. These are mutually inconsistent (a non-positive operator with positive eigenvalues cannot generate a semigroup with exponentially decaying eigenvalues in this way).",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "This is likely a sign convention error that could be fixed, but as written it creates ambiguity about which operator's eigenvalues are being computed and whether the formulas are correct. It affects the interpretation of several derivations.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Equation (3.2), λ_1^Y(D) = −lim_{t→∞} log Q_D^Y(t)/t, is used without verifying that the coefficient ∫_D φ_1 dx is nonzero. The spectral expansion Q_D^Y(t) = Σ e^{−tλ_n}(∫_D φ_n)^2 yields the claimed limit only if the leading term has nonzero coefficient.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.78,
+        "justification": "For killed semigroups of symmetric processes, the principal eigenfunction is typically strictly positive in D, making ∫_D φ_1 > 0, but this needs to be established under the paper's assumptions. Likely fixable but not addressed.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Corollary 2.2 (Faber–Krahn inequality: balls uniquely minimize the principal eigenvalue among domains of given volume) depends entirely on Theorem 2.1. Since the theorem's formula is unsupported, the Faber–Krahn result is also unsupported. The rearrangement argument at most proves an inequality for the averaged escape integral, not for the principal eigenvalue.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.92,
+        "justification": "This is a central advertised result of the paper. Its validity is entirely derivative of Theorem 2.1, which is itself unsupported.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Theorem 2.3 is incompletely stated in the manuscript: the equivalence conditions are missing their actual items. Additionally, there are notation inconsistencies (A vs 𝒜, D vs E) throughout the equality-case analysis.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.82,
+        "justification": "A theorem whose statement is incomplete cannot be evaluated. This may be a transcription error but prevents assessment of the result's correctness.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Condition 4.1 appears incomplete (finite variance and integrability of characteristic function powers are used in Lemma 4.3 but not stated in the condition). The assumptions needed for Theorem 2.1 are therefore underspecified.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "Missing assumptions prevent verification of whether the supporting lemmas actually apply under the stated hypotheses. Likely fixable but requires explicit correction.",
+        "source": "both"
+      },
+      {
+        "finding": "Proposition 4.6's claim about invariance under linear isomorphisms uses an incorrect pushforward density formula (writing j̃ = T ∘ j instead of j̃(y) = j(T⁻¹y)/|det T|).",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.72,
+        "justification": "This affects the equality-case argument but could be repaired with the correct formula. Does not independently invalidate the main results.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Pervasive editorial defects: unfinished proof segments, stray '[AUTHOR_1]' markers, incomplete sentences, numbered fragments inserted mid-section.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "These do not independently change conclusions but severely impede verification and suggest the manuscript was not ready for review.",
+        "source": "both"
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 39191,
+    "duration_s": 132.17,
+    "n_api_calls": 3,
+    "cost_usd": 0.3467,
+    "total_input_tokens": 34435,
+    "total_output_tokens": 6911,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 15205,
+        "output_tokens": 2667,
+        "cost_usd": 0.0646825,
+        "duration_s": 46.69,
+        "label": "2405.20571v2/b3/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 13525,
+        "output_tokens": 1699,
+        "cost_usd": 0.00552065,
+        "duration_s": 26.74,
+        "label": "2405.20571v2/b3/prover_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 5705,
+        "output_tokens": 2545,
+        "cost_usd": 0.27645,
+        "duration_s": 58.74,
+        "label": "2405.20571v2/b3/arbiter"
+      }
+    ]
+  }
+}

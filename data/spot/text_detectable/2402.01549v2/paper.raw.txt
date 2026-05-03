@@ -1,0 +1,513 @@
+**Abstract**—We consider the problem of zero-error function computation with side information. Alice has a source X and Bob has correlated source Y and they can communicate via either classical or a quantum channel. Bob wants to calculate f(X, Y) with zero error. We aim to characterize the minimum amount of information that Alice needs to send to Bob for this to happen with zero-error. In the classical setting, this quantity depends on the asymptotic growth of χ(G^(m)), the chromatic number of an appropriately defined m-instance "confusion graph". In this work we present structural characterizations of G^(m) and demonstrate two function computation scenarios that have the same single-instance confusion graph. However, in one case there a strict advantage in using quantum transmission as against classical transmission, whereas there is no such advantage in the other case.
+
+---
+
+In this work, we consider the problem of zero-error function computation with side information when there are two parties. This can be formally specified as follows. Alice observes a sequence of i.i.d. observations of a random variable X (taking values in a discrete alphabet X). Bob has access to i.i.d. observations of a side information random variable Y (taking values in a discrete alphabet Y). X and Y are correlated such that their joint probability mass function (p.m.f.) is p_{X,Y}(x, y), x in X, y in Y. Bob seeks to compute a function f : X × Y → Z. The channel from Alice to Bob is assumed to be error-free and can support either classical or quantum transmission depending on the considered scenario. The aim is to understand the minimum rate at which Alice can communicate information to Bob such that the function computation is successful with probability-1, i.e., the probability of error is zero. The typical setting considers m-length blocks of the sources X_i, Y_i, for i in [m] where [m] = {1, ..., m}, and the schemes allow the calculation of f(X_i, Y_i) for i in [m]. We consider m-length blocks, since it is often the case that computing multiple instances of the function at the same time allows Alice to send less information "per" computation than computing them one by one [1].
+
+---
+
+The classical version of this problem where Alice communicates classical bits has a long history [2]–[9], see [8] for an extensive survey. Witsenhausen [2] and Ferguson and Bailey [3] and Ahlswede [4] showed that for zero-error source coding with side information, the rate can be phrased in terms of graph-theoretic parameters of the appropriate graph-products. The optimal classical transmission strategy for Alice is to color an appropriately defined confusion graph [2] and transmit the color to Bob. Alon and Orlitsky [5], Linial and Vazirani [6] exhibited examples in source coding such that the multiple-instance rate is less than the one-shot rate by a large amount. Korner and Orlitsky [8] noted that one of these examples combined with results in [10], [11] imply that for arbitrary χ, ε > 0, there exists a setting where the one-shot rate ≥ log_2 χ and the asymptotic rate ≤ 2 + ε. For general functions (not necessarily f(X, Y) = X) recent results appear in Charpenay’s PhD thesis [9]. Orlitsky and Roche [7] showed that a natural conditional entropy defined on graphs is the rate of asymptotically vanishing distortion (i.e., not a zero-error scenario) for the function computation with side information.
+
+---
+
+In this work, we consider general functions and a quantum variant where Alice can transmit quantum states to Bob. This version has received much less attention in the literature. Briët et al [12] and Stahlke [13] characterized the rate of zero-error source-channel coding with entanglement-assisted classical communication and quantum communication respectively; they did not consider general functions. In our problem setting, for function computation, Buhrman, Cleve, Wigderson [14], Gavinsky et al [15], Bar-Yossef, Jayram and Kenrenidis [16] showed exponential separation between the classical and quantum rates. However, these results are for the one-shot case, i.e., they do not consider the case of multiple instances. As pointed out in the previous paragraph, a quantum separation in one-shot case may not hold in multiple-instance case due to the classical rate’s discrepancy between one-shot and multiple-instance. The work that is most related to ours is by Gupta et al [17] who considered our setting and a specific function that demonstrates a quantum advantage. In contrast, we formulate the general version of the problem in terms of confusion graphs and present a substantially simpler example that demonstrates a quantum advantage.
+
+---
+
+**Main contributions:** The general m-instance confusion graph G^(m) is sandwiched between the strong product (G⊠m) and OR-product (G∨n) of the single-instance graph (G). We provide necessary and sufficient conditions on the function and the joint p.m.f. such that G^(m) equals G⊠m or G∨n. We demonstrate example functions f and g and corresponding p.m.f.'s such that their single instance graph is the same. However, when considering m-instances, there is a strict quantum advantage in g while there is no quantum advantage for f.
+
+---
+
+Ruoyu Meng and Aditya Ramamoorthy  
+Department of Electrical and Computer Engineering  
+Iowa State University, Ames, IA, USA  
+Email: {rmeng, adityar}@iastate.edu
+
+If Alice has symbols x and x' such that for any possible y that occurs with joint non-zero likelihood, i.e., p_{XY}(x, y) > 0 and p_{XY}(x', y) > 0, it holds that f(x, y) = f(x', y) then from Bob's perspective, x and x' are equivalent and can be given the same description by Alice. Thus, Alice's symbols that need to be given “different” descriptions can be formalized by the following definition [2], [7].
+
+Definition 1. f-confusion graph. The f-confusion graph of X given Y is a graph G = (V, E) where V = X and (x_1, x_2) ∈ E if there exists y ∈ Y such that p_{XY}(x_1, y)p_{XY}(x_2, y) > 0 and f(x_1, y) ≠ f(x_2, y).
+
+Similarly, if we consider computations over m instances then we can define the f-confusion graph over m instances denoted G^{(m)} analogously. Let x and y denote m-length Alice and Bob sequences, respectively. The vertex set corresponds to all m-length Alice sequences; vertices x_1, x_2 ∈ E(G^{(m)}) if there exists y such that ∏_{i=1}^m p_{XY}(x_{1i}, y_i) p_{XY}(x_{2i}, y_i) > 0 and there exists j ∈ [m] such that f(x_{1j}, y_j) ≠ f(x_{2j}, y_j). We use shorthand f^{(m)}(x, y) := {f(x_i, y_i)}_{i=1}^m, p_{XY}(x, y) = ∏_{i=1}^m p_{XY}(x_i, y_i).
+
+To better understand the notion of a f-confusion graph let us consider a scenario where X and Y take values in {0, 1, …, 4} and be correlated such that
+
+p_{XY}(x, y) = 
+    { 1/10,  if y = x or y = (x + 1) mod 5,
+    { 0,     otherwise.        (1)
+
+Suppose that Bob wishes to determine whether X = Y or X ≠ Y. We observe that Alice symbols 0 and 1 are connected since p_{XY}(0, 1)p_{XY}(1, 1) = 1/100 > 0 and f(0, 1) ≠ f(1, 1); the reasoning for the other edges is similar. It can be observed that this f-confusion graph is a pentagon (see Fig. 1).
+
+Classical Setting: It can be observed that the Alice's strategy in the classical setting corresponds to coloring G^{(m)} with the fewest possible colors and transmitting the color of her realization [2], [5], [8]. Thus, the rate in the classical setting appears as follows [2]–[4].
+
+Definition 2. The rate in the classical setting is given by
+
+R_{classical} = \lim_{m \to \infty} \frac{\log \chi(G^{(m)})}{m} = \inf_m \frac{\log \chi(G^{(m)})}{m}.
+
+Quantum Setting: Suppose that Alice and Bob have m-length sequences x and y and Alice communicates to Bob through an error-free quantum channel that supports the transmission of operators on Hilbert space H; the space of operators is denoted as L(H). A quantum state ρ ∈ L(H) is a Hermitian, positive semi-definite, unit-trace operator. States ρ and σ are said to be orthogonal, denoted ρ ⟂ σ if Tr(ρ†σ) = 0¹. This is equivalent to ρ and σ having orthogonal supports².
+
+The quantum protocol operates as follows.
+
+• Alice picks a quantum state ρ_x ∈ L(H), where dim H = d, that depends on the sequence x and transmits it to Bob.
+• Bob performs a POVM measurement [18, page 134] on the received state. The POVM is specified by {Λ^{z}_{f(·,·), y}}_{z ∈ Z^m}, where the indices z are measurement results and the matrices Λ^{z}_{f(·,·), y} are positive semi-definite matrices that sum to the identity, i.e., Λ^{z}_{f(·,·), y} ⪰ 0, for z ∈ Z^m, and ∑_{z ∈ Z^m} Λ^{z}_{f(·,·), y} = I.
+
+The protocol is deemed successful if z_i = f(x_i, y_i), for i ∈ {1, …, m} for all possible pairs (x, y). Alice's rate of transmission is defined as (1/m) log_2 d.
+
+It can be shown (Section V), that this protocol is zero-error if and only if for (x, x') ∈ G^{(m)} then ρ_x ⟂ ρ_{x'}. If this condition is satisfied, depending on the y sequence observed by Bob, it can be shown that he can prepare the measurement that recovers the function value with zero error. Furthermore, Alice needs to find the suitable set of states in as small of a dimension d as possible, so that the task can be achieved by transmitting the fewest number of quantum bits. The quantum rate is defined formally in Section V (Theorem 4).
+
+We point out that the classical protocol can be considered an instance of the proposed quantum protocol, simply by operating in a large enough vector space and labeling the nodes of the confusion graph by canonical basis vectors (binary vectors with all components zero except one). However, considering general unit-norm vectors provides much more flexibility and therefore the dimension d in which we need to operate in can be much lower.
+
+For a graph G, 𝑮̅ denotes the complementary graph, α(G) its independence number, χ(G) its chromatic number. We say that G is a spanning subgraph of H, denoted by G ⊆ H if V(G) = V(H) and E(G) ⊆ E(H). Likewise, graph union of two graphs G ∪ H is the graph whose vertex set is V(G) ∪ V(H) and edge set is E(G) ∪ E(H). We will deal extensively with graph products.
+
+¹† stands for conjugate transpose  
+²The support of an operator is the orthogonal complement of its kernel. For Hermitian operators (as we consider) the support is its image.
+
+1. Definition 3. The strong product of two graphs, \(G \boxtimes H\), has vertex set \(V(G) \times V(H)\). \(((u_1, v_1), (u_2, v_2)) \in E(G \boxtimes H)\) iff
+
+\[
+(u_1 = u_2 \text{ and } (v_1, v_2) \in E(H)) \text{ or }
+((u_1, u_2) \in E(G) \text{ and } v_1 = v_2) \text{ or }
+((u_1, u_2) \in E(G) \text{ and } (v_1, v_2) \in E(H))
+\]
+
+The \(m\)-fold strong product is written \(G^{\boxtimes m} := G \boxtimes G \boxtimes \cdots \boxtimes G\).
+
+The OR product of two graphs, \(G \lor H\), has vertex set \(V(G) \times V(H)\). \(((u_1, v_1), (u_2, v_2)) \in E(G \lor H)\) iff
+
+\[
+(v_1, v_2) \in E(H) \text{ if } u_1 = u_2,
+(u_1, u_2) \in E(G) \text{ if } v_1 = v_2,
+(u_1, u_2) \in E(G) \text{ or } (v_1, v_2) \in E(H) \text{ if } u_1 \neq u_2, v_1 \neq v_2.
+\]
+
+The \(m\)-fold OR product is written \(G^{\lor m} := G \lor G \lor \cdots \lor G\).
+
+2. We will use the following known results (proved in Appendix A for completeness). Let \(G, H, H_1, H_2\) be simple graphs.
+
+Proposition 1. \(G \boxtimes H = G \lor H\).
+
+Proposition 2. \(G \boxtimes (H_1 \cup H_1) = G \boxtimes H_1 \cup G \boxtimes H_1\).
+
+Proposition 3. \(\alpha(G \lor H) = \alpha(G)\alpha(H) \leq \alpha(G \boxtimes H)\).
+
+Proposition 4. \(\chi(G \boxtimes H) \leq \chi(G \lor H) \leq \chi(G)\chi(H)\).
+
+3. We now demonstrate that the \(m\)-instance confusion graph depends strongly on the underlying joint pmf \(p_{XY}(x, y)\) and the function \(f(x, y)\). In particular, we demonstrate three scenarios, all of which have identical single instance confusion graphs but very different m-instance confusion graphs.
+
+4. The examples appear in Table I–III. The functions are denoted \(f, g, h\). The rows corresponding to \(y\) and columns corresponding to \(x\). Entries represent the value of the function with input \((x, y)\) and \(*\) entries consist of all \((x, y)\) such that \(p_{X,Y}(x, y) = 0\). While we checked manually that \(G_f = G_g = G_h = C_5\), we have distinct confusion graphs: \(G_f^{(m)} = C_5^{\boxtimes m}, G_g^{(m)} = C_5^{\lor m}, C_5^{\boxtimes m} \neq G_h^{(m)} \neq C_5^{\lor m}\) by Theorem 1 that is shown later.
+
+5. If there exists \(x \in X\) such that \(p_{XY}(x, y) = 0\) for all \(y \in Y\), Alice may remove \(x\) from \(X\). Therefore, we assume the opposite holds for the rest of this paper.
+
+Assumption 1. \(\forall x \in X, \exists y \in Y\) s.t. \(p_{XY}(x, y) > 0\).
+
+6. For a confusion graph \(G\), the following proposition holds.
+
+Proposition 5. \(G^{\boxtimes m} \subseteq G^{(m)} \subseteq G^{\lor m}\) for \(m \geq 1\).
+
+Proof. See Appendix B-A.
+
+Consider two trivial cases. If \(G\) is edge-less, i.e. \(G\) is a set of isolated vertices, then \(G^{\lor m}\) is edge-less and thus \(G^{(m)}\) is edge-less. Similarly, if \(G\) is complete, then \(G^{\boxtimes m}\) is complete and thus \(G^{(m)}\) is complete. In both cases, we have \(G^{\boxtimes m} = G^{(m)} = G^{\lor m}\). If \(G\) is neither complete nor edge-less, we say \(G\) is nontrivial. We want to know conditions for \(G^{(m)} = G^{\boxtimes m}\) and for \(G^{(m)} = G^{\lor m}\) when \(G\) is nontrivial.
+
+7. Let \(G\) be a nontrivial \(f\)-confusion graph. Then, for distinct \(x, x' \in V(G), (x, x') \notin E(G)\) can be due to either of following mutually exclusive conditions.
+
+- C1: there is no \(y \in Y\) s.t. \(p_{XY}(x, y) p_{XY}(x', y) > 0\).
+- C2: \(\exists y\) such that \(p_{XY}(x, y) p_{XY}(x', y) > 0\) but for all such \(y\), we have \(f(x, y) = f(x', y)\).
+
+Examples of C1, C2 above can be observed in the functions \(f, g, h\) from Table I–III. A manual check shows that all non-adjacent \((x, x')\)'s in Table I are due to C1. Similarly, all non-adjacent \((x, x')\)'s in Table II are due to C2. Differently, Table III contains both non-adjacent \((x, x')\) of C1 and that of C2.
+
+8. Theorem 1. Let \(f : X \times Y \to Z\) be a function and \(p_{XY}(x, y)\). Recall \(G\) and \(G^{(m)}\) are \(f\)-confusion graphs over one-instance and m-instances respectively. Assume \(G\) is nontrivial.
+
+(a) \(G^{(m)} = G^{\boxtimes m}\) for all \(m \in \mathbb{N}_{\geq 1}\) iff all \((x, x') \notin E(G)\) is due to condition C1.
+(b) \(G^{(m)} = G^{\lor m}\) for all \(m \in \mathbb{N}_{\geq 1}\) iff all \((x, x') \notin E(G)\) is due to condition C2.
+
+Proof. See Appendix B-B.
+
+As a consequence of Theorem 1, given a finite simple graph \(G\), we can always construct functions \(f\) and \(g\) s.t. the \(m\)-instance confusion graphs of \(f\) and \(g\) are \(G^{\boxtimes m}\) and \(G^{\lor m}\) respectively.
+
+Theorem 2. Let \(G\) be a finite simple graph. Then
+(a) There exists a function \(f\) and a joint pmf \(p_{XY}(x, y)\) s.t. the \(f\)-confusion graph over m-instances is \(G^{\boxtimes m}\).
+(b) There exists a function \(g\) and a joint pmf \(p_{XY}(x, y)\) s.t. the \(g\)-confusion graph over m-instances is \(G^{\lor m}\).
+
+Proof. See Appendix B-C.
+
+9. We now discuss “orthogonal representations” of graphs.
+
+Definition 4. Let \(G\) be a graph. An orthogonal representation\(^3\) of \(G\) is a mapping \(\phi : V(G) \mapsto \mathbb{C}^m\) for some \(m \geq 1\) s.t. each \(\phi(v)\) is a unit-norm vector and non-adjacent vertices are assigned orthogonal vectors. The orthogonal rank of \(G\), denoted by \(\xi(G)\), is the minimum dimension \(m\) s.t. there exists an orthogonal representation of \(G\).
+
+\(^3\) Our definition of the orthogonal representation aligns with Lovász’ number defined in [19]. The orthogonal representation is sometimes defined s.t. adjacent vertices are assigned orthogonal vectors. The other definition is related with ours by taking graph complement.
+
+We will use the following propositions of \(\xi(G)\). The proof appears in Appendix C. Let \(G, H\) be finite simple graphs.
+
+Proposition 6. If \(G \subseteq H\), then \(\xi(H) \leq \xi(G)\).
+
+Proposition 7. \(\xi(G \lor H)\leq \xi(G \boxtimes H) \leq \xi(G)\xi(H)\).
+
+Proposition 8. \(\xi(G) \leq \chi(G)\).
+
+Next, we define the Lovász number over vector spaces in \(\mathbb{C}\). This is slightly different from [19] as they assume the field is \(\mathbb{R}\), but these two definitions are actually the same, which...
+
+we include a proof in Appendix D-A for completeness. For a complex number z, denote |z| := √(z z̄) where the overline is complex conjugate. For complex vectors v,u ∈ C^n, denote ⟨v,u⟩ := v^†u where † stands for conjugate transpose.
+
+**Definition 5** (Lovász number). Let G be a finite simple graph. Its Lovász number ϑ(G) is
+
+$$\vartheta(G) = \min_{\phi,c} \max_{i \in V(G)} \frac{1}{|\langle c, \phi(i) \rangle|^2}$$
+
+where the minimum is taken over all orthogonal representations φ with field C and complex unit-norm vector c, which is called the handle.
+
+**Proposition 9.** If G ⊆ H, then ϑ(G) ≥ ϑ(H).
+
+**Proof.** See Appendix D-B.
+
+**Lemma 1** (from [19]). α(G) ≤ ϑ(G)
+
+**Lemma 2** (from [19]). ϑ(G∨H) = ϑ(G⊠H) = ϑ(G)ϑ(H)
+
+In [19], Lovász proved that ϑ(G)ϑ(H) ≤ ϑ(G ⊠ H) ≤ ϑ(G)ϑ(H). The first inequality is sufficient for him to compute the Shannon capacity of C₅. Lovász noted that his proof of the first inequality can be strengthened to ϑ(G)ϑ(H) ≤ ϑ(G ∨ H). This can be used to show that ϑ(G)ϑ(H) = ϑ(G ∨ H). We prove it in Appendix D-C for completeness.
+
+Recall that in [19], the orthogonal representation is in ℝ, but the following lemma still holds in the case of orthogonal representation in ℂ. We include a proof for completeness.
+
+**Lemma 3.** ϑ(G) ≤ ξ(G)
+
+**Proof.** See Appendix D-D.
+
+Generally, it seems hard to know any information of an f-confusion graph over m-instances G^{(m)}. However, the following theorem allows us to calculate ϑ(G^{(m)}) from ϑ(G).
+
+**Theorem 3.** Let G be an f-confusion graph and G^{(m)} be its f-confusion graph over m-instances. We have
+
+$$\alpha(G^{\boxtimes m}) \leq \vartheta(G^{\boxtimes m}) = \vartheta(G)^m = \vartheta(G^{(m)}) = \vartheta(G^{\vee m}) \leq \xi(G^{\vee m}).$$
+
+**Proof.** See Appendix E.
+
+**Lemma 4.** Fix the block length m and function f and a pmf p_{XY}(x, y). The optimal rate is (log₂ ξ(G^{(m)}))/m, where we recall that Ḡ^{(m)} denotes the complement of the f-confusion graph over m-instances G^{(m)}.
+
+**Proof.** An orthogonal representation φ : Ḡ^{(m)} → ℂ^{ξ(G^{(m)})} induces a quantum protocol as follows. Suppose Alice and Bob get x and y respectively. Alice sends |φ(x)⟩⟨φ(x)| to Bob. Bob chooses his POVM to be {Π_z : z ∈ 𝒵^m} where Π_z is the projector onto S_z := span{|φ(x)⟩ : p_{XY}(x, y) > 0, f^{(m)}(x, y) = z}. Since φ is an orthogonal representation of Ḡ, then Π_z ⟂ Π_{z'} for all z ≠ z'. If ∑_z Π_z ≠ I, Bob adds I − ∑_z Π_z to complete a POVM. The protocol has rate (1/m) log₂ ξ(G^{(m)}) as the orthogonal representation φ is ξ(G^{(m)})-dimensional.
+
+Now, we show the protocol is zero-error. Let x and y be the same as the paragraph above. Denote z = f^{(m)}(x, y). Since |φ(x)⟩ ∈ S_z and |φ(x)⟩ ∉ S_{z'} for all z' ≠ z, Bob’s measurement result will be z with probability 1.
+
+Conversely, a protocol Π of rate (1/m) log₂ d induces an orthogonal representation ψ: V(Ḡ^{(m)}) → ℂ^d. Let ρ_x be a d × d density operator associated with input x. If ρ_x is a pure state |v⟩⟨v| for some |v⟩ ∈ ℂ^d, then we set ψ(x) = |v⟩. If ρ_x is a mixed state with spectral decomposition ρ_x = ∑_{i=1}^k λ_i |v_i⟩⟨v_i| with λ_i ≠ 0 for i=1,...,k. Then let l ∈ [k] be arbitrary and ψ(x) = |v_l⟩.
+
+Now we check it is indeed an orthogonal representation. Let (x, x') ∈ E(Ḡ^{(m)}). The protocol Π is zero-error, so ρ_x = ∑_{i=1}^k λ_i |v_i⟩⟨v_i|, ρ_{x'} = ∑_{i=1}^k λ'_i |v'_i⟩⟨v'_i| must be perfectly distinguishable, i.e., ρ_x ⟂ ρ_{x'}. We have
+
+∑_{i=1}^k λ_i |v_i⟩⟨v_i| ⟂ ∑_{i=1}^k λ'_i |v'_i⟩⟨v'_i| ⇒ |v_i⟩ ⟂ |v'_j⟩ for all i, j
+
+⇒ ψ(x) ⟂ ψ(x').
+
+Since (x, x') ∈ E(Ḡ) is arbitrary, it implies that ψ is an orthogonal representation.
+
+**Theorem 4.** The rate in the quantum setting is given by
+
+$$R_\text{quantum} = \inf_m \frac{\log_2 \xi(G^{(m)})}{m}$$
+
+**Proof.** It can be seen that ξ(G^{(m+n)}) ≤ ξ(G^{(m)}) ξ(G^{(n)}), since a protocol for the (m+n)-instance case can be obtained by putting together the m-instance and n-instance protocols. By Fekete lemma [20], the limit exists and is inf_m (1/m) log ξ(G^{(m)}).
+
+---
+
+## VI. DISCREPANCY OF R_\text{classical}/R_\text{quantum} BETWEEN m-FOLD STRONG AND OR PRODUCTS
+
+In this section, we consider the function f, g described in Table I-II in detail. The m-instance confusion graphs for f
+
+and \( g \) are \( C_{5}^{\boxtimes m} \) and \( C_{5}^{\vee m} \) respectively, while the one-instance confusion graphs for both are \( C_{5} \). We demonstrate that there is a quantum advantage for \( g \) while there is no quantum advantage for \( f \). At various points in the discussion below, we use the well-known fact that \( C_{5} \) is self-complementary.
+
+The rest of this section is the proof of Proposition 11. Let \( G^{(m)} \) be the \( m \)-fold \( g \)-confusion graph. From Table I and Theorem 1, we know that \( G^{(1)} = C_{5} \) and \( G^{(m)} = C_{5}^{\vee m} \) respectively.
+
+where the first inequality follows from Proposition 7 and the second inequality follows from Claim 3, \( C_{5} \) is self-complementary and Claim 1. A lower bound of \( \xi(C_{5}^{\vee m}) = \xi(C_{5}^{\boxtimes m}) \) is given by
+
+Definition 7. Let \( \widetilde{G} = \overline{Cay}(\Gamma, S) \) be the complement of a Cayley graph and \( \varphi : V(\widetilde{G}) \mapsto \mathbb{C}^{m} \) be an orthogonal representation of \( \widetilde{G} \). \( \varphi \) is said to be "symmetric" if there exists \( f : \Gamma \to \mathbb{C} \) s.t. \( \langle \varphi(g), \varphi(h) \rangle = \widetilde{f}(gh^{-1}) \) for all \( g, h \in \Gamma \). The symmetric orthogonal rank \( \xi_{sym}(\widetilde{G}) \) is the minimum dimension \( m \) such that there exists a symmetric orthogonal representation of \( \widetilde{G} \).
+
+where the first inequality follows from (6) and Proposition 6, the second inequality follows from (4) and the fact that \( H_{5}^{2}(4) \) is complement of a Cayley graph, the last equality follows from Theorem 1 of [21], i.e. \( \xi_{sym}(H_{5}^{2}(4)) = 5^{2-4/4} = 5 \).
+
+Definition 8. Let \( \mathbb{Z}_{\ell} = \{ 0, \ldots, \ell - 1 \} \) be the cyclic group of integers under addition modulo \( \ell \) and \( \mathbb{Z}_{\ell}^{\times n} \) be the direct product of \( n \) copies of \( \mathbb{Z}_{\ell} \). We define
+
+where first inequality follows from Lemma 3, the first equality follows from Theorem 3, the second equality follows from \( \vartheta(C_{5}) = \sqrt{5} \) [19].
+
+Next, we prove Claim 3. For this we leverage the result of [21]. In order to develop this argument, we need some definitions that we now provide.
+
+Now we are ready to show \( R_{quantum}(g) = \frac{1}{2}\log_{2}5 \), which completes the proof of Proposition 11.
+
+Thus we have that \( R_{classical}(g) = \inf_{m} \frac{1}{m} \log_{2} \chi(C_{5}^{\vee m}) \geq \log_{2}\frac{5}{2} \). Next, we will show that \( R_{quantum}(g) = \frac{1}{2} \log_{2}5 \). We will use the following claim, whose proof is given after the proof of \( R_{quantum}(g) = \frac{1}{2}\log_{2}5 \).
+
+Since an orthogonal representation has less constraints than a symmetric one, we have
+
+Theorem 1 of [21] shows that For all positive integers \( \ell, n \) and any \( d \in [(\ell-1)n] \) that is divisible by \( \ell-1 \), we have \( \xi_{sym}(H_{\ell}^{n}(d)) = \ell^{n - d/(\ell-1)} \).
+
+The result follows by taking logarithms, normalizing by \( m \) and taking the infimum.
+
+\[
+\xi(C_{5}^{\boxtimes m}) \geq \vartheta(C_{5}^{\boxtimes m}) = \vartheta(C_{5})^{m} = 5^{m/2}.
+\] (3)
+
+\[
+H_{5}^{2}(4) \subseteq C_{5} \vee C_{5}.
+\] (6)
+
+\[
+\xi(\widetilde{G}) \leq \xi_{sym}(\widetilde{G}).
+\] (4)
+
+\[
+H_{\ell}^{n}(d) = Cay(\mathbb{Z}_{\ell}^{\times n}, S)
+\] (5)
+
+\[
+R_{quantum}(g) = \frac{1}{2}\log_{2} 5 < \log_{2} \frac{5}{2} \leq R_{classical}(g)
+\]
+
+where \( S = \{ x \in \mathbb{Z}_{\ell}^{\times n} : \sum_{i=1}^{n} x_{i} \geq d \} \) and the sum in the definition \( S \) is taken in \( \mathbb{N} \).
+
+Definition 6. Let \( \Gamma \) be a group and \( S \subseteq \Gamma \) be a subset of \( \Gamma \). The Cayley graph \( Cay(\Gamma, S) \) has vertex set \( V = \Gamma \). \( g, h \in \Gamma \), where \( g \ne h \) are adjacent if we have
+
+On the other hand, notice that \( H_{5}^{2}(4) = Cay(\mathbb{Z}_{5}^{\times 2}, S) \) where \( S = \{ x \in \mathbb{Z}_{5}^{\times 2} : x_{1} + x_{2} \geq 4 \} \). Since \( x_{1} \geq 4 \) or \( x_{2} \geq 4 \) implies \( x_{1} + x_{2} \geq 4 \), we have \( E(C_{5} \vee C_{5}) \subseteq E(H_{5}^{2}(4)) \). Note \( V(C_{5} \vee C_{5}) = V(H_{5}^{2}(4)) = \mathbb{Z}_{5}^{\times 2} \). Thus, we conclude that
+
+Proof of Claim 3. Since \( C_{5} = Cay(\mathbb{Z}_{5}, \{ x \in \mathbb{Z}_{5} : x \geq 4 \}) \), \( C_{5} \vee C_{5} \) can also be written as \( C_{5} \vee C_{5} = Cay(\mathbb{Z}_{5}^{\times 2}, T) \) where \( T = \{ x \in \mathbb{Z}_{5}^{\times 2} : x_{1} \geq 4 \text{ or } x_{2} \geq 4 \} \).
+
+Proof. See Appendix F-A.
+
+Then we have
+
+Proof. See Appendix F-B.
+
+\[
+5^{m/2} \leq \xi(C_{5}^{\vee m}) \leq 3\cdot 5^{(m-1)/2}.
+\]
+
+\[
+R_{quantum}(f) = R_{classical}(f) = \frac{1}{2}\log_{2}5
+\]
+
+\[
+\xi(C_{5} \vee C_{5}) \leq \xi(H_{5}^{2}(4)) \leq \xi_{sym}(H_{5}^{2}(4)) = 5
+\]
+
+Combining (2) and (3), we have
+
+\[
+ah^{-1} \in S \text{ or } hg^{-1} \in S
+\]
+
+Proof of \( R_{quantum}(g) = \frac{1}{2}\log_{2}5 \). We have \( C_{5}^{\vee m} = \overline{C_{5}^{\boxtimes m}} = C_{5}^{\boxtimes m} \), and in particular \( C_{5}^{\vee 2} = C_{5}^{\boxtimes 2} \). Therefore, we have
+
+\[
+\xi(C_{5}^{\vee m}) = \xi(C_{5}^{\boxtimes m}) \leq
+ \begin{cases}
+   \xi(C_{5}^{\boxtimes 2})^{m/2} & \text{if } m \text{ even} \\
+   \xi(C_{5})\chi(C_{5}^{\boxtimes 2})^{(m-1)/2} & \text{if } m \text{ odd}
+ \end{cases}
+\]
+\[
+  \leq 3\cdot 5^{(m-1)/2}
+\] (2)
+
+\[
+\xi(C_{5}^{\vee 2}) \leq 5
+\]
+
+\[
+\chi(C_{5}^{\vee m}) \geq \left(\frac{5}{2}\right)^{m}
+\]
+
+Proof. See Appendix F-C.
+
+\[
+\xi(\overline{C_{5}}) = \chi(C_{5}) = 3
+\]
+
+
+# REFERENCES
+
+[1] C. Shannon, "The zero error capacity of a noisy channel," IRE Transactions on Information Theory, vol. 2, no. 3, pp. 8–19, 1956.
+
+[2] H. Witsenhausen, "The zero-error side information problem and chromatic numbers (corresp.)," IEEE Transactions on Information Theory, vol. 22, no. 5, pp. 592–593, 1976.
+
+[3] M. Ferguson and D. Bailey, "Zero-error coding for correlated sources," 1975.
+
+[4] R. Ahlswede, "Coloring hypergraphs: A new approach to multi-user source coding," Journal of Combinatorics, vol. 4, no. 1, pp. 76–115, 1979.
+
+[5] N. Alon and A. Orlitsky, "Repeated communication and ramsey graphs," IEEE Transactions on Information Theory, vol. 41, no. 5, pp. 1276–1289, 1995.
+
+[6] N. Linial and U. Vazirani, "Graph products and chromatic numbers," in 30th Annual Symposium on Foundations of Computer Science, 1989, pp. 124–128.
+
+[7] A. Orlitsky and J. Roche, "Coding for computing," IEEE Transactions on Information Theory, vol. 47, no. 3, pp. 903–917, 2001.
+
+[8] J. Korner and A. Orlitsky, "Zero-error information theory," IEEE Transactions on Information Theory, vol. 44, no. 6, pp. 2207–2229, 1998.
+
+[9] N. Charpenay, "Zero-error network information theory: graphs, coding for computing and source-channel duality," Theses, Université de Rennes, Nov. 2023. [Online]. Available: https://theses.hal.science/tel-04384481
+
+[10] R. J. McEliece and E. C. Posner, "Hide and seek, data storage, and entropy," The Annals of Mathematical Statistics, vol. 42, no. 5, pp. 1706–1716, 1971.
+
+[11] C. Berge and M. Simonovits, "The coloring numbers of the direct product of two hypergraphs," in Hypergraph Seminar, C. Berge and D. Ray-Chaudhuri, Eds. Berlin, Heidelberg: Springer Berlin Heidelberg, 1974, pp. 21–33.
+
+[12] J. Briët, H. Buhrman, M. Laurent, T. Piovesan, and G. Scarpa, "Entanglement-assisted zero-error source-channel coding," IEEE Transactions on Information Theory, vol. 61, no. 2, pp. 1124–1138, 2015.
+
+[13] D. Stahlke, "Quantum zero-error source-channel coding and non-commutative graph theory," IEEE Transactions on Information Theory, vol. 62, no. 1, pp. 554–577, 2016.
+
+[14] H. Buhrman, R. Cleve, and A. Wigderson, "Quantum vs. classical communication and computation," in Proceedings of the Thirtieth Annual ACM Symposium on Theory of Computing, ser. STOC '98. New York, NY, USA: Association for Computing Machinery, 1998, pp. 63–68. [Online]. Available: https://doi.org/10.1145/276698.276713
+
+[15] D. Gavinsky, J. Kempe, I. Kerenidis, R. Raz, and R. de Wolf, "Exponential separations for one-way quantum communication complexity, with applications to cryptography," in Proceedings of the Thirty-Ninth Annual ACM Symposium on Theory of Computing, ser. STOC '07. New York, NY, USA: Association for Computing Machinery, 2007, pp. 516–525. [Online]. Available: https://doi.org/10.1145/1250790.1250866
+
+[16] Z. Bar-Yossef, T. S. Jayram, and I. Kerenidis, "Exponential separation of quantum and classical one-way communication complexity," in Proceedings of the Thirty-Sixth Annual ACM Symposium on Theory of Computing, ser. STOC '04. New York, NY, USA: Association for Computing Machinery, 2004, pp. 128–137. [Online]. Available: https://doi.org/10.1145/1007352.1007379
+
+[17] S. Gupta, D. Saha, Z.-P. Xu, A. Cabello, and A. S. Majumdar, "Quantum contextuality provides communication complexity advantage," Phys. Rev. Lett., vol. 130, p. 080802, Feb 2023. [Online]. Available: https://link.aps.org/doi/10.1103/PhysRevLett.130.080802
+
+[18] M. M. Wilde, Quantum Information Theory, 2nd ed. Cambridge University Press, 2017.
+
+[19] L. Lovász, "On the shannon capacity of a graph," IEEE Transactions on Information Theory, vol. 25, no. 1, pp. 1–7, 1979.
+
+[20] M. Fekete, "Über die Verteilung der Wurzeln bei gewissen algebraischen Gleichungen mit ganzzahligen Koeffizienten," Mathematische Zeitschrift, vol. 17, no. 1, pp. 228–249, Dec 1923. [Online]. Available: https://doi.org/10.1007/BF01504345
+
+[21] J. Briët and J. Zuiddam, "On the orthogonal rank of Cayley graphs and impossibility of quantum round elimination," Quantum Info. Comput., vol. 17, no. 1–2, pp. 106–116, Feb 2017.
+
+[22] D. B. West, Introduction to Graph Theory, 2nd edition. Prentice Hall, 2017.
+
+Proof. Let $S_1$ and $S_2$ be independent in $G$ and $H$ respectively. Then, $S_1 \times S_2$ is independent in $G \vee H$. Thus, $\alpha(G \vee H) \geq \alpha(G)\alpha(H)$. Now we show the other inequality. Let $S$ be a maximum independent set in $G \vee H$. Define
+
+$S_g := \{g \in V(G) : \exists h \in V(H), (g, h) \in S\}$,
+$S_h := \{h \in V(H) : \exists g \in V(G), (g, h) \in S\}$
+
+The role of $S_g, S_h$ is interchangeable, so it suffices to show $S_g$ is independent in $G$. Let distinct $g_1, g_2 \in S_g$. Then there exist $h_1, h_2$ s.t. $(g_1, h_1), (g_2, h_2) \in S$. Since $S$ is independent in $G \vee H$, $(g_1, h_1), (g_2, h_2) \notin E(G \vee H)$ and thus $(g_1, g_2) \notin E(G)$. It follows that $S_g$ is independent. Therefore, $\alpha(G \vee H) \leq \alpha(G)\alpha(H)$ holds.
+
+For $\alpha(G)\alpha(H) \leq \alpha(G \boxtimes H)$, we note that if $S_1$ and $S_2$ are independent in $G$ and $H$ respectively, then $S_1 \times S_2$ is independent in $G \boxtimes H$. Then, $\alpha(G \boxtimes H) \geq \alpha(G)\alpha(H)$ holds.
+
+Proof of (a). We construct the function \( f \) as follows. Let \( \mathcal{X} = V(G) \) and \( \mathcal{Y} = E(G) \). Choose any distribution \( p_{XY} \) s.t. \( p_{XY}(x, y) > 0 \) if and only if vertex \( x \) is incident with edge \( y \). Then, we set \( f(x, y) = x \). Denote \( f \)-confusion graph by \( G_f \).
+
+For \( x \ne x' \in \mathcal{X} \), \( (x, x') \notin E(G_f) \) if and only if there does not exist \( y \in \mathcal{Y} \) s.t. \( p_{XY}(x, y)p_{XY}(x', y) > 0 \) if and only if \( (x, x') \notin E(G) \). Therefore, \( G_f = G \) and all \( (x, x') \notin E(G_f) \) is due to \( C_1 \) as \( x \ne x' \in \mathcal{X} \) are arbitrary. By Theorem 1, we have that \( G^{(m)} = G^{\boxtimes m} \) for \( m \ge 1 \).
+
+Proof of (b). We construct the function \( g \) as follows. Let \( \mathcal{X} = V(G) \) and \( \mathcal{Y} = \{\{i, j\} : i \ne j \in V(G)\} \). Choose any distribution \( p_{XY} \) s.t. \( p_{XY}(x, y) > 0 \) if and only if vertex \( x \) is an element of set \( y \). The function evaluation is s.t.
+
+\[
+g(x, y) = \begin{cases}
+x, & \text{if } y \in E(G), \\
+1, & \text{if } y \notin E(G).
+\end{cases}
+\]
+
+Denote \( g \)-confusion graph by \( G_g \). Now we show that \( G_g = G \) is \( g \)-confusion graph. For each \( x \ne x' \in \mathcal{X} \), there is exactly one choice of \( y \), that is \( \{x, x'\} \), s.t. \( p_{XY}(x, y)p_{XY}(x', y) > 0 \). \( g(x, \{x, x'\}) = g(x', \{x, x'\}) \) if and only if \( \{x, x'\} \notin E(G) \). This implies \( G_g = G \) and all \( (x, x') \notin E(G_g) \) is due to \( C_2 \) as \( x \ne x' \in \mathcal{X} \) are arbitrary. By Theorem 1, we have that \( G^{(m)} = G^{\vee m} \) for \( m \ge 1 \).
+
+Proof of (b). \(\Rightarrow\): Since \( G \) is nontrivial, there exists \( (x_1, x_1') \in E(G) \) and \( (x_2, x_2') \notin E(G) \). Denote \( \mathbf{x} = [x_1, x_2] \), \( \mathbf{x}' = [x_1', x_2'] \) and note \( \langle \mathbf{x}, \mathbf{x}' \rangle \in G^{\vee 2} \). By the assumption that \( G^{\vee m} = G^{(m)} \) for \( m \ge 1 \) and setting \( m = 2 \), there exists \( y = [y_1, y_2] \) s.t. \( p_{XY}(\mathbf{x}, y)p_{XY}(\mathbf{x}', y) > 0 \), which implies \( p_{XY}(x_2, y_2)p_{XY}(x_2', y_2) > 0 \). Therefore, \( (x_2, x_2') \notin E(G) \) is not due to condition \( C_1 \).
+
+Now let \( (\mathbf{x}, \mathbf{x}') \notin E(G^{\boxtimes m}) \) be arbitrary. Then, there is \( i \) s.t. \( (x_i, x_i') \notin E(G) \). Since all \( (x, x') \notin E(G) \) are due to condition \( C_1 \), there does not exist \( y_i \) s.t. \( p_{XY}(x_i, y_i)p_{XY}(x_i', y_i) > 0 \), which implies \( p_{XY}(\mathbf{x}, y)p_{XY}(\mathbf{x}', y) = 0 \) for all choices of \( y \). Thus, we have \( (\mathbf{x}, \mathbf{x}') \notin E(G^{(m)}) \). Since \( (\mathbf{x}, \mathbf{x}') \notin E(G^{\vee m}) \) is arbitrary, this implies \( E(G^{\vee m}) \subseteq E(G^{(m)}) \).
+
+\(\Leftarrow\): By Proposition 5 and the fact \( V(G^{\vee m}) = V(G^{\boxtimes m}) \), it suffices to show \( E(G^{(m)}) \subseteq E(G^{\vee m}) \). Let \( (\mathbf{x}, \mathbf{x}') \in E(G^{(m)}) \). Since role of \( (x_i, x_i') \)s are interchangeable, we may assume \( \mathbf{x}, \mathbf{x}' \) is s.t.
+
+\[
+\begin{cases}
+(x_i, x_i') \in E(G) & \text{for } i \in \{1, \ldots, k_1\} \\
+(x_i, x_i') \notin E(G) & \text{for } i \in \{k_1+1, \ldots, k_2\} \\
+x_i = x_i' & \text{for } i \in \{k_2+1, \ldots, m\}
+\end{cases}
+\]
+
+for some \( 1 \le k_1 \le k_2 \le m \). To show \( (\mathbf{x}, \mathbf{x}') \in E(G^{\vee m}) \), it suffices to find \( y = [y_1, \ldots, y_m] \) s.t. \( p_{XY}(\mathbf{x}, y)p_{XY}(\mathbf{x}', y) > 0 \) and \( f^{(m)}(\mathbf{x}, y) \ne f^{(m)}(\mathbf{x}', y) \).
+
+For \( i \in \{1, \ldots, k_1\} \), choose \( y_i \) be s.t. \( p_{XY}(x_i, y_i)p_{XY}(x_i', y_i) > 0 \) and \( f(x_i, y_i) \ne f(x_i', y_i) \). Such \( y_i \) exists as \( (x_i, x_i') \in E(G) \). For \( i \in \{k_1+1, \ldots, k_2\} \), choose \( y_i \) be s.t. \( p_{XY}(x_i, y_i)p_{XY}(x_i', y_i) > 0 \) and \( f(x_i, y_i) = f(x_i', y_i) \). Such \( y_i \) exists because \( (x_i, x_i') \notin E(G) \) and because all \( (x, x') \notin E(G) \) is due to condition \( C_2 \). For \( i \in \{k_2+1, \ldots, m\} \), choose \( y_i \) be s.t. \( p_{XY}(x_i, y_i) = p_{XY}(x_i', y_i) > 0 \). Such \( y_i \) by \( p_{XY}(x, y) \) satisfies Assumption 1. Then,
+\[
+p_{XY}(\mathbf{x}, y)p_{XY}(\mathbf{x}', y) = \prod_{i=1}^m p_{XY}(x_i, y_i)p_{XY}(x_i', y_i)
+\]
+We have \( f^{(m)}(\mathbf{x}, y) \ne f^{(m)}(\mathbf{x}', y) \) because \( f(x_i, y_i) \ne f(x_i', y_i) \) for \( i \in \{1, \ldots, k_1\} \).
+
+Therefore, \( (\mathbf{x}, \mathbf{x}') \in E(G^{\vee m}) \) holds. Since \( (\mathbf{x}, \mathbf{x}') \in E(G^{(m)}) \) is arbitrary, we have \( E(G^{(m)}) \subseteq E(G^{\vee m}) \).
+
+Therefore, we have \( E(G^{\vee m}) = E(G^{(m)}) \).
+
+APPENDIX C
+
+PROOFS OF PROPOSITION 6-8
+
+A. Proof of Proposition 6
+
+Proof. Let \( \phi \) be an orthogonal representation of \( G \). \( V(G) = V(H) \) as \( G \subseteq H \). Since \( V(G) = V(H) \), every vertex in \( V(H) \) is assigned a vector. Let \( u, v \in V(H) \) be non-adjacent in \( H \). Since \( G \subseteq H \), \( u, v \) is also non-adjacent in \( G \). Thus \( \phi(u) \perp \phi(v) \). Therefore, \( \phi \) is also an orthogonal representation of \( H \). This implies \( \xi(H) \le \xi(G) \).
+
+B. Proof of Proposition 7
+
+Proof. \( \xi(G \vee H) \le \xi(G \boxtimes H) \) holds because of Proposition 6 and the fact that \( G \boxtimes H \subseteq G \vee H \).
+
+Now we show that \( \xi(G \boxtimes H) \le \xi(G)\xi(H) \). Suppose \( \phi_G : V(G) \to \mathbb{C}^{m_1} \), \( \phi_H : V(H) \to \mathbb{C}^{m_2} \) are orthogonal representations of \( G, H \) respectively. We claim
+
+\[
+\phi_G \times \phi_H : V(G) \times V(H) \to \mathbb{C}^{m_1 m_2}, (g, h) \mapsto \phi_G(g) \otimes \phi_H(h)
+\]
+where \( \otimes \) denotes tensor product, is an orthogonal representation of \( G \boxtimes H \).
+
+Indeed, let \( (g_1, h_1), (g_2, h_2) \) be non-adjacent in \( G \boxtimes H \). Since the role of \( G, H \) are interchangeable, we assume \( (g_1, g_2) \notin E(G) \). Thus \( \phi_G(g_1) \perp \phi_G(g_2) \). It follows that \( \phi_G \times \phi_H(g_1, h_1) = \phi_G(g_1) \otimes \phi_H(h_1) \perp \phi_G(g_2) \otimes \phi_H(h_2) = \phi_G \times \phi_H(g_2, h_2) \).
+
+Here are the corrected OCR transcriptions for each image crop, in order:
+
+1. In this subsection, let ϑ_C(G) and ϑ_R(G) be the Lovász number defined on orthogonal representation over vector spaces in C and R respectively. We use the shorthand PSD matrix for positive semidefinite matrix.
+
+2. Since R ⊆ C, the feasible set in the minimization problem defining ϑ_R(G) is a subset of the feasible set in the minimization problem defining ϑ_C(G). Therefore, we have ϑ_R(G) ≥ ϑ_C(G). Now it suffices to show ϑ_R(G) ≤ ϑ_C(G).
+
+3. Most of our proof is the same as those in [19] except that we use conjugate transpose. We include them here for completeness.
+
+4. Proof. Let c, φ be s.t. the optimal handle and orthogonal representation that achieves ϑ_C(G). Define
+
+5. Theorem 5. Let G be a graph on vertices [n]. Then ϑ_C(G) is minimum of the largest eigenvalue of any Hermitian matrix (a_{ij})_{i,j=1}^n s.t.
+
+6. a_{ij} = 1, if i = j or i, j are non-adjacent                 (7)
+
+7. a_{ij} = 1 - ⟨u_i, u_j⟩ / (⟨c, u_i⟩⟨c, u_j⟩), i ≠ j
+  a_{ii} = 1,
+  A = (a_{ij})_{i,j=1}^n.
+
+8. -a_{ij} = (c - u_i/⟨c, u_i⟩)†(c - u_j/⟨c, u_j⟩),
+  ϑ_C(G) - a_{ii} = (c - u_i/⟨c, u_i⟩)†(c - u_i/⟨c, u_i⟩)
+  + (ϑ_C(G) - 1/|⟨c, u_i⟩|^2).
+
+9. These implies that ϑ_C(G)I - A is Hermitian PSD and hence the largest eigenvalue of A is at most ϑ_C(G).
+
+10. Conversely, let A = (a_{ij})_{i,j=1}^n be any Hermitian matrix satisfying (7) and λ be its largest eigenvalue. Then λI - A is Hermitian, positive semidefinite. Hence there exist vectors x_1,...,x_n s.t.
+
+11. λδ_{ij} - a_{ij} = x_i†x_j.
+
+12. Let c be a unit vector orthogonal to x_1, ..., x_n and set
+
+13. u_i = 1/√λ (c + x_i).
+
+14. u_i†u_i = 1/λ (c†c + x_i†x_i) = 1,
+  u_i†u_j = 1/λ (1 + x_i†x_j) = 0 if (i, j) ∉ E(G).
+
+15. Then u_1, ..., u_n is an orthogonal representation of G and
+
+16. λ = 1/|⟨c, u_i⟩|^2, ∀i ∈ [n].
+
+17. This completes the proof.
+
+18. Lemma 5. Let G be a graph on vertices [n], and B = (b_{ij})_{i,j=1}^n range over all Hermitian PSD matrices s.t.
+
+19. b_{ij} = 0, for all (i, j) ∈ E(G), and Tr(B) = 1.
+
+20. ϑ_C(G) ≥ max_B Tr BJ.
+
+21. Proof. Let A = (a_{ij})_{i,j=1}^n be a matrix satisfying (7) with largest eigenvalue ϑ_C(G) and B be any Hermitian PSD matrix satisfying the above constraints. Then, using (7),
+
+22. Tr BJ = ∑_{i, j=1}^n b_{ij} = ∑_{i, j=1}^n a_{ij}b_{ij} = Tr AB
+
+23. ϑ_C(G) - Tr BJ = Tr (ϑ_C(G)I - A)B.
+
+24. Here, both ϑ_C(G)I - A and B are PSD. Let e_1, ..., e_n be a set of mutually orthogonal eigenvectors of B with corresponding eigenvalues λ_1, ..., λ_n ≥ 0. Then
+
+25. Tr (ϑ_C(G)I - A)B = ∑_{i=1}^n e_i†(ϑ_C(G)I - A)Be_i
+  = ∑_{i=1}^n λ_i e_i†(ϑ_C(G)I - A)e_i ≥ 0
+
+26. ϑ_R(G) has an equivalent definition as follows.
+
+27. Theorem 6 (from [19]). Let G be a graph on vertices [n], and B = (b_{ij})_{i,j=1}^n range over all symmetric PSD matrices, which consists of Hermitian PSD matrices with real entries, s.t.
+
+28. b_{ij} = 0, for all (i, j) ∈ E(G), and Tr(B) = 1.
+
+29. ϑ_R(G) = max_B Tr BJ.
+
+30. Since n × n symmetric PSD is already Hermitian, we have that
+
+  ϑ_C(G) ≥ max_{B is Hermitian PSD} Tr BJ
+                         ≥ max_{B is symmetric PSD} Tr BJ = ϑ_R(G).
+
+31. Since an optimal point achieving ϑ_R(G) is an optimal point achieving ϑ_C(G), ϑ_C(G) can be always achieved by an orthogonal representation φ s.t. all vectors are real and real vector c.
+
+32. A. Two definitions of Lovász number are the same
+
+Proof. Since \( G \subseteq H \), we have \( V(G) = V(H) \) and that if \( (u, v) \notin E(H) \), then \( (u, v) \notin E(G) \). Therefore, an orthogonal representation \( \phi \) of \( G \) is an orthogonal representation of \( H \). Let \( \psi \) and \( d \) be optimal orthogonal representation and handle that achieves \( \vartheta(G) \). Then, we have
+
+\[
+\vartheta(G) = \max_{i \in V(G)} \frac{1}{|\langle d, \psi(i) \rangle|^2}
+\geq \min_{\phi, c} \max_{i \in V(H)} \frac{1}{|\langle c, \phi(i) \rangle|^2} = \vartheta(H).
+\]
+
+Proof. By Proposition 3, we have that $\alpha(C_5^{\vee m}) = \alpha(C_5)^m = 2^m$. Since $\alpha(G)\chi(G) \geq |V(G)|$ [22, page 193], we have $\chi(C_5^{\vee m}) \geq |V(C_5^{\vee m})|/\alpha(C_5^{\vee m}) = \frac{5^m}{2^m}$.

@@ -1,0 +1,289 @@
+{
+  "condition": "B3",
+  "paper_id": "2407.06913v2",
+  "verdict": "flagged",
+  "confidence": 0.95,
+  "reasoning": "Both reviewers independently flag the manuscript and converge on several critical issues. The most serious concerns involve (1) the sensitivity analysis in the core tree-release primitive (Lemma 3.2), (2) the misapplication of advanced composition throughout the approximate-DP results, and (3) the flawed probabilistic analysis underlying the Thorup-Zwick-style construction in Section 4.2. These are not cosmetic or minor issues—they directly underwrite the paper's headline contributions (optimal additive error rates and the multiplicative-approximation algorithm). Reviewer A provides detailed, specific identification of where the proofs break down, and Reviewer B independently corroborates the composition and balancing issues from a different angle. After weighing both reviews, I find that the composition/privacy-budget errors and the sensitivity error in Lemma 3.2 are the most clearly retraction-worthy, as they invalidate the stated privacy guarantees and error rates that constitute the paper's central claims. The probabilistic issues in Section 4.2 (dependence in the union of sampled sets) are also severe but could conceivably be repaired with substantial effort, so I classify those at the boundary of RETRACTION-WORTHY and MAJOR-REVISION. Overall, the manuscript's main theorems are not established by the presented arguments.",
+  "findings": [
+    {
+      "finding": "Lemma 3.2 (tree release primitive) has an incorrect sensitivity analysis. The paper claims the released vector of distances has ℓ1-sensitivity 1 because subtrees are disjoint, but changing one edge weight can affect multiple distances whose shortest paths traverse that edge, yielding sensitivity larger than 1. The noise calibration is therefore insufficient for the claimed privacy guarantee.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.92,
+      "justification": "This primitive is invoked repeatedly throughout Sections 3 and 4 as the building block for all main algorithms. If the privacy proof of the primitive is invalid, every downstream theorem inherits the flaw. Reviewer A identifies this precisely; Reviewer B's 'composition of compositions' concern is a related but differently framed version of the same core issue (the per-tree privacy/accuracy tradeoff is not as claimed). Because the paper's central contribution is the family of DP algorithms built on this primitive, this undermines the main conclusions.",
+      "source": "both"
+    },
+    {
+      "finding": "Advanced composition is misapplied in the approximate-(ε,δ)-DP results. The manuscript uses per-mechanism privacy budget scaling as 1/k (or 1/s) rather than 1/√k (or 1/√s), inconsistent with the paper's own stated Lemma 2.2. This affects the error bounds in Theorems 3.2, 4.2, and related results.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.9,
+      "justification": "This is not a constant-factor issue; it changes the asymptotic dependence on s (and hence n) in the final error rate. The headline Õ(n^{1/4}/ε) bound for approximate DP is derived from a balancing argument that relies on this incorrect scaling. If corrected, the optimal parameter choice and resulting rate change materially. Both reviewers flag this: Reviewer A pinpoints the specific algebraic discrepancy (1/s vs 1/√s), and Reviewer B identifies the balancing argument as fundamentally flawed for related reasons.",
+      "source": "both"
+    },
+    {
+      "finding": "Section 4.2, Lemma 4.4: |A_i| is modeled as Binomial(n, p_i), but A_i is a union of fixed-size subsets sampled without replacement, so the vertex indicators are dependent and the binomial model is invalid.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.82,
+      "justification": "This lower bound on |A_i| feeds into Lemma 4.5 and the subsequent stretch analysis for the Thorup-Zwick-style oracle. The probabilistic foundation for the 2k−1 stretch guarantee is therefore unsupported. Reviewer A identifies this clearly as retraction-worthy; Reviewer B flags it as a major concern though with slightly less certainty. The dependence issue is real and not easily hand-waved away, though it might be repairable with a more careful analysis (e.g., negative association arguments). Given that no such repair is present, the current proof is invalid.",
+      "source": "both"
+    },
+    {
+      "finding": "Lemma 4.5's proof treats A_{i+1} as providing independent opportunities to beat A_i^r − {w}, but A_{i+1} is constructed from the same dependent sampling process, so the independence assumption is unjustified.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "This is closely related to the Lemma 4.4 issue. While clearly problematic, it is plausible that negative-association or coupling arguments could salvage the conclusion. However, no such argument is present in the manuscript. Reviewer A rates this retraction-worthy; Reviewer B flags the stretch analysis as insufficiently justified. I rate it MAJOR-REVISION because, conditional on fixing the Lemma 4.4 issue, this step might be repairable.",
+      "source": "both"
+    },
+    {
+      "finding": "Theorem 3.1's hitting-set probability analysis assumes independent Bernoulli sampling (each vertex included with probability s/n), but the algorithm constructs a fixed-size set of size s. The miss-probability calculation (1−s/n)^ℓ is not correct for sampling without replacement.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "For fixed-size sampling without replacement, hypergeometric bounds would be needed. Alternatively, the algorithm could be restated to use Bernoulli sampling. Either way, this is likely fixable but requires non-trivial changes to the proof and possibly the algorithm statement/error accounting.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The bunch definition in Section 4.2 is malformed (contains a free index i) and does not match the standard Thorup-Zwick definition. The stretch analysis depends on this object being well-defined.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "Likely a fixable definitional error, but as written the correctness proof for the 2k−1 stretch is incomplete. Reviewer B also notes that the connection between bunches, clusters, and the tree construction is insufficiently rigorous.",
+      "source": "both"
+    },
+    {
+      "finding": "Inconsistent exponents for the approximate-DP additive error across the abstract, theorem statements, and proofs (e.g., Õ(√k · n^{1/(2k)}/ε) vs Õ(√(k · n^{1/(2k)})/ε) = Õ(√k · n^{1/(4k)}/ε)).",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "These are materially different rates. The manuscript must resolve which bound is intended and prove it consistently. This is especially problematic given the composition errors identified above.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Proof of Lemma 3.1 contains an apparent transcription error comparing d̃^(t)(u,v) to d_{G̃}^(t)(u,v) rather than to d_G^(t)(u,v).",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.7,
+      "justification": "Likely fixable if it is a typo, but as written the proof does not establish the stated approximation guarantee.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The manuscript conflates two different views of the mechanism (perturbing edge weights vs. applying the Laplace mechanism to the all-pairs distance function) without cleanly reconciling them.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "A clarity/reporting issue that contributes to confusion in the sensitivity analysis but does not by itself invalidate results.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Asymptotic simplifications (e.g., Proposition E.2) are overly loose and sometimes dimensionally odd, obscuring the balancing arguments.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Does not change conclusions but makes verification difficult.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Substantial notation and editorial inconsistencies throughout (T vs 𝒯, duplicated proof fragments, references to nonexistent theorems).",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Does not change results but makes the manuscript very difficult to verify.",
+      "source": "prover_a"
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 3,
+    "MAJOR-REVISION": 5,
+    "MINOR": 3
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.98,
+    "reasoning": "The manuscript contains multiple core methodological errors in both privacy accounting and utility analysis. Several claimed theorems rely on incorrect applications of the Laplace mechanism, advanced composition, and probabilistic reasoning. Most seriously, the paper repeatedly claims privacy/accuracy guarantees that do not follow from the stated algorithms: (i) the tree algorithm in Lemma 3.2 misstates the sensitivity of the released vector and therefore its privacy proof is invalid as written; (ii) the approximate-DP theorems use an incorrect advanced-composition scaling, yielding substantially understated error and in some cases not even the claimed privacy level; (iii) the hitting-set argument in Theorem 3.1 samples vertices independently with probability s/n, but the algorithm appears to choose a fixed-size set of size s, so the probability calculations are inconsistent; and (iv) in Section 4.2 the analysis treats the random union A_i = \\cup_r A_i^r as if |A_i| were binomial, despite strong dependence, so the key lower bound on |A_i| is unsupported. These are not cosmetic issues: they directly underwrite the main asymptotic improvements. There are also major inconsistencies in exponents and notation for the mixed additive/multiplicative results. Overall, the paper's central claimed bounds are not established by the presented arguments.",
+    "findings": [
+      {
+        "finding": "Lemma 3.2 (tree release) claims the released vector of distances between z and z*, and between z* and each child, has sensitivity 1 because the subtrees are disjoint. This is incorrect: under the paper's neighboring relation, changing one edge weight by 1 can affect every one of these released distances whose path contains that edge, so the l1 sensitivity of the whole vector is generally larger than 1.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This is the core privacy proof for the Sealfon-style tree primitive that the paper repeatedly invokes in Sections 3 and 4. As written, the mechanism/noise calibration in Lemma 3.2 is not justified, so every theorem depending on this primitive lacks a valid privacy guarantee. Since the paper's main contribution is a family of DP algorithms built on that primitive, this undermines the central conclusions."
+      },
+      {
+        "finding": "The approximate-DP composition is misapplied throughout. Lemma 2.2 states that k mechanisms each with privacy ε/(2√(2k log(2/δ))) compose to (ε,δ)-DP, but the manuscript repeatedly substitutes ε/(2√2 k log(2/δ)) or ε/(4√2 s log(2/δ)), i.e. scaling as 1/k rather than 1/√k.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This directly drives the claimed Õ(n^{1/4}/ε) and Õ(√k·n^{1/(2k)}/ε) error bounds in the (ε,δ)-DP setting. Using the stated lemma correctly would change the per-mechanism privacy budget and therefore the final error. As presented, the claimed approximate-DP theorems are not established and may be false at the advertised rates."
+      },
+      {
+        "finding": "Even within Appendix B, the algorithm says 'we run the ε/(4√2 s log(2/δ))-DP algorithm from Lemma 3.2' and then claims by advanced composition that running s such mechanisms is (ε/2,δ)-DP. This does not follow from their own Lemma 2.2, which requires a √s term in the denominator, not s.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This is not a minor constant issue; it changes the asymptotic utility calculation. The headline optimal Õ(n^{1/4}/ε) upper bound is derived from this incorrect composition. If corrected, the balancing argument and resulting rate may change materially."
+      },
+      {
+        "finding": "The proof of Lemma 3.1 contains a likely typo/logic error in the key accuracy bound: it states |d̃^{(t)}(u,v) − d_{G̃}^{(t)}(u,v)|, but the target quantity should be compared to d_G^{(t)}(u,v). As written, the bound is vacuous/incoherent.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This appears fixable if it is merely a transcription error, but in the current manuscript the proof does not correctly establish the stated approximation to the true graph distances."
+      },
+      {
+        "finding": "Theorem 3.1's hitting-set probability analysis assumes 'each vertex in V has probability s/n of being included in S' and computes the miss probability as (1−s/n)^l, which corresponds to independent Bernoulli sampling. But the manuscript elsewhere describes constructing a hitting set of size s. For a fixed-size sample without replacement, those probabilities are not correct as stated.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The event that every long shortest path is hit is central to the additive-error theorem. If S is sampled without replacement, the proof must be rewritten using the correct hypergeometric bound; if S is Bernoulli-sampled, the algorithm statement should say so and the size/error accounting should be adjusted."
+      },
+      {
+        "finding": "Section 4.2, Lemma 4.4 models |A_i| as a Binomial(n,p_i) random variable, where A_i is the union over r of fixed-size subsets A_i^r sampled without replacement. The indicators {1[u∈A_i]} across vertices are dependent, so |A_i| is not binomial.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This lower bound on |A_i| is then used in Lemma 4.5 to prove the key event that every relevant vertex is closer to A_{i+1} than to competing centers in A_i^r, which in turn is used to argue the modified clusters preserve the Thorup–Zwick stretch analysis. Because the probabilistic foundation is invalid, the main 2k−1 stretch theorem is not established."
+      },
+      {
+        "finding": "Lemma 4.5's proof conditions on the event from Lemma 4.4 and then treats vertices in A_{i+1} as if they were independent opportunities to beat A_i^r−{w}, using a bound of the form 1−(1−1/(2|A_i^r|))^{|A_{i+1}|}. But A_{i+1} is a dependent random set produced from the same sampling process, so this step is not justified.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This lemma is a linchpin for embedding bunch/cluster arguments into a single tree family and for showing the Thorup–Zwick stretch survives the modification. Without it, the correctness of Theorems 4.3 and 4.4 is unsupported."
+      },
+      {
+        "finding": "The bunch definition in Section 4.2 is malformed: 'we define the bunches as B(u) = {w ∈ V | d(w,u) < d(u,p_{i+1}(u))}' has a free index i and is not the standard union over levels. Subsequent arguments about p_i(u) ∈ B(u) and the swap procedure therefore lack a precise object.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This may be repairable by restoring the standard definition, but as written the correctness proof for the 2k−1 stretch algorithm is incomplete because the key combinatorial object is not formally defined."
+      },
+      {
+        "finding": "Theorem 4.2 and multiple surrounding summary statements contain inconsistent exponents for the approximate-DP additive term. The abstract claims Õ(√k·n^{1/(2k)}/ε), but one sentence states 'reducing the additive error to O(√k n^{1/(2k)}/ε)' while another says 'O(√{k n^{1/(2k)}}/ε)', which equals O(√k·n^{1/(4k)}/ε).",
+        "severity": "MAJOR-REVISION",
+        "justification": "These are materially different asymptotic rates. Because these claims are central to the contribution, the manuscript must resolve which bound is intended and prove it consistently."
+      },
+      {
+        "finding": "The proof of Corollary 4.1 says the all-pairs distance is 'the sum of four distances from z', but the displayed formula uses three root distances: d(z,x)+d(z,y)−2d(z,lca). This is a proof inconsistency.",
+        "severity": "MINOR",
+        "justification": "The asymptotic bound likely survives up to a constant factor, but the current explanation is sloppy and should be corrected."
+      },
+      {
+        "finding": "The manuscript repeatedly says it applies the Laplace mechanism to f:w↦R^{n^2} returning all-pairs distances, while in fact the implemented mechanism perturbs edge weights and releases shortest paths on the noisy graph. These are different views and the privacy argument is not cleanly stated.",
+        "severity": "MINOR",
+        "justification": "This is mostly a reporting/clarity issue if the intended mechanism is edgewise noise addition, but it contributes to confusion in the sensitivity analysis and should be clarified."
+      },
+      {
+        "finding": "Several asymptotic simplifications via Proposition E.2 are overly loose or dimensionally odd, e.g. replacing log(n^2/γ) by O(log(n/γ)) is fine, but replacing single-log terms by products like O(log n · log(1/γ)) is unnecessarily inflationary and obscures balancing arguments.",
+        "severity": "MINOR",
+        "justification": "This does not by itself invalidate conclusions, but it makes the stated polylog factors hard to audit and contributes to inconsistent displayed rates."
+      },
+      {
+        "finding": "There are substantial notation and editorial inconsistencies (e.g., T versus mathcal{T} versus bold T, repeated duplicated proof fragments, references to 'Theorem E.2' where no such theorem is present, malformed formulas for approximate-DP bounds).",
+        "severity": "MINOR",
+        "justification": "These do not necessarily change results, but they make it difficult to verify the mathematics and increase the risk that important proof steps contain unnoticed errors."
+      }
+    ]
+  },
+  "review_b": {
+    "raw": "```json\n{\n  \"verdict\": \"flagged\",\n  \"confidence\": 0.95,\n  \"reasoning\": \"The manuscript claims a breakthrough improvement in the accuracy of differential privacy algorithms for the All-Pairs Shortest Distances (APSD) problem, matching a known lower bound. However, I have identified a critical and fundamental error: the claimed accuracy in the key theorems does not follow from the arguments provided. Specifically, the crucial step of balancing error terms to get the stated rates (O(n^{1/3}/ε) and O(n^{1/4}/ε)) is not valid, as the error from the tree-based component is not independent of the parameter 's' in the way required for the balancing. This error is derived by misinterpreting the privacy budget allocation. Because this error directly undermines the paper's central claimed result (the optimality of the additive error), the paper's core conclusions cannot be supported as presented. This is a retraction-worthy error.\",\n  \"findings\": [\n    {\n      \"finding\": \"The core algorithm balancing argument in Theorem 3.1 is invalid. The paper claims to set the error from two methods equal to find the optimal parameter 's'. However, the error bound from the tree-recursive method (Equation 1) is stated as O(s * polylog(n) / ε). The error bound from the input perturbation method (Equation 2) is O(√t / ε) = O(√(n/s) * polylog(n) / ε). Setting these equal to balance them gives O(s) ≈ O(√(n/s)), leading to s ≈ n^{1/3}. This is the stated result. The critical flaw is that the tree-based mechanism is run 's' times, but the paper's privacy composition analysis assumes a budget of ε/(2s) for each tree, which **only accounts for the total number of trees (s)**. It fails to account for the fact that **each tree mechanism itself has internal composition**. Sealfon's tree algorithm (Lemma 3.2) is not a single simple query; it's a composition of O(log n) sub-mechanisms. While Lemma 3.2 claims an algorithm with error O(polylog(n)/ε), this is for a **single** tree with **total** privacy budget ε. In the paper's Algorithm 1, each tree gets a budget of only ε/(2s). Therefore, the actual error for a single tree is not O(polylog(n) / (ε/(2s))) = O(s * polylog(n) / ε). Instead, because the tree algorithm itself is a composition, we must apply its complex internal budget allocation (involving log n sub-mechanisms) **after** allocating the budget per tree. The paper simply multiplies the per-tree error by 's', which is a standard operation for a single-query mechanism under basic composition, but not for a composed mechanism like Sealfon's. The per-tree error should scale as O(polylog(n) / (ε/(2s)) * (composition overhead of tree algorithm). The paper neglects this \"composition of compositions\" problem, leading to an optimistic and inaccurate error bound. Without a corrected analysis, the claimed rate of n^{1/3} is unjustified.\",\n      \"severity\": \"RETRACTION-WORTHY\",\n      \"justification\": \"This error is central to the paper's main contribution. The entire result of achieving a nearly-optimal n^{1/3} (ε-DP) and n^{1/4} (ε,δ-DP) additive error hinges on this balancing. If confirmed, the claimed rates are false and the paper's main conclusions cannot be supported. The paper does not present a correct analysis that would salvage the claimed bounds.\"\n    },\n    {\n      \"finding\": \"The proof of Lemma 4.4 contains a critical error in the application of the Chernoff bound. The paper states that E[X_i] >= t/2 and uses this to derive a tail bound. However, the calculation of E[X_i] is incorrect. The expectation E[X_i] = n * p_i, and p_i = 1 - (1 - |A_i^r|/n)^t. The paper then provides a lower bound for this expectation, but the derivation is sloppy and the final value is questionable. More importantly, the key step in the proof of a lower bound on |A_i| relies on the condition that 't' is chosen to be 100 * n^{1/k} log(n), and then uses the inequality |A_i^r| * t ≤ n (from line: 'where the first inequality follows from Bernoulli's inequality, and the last inequality follows from |A^r_i| · t ≤ n.'). The quantity |A_i^r| is n^{1-(i+1)/k}. For the smallest level (i=k-1), this is n^{1-(k)/k} = n^{0} = 1. So |A_i^r| * t = 1 * t = t. The condition t ≤ n is only true because t is defined as O(n^{1/k} log n). This is not a contradiction, but the overall justification is poorly structured and the logic is hard to follow. A more serious issue: the algorithm constructs sets A_i by sampling in iterations. The paper claims a minimum size for A_i with high probability, but does not sufficiently prove that this property holds simultaneously for all i and all iterations without a more complex union bound. While not necessarily a fatal flaw, this lack of rigor is a major methodological concern.\",\n      \"severity\": \"MAJOR-REVISION\",\n      \"justification\": \"This part of the construction for the multiplicative-approximation algorithm (Thorup-Zwick variant) is complex. While potentially fixable, the analysis as written is incomplete and relies on unsubstantiated claims. A reviewer cannot confirm the correctness of the algorithm's construction without a complete and rigorous probabilistic proof. This could affect the multiplicative and additive error bounds claimed in the later theorems.\"\n    },\n    {\n      \"finding\": \"The analysis of the 'pivot' and 'bunch' construction (Section 4.2) mixes probabilistic events in a way that is not guaranteed by the algorithm. The paper states that for a vertex 'u', 'w ∈ B(u) ... with probability 1 - 1/n^2 by Lemma 4.5'. Lemma 4.5 specifically proves a bound on the probability that d(u, p_{i+1}(u)) ≤ d(u, A_i^r - {w}). The event 'w ∈ B(u)' is equivalent to this event only in very specific circumstances that the paper does not clearly connect. The definition of B(u) involves *all* potential pivots, not just those from a specific A_i^r. The paper's logic seems to assume that if a pivot 'w' is the closest to 'u', then the condition of Lemma 4.5 automatically makes 'u' belong to the cluster and bunch of 'w', but this ignores the fact that a vertex can be in the bunches of many centers and the definition of B(u) is based on a different set (A_{i+1}). The reasoning is insufficient to guarantee that the distance from u to v is correctly captured by a single tree T* in the claimed way. This undermines the stretch analysis which is fundamental to the multiplicative approximation algorithm.\",\n      \"severity\": \"MAJOR-REVISION\",\n      \"justification\": \"A key step in the stretch analysis (the claim that a specific tree T* contains the correct path for all vertex pairs) lacks a clear, rigorous justification. The paper conflates several probabilistic events and definitions. This needs significant clarification and a proper proof. If the stretch factor cannot be properly bounded, the claimed improvement over Chen et al. is not valid.\"\n    },\n    {\n      \"finding\": \"The paper makes a minor but potentially confusing mistake in the statement of Lemma 2.2 (Advanced Composition). The lemma states that if you run k mechanisms where each is (ε/(2√(2k log(2/δ))), δ/2k)-DP, then the total is (ε, δ)-DP. The standard advanced composition theorem (Dwork & Roth, 2014) states that if you run k mechanisms where each is (ε', δ')-DP, the total is (ε, kδ' + δ)-DP for a specific relationship. The paper's formulation is a non-standard but valid reparameterization. However, the paper then uses this lemma in its proofs (e.g., Theorem 3.2, Theorem 4.2) by setting the per-mechanism ε to the given fraction. This is standard. The main issue is the lack of clarity, which is minor.\",\n      \"severity\": \"MINOR\",\n      \"justification\": \"The error is a reporting/notation issue that does not affect the fundamental conclusions. A careful reader can infer the correct application of the composition theorem. It does not change the paper's results.\"\n    }\n  ]\n}\n```",
+    "parse_error": true,
+    "truncated": true
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "Both reviewers independently flag the manuscript and converge on several critical issues. The most serious concerns involve (1) the sensitivity analysis in the core tree-release primitive (Lemma 3.2), (2) the misapplication of advanced composition throughout the approximate-DP results, and (3) the flawed probabilistic analysis underlying the Thorup-Zwick-style construction in Section 4.2. These are not cosmetic or minor issues—they directly underwrite the paper's headline contributions (optimal additive error rates and the multiplicative-approximation algorithm). Reviewer A provides detailed, specific identification of where the proofs break down, and Reviewer B independently corroborates the composition and balancing issues from a different angle. After weighing both reviews, I find that the composition/privacy-budget errors and the sensitivity error in Lemma 3.2 are the most clearly retraction-worthy, as they invalidate the stated privacy guarantees and error rates that constitute the paper's central claims. The probabilistic issues in Section 4.2 (dependence in the union of sampled sets) are also severe but could conceivably be repaired with substantial effort, so I classify those at the boundary of RETRACTION-WORTHY and MAJOR-REVISION. Overall, the manuscript's main theorems are not established by the presented arguments.",
+    "findings": [
+      {
+        "finding": "Lemma 3.2 (tree release primitive) has an incorrect sensitivity analysis. The paper claims the released vector of distances has ℓ1-sensitivity 1 because subtrees are disjoint, but changing one edge weight can affect multiple distances whose shortest paths traverse that edge, yielding sensitivity larger than 1. The noise calibration is therefore insufficient for the claimed privacy guarantee.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.92,
+        "justification": "This primitive is invoked repeatedly throughout Sections 3 and 4 as the building block for all main algorithms. If the privacy proof of the primitive is invalid, every downstream theorem inherits the flaw. Reviewer A identifies this precisely; Reviewer B's 'composition of compositions' concern is a related but differently framed version of the same core issue (the per-tree privacy/accuracy tradeoff is not as claimed). Because the paper's central contribution is the family of DP algorithms built on this primitive, this undermines the main conclusions.",
+        "source": "both"
+      },
+      {
+        "finding": "Advanced composition is misapplied in the approximate-(ε,δ)-DP results. The manuscript uses per-mechanism privacy budget scaling as 1/k (or 1/s) rather than 1/√k (or 1/√s), inconsistent with the paper's own stated Lemma 2.2. This affects the error bounds in Theorems 3.2, 4.2, and related results.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.9,
+        "justification": "This is not a constant-factor issue; it changes the asymptotic dependence on s (and hence n) in the final error rate. The headline Õ(n^{1/4}/ε) bound for approximate DP is derived from a balancing argument that relies on this incorrect scaling. If corrected, the optimal parameter choice and resulting rate change materially. Both reviewers flag this: Reviewer A pinpoints the specific algebraic discrepancy (1/s vs 1/√s), and Reviewer B identifies the balancing argument as fundamentally flawed for related reasons.",
+        "source": "both"
+      },
+      {
+        "finding": "Section 4.2, Lemma 4.4: |A_i| is modeled as Binomial(n, p_i), but A_i is a union of fixed-size subsets sampled without replacement, so the vertex indicators are dependent and the binomial model is invalid.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.82,
+        "justification": "This lower bound on |A_i| feeds into Lemma 4.5 and the subsequent stretch analysis for the Thorup-Zwick-style oracle. The probabilistic foundation for the 2k−1 stretch guarantee is therefore unsupported. Reviewer A identifies this clearly as retraction-worthy; Reviewer B flags it as a major concern though with slightly less certainty. The dependence issue is real and not easily hand-waved away, though it might be repairable with a more careful analysis (e.g., negative association arguments). Given that no such repair is present, the current proof is invalid.",
+        "source": "both"
+      },
+      {
+        "finding": "Lemma 4.5's proof treats A_{i+1} as providing independent opportunities to beat A_i^r − {w}, but A_{i+1} is constructed from the same dependent sampling process, so the independence assumption is unjustified.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.78,
+        "justification": "This is closely related to the Lemma 4.4 issue. While clearly problematic, it is plausible that negative-association or coupling arguments could salvage the conclusion. However, no such argument is present in the manuscript. Reviewer A rates this retraction-worthy; Reviewer B flags the stretch analysis as insufficiently justified. I rate it MAJOR-REVISION because, conditional on fixing the Lemma 4.4 issue, this step might be repairable.",
+        "source": "both"
+      },
+      {
+        "finding": "Theorem 3.1's hitting-set probability analysis assumes independent Bernoulli sampling (each vertex included with probability s/n), but the algorithm constructs a fixed-size set of size s. The miss-probability calculation (1−s/n)^ℓ is not correct for sampling without replacement.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "For fixed-size sampling without replacement, hypergeometric bounds would be needed. Alternatively, the algorithm could be restated to use Bernoulli sampling. Either way, this is likely fixable but requires non-trivial changes to the proof and possibly the algorithm statement/error accounting.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "The bunch definition in Section 4.2 is malformed (contains a free index i) and does not match the standard Thorup-Zwick definition. The stretch analysis depends on this object being well-defined.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "Likely a fixable definitional error, but as written the correctness proof for the 2k−1 stretch is incomplete. Reviewer B also notes that the connection between bunches, clusters, and the tree construction is insufficiently rigorous.",
+        "source": "both"
+      },
+      {
+        "finding": "Inconsistent exponents for the approximate-DP additive error across the abstract, theorem statements, and proofs (e.g., Õ(√k · n^{1/(2k)}/ε) vs Õ(√(k · n^{1/(2k)})/ε) = Õ(√k · n^{1/(4k)}/ε)).",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "These are materially different rates. The manuscript must resolve which bound is intended and prove it consistently. This is especially problematic given the composition errors identified above.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Proof of Lemma 3.1 contains an apparent transcription error comparing d̃^(t)(u,v) to d_{G̃}^(t)(u,v) rather than to d_G^(t)(u,v).",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.7,
+        "justification": "Likely fixable if it is a typo, but as written the proof does not establish the stated approximation guarantee.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "The manuscript conflates two different views of the mechanism (perturbing edge weights vs. applying the Laplace mechanism to the all-pairs distance function) without cleanly reconciling them.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "A clarity/reporting issue that contributes to confusion in the sensitivity analysis but does not by itself invalidate results.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Asymptotic simplifications (e.g., Proposition E.2) are overly loose and sometimes dimensionally odd, obscuring the balancing arguments.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Does not change conclusions but makes verification difficult.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Substantial notation and editorial inconsistencies throughout (T vs 𝒯, duplicated proof fragments, references to nonexistent theorems).",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Does not change results but makes the manuscript very difficult to verify.",
+        "source": "prover_a"
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 69650,
+    "duration_s": 115.32,
+    "n_api_calls": 3,
+    "cost_usd": 0.3372,
+    "total_input_tokens": 48382,
+    "total_output_tokens": 6505,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 22171,
+        "output_tokens": 2291,
+        "cost_usd": 0.0783375,
+        "duration_s": 37.33,
+        "label": "2407.06913v2/b3/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 20952,
+        "output_tokens": 1918,
+        "cost_usd": 0.0077668400000000005,
+        "duration_s": 28.34,
+        "label": "2407.06913v2/b3/prover_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 5259,
+        "output_tokens": 2296,
+        "cost_usd": 0.251085,
+        "duration_s": 49.65,
+        "label": "2407.06913v2/b3/arbiter"
+      }
+    ]
+  }
+}

@@ -1,0 +1,316 @@
+{
+  "condition": "B3",
+  "paper_id": "paper_015",
+  "verdict": "flagged",
+  "confidence": 0.87,
+  "reasoning": "Both reviewers independently converge on the same core concerns: absence of statistical rigor for state-of-the-art claims on a very small test set, unclear fairness of baseline comparisons, insufficient ablation depth, and potential data leakage from lack of a documented validation split. No single issue is retraction-worthy on its own—the proposed method is plausible and the architecture design is not fundamentally flawed—but the accumulation of major-revision-level issues means the central claim of superior performance is not reliably substantiated as presented. The findings below are ordered by severity and confidence.",
+  "findings": [
+    {
+      "finding": "No confidence intervals, error bars, repeated runs, or statistical significance tests are reported for any quantitative metric. With only 15 test scenes (Kalantari benchmark), small PSNR gains (e.g., ~0.34 dB) may be within noise, leaving the state-of-the-art claim unsupported.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.92,
+      "justification": "Both reviewers flag this. The extremely small test set makes stochastic variation a real concern. If repeated runs or significance tests showed the gains are not robust, the paper's primary conclusion would change. However, this is a reporting/rigor gap, not proof that the method fails, so it warrants revision rather than retraction.",
+      "source": "both"
+    },
+    {
+      "finding": "It is unclear whether all baselines were retrained under identical conditions (same data splits, preprocessing, augmentation, hardware) or whether published numbers were copied from original papers. The inclusion of an unreviewed arXiv preprint (Liu et al. 2022) further weakens comparability.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers raise this. Deep-learning benchmarks are highly sensitive to training protocol; differences in preprocessing or data handling alone can account for the reported margins. The relative ranking of methods could change under a fair, uniform evaluation, but the proposed method is not necessarily invalid.",
+      "source": "both"
+    },
+    {
+      "finding": "No separate validation split is described; hyperparameters (λ_g, learning rate schedule, architecture depth, etc.) appear to have been tuned on the same data used for final evaluation, constituting potential data leakage and over-optimistic performance estimates.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "Reviewer B raises this explicitly and Reviewer A notes the tiny dataset concern. If hyperparameters were optimized against the 15-scene test set, reported metrics are inflated relative to methods that used proper validation. This could change the claimed ranking but does not prove the method is fundamentally flawed.",
+      "source": "prover_b"
+    },
+    {
+      "finding": "The ablation study is too limited: only single-component removal is tested, with no variance estimates, no cross-validation, and no parameter-matched controls (e.g., transformer-only vs. deformable-conv-only, local-only vs. global-only attention).",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers note this. Without deeper ablations or repeated experiments, attributing performance gains to specific novel components (TDCAM, DWFB, gradient loss) is weakly supported. Conclusions about architectural contributions could change, but the overall empirical results are not invalidated.",
+      "source": "both"
+    },
+    {
+      "finding": "Critical architectural and training hyperparameters are omitted (numbers of transformer layers M/N, window sizes, channel dimensions, number of heads, number of TDCAM/RDWFB stacks, positional encoding details), severely limiting reproducibility.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Reviewer A raises this. Hidden capacity differences versus baselines could explain part of the reported gains. The omission also prevents independent verification. This is a significant reporting gap but not a proof of error.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The inference-time comparison is methodologically unfair: homography computation time is excluded for DeepHDR, and hardware/software conditions are not standardized across methods.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "Both reviewers flag this. It directly undermines the efficiency claims. If total end-to-end times were reported uniformly, the relative standing could change. However, this affects only the efficiency claim, not the accuracy claim.",
+      "source": "both"
+    },
+    {
+      "finding": "The HDR formation model (H_i = L_i^γ / t_i) is oversimplified: it assumes a fixed gamma without discussing camera response linearization, black level, or clipping, and does not confirm that the dataset images satisfy these assumptions.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.68,
+      "justification": "Reviewer A raises this. While many HDR papers use similar approximations and the Kalantari dataset may already be linearized, the lack of discussion means fairness of comparison with methods that handle linearization differently is uncertain. Probably does not change the main results but should be addressed.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "Claims about recovering occluded content and hallucinating textures are supported only by qualitative examples on datasets without ground truth, with no user study, no-reference metric, or protocol to distinguish faithful recovery from hallucination.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.82,
+      "justification": "Reviewer A raises this. It affects secondary claims about generalization and robustness but does not undermine the core benchmark results. Qualitative-only evaluation on non-GT data is common, though the language should be tempered.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The choice of medium exposure as the reference image is not justified and no sensitivity analysis is provided for alternative reference selections.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Reviewer B raises this. It is standard practice in the field and unlikely to change the main conclusions, but a brief robustness check or discussion would strengthen the paper.",
+      "source": "prover_b"
+    },
+    {
+      "finding": "Notation for deformable convolution is ambiguous (m_k conflates kernel weights and modulation scalars), impairing reproducibility but not necessarily indicating an implementation error.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.75,
+      "justification": "Reviewer A raises this. A notation fix would resolve it; there is no evidence the implementation is wrong.",
+      "source": "prover_a"
+    },
+    {
+      "finding": "The manuscript contains overstatements ('artifact-free,' 'accurately remove misalignment') that are stronger than what the reported methodology can support.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Reviewer A raises this. Toning down language would address it without affecting empirical substance.",
+      "source": "prover_a"
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 7,
+    "MINOR": 4
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.85,
+    "reasoning": "The manuscript presents a plausible deep-learning HDR deghosting architecture, but the methodological reporting is too incomplete to substantiate its state-of-the-art claims. The main problems are not obvious mathematical impossibilities in the model itself, but serious omissions and ambiguities in evaluation protocol, reproducibility, and fairness of comparison. These issues could materially affect the claimed superiority, though they do not by themselves prove the central idea is invalid. I do not see a clear retraction-level flaw from the text alone, but I do see multiple major-revision issues.",
+    "findings": [
+      {
+        "finding": "Quantitative results are asserted as state-of-the-art, but the actual numerical tables (Table 1, 2, 3) are missing from the manuscript text provided, preventing verification of whether improvements are statistically meaningful, consistently measured, or even correctly reported.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, this does not prove the method is wrong, but it prevents assessment of the central comparative claim. The paper's conclusion of superior performance could change once the full numbers are inspected."
+      },
+      {
+        "finding": "The evaluation protocol is insufficiently specified for fair comparison with prior work. It is unclear whether all baselines were retrained under identical preprocessing, patching, augmentation, and data splits, or whether published numbers were copied from prior papers under different settings.",
+        "severity": "MAJOR-REVISION",
+        "justification": "State-of-the-art claims in deep learning are highly sensitive to training protocol. If baselines were not retrained comparably, the performance ranking may change, but the proposed method itself is not necessarily invalid."
+      },
+      {
+        "finding": "Inference-time comparison is methodologically unfair as described: the manuscript explicitly excludes homography computation time for DeepHDR while including GPU inference for the proposed model, and does not clearly standardize hardware/software conditions across methods.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This directly weakens any efficiency claim. If confirmed, conclusions about acceptable or superior runtime are unreliable, though accuracy claims may still stand."
+      },
+      {
+        "finding": "No variance estimates, repeated runs, confidence intervals, or statistical significance analyses are reported despite the very small test set (15 scenes in Kalantari's dataset).",
+        "severity": "MAJOR-REVISION",
+        "justification": "With such a small benchmark, modest gains (e.g., fractions of a dB) may not be robust. The claimed superiority could disappear under repeated training/evaluation, but the paper is not fundamentally invalidated."
+      },
+      {
+        "finding": "The ablation study appears too limited to isolate which component actually drives improvement. The paper removes TDCAM, DWFB, and gradient loss separately, but does not report stronger controls such as transformer-only vs deformable-conv-only vs both, local-only vs global-only attention, or parameter-matched alternatives.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Without adequate ablations, the claim that specific architectural innovations cause the gains is under-supported. This affects mechanistic conclusions more than the existence of some empirical improvement."
+      },
+      {
+        "finding": "The manuscript claims the method can 'recover occluded content' and even 'hallucinates complete textures' on datasets without ground truth, but provides only qualitative examples and no methodology to distinguish faithful recovery from hallucination.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the model hallucinates plausible content rather than recovers true scene content, the interpretation of deghosting quality changes substantially. The practical claims may need to be softened or reevaluated."
+      },
+      {
+        "finding": "The treatment of HDR formation is oversimplified and under-justified: the conversion H_i = L_i^gamma / t_i assumes a fixed gamma and exposure normalization without discussing camera response linearization, black level, clipping behavior, or whether the dataset images satisfy these assumptions.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the dataset preprocessing does not match this imaging model, inputs to the network may be inconsistent and comparisons to prior work may not be fair. This could alter conclusions, though many prior HDR papers use similar approximations."
+      },
+      {
+        "finding": "The paper gives an equation for deformable convolution where m_k is described as the k-th kernel weight, but standard deformable convolution formulations distinguish learned convolution weights from modulation scalars. The notation is ambiguous enough that implementation correctness cannot be checked from the manuscript.",
+        "severity": "MINOR",
+        "justification": "This is primarily a reporting/notation issue unless the implementation is actually incorrect. It impairs reproducibility but does not by itself invalidate results."
+      },
+      {
+        "finding": "Critical architectural hyperparameters are omitted or unclear, including the numbers of local/global transformer layers (M, N), window sizes, channel dimensions, number of heads, number of TDCAM/RDWFB stacks, and whether absolute positional encoding is learned per resolution.",
+        "severity": "MAJOR-REVISION",
+        "justification": "These omissions make the method difficult to reproduce and may hide substantial capacity differences versus baselines. Conclusions about architectural novelty and efficiency could change once full details are disclosed."
+      },
+      {
+        "finding": "The manuscript uses qualitative evaluation on datasets without ground truth to claim generalization/normalization, but provides no objective protocol, user study, or no-reference metric to support those claims.",
+        "severity": "MINOR",
+        "justification": "This weakens external validity claims but does not materially affect the core benchmark results on the main dataset."
+      },
+      {
+        "finding": "The manuscript contains several overstatements such as 'artifact-free' and 'accurately remove misalignment and fill the content occluded by moving objects' that are stronger than what the reported methodology appears able to prove.",
+        "severity": "MINOR",
+        "justification": "This is mostly a claims-language issue. Toning down the conclusions would address it without changing the core experimental results."
+      },
+      {
+        "finding": "There is no discussion of potential train-test leakage or overlap in scenes/augmentations beyond citing the standard 74/15 Kalantari split. Given the tiny dataset and heavy patch extraction, explicit confirmation of scene-level split integrity would be important.",
+        "severity": "MINOR",
+        "justification": "Probably standard practice, but still worth stating. If leakage occurred it would be serious, but the current text does not provide evidence of leakage; it only fails to document safeguards."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.85,
+    "reasoning": "The manuscript presents a novel neural network architecture for HDR imaging with plausible claims and standard evaluation metrics. However, there are several methodological concerns, including missing statistical uncertainty (confidence intervals, significance tests), questionable baseline comparisons (unknown details for some methods like Liu et al. 2022), insufficient ablation rigor, and potential data leakage from using the same dataset for training and hyperparameter tuning without cross-validation. These issues do not invalidate the core conclusions but significantly weaken the reliability of the claimed 'state-of-the-art' performance.",
+    "findings": [
+      {
+        "finding": "No confidence intervals, error bars, or statistical significance tests are reported for any of the quantitative metrics (PSNR, SSIM, HDR-VDP-2). The paper presents only point estimates, making it impossible to assess whether the reported improvements over baselines (e.g., 0.34 dB PSNR-μ) are statistically significant or due to random variation.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the claimed superiority over previous methods may not be statistically robust. The paper's central conclusion ('state-of-the-art performance') could be unsupported if the differences are within noise. This requires revision to include variability measures or significance tests."
+      },
+      {
+        "finding": "The comparison with 'Liu et al. 2022' is problematic because that paper is cited as an arXiv preprint without peer review, and its implementation details, training setup, or exact metric computation may differ. The paper also does not specify whether all baselines were retrained under identical conditions or whether reported numbers were taken from original papers.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the quantitative comparison (Table 1) may be unfair or unverifiable. The improvement over Liu et al. (2022) could reflect differences in training protocol, data preprocessing, or metric computation rather than architectural superiority. This weakens the claim of state-of-the-art performance."
+      },
+      {
+        "finding": "The ablation study (Table 3) lacks statistical rigor. Only a single run with one random seed is implied. There is no reporting of variance across multiple runs, and the ablation components (removing TDCAM, removing DWFB) are tested only on the final validation set, not on a held-out test set or via cross-validation. This risks overfitting to the specific test scenes.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the claimed effectiveness of each component (TDCAM, DWFB, gradient loss) may be inflated or dataset-specific. Without multiple runs or proper validation strategy, the conclusions from the ablation study are not robust. A major revision should include repeated experiments or cross-validation."
+      },
+      {
+        "finding": "The paper uses the same dataset (Kalantari et al. 2017) for both training and for selecting hyperparameters (e.g., λ_g = 0.6, number of Transformer layers, learning rate schedule). There is no separate validation split described. This constitutes data leakage and can lead to over-optimistic performance estimates.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the reported results may not generalize to unseen data. The model's hyperparameters were tuned on the same data used for final evaluation, inflating performance. This could change the conclusions about relative ranking against methods that used proper validation splits."
+      },
+      {
+        "finding": "The inference time comparison (Table 2) is incomplete and potentially misleading. The paper explicitly excludes time for homography computation in DeepHDR (Wu et al. 2018) because it is 'very time-consuming,' but DeepHDR's total pipeline includes this step. This comparison is unfair and not 'apples-to-apples.'",
+        "severity": "MINOR",
+        "justification": "If confirmed, the claim that 'the inference time of our model is acceptable' is not properly contextualized. This does not invalidate the main conclusions about image quality but weakens the practical applicability argument. A revision should report total end-to-end time for all methods."
+      },
+      {
+        "finding": "The manuscript states that 'the medium exposure image L2 is regarded as the reference image' but does not justify this choice or test sensitivity to selecting a different reference exposure. In scenes where the medium exposure is heavily saturated or underexposed, this choice could degrade performance.",
+        "severity": "MINOR",
+        "justification": "If confirmed, the method's robustness to reference frame selection is unknown. This is a common practice in the field, so it does not invalidate conclusions, but a robustness check would strengthen the paper. A minor revision noting this limitation would suffice."
+      }
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.87,
+    "reasoning": "Both reviewers independently converge on the same core concerns: absence of statistical rigor for state-of-the-art claims on a very small test set, unclear fairness of baseline comparisons, insufficient ablation depth, and potential data leakage from lack of a documented validation split. No single issue is retraction-worthy on its own—the proposed method is plausible and the architecture design is not fundamentally flawed—but the accumulation of major-revision-level issues means the central claim of superior performance is not reliably substantiated as presented. The findings below are ordered by severity and confidence.",
+    "findings": [
+      {
+        "finding": "No confidence intervals, error bars, repeated runs, or statistical significance tests are reported for any quantitative metric. With only 15 test scenes (Kalantari benchmark), small PSNR gains (e.g., ~0.34 dB) may be within noise, leaving the state-of-the-art claim unsupported.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.92,
+        "justification": "Both reviewers flag this. The extremely small test set makes stochastic variation a real concern. If repeated runs or significance tests showed the gains are not robust, the paper's primary conclusion would change. However, this is a reporting/rigor gap, not proof that the method fails, so it warrants revision rather than retraction.",
+        "source": "both"
+      },
+      {
+        "finding": "It is unclear whether all baselines were retrained under identical conditions (same data splits, preprocessing, augmentation, hardware) or whether published numbers were copied from original papers. The inclusion of an unreviewed arXiv preprint (Liu et al. 2022) further weakens comparability.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.88,
+        "justification": "Both reviewers raise this. Deep-learning benchmarks are highly sensitive to training protocol; differences in preprocessing or data handling alone can account for the reported margins. The relative ranking of methods could change under a fair, uniform evaluation, but the proposed method is not necessarily invalid.",
+        "source": "both"
+      },
+      {
+        "finding": "No separate validation split is described; hyperparameters (λ_g, learning rate schedule, architecture depth, etc.) appear to have been tuned on the same data used for final evaluation, constituting potential data leakage and over-optimistic performance estimates.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.82,
+        "justification": "Reviewer B raises this explicitly and Reviewer A notes the tiny dataset concern. If hyperparameters were optimized against the 15-scene test set, reported metrics are inflated relative to methods that used proper validation. This could change the claimed ranking but does not prove the method is fundamentally flawed.",
+        "source": "prover_b"
+      },
+      {
+        "finding": "The ablation study is too limited: only single-component removal is tested, with no variance estimates, no cross-validation, and no parameter-matched controls (e.g., transformer-only vs. deformable-conv-only, local-only vs. global-only attention).",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers note this. Without deeper ablations or repeated experiments, attributing performance gains to specific novel components (TDCAM, DWFB, gradient loss) is weakly supported. Conclusions about architectural contributions could change, but the overall empirical results are not invalidated.",
+        "source": "both"
+      },
+      {
+        "finding": "Critical architectural and training hyperparameters are omitted (numbers of transformer layers M/N, window sizes, channel dimensions, number of heads, number of TDCAM/RDWFB stacks, positional encoding details), severely limiting reproducibility.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Reviewer A raises this. Hidden capacity differences versus baselines could explain part of the reported gains. The omission also prevents independent verification. This is a significant reporting gap but not a proof of error.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "The inference-time comparison is methodologically unfair: homography computation time is excluded for DeepHDR, and hardware/software conditions are not standardized across methods.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.78,
+        "justification": "Both reviewers flag this. It directly undermines the efficiency claims. If total end-to-end times were reported uniformly, the relative standing could change. However, this affects only the efficiency claim, not the accuracy claim.",
+        "source": "both"
+      },
+      {
+        "finding": "The HDR formation model (H_i = L_i^γ / t_i) is oversimplified: it assumes a fixed gamma without discussing camera response linearization, black level, or clipping, and does not confirm that the dataset images satisfy these assumptions.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.68,
+        "justification": "Reviewer A raises this. While many HDR papers use similar approximations and the Kalantari dataset may already be linearized, the lack of discussion means fairness of comparison with methods that handle linearization differently is uncertain. Probably does not change the main results but should be addressed.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "Claims about recovering occluded content and hallucinating textures are supported only by qualitative examples on datasets without ground truth, with no user study, no-reference metric, or protocol to distinguish faithful recovery from hallucination.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.82,
+        "justification": "Reviewer A raises this. It affects secondary claims about generalization and robustness but does not undermine the core benchmark results. Qualitative-only evaluation on non-GT data is common, though the language should be tempered.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "The choice of medium exposure as the reference image is not justified and no sensitivity analysis is provided for alternative reference selections.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "Reviewer B raises this. It is standard practice in the field and unlikely to change the main conclusions, but a brief robustness check or discussion would strengthen the paper.",
+        "source": "prover_b"
+      },
+      {
+        "finding": "Notation for deformable convolution is ambiguous (m_k conflates kernel weights and modulation scalars), impairing reproducibility but not necessarily indicating an implementation error.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.75,
+        "justification": "Reviewer A raises this. A notation fix would resolve it; there is no evidence the implementation is wrong.",
+        "source": "prover_a"
+      },
+      {
+        "finding": "The manuscript contains overstatements ('artifact-free,' 'accurately remove misalignment') that are stronger than what the reported methodology can support.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Reviewer A raises this. Toning down language would address it without affecting empirical substance.",
+        "source": "prover_a"
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 32143,
+    "duration_s": 75.45,
+    "n_api_calls": 3,
+    "cost_usd": 0.2191,
+    "total_input_tokens": 18341,
+    "total_output_tokens": 4125,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 7579,
+        "output_tokens": 1259,
+        "cost_usd": 0.0315375,
+        "duration_s": 27.44,
+        "label": "paper_015/b3/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 7601,
+        "output_tokens": 1040,
+        "cost_usd": 0.00319627,
+        "duration_s": 14.62,
+        "label": "paper_015/b3/prover_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 3161,
+        "output_tokens": 1826,
+        "cost_usd": 0.184365,
+        "duration_s": 33.39,
+        "label": "paper_015/b3/arbiter"
+      }
+    ]
+  }
+}

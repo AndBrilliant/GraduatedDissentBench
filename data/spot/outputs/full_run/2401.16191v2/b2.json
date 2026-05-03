@@ -1,0 +1,160 @@
+{
+  "condition": "B2",
+  "paper_id": "2401.16191v2",
+  "verdict": "flagged",
+  "confidence": 0.98,
+  "reasoning": "The manuscript contains multiple serious proof-level methodological flaws and internal inconsistencies. This is a mathematics/theoretical CS paper, so methodological correctness hinges on complete and valid proofs. Several central arguments are incomplete, rely on undefined assumptions/invariants, contain clear indexing/adjacency mistakes, and include at least one theorem proof left as a draft. Most importantly, the claimed queue-number bounds (Theorems 1.5 and 1.7) are not supportable from the text as presented because the key proof of Theorem 4.9 is incomplete and internally inconsistent. In addition, parts of the core structural proof toward Theorem 1.2 appear logically underjustified, though some may be repairable with substantial revision. Therefore the manuscript should be flagged.",
+  "findings": [
+    {
+      "finding": "The proof of Theorem 4.9 (the claimed 38-queue bound) is explicitly incomplete and marked '- DRAFT -', with undefined queue families / inconsistent notation and missing arguments.",
+      "severity": "RETRACTION-WORTHY",
+      "justification": "This theorem is one of the paper's headline results and is used directly for Theorems 1.5 and 1.7. As written, the proof is not complete: the queue assignment is only partially specified, notation changes mid-proof (e.g. Ω, Q, X in {L,F,B} but later 'R^s_h and R^ℓ_h'), and Claim 4.12 references queue classes not properly defined. Without a complete proof, the central numerical bounds 38 and 25 are unsupported by the manuscript as presented."
+    },
+    {
+      "finding": "The proof of Claim 4.10 is internally corrupted/incoherent: duplicated and disordered text appears after the claim, with contradictory case handling and malformed inequalities/symbol order.",
+      "severity": "RETRACTION-WORTHY",
+      "justification": "Claim 4.10 is used as a core ingredient in the construction of the queue layout inside each bag for Theorem 4.9. The proof text includes obvious paste/order corruption ('Thus, we necessarily have...' after a prior conclusion, malformed 'u ≺x u′ v ≺x ≺x v′', inconsistent case labels). This prevents verification of a central lemma needed for the main queue-number result. If this cannot be repaired, the main conclusion on queue number fails."
+    },
+    {
+      "finding": "The final count of queues in Theorem 4.9 is inconsistent with the queue names introduced. The proof concludes with queues 'Q^ℓ_b, Q^i_b and ... L,F,R ...' although earlier the families are described differently, and the counting basis for 38 is not rigorously established.",
+      "severity": "RETRACTION-WORTHY",
+      "justification": "The paper's principal contribution is a quantitative improvement from previous queue-number bounds. For such a result, exact queue accounting is essential. As written, the queue taxonomy is inconsistent and the arithmetic leading to 38 cannot be verified. This means the central claimed improvement is not established by the manuscript."
+    },
+    {
+      "finding": "The proof of Theorems 1.6 and 1.7 is only a sketch and relies entirely on Theorem 4.9 plus the assertion that all intra-layer edges are added triangulation edges, without a full argument that the 25-queue count follows from the '13 intra-layer queues' refinement.",
+      "severity": "RETRACTION-WORTHY",
+      "justification": "The bipartite planar graph bound 25 is a headline theorem. Since the supporting proof is compressed to a few sentences and depends on the already incomplete Theorem 4.9 proof, the claimed bound is unsupported as presented. If confirmed, this invalidates one of the two main advertised applications."
+    },
+    {
+      "finding": "In the quadrangular-face case of the iterative proof toward Theorem 1.2, there are clear indexing/adjacency errors: e.g. when defining optional edges e2 and e4, both are written with endpoint 'v2 ∈ B_{x_3}' and both conclude connecting to x2, whereas one should evidently involve x4.",
+      "severity": "MAJOR-REVISION",
+      "justification": "This is not a cosmetic typo: the combinatorial update rule for H depends on which boundary bags the new bag is adjacent to. Wrong adjacency to x2/x4 changes the canonical-face decomposition and the maintenance of invariants. The structural theorem may still be salvageable if this is corrected and re-proved carefully, but as written the proof cannot be trusted in this section."
+    },
+    {
+      "finding": "The manuscript repeatedly invokes Invariants I3.4.1–I3.4.6 and Assumption 3.6, but in the provided text these are not fully stated before use; some arguments depend critically on them.",
+      "severity": "MAJOR-REVISION",
+      "justification": "A proof by invariant maintenance is only checkable if the invariants are explicitly and precisely given. Here they are referenced extensively, but the text supplied omits their full statements and then derives substantial conclusions from them. This may reflect excerpting/assembly issues, but in the manuscript as presented the core proof is not verifiable and requires major revision for completeness."
+    },
+    {
+      "finding": "Lemma 3.3 only shows existence of an induced subgraph obtained by truncating two vertical paths at a maximal connecting edge. The subsequent use claims that one can replace a bipod by an acyclic sub-bipod while preserving the needed boundary connectivity to specified roots p1 and p2/p3. That preservation is not established by Lemma 3.3 in the general form used.",
+      "severity": "MAJOR-REVISION",
+      "justification": "In several places the proof says that if the constructed bipod is cyclic, Lemma 3.3 yields an acyclic subset 'such that p1 and p2 are connected via a path through that bipod.' But Lemma 3.3 as stated only guarantees an acyclic induced subgraph on suffixes of the two paths, not necessarily preserving the exact attachment behavior required in the invariant argument. If this gap is real, the iterative construction of the H-partition is not justified as written, though it may be repairable with a strengthened lemma."
+    },
+    {
+      "finding": "Claim 3.5 contains a nontrivial planar-separation assertion: from the absence of differently colored edges inside C_f, it concludes the existence of a single separating edge (u',v') with both endpoints in B_{x1}. This step is asserted without proof and is not immediate.",
+      "severity": "MAJOR-REVISION",
+      "justification": "This claim is used to force existence of a bichromatic edge, which is then used to create the next bipod in the triangular-face case. If the separation argument is invalid or needs extra hypotheses, the induction step toward Theorem 1.2 may fail. This does not yet force retraction because the result might still be true with a corrected argument, but substantial proof repair is needed."
+    },
+    {
+      "finding": "Lemma 3.1 (generalized Sperner-style lemma) appears to rely on parity in the dual graph, but the proof as written is incomplete/truncated and omits key details about why the outer face contributes degree 1 and why an odd-degree internal dual vertex yields the desired trichromatic triangle under the stated k-color boundary condition.",
+      "severity": "MAJOR-REVISION",
+      "justification": "This lemma is a central tool for the structural theorem. Since the proof is incomplete in the manuscript text, the downstream arguments cannot be fully checked. The result may well be true, but the manuscript needs a complete proof or a citation to an established theorem."
+    },
+    {
+      "finding": "The conclusion of the iterative construction for Theorem 1.2 asserts termination because degenerate steps reduce the number of problematic faces and non-degenerate steps assign at least one new vertex. However, no explicit well-founded potential function is defined to rule out cycling between degenerate and non-degenerate configurations.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Termination is essential for constructive inductive proofs. The current argument is plausible but not fully formalized. This is a serious proof-completeness issue that could affect correctness if hidden interactions create new problematic faces indefinitely. It likely requires revision rather than invalidating the theorem outright."
+    },
+    {
+      "finding": "The proof of Lemma 4.1 is incomplete at the beginning/end in the provided text and assumes biconnectivity after augmentation without discussing whether the augmentation preserves the target class/properties needed later.",
+      "severity": "MAJOR-REVISION",
+      "justification": "Lemma 4.1 underpins the 6-queue layout of planar quasi-4-trees. If augmentation changes the graph class or required face structure, the application may be invalid. This seems repairable with a fuller statement/proof, but it is currently underjustified."
+    },
+    {
+      "finding": "There are numerous notation and editing inconsistencies suggesting the manuscript is not in a methodologically stable form: undefined theorem references (e.g. Theorems 2.3, 2.4), missing citation '?', placeholder journal/date fields, and inconsistent symbol names.",
+      "severity": "MINOR",
+      "justification": "These do not by themselves invalidate results, but they impede verification and indicate the manuscript has not been fully proofread. They should be corrected in revision."
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 4,
+    "MAJOR-REVISION": 7,
+    "MINOR": 1
+  },
+  "raw_review": {
+    "verdict": "flagged",
+    "confidence": 0.98,
+    "reasoning": "The manuscript contains multiple serious proof-level methodological flaws and internal inconsistencies. This is a mathematics/theoretical CS paper, so methodological correctness hinges on complete and valid proofs. Several central arguments are incomplete, rely on undefined assumptions/invariants, contain clear indexing/adjacency mistakes, and include at least one theorem proof left as a draft. Most importantly, the claimed queue-number bounds (Theorems 1.5 and 1.7) are not supportable from the text as presented because the key proof of Theorem 4.9 is incomplete and internally inconsistent. In addition, parts of the core structural proof toward Theorem 1.2 appear logically underjustified, though some may be repairable with substantial revision. Therefore the manuscript should be flagged.",
+    "findings": [
+      {
+        "finding": "The proof of Theorem 4.9 (the claimed 38-queue bound) is explicitly incomplete and marked '- DRAFT -', with undefined queue families / inconsistent notation and missing arguments.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This theorem is one of the paper's headline results and is used directly for Theorems 1.5 and 1.7. As written, the proof is not complete: the queue assignment is only partially specified, notation changes mid-proof (e.g. Ω, Q, X in {L,F,B} but later 'R^s_h and R^ℓ_h'), and Claim 4.12 references queue classes not properly defined. Without a complete proof, the central numerical bounds 38 and 25 are unsupported by the manuscript as presented."
+      },
+      {
+        "finding": "The proof of Claim 4.10 is internally corrupted/incoherent: duplicated and disordered text appears after the claim, with contradictory case handling and malformed inequalities/symbol order.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "Claim 4.10 is used as a core ingredient in the construction of the queue layout inside each bag for Theorem 4.9. The proof text includes obvious paste/order corruption ('Thus, we necessarily have...' after a prior conclusion, malformed 'u ≺x u′ v ≺x ≺x v′', inconsistent case labels). This prevents verification of a central lemma needed for the main queue-number result. If this cannot be repaired, the main conclusion on queue number fails."
+      },
+      {
+        "finding": "The final count of queues in Theorem 4.9 is inconsistent with the queue names introduced. The proof concludes with queues 'Q^ℓ_b, Q^i_b and ... L,F,R ...' although earlier the families are described differently, and the counting basis for 38 is not rigorously established.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The paper's principal contribution is a quantitative improvement from previous queue-number bounds. For such a result, exact queue accounting is essential. As written, the queue taxonomy is inconsistent and the arithmetic leading to 38 cannot be verified. This means the central claimed improvement is not established by the manuscript."
+      },
+      {
+        "finding": "The proof of Theorems 1.6 and 1.7 is only a sketch and relies entirely on Theorem 4.9 plus the assertion that all intra-layer edges are added triangulation edges, without a full argument that the 25-queue count follows from the '13 intra-layer queues' refinement.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The bipartite planar graph bound 25 is a headline theorem. Since the supporting proof is compressed to a few sentences and depends on the already incomplete Theorem 4.9 proof, the claimed bound is unsupported as presented. If confirmed, this invalidates one of the two main advertised applications."
+      },
+      {
+        "finding": "In the quadrangular-face case of the iterative proof toward Theorem 1.2, there are clear indexing/adjacency errors: e.g. when defining optional edges e2 and e4, both are written with endpoint 'v2 ∈ B_{x_3}' and both conclude connecting to x2, whereas one should evidently involve x4.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is not a cosmetic typo: the combinatorial update rule for H depends on which boundary bags the new bag is adjacent to. Wrong adjacency to x2/x4 changes the canonical-face decomposition and the maintenance of invariants. The structural theorem may still be salvageable if this is corrected and re-proved carefully, but as written the proof cannot be trusted in this section."
+      },
+      {
+        "finding": "The manuscript repeatedly invokes Invariants I3.4.1–I3.4.6 and Assumption 3.6, but in the provided text these are not fully stated before use; some arguments depend critically on them.",
+        "severity": "MAJOR-REVISION",
+        "justification": "A proof by invariant maintenance is only checkable if the invariants are explicitly and precisely given. Here they are referenced extensively, but the text supplied omits their full statements and then derives substantial conclusions from them. This may reflect excerpting/assembly issues, but in the manuscript as presented the core proof is not verifiable and requires major revision for completeness."
+      },
+      {
+        "finding": "Lemma 3.3 only shows existence of an induced subgraph obtained by truncating two vertical paths at a maximal connecting edge. The subsequent use claims that one can replace a bipod by an acyclic sub-bipod while preserving the needed boundary connectivity to specified roots p1 and p2/p3. That preservation is not established by Lemma 3.3 in the general form used.",
+        "severity": "MAJOR-REVISION",
+        "justification": "In several places the proof says that if the constructed bipod is cyclic, Lemma 3.3 yields an acyclic subset 'such that p1 and p2 are connected via a path through that bipod.' But Lemma 3.3 as stated only guarantees an acyclic induced subgraph on suffixes of the two paths, not necessarily preserving the exact attachment behavior required in the invariant argument. If this gap is real, the iterative construction of the H-partition is not justified as written, though it may be repairable with a strengthened lemma."
+      },
+      {
+        "finding": "Claim 3.5 contains a nontrivial planar-separation assertion: from the absence of differently colored edges inside C_f, it concludes the existence of a single separating edge (u',v') with both endpoints in B_{x1}. This step is asserted without proof and is not immediate.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This claim is used to force existence of a bichromatic edge, which is then used to create the next bipod in the triangular-face case. If the separation argument is invalid or needs extra hypotheses, the induction step toward Theorem 1.2 may fail. This does not yet force retraction because the result might still be true with a corrected argument, but substantial proof repair is needed."
+      },
+      {
+        "finding": "Lemma 3.1 (generalized Sperner-style lemma) appears to rely on parity in the dual graph, but the proof as written is incomplete/truncated and omits key details about why the outer face contributes degree 1 and why an odd-degree internal dual vertex yields the desired trichromatic triangle under the stated k-color boundary condition.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This lemma is a central tool for the structural theorem. Since the proof is incomplete in the manuscript text, the downstream arguments cannot be fully checked. The result may well be true, but the manuscript needs a complete proof or a citation to an established theorem."
+      },
+      {
+        "finding": "The conclusion of the iterative construction for Theorem 1.2 asserts termination because degenerate steps reduce the number of problematic faces and non-degenerate steps assign at least one new vertex. However, no explicit well-founded potential function is defined to rule out cycling between degenerate and non-degenerate configurations.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Termination is essential for constructive inductive proofs. The current argument is plausible but not fully formalized. This is a serious proof-completeness issue that could affect correctness if hidden interactions create new problematic faces indefinitely. It likely requires revision rather than invalidating the theorem outright."
+      },
+      {
+        "finding": "The proof of Lemma 4.1 is incomplete at the beginning/end in the provided text and assumes biconnectivity after augmentation without discussing whether the augmentation preserves the target class/properties needed later.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Lemma 4.1 underpins the 6-queue layout of planar quasi-4-trees. If augmentation changes the graph class or required face structure, the application may be invalid. This seems repairable with a fuller statement/proof, but it is currently underjustified."
+      },
+      {
+        "finding": "There are numerous notation and editing inconsistencies suggesting the manuscript is not in a methodologically stable form: undefined theorem references (e.g. Theorems 2.3, 2.4), missing citation '?', placeholder journal/date fields, and inconsistent symbol names.",
+        "severity": "MINOR",
+        "justification": "These do not by themselves invalidate results, but they impede verification and indicate the manuscript has not been fully proofread. They should be corrected in revision."
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 71356,
+    "duration_s": 32.49,
+    "n_api_calls": 1,
+    "cost_usd": 0.0793,
+    "total_input_tokens": 24155,
+    "total_output_tokens": 1894,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 24155,
+        "output_tokens": 1894,
+        "cost_usd": 0.0793275,
+        "duration_s": 32.49,
+        "label": "2401.16191v2/b2/review"
+      }
+    ]
+  }
+}

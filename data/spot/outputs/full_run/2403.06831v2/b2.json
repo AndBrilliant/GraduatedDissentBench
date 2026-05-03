@@ -1,0 +1,160 @@
+{
+  "condition": "B2",
+  "paper_id": "2403.06831v2",
+  "verdict": "flagged",
+  "confidence": 0.9,
+  "reasoning": "The manuscript presents a plausible deep-learning HDR architecture, but the methods/evaluation description has several substantial methodological and reporting weaknesses that prevent confident verification of the state-of-the-art claim. I do not see a clear internal contradiction that alone proves the core results are impossible, so this is not obviously retraction-worthy from the text alone. However, there are major concerns about incomplete experimental specification, potentially non-comparable runtime evaluation, unsupported generalization claims, and ambiguities in key architectural/training details that materially affect reproducibility and interpretation of the reported superiority.",
+  "findings": [
+    {
+      "finding": "The paper claims 'state-of-the-art performance' from quantitative comparisons, but the actual comparison table values, variance/statistical uncertainty, and evaluation protocol details are absent from the manuscript excerpt. Without the reported numbers and exact protocol, the central superiority claim cannot be independently assessed.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If confirmed, this would require revision because the headline empirical claim is insufficiently supported/documented. It does not prove the method fails, but conclusions about superiority could change once full tables/protocol are inspected."
+    },
+    {
+      "finding": "The runtime comparison is methodologically non-comparable: the manuscript explicitly excludes homography time for DeepHDR because it is 'usually performed on CPU,' while apparently reporting only GPU inference for the proposed method and others. This biases the efficiency comparison in favor of pipelines whose costly preprocessing is omitted or treated inconsistently.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If confirmed, the computational-budget conclusions would need revision because timing comparisons are not apples-to-apples. This affects claims of acceptable or superior efficiency, though not necessarily image-quality conclusions."
+    },
+    {
+      "finding": "The manuscript makes a 'generalization/normalization on other datasets' claim based only on qualitative results on datasets without ground truth. No objective metrics, human study, or blinded assessment is provided to support generalization claims.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If confirmed, the external-validity/generalization conclusion is not adequately supported and should be toned down or re-evaluated. This does not invalidate the core method on the main benchmark."
+    },
+    {
+      "finding": "Key architectural details are underspecified for reproducibility: the numbers of local/global transformer layers (M, N), window sizes, tokenization strategy, channel dimensions, number of TDCAM/RDWFB blocks, deformable convolution configuration, attention block design in DWFB, and exact offset-generation network are not fully specified.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If confirmed, independent reproduction is seriously impeded and some performance may depend strongly on omitted implementation choices. This requires revision, though it does not by itself prove the reported results are wrong."
+    },
+    {
+      "finding": "The formulation of the attention mechanism/fusion block is too vague to verify correctness. Equation (5) defines Δw = φ(x), but there is no precise mathematical description of its dimensionality, normalization, whether weights are frame-wise, channel-wise, or spatially varying, or how Δw is applied to fuse the multi-frame features.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If confirmed, the proposed contribution cannot be properly evaluated or reproduced. Conclusions about why DWFB improves performance would remain unsupported until the mechanism is explicitly defined."
+    },
+    {
+      "finding": "The deformable convolution equation appears notation-inconsistent: m_k is described as the k-th kernel weight, but in deformable convolution literature the multiplicative term is often a learned modulation scalar distinct from the convolution kernel weights. The paper does not clearly separate convolution weights, offsets, and modulation terms.",
+      "severity": "MINOR",
+      "justification": "If confirmed, this is primarily a presentation/notation issue unless the implementation itself is wrong. It should be corrected for clarity but does not alone undermine the results."
+    },
+    {
+      "finding": "The manuscript asserts causal explanations for prior failures and its own improvements ('CNN local extraction causes ghosts', 'traditional convolution weakens complement information', 'TDCAM recovers occlusion') largely from intuition and visual examples, without targeted controlled experiments isolating those mechanisms beyond simple ablations.",
+      "severity": "MINOR",
+      "justification": "If confirmed, this weakens mechanistic interpretation but not necessarily the empirical performance claims."
+    },
+    {
+      "finding": "Training on Kalantari's dataset uses only 74 training scenes, yet the manuscript does not discuss overfitting control, model selection protocol, number of random seeds, or robustness across runs. With a large transformer-based model and 6000 epochs, sensitivity to initialization and data scarcity is a plausible concern.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If confirmed, reported gains may be unstable or dependent on favorable training conditions. This could change comparative conclusions and should be addressed with clearer validation protocol and repeatability evidence."
+    },
+    {
+      "finding": "The manuscript does not describe whether baseline methods were retrained under the same data preprocessing/augmentation settings or whether published numbers were copied. This matters because patch size, augmentation, gamma/exposure preprocessing, and training schedule can materially affect HDR benchmark performance.",
+      "severity": "MAJOR-REVISION",
+      "justification": "If confirmed, fairness of the comparison is uncertain and the claimed superiority could change under matched training/evaluation conditions."
+    },
+    {
+      "finding": "The use of HDR-VDP-2 is mentioned, but the required display/luminance calibration assumptions for HDR-VDP-2 are not described. Since this metric depends on viewing/display conditions, omission of those parameters makes the metric hard to interpret and reproduce.",
+      "severity": "MINOR",
+      "justification": "If confirmed, metric reproducibility/interpretability is weakened, but the paper still has other metrics and this likely would not overturn the main conclusion alone."
+    },
+    {
+      "finding": "The manuscript contains multiple signs of incomplete/poorly edited presentation ('normalization' instead of generalization, broken section transitions, placeholders like [JOURNAL], interrupted sentences around results/timing). This raises concern that important methodological details may be missing from the submitted version.",
+      "severity": "MINOR",
+      "justification": "If confirmed, this is mainly a reporting-quality issue. It warrants correction but does not itself invalidate the study."
+    },
+    {
+      "finding": "The claim that LDR images are effective for saturated/noisy region detection while HDR-domain transforms are effective for moving-object detection is asserted without citation or dedicated validation. Since the 6-channel input design is justified by this premise, the rationale is not rigorously demonstrated.",
+      "severity": "MINOR",
+      "justification": "If confirmed, this weakens motivation for the input representation but not necessarily the empirical performance."
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 7,
+    "MINOR": 5
+  },
+  "raw_review": {
+    "verdict": "flagged",
+    "confidence": 0.9,
+    "reasoning": "The manuscript presents a plausible deep-learning HDR architecture, but the methods/evaluation description has several substantial methodological and reporting weaknesses that prevent confident verification of the state-of-the-art claim. I do not see a clear internal contradiction that alone proves the core results are impossible, so this is not obviously retraction-worthy from the text alone. However, there are major concerns about incomplete experimental specification, potentially non-comparable runtime evaluation, unsupported generalization claims, and ambiguities in key architectural/training details that materially affect reproducibility and interpretation of the reported superiority.",
+    "findings": [
+      {
+        "finding": "The paper claims 'state-of-the-art performance' from quantitative comparisons, but the actual comparison table values, variance/statistical uncertainty, and evaluation protocol details are absent from the manuscript excerpt. Without the reported numbers and exact protocol, the central superiority claim cannot be independently assessed.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, this would require revision because the headline empirical claim is insufficiently supported/documented. It does not prove the method fails, but conclusions about superiority could change once full tables/protocol are inspected."
+      },
+      {
+        "finding": "The runtime comparison is methodologically non-comparable: the manuscript explicitly excludes homography time for DeepHDR because it is 'usually performed on CPU,' while apparently reporting only GPU inference for the proposed method and others. This biases the efficiency comparison in favor of pipelines whose costly preprocessing is omitted or treated inconsistently.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the computational-budget conclusions would need revision because timing comparisons are not apples-to-apples. This affects claims of acceptable or superior efficiency, though not necessarily image-quality conclusions."
+      },
+      {
+        "finding": "The manuscript makes a 'generalization/normalization on other datasets' claim based only on qualitative results on datasets without ground truth. No objective metrics, human study, or blinded assessment is provided to support generalization claims.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the external-validity/generalization conclusion is not adequately supported and should be toned down or re-evaluated. This does not invalidate the core method on the main benchmark."
+      },
+      {
+        "finding": "Key architectural details are underspecified for reproducibility: the numbers of local/global transformer layers (M, N), window sizes, tokenization strategy, channel dimensions, number of TDCAM/RDWFB blocks, deformable convolution configuration, attention block design in DWFB, and exact offset-generation network are not fully specified.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, independent reproduction is seriously impeded and some performance may depend strongly on omitted implementation choices. This requires revision, though it does not by itself prove the reported results are wrong."
+      },
+      {
+        "finding": "The formulation of the attention mechanism/fusion block is too vague to verify correctness. Equation (5) defines Δw = φ(x), but there is no precise mathematical description of its dimensionality, normalization, whether weights are frame-wise, channel-wise, or spatially varying, or how Δw is applied to fuse the multi-frame features.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the proposed contribution cannot be properly evaluated or reproduced. Conclusions about why DWFB improves performance would remain unsupported until the mechanism is explicitly defined."
+      },
+      {
+        "finding": "The deformable convolution equation appears notation-inconsistent: m_k is described as the k-th kernel weight, but in deformable convolution literature the multiplicative term is often a learned modulation scalar distinct from the convolution kernel weights. The paper does not clearly separate convolution weights, offsets, and modulation terms.",
+        "severity": "MINOR",
+        "justification": "If confirmed, this is primarily a presentation/notation issue unless the implementation itself is wrong. It should be corrected for clarity but does not alone undermine the results."
+      },
+      {
+        "finding": "The manuscript asserts causal explanations for prior failures and its own improvements ('CNN local extraction causes ghosts', 'traditional convolution weakens complement information', 'TDCAM recovers occlusion') largely from intuition and visual examples, without targeted controlled experiments isolating those mechanisms beyond simple ablations.",
+        "severity": "MINOR",
+        "justification": "If confirmed, this weakens mechanistic interpretation but not necessarily the empirical performance claims."
+      },
+      {
+        "finding": "Training on Kalantari's dataset uses only 74 training scenes, yet the manuscript does not discuss overfitting control, model selection protocol, number of random seeds, or robustness across runs. With a large transformer-based model and 6000 epochs, sensitivity to initialization and data scarcity is a plausible concern.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, reported gains may be unstable or dependent on favorable training conditions. This could change comparative conclusions and should be addressed with clearer validation protocol and repeatability evidence."
+      },
+      {
+        "finding": "The manuscript does not describe whether baseline methods were retrained under the same data preprocessing/augmentation settings or whether published numbers were copied. This matters because patch size, augmentation, gamma/exposure preprocessing, and training schedule can materially affect HDR benchmark performance.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, fairness of the comparison is uncertain and the claimed superiority could change under matched training/evaluation conditions."
+      },
+      {
+        "finding": "The use of HDR-VDP-2 is mentioned, but the required display/luminance calibration assumptions for HDR-VDP-2 are not described. Since this metric depends on viewing/display conditions, omission of those parameters makes the metric hard to interpret and reproduce.",
+        "severity": "MINOR",
+        "justification": "If confirmed, metric reproducibility/interpretability is weakened, but the paper still has other metrics and this likely would not overturn the main conclusion alone."
+      },
+      {
+        "finding": "The manuscript contains multiple signs of incomplete/poorly edited presentation ('normalization' instead of generalization, broken section transitions, placeholders like [JOURNAL], interrupted sentences around results/timing). This raises concern that important methodological details may be missing from the submitted version.",
+        "severity": "MINOR",
+        "justification": "If confirmed, this is mainly a reporting-quality issue. It warrants correction but does not itself invalidate the study."
+      },
+      {
+        "finding": "The claim that LDR images are effective for saturated/noisy region detection while HDR-domain transforms are effective for moving-object detection is asserted without citation or dedicated validation. Since the 6-channel input design is justified by this premise, the rationale is not rigorously demonstrated.",
+        "severity": "MINOR",
+        "justification": "If confirmed, this weakens motivation for the input representation but not necessarily the empirical performance."
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 32143,
+    "duration_s": 23.7,
+    "n_api_calls": 1,
+    "cost_usd": 0.0337,
+    "total_input_tokens": 7579,
+    "total_output_tokens": 1476,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 7579,
+        "output_tokens": 1476,
+        "cost_usd": 0.0337075,
+        "duration_s": 23.7,
+        "label": "2403.06831v2/b2/review"
+      }
+    ]
+  }
+}
