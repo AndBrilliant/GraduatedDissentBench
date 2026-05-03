@@ -124,8 +124,9 @@ def judge_pair(annotations: list[dict], predictions: list[dict],
         "predictions": predictions,
     }, ensure_ascii=False, indent=2)
 
+    # Temperature=0 for the judge to make scoring reproducible.
     raw = call_model(JUDGE_MODEL, SPOT_JUDGE_PROMPT.format(payload=payload),
-                     label=f"{paper_id}/{condition}/judge")
+                     label=f"{paper_id}/{condition}/judge", temperature=0)
     judge_dict = parse_judge_response(raw)
     matches_raw = judge_dict.get("matches", []) if isinstance(judge_dict, dict) else []
 

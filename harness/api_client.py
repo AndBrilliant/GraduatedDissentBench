@@ -170,7 +170,8 @@ def _call_openai_compatible(model_id: str, prompt: str, *,
                             base_url: str | None,
                             api_key_env: str,
                             uses_max_completion_tokens: bool,
-                            timeout_s: float = 180.0) -> tuple[str, int, int]:
+                            timeout_s: float = 180.0,
+                            temperature: float | None = None) -> tuple[str, int, int]:
     import openai
     client_kwargs: dict[str, Any] = {
         "api_key": os.environ.get(api_key_env, ""),
@@ -188,6 +189,8 @@ def _call_openai_compatible(model_id: str, prompt: str, *,
         kwargs["max_completion_tokens"] = 4096
     else:
         kwargs["max_tokens"] = 4096
+    if temperature is not None:
+        kwargs["temperature"] = temperature
     response = client.chat.completions.create(**kwargs)
     text = response.choices[0].message.content or ""
     usage = getattr(response, "usage", None)
@@ -196,14 +199,18 @@ def _call_openai_compatible(model_id: str, prompt: str, *,
     return text, in_tok, out_tok
 
 
-def _call_anthropic(model_id: str, prompt: str, timeout_s: float = 240.0) -> tuple[str, int, int]:
+def _call_anthropic(model_id: str, prompt: str, timeout_s: float = 240.0,
+                    temperature: float | None = None) -> tuple[str, int, int]:
     import anthropic
     client = anthropic.Anthropic(timeout=timeout_s, max_retries=2)
-    message = client.messages.create(
-        model=model_id,
-        max_tokens=4096,
-        messages=[{"role": "user", "content": prompt}],
-    )
+    kwargs: dict[str, Any] = {
+        "model": model_id,
+        "max_tokens": 4096,
+        "messages": [{"role": "user", "content": prompt}],
+    }
+    if temperature is not None:
+        kwargs["temperature"] = temperature
+    message = client.messages.create(**kwargs)
     text_parts = []
     for block in message.content:
         t = getattr(block, "text", None)
@@ -216,8 +223,13 @@ def _call_anthropic(model_id: str, prompt: str, timeout_s: float = 240.0) -> tup
     return text, in_tok, out_tok
 
 
-def call_model(name: str, prompt: str, *, label: str = "") -> str:
-    """Call a model by registered name, tracking cost and enforcing the cap."""
+def call_model(name: str, prompt: str, *, label: str = "",
+               temperature: float | None = None) -> str:
+    """Call a model by registered name, tracking cost and enforcing the cap.
+
+    temperature=None uses provider defaults (1.0). Pass temperature=0 for
+    deterministic outputs (e.g. for the LLM-as-judge in scoring).
+    """
     if not _KEYS_LOADED:
         load_keys()
 
@@ -234,18 +246,20 @@ def call_model(name: str, prompt: str, *, label: str = "") -> str:
 
     t0 = time.time()
     if provider == "anthropic":
-        text, in_tok, out_tok = _call_anthropic(model_id, prompt)
+        text, in_tok, out_tok = _call_anthropic(model_id, prompt, temperature=temperature)
     elif provider == "openai":
         text, in_tok, out_tok = _call_openai_compatible(
             model_id, prompt, base_url=None,
             api_key_env="OPENAI_API_KEY",
             uses_max_completion_tokens=True,  # GPT-5.4 needs max_completion_tokens
+            temperature=temperature,
         )
     elif provider == "deepseek":
         text, in_tok, out_tok = _call_openai_compatible(
             model_id, prompt, base_url="https://api.deepseek.com",
             api_key_env="DEEPSEEK_API_KEY",
             uses_max_completion_tokens=False,
+            temperature=temperature,
         )
     else:
         raise ValueError(f"Unknown provider: {provider}")
