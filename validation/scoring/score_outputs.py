@@ -119,40 +119,88 @@ def replay_judge_traces(
     return df
 
 
+# ── Disputed-TP list (editorial — set by evaluator audit, not the judge) ──
+
+# Each entry is (paper_id, condition) for a TP that an external audit
+# flagged as borderline. The aggregate emits both GD_strict (excludes
+# disputed) and GD_standard (includes) when GD has any disputed TP.
+DISPUTED_TPS: set[tuple[str, str]] = {
+    ("paper_014", "GD"),  # ChatGPT/Claude evaluators split on this match
+}
+
+
 # ── Aggregate metrics ─────────────────────────────────────────────────
 
+def _condition_metrics(grp: pd.DataFrame, label: str) -> dict:
+    N = len(grp)
+    TP = int(grp["TP_i"].sum())
+    FP = int(grp["FP_i"].sum())
+    FN = int(grp["FN_i"].sum())
+    precision_micro = TP / (TP + FP) if (TP + FP) else 0.0
+    recall_micro = TP / (TP + FN) if (TP + FN) else 0.0
+    precision_macro = grp["precision_i"].mean()
+    recall_macro = grp["recall_i"].mean()
+    pass_at_1 = (grp["TP_i"] > 0).mean()
+    ppr = grp["perfect_i"].mean()
+    if "rw_count" in grp.columns and grp["rw_count"].notna().any():
+        lenient = (grp["rw_count"].fillna(0).astype(int) > 0).mean()
+    else:
+        lenient = float("nan")
+    return {
+        "condition": label,
+        "N": N,
+        "TP_total": TP,
+        "FP_total": FP,
+        "FN_total": FN,
+        "precision_micro": round(precision_micro, 4),
+        "recall_micro": round(recall_micro, 4),
+        "precision_macro": round(precision_macro, 4),
+        "recall_macro": round(recall_macro, 4),
+        "PPR": round(ppr, 4),
+        "pass_at_1": round(pass_at_1, 4),
+        "lenient_RW_detection": round(lenient, 4) if lenient == lenient else None,
+    }
+
+
 def aggregate(per_paper: pd.DataFrame) -> pd.DataFrame:
-    """Per-condition pass@1, precision, recall, PPR, lenient detection."""
+    """Per-condition pass@1, precision, recall, PPR, lenient detection.
+
+    For any condition that has a disputed TP, emit BOTH a `<COND>_strict`
+    row (disputed TPs reclassified as misses) and a `<COND>_standard` row
+    (judge decision honored). Conditions with zero disputed TPs emit a
+    single row.
+    """
+    pp = per_paper.copy()
+    # Strict view: any (paper_id, condition) in DISPUTED_TPS has TP -> 0.
+    pp["disputed"] = pp.apply(
+        lambda r: "yes" if (r["paper_id"], r["condition"]) in DISPUTED_TPS else "no",
+        axis=1,
+    )
+
     rows = []
-    for cond, grp in per_paper.groupby("condition"):
-        N = len(grp)
-        TP = int(grp["TP_i"].sum())
-        FP = int(grp["FP_i"].sum())
-        FN = int(grp["FN_i"].sum())
-        precision_micro = TP / (TP + FP) if (TP + FP) else 0.0
-        recall_micro = TP / (TP + FN) if (TP + FN) else 0.0
-        precision_macro = grp["precision_i"].mean()
-        recall_macro = grp["recall_i"].mean()
-        pass_at_1 = (grp["TP_i"] > 0).mean()
-        ppr = grp["perfect_i"].mean()
-        if "rw_count" in grp.columns and grp["rw_count"].notna().any():
-            lenient = (grp["rw_count"].fillna(0).astype(int) > 0).mean()
-        else:
-            lenient = float("nan")
-        rows.append({
-            "condition": cond,
-            "N": N,
-            "TP_total": TP,
-            "FP_total": FP,
-            "FN_total": FN,
-            "precision_micro": round(precision_micro, 4),
-            "recall_micro": round(recall_micro, 4),
-            "precision_macro": round(precision_macro, 4),
-            "recall_macro": round(recall_macro, 4),
-            "PPR": round(ppr, 4),
-            "pass_at_1": round(pass_at_1, 4),
-            "lenient_RW_detection": round(lenient, 4) if lenient == lenient else None,
-        })
+    for cond, grp in pp.groupby("condition"):
+        any_disputed = (grp["disputed"] == "yes").any()
+        if not any_disputed:
+            rows.append(_condition_metrics(grp, cond))
+            continue
+        # Standard
+        rows.append(_condition_metrics(grp, f"{cond}_standard"))
+        # Strict: zero out the disputed rows' TPs and increment FN
+        strict = grp.copy()
+        mask = strict["disputed"] == "yes"
+        strict.loc[mask, "TP_i"] = 0
+        strict.loc[mask, "FN_i"] = strict.loc[mask, "FN_i"] + (grp.loc[mask, "TP_i"].values)
+        strict["precision_i"] = strict.apply(
+            lambda r: (r["TP_i"] / (r["TP_i"] + r["FP_i"])) if (r["TP_i"] + r["FP_i"]) else 0.0,
+            axis=1,
+        )
+        strict["recall_i"] = strict.apply(
+            lambda r: (r["TP_i"] / (r["TP_i"] + r["FN_i"])) if (r["TP_i"] + r["FN_i"]) else 0.0,
+            axis=1,
+        )
+        strict["perfect_i"] = ((strict["TP_i"] == strict["n_annotations"]) & (strict["FP_i"] == 0)).astype(int)
+        rows.append(_condition_metrics(strict, f"{cond}_strict"))
+
     return pd.DataFrame(rows).sort_values("condition").reset_index(drop=True)
 
 
@@ -287,6 +335,11 @@ def main():
         id_map = {}
 
     per_paper = replay_judge_traces(traces_path, ground_truth, id_map, raw_outputs)
+    # Annotate the per-paper output with the disputed flag
+    per_paper["disputed"] = per_paper.apply(
+        lambda r: "yes" if (r["paper_id"], r["condition"]) in DISPUTED_TPS else "no",
+        axis=1,
+    )
     per_paper.to_csv(args.per_paper_out, index=False)
     agg = aggregate(per_paper)
     agg.to_csv(args.aggregate_out, index=False)
