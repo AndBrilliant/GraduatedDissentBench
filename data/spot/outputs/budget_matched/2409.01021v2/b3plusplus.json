@@ -1,0 +1,550 @@
+{
+  "condition": "B3PLUSPLUS",
+  "paper_id": "2409.01021v2",
+  "verdict": "flagged",
+  "confidence": 0.95,
+  "reasoning": "Both reviewers converge on a set of serious methodological concerns that, taken together, undermine confidence in the paper's central claims. The most critical issues are: (1) the OCC loss uses ground-truth masks while being presented as unsupervised correspondence learning, which is a supervision misrepresentation; (2) the CAC module relies on non-differentiable operations without any described relaxation, casting doubt on whether correspondence learning actually occurs as claimed; (3) possible train-test data overlap involving COCO-derived datasets; (4) tensor-algebra inconsistencies that prevent independent verification of the core module; and (5) an underspecified warping operator for the cycle consistency loss. While several of these issues could individually be addressed through revision, the combination — particularly the supervision mischaracterization and the non-differentiability gap — raises fundamental questions about whether the paper's mechanistic claims are supported. However, none of these issues constitute incontrovertible proof that the empirical results are fabricated or impossible; they instead indicate that the paper's explanations of why the method works are unreliable, comparisons may be unfair, and the method cannot be independently verified from the manuscript. This warrants major revision rather than retraction, because the underlying architecture could still produce valid results even if the paper's account of the learning mechanism is incorrect or incomplete.",
+  "findings": [
+    {
+      "finding": "The Object-Aware Cycle Consistency (OCC) loss uses ground-truth segmentation masks (G_i^s in Eq. 16) to restrict correspondence supervision to co-salient pixels, while the paper presents this as unsupervised correspondence learning. This constitutes a misrepresentation of the supervision level of a core component and creates an unfair comparison with methods that do not use mask-guided auxiliary training for correspondence.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers flagged this independently, and Reviewer B upgraded it to RETRACTION-WORTHY in reflection. However, all methods in this domain use ground-truth masks for the primary segmentation loss; the question is whether using masks in an auxiliary loss constitutes a fundamentally different supervision regime. It is a serious confound that changes the interpretation of novelty and fairness, and the 'unsupervised' characterization is clearly misleading. However, it does not by itself prove the architecture is without value — it means the claims must be rewritten and controlled ablations must be performed. This is textbook MAJOR-REVISION territory. It approaches but does not cross the RETRACTION-WORTHY threshold because the masks are already available as part of the standard training data; the issue is mischaracterization and unfair attribution, not fabrication.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The CAC condensation step relies on hard argmax selection and index-based gathering of correspondence locations. These operations are non-differentiable with respect to correspondence coordinates, yet the paper claims OCC supervises correspondence learning end-to-end. No differentiable relaxation (soft-argmax, Gumbel-softmax, straight-through estimator) is described.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Reviewer A identified this originally; Reviewer B acknowledged it as a critical issue they missed. If confirmed, the claimed learning pathway for correspondence estimation is broken as described: gradients cannot flow through hard argmax to update correspondence parameters. This means either the implementation differs from the manuscript (making the paper an inaccurate record of the method) or the OCC-guided correspondence learning is not actually occurring. Either way, the paper's central mechanistic claim is not supported by the described method. This is a strong MAJOR-REVISION because it directly undermines the causal story but could be resolved by clarifying the actual implementation.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Potential train-test data overlap: training datasets (COCO-9k, COCO-SEG) and test benchmarks (CoCA, CoSal2015) both draw from COCO images. The paper does not verify or discuss the absence of overlapping images/groups between training and test sets.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "Reviewer B flagged this and upgraded to RETRACTION-WORTHY in reflection. This is indeed a serious concern — if overlap exists, performance numbers are inflated and rankings may change. However, the overlap is not confirmed; it is a plausible risk that has not been verified. Many papers in this domain use similar training/test combinations, and the concern applies broadly. Without concrete evidence of actual overlap, MAJOR-REVISION is the appropriate rating: the authors must demonstrate non-overlap or perform deduplication. If overlap were confirmed to be substantial, this would warrant upgrade to RETRACTION-WORTHY.",
+      "source": "prover_b",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The aggregation network's tensor formulations contain internal dimensional inconsistencies. Equations (6)-(8) index and convolve over axes in ways that are not dimensionally coherent, and intermediate tensor shapes do not match the described operations. The core module cannot be independently verified or reproduced from the manuscript.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "Reviewer A identified this; Reviewer B acknowledged it as more serious than initially appreciated. For a methods paper whose core contribution is a novel architectural module, having an incoherent mathematical specification is a significant defect. It means the paper does not serve as an accurate record of the method and prevents independent reproduction. Combined with the non-differentiability issue, the entire CAC/aggregation pipeline is not verifiable from the manuscript.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The image-warping operator used in the OCC cycle consistency loss is not specified: no interpolation scheme, coordinate normalization, out-of-bounds handling, occlusion treatment, or mechanism for constructing a dense warp from sparse KxK local correspondences is described.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Identified by Reviewer A and validated by Reviewer B in reflection. The OCC loss based on SSIM between warped images requires a well-defined warping function. Without this specification, the loss function is uninterpretable, and different implementations could produce different results. This undermines the ablation claims about OCC's contribution.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Benchmark comparisons may not be under matched training/evaluation conditions. The paper mixes officially released saliency maps from prior methods with retrained versions under multiple dataset combinations, without clear documentation that all methods were trained and evaluated under identical conditions.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "Both reviewers raised evaluation comparability concerns. State-of-the-art claims require condition-matched comparisons. The paper reports results under different training set combinations (DC, C9, DC+C9, DC+CS) but does not systematically document which compared methods used which training data, resolution, or post-processing.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The semantic-correspondence rationale for CAC condensation is unsupported: the initial correspondence is obtained by taking the maximum similarity from the same noisy global association tensor that the method claims is unreliable. No independent validation of correspondence quality is provided.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "Reviewer A identified this. The paper's mechanistic explanation claims CAC improves co-saliency through better semantic correspondences, but the evidence does not distinguish this from generic sparsification. Without correspondence-specific metrics, the novelty claim is overstated.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The ablation study's baseline includes R2R (a transformer-based inter-image module), making it difficult to isolate the contribution of PAG versus simply replacing R2R. A standard FPN-only baseline would be more appropriate.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.7,
+      "justification": "Reviewer B identified this. The 3.72% improvement from baseline to PAG may partly reflect the inferiority of R2R rather than the superiority of PAG. While ablation design choices are common concerns, this one directly affects attribution of the improvement to the proposed module.",
+      "source": "prover_b",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The method requires N images per group (fixed at N=6 during training), but test datasets have variable group sizes (e.g., 2 to 40 images). The paper does not specify how variable-sized groups are handled during evaluation.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.72,
+      "justification": "Both reviewers raised this. Reviewer A rated it MINOR; Reviewer B rated it MAJOR-REVISION. The evaluation protocol for variable group sizes is not defined, making reported test numbers irreproducible. Different handling strategies (padding, subsampling, dynamic batching) could produce different results. Given that this directly affects the reproducibility of all reported test metrics, MAJOR-REVISION is warranted.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "No repeated-run variance, standard deviations, or confidence intervals are reported for any experimental results, despite some claimed improvements being small (0.3-1.2% on some metrics).",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.7,
+      "justification": "Both reviewers noted this. Reviewer A rated MINOR; Reviewer B rated MAJOR-REVISION. While important for assessing statistical significance of small gains, this is a pervasive reporting weakness across the field. It limits confidence but does not by itself invalidate the conclusions, especially when larger gains (2-4%) are also reported. The concern is mitigated by the fact that the overall pattern of improvement is consistent across multiple metrics and datasets.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Multiple notation inconsistencies, equation ordering issues, and dimensional description errors appear throughout the core method sections, including redefinition of variables and mismatched indices.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Reviewer A identified this as separate from the more serious tensor-algebra inconsistency finding. These presentation problems compound the methodological concerns but are insufficient on their own to change conclusions. They are separated from the dimensional inconsistency finding (rated MAJOR-REVISION) which addresses the substantive mathematical errors.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The learning rate schedule (dividing by 10 at iteration 60,000 during 300-epoch training) is unusual and not justified.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.75,
+      "justification": "Reviewer B identified this. Both reviewers agree this is a minor concern — an unusual but not necessarily incorrect optimization choice that is unlikely to overturn results.",
+      "source": "prover_b",
+      "survived_reflection": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 9,
+    "MINOR": 3
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.94,
+    "reasoning": "The manuscript is technically interesting, but there are substantial methodological and reporting problems that prevent confident assessment of correctness. The most serious issues concern an apparent mismatch between the described correspondence-learning objective and the actual train/eval setting, insufficiently specified and possibly non-differentiable core operations in CAC, and internal inconsistencies in the tensor algebra/aggregation pipeline that make reproduction and validation difficult. These issues do not by themselves prove the headline empirical results are false, but they are strong enough that the paper requires major revision before its conclusions can be trusted.",
+    "findings": [
+      {
+        "finding": "The proposed object-aware cycle consistency loss uses ground-truth masks during training to restrict correspondence supervision to co-salient pixels, but the method is presented as a model for CoSOD without clear discussion of this additional supervision source. This means the correspondence module is trained with segmentation annotations beyond the standard output supervision, which may make comparisons to prior methods unfair unless they also use such mask-guided auxiliary training.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the paper's claimed performance gains from CAC/OCC may partly derive from extra supervision rather than the proposed architecture alone. This would not necessarily invalidate the whole paper, but it could materially change the interpretation of novelty and fairness of the comparisons."
+      },
+      {
+        "finding": "The CAC condensation step appears to rely on hard argmax selection of an initial correspondence and then index-based gathering of KxK locations (Eqs. for argmax and index selection). As written, these operations are non-differentiable with respect to the correspondence locations, yet the paper claims to learn offsets and correspondence estimations through OCC supervision. The manuscript does not explain any relaxation (e.g., soft-argmax, differentiable sampling, stop-gradient strategy) that would make the correspondence pathway trainable end-to-end.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the implementation truly uses non-differentiable hard selection as written, the stated learning mechanism for correspondence estimation is incomplete or incorrect, and the claimed benefit of OCC-guided correspondence learning is not methodologically supported. This could change the ablation conclusions, though the whole segmentation model might still function."
+      },
+      {
+        "finding": "There are internal inconsistencies in the tensor formulations of the aggregation network. The paper says repeated aggregation layers eliminate the target HxW dimension and produce F_s^{A'} in R^{N x H_s x W_s x N x C}, then average over the second N to get F_s^A. But the intermediate equations (6)-(8) index and convolve over different axes in a way that is not dimensionally coherent, and Eq. (8) appears to misuse indices after downsampling. It is unclear what exact tensor is fed to each convolution and what dimensions remain after each step.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the mathematical description is wrong, the core proposed module cannot be independently verified or reproduced. This does not prove the code is wrong, but it means the methodological presentation is insufficient and potentially incorrect in a way that could alter conclusions about what was actually tested."
+      },
+      {
+        "finding": "The condensation mechanism is justified by 'semantic correspondence,' but the initial correspondence estimate is obtained by simply taking the maximum similarity location from the same raw association tensor later criticized as unreliable. The manuscript does not show that this heuristic initialization is valid under the difficult scenarios motivating the paper, nor does it provide quantitative correspondence metrics or independent validation of correspondence quality.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the claimed mechanism behind CAC may be overstated: improvements could come from generic sparsification/local cropping rather than meaningful correspondence estimation. This would weaken but not necessarily invalidate the empirical segmentation gains."
+      },
+      {
+        "finding": "The OCC loss is described as using image warping based on estimated correspondences, but the paper does not specify the warping operator, interpolation scheme, coordinate normalization, treatment of out-of-bounds samples, or whether occluded/non-bijective regions are masked. Given that the correspondence output is sparse/local (KxK offsets around a center), it is also unclear how a dense image warp is constructed from these predictions.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the dense warp required for SSIM-based cycle consistency is not properly defined, the supervision signal may not correspond to the stated objective. This affects the validity of the OCC component and its reported ablation benefit."
+      },
+      {
+        "finding": "The model evaluation may not be fully comparable because the paper states that officially released saliency maps from prior methods were used, while the proposed model is retrained under several dataset combinations 'to align with other compared methods.' It is not clearly documented which compared method used which exact training data, augmentation, input resolution, and post-processing, and whether all methods were evaluated under matched conditions.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If training/evaluation conditions differ across methods, the superiority claims may be overstated. This would warrant revision of the benchmarking claims, though not retraction."
+      },
+      {
+        "finding": "The manuscript lacks uncertainty quantification or repeated-run variance for all reported gains, despite some gains being relatively modest in ablations and the training involving stochastic optimization on grouped data. No confidence intervals, standard deviations, or significance analyses are provided.",
+        "severity": "MINOR",
+        "justification": "This is a common reporting weakness. It does not invalidate the conclusions, but it limits confidence in the robustness of the reported improvements."
+      },
+      {
+        "finding": "The batch/group size is fixed at N=6 during training, but the task is defined over groups of related images and datasets may contain groups of varying sizes. The manuscript does not explain how variable-sized groups are handled during training and testing, whether images are subsampled/padded, or how this affects fairness and reproducibility.",
+        "severity": "MINOR",
+        "justification": "This omission reduces reproducibility and may modestly affect conclusions about general applicability, but it is unlikely by itself to overturn the main results."
+      },
+      {
+        "finding": "There are several notation and equation inconsistencies suggestive of insufficient methodological vetting: duplicated/garbled equation ordering, redefinition of F_s^A around Eq. (9)-(10), malformed dimensions (the hyperassociation is effectively 7D but described as 6D in prose), and textual corruption around key sections. These issues make it hard to determine the exact implemented method.",
+        "severity": "MINOR",
+        "justification": "These are primarily reporting/presentation problems, but because they occur in core method sections they should be corrected for technical clarity. On their own they do not imply the experiments are invalid."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "The manuscript presents a novel approach to co-salient object detection with clear methodology. However, there are significant methodological concerns regarding the evaluation, particularly in the comparison with state-of-the-art methods. The ablation studies and main comparisons lack critical information about the training data composition, leading to potentially invalid conclusions about relative performance. The severity of this issue is sufficient to require major revision, as it could change the reported performance rankings if addressed properly.",
+    "findings": [
+      {
+        "finding": "Potential data leakage in main comparison: The manuscript states it uses three training datasets (DUTS class, COCO-9k, COCO-SEG) and reports results with different combinations (DC, C9, DC+C9, DC+CS). However, the test datasets (CoCA, CoSal2015, CoSOD3k) contain images that may overlap with these training datasets. For example, CoCA and CoSal2015 use COCO images. The authors do not verify or discuss the absence of overlapping image groups between training and testing sets, which could inflate performance metrics.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If there is any overlap between training and test data, the reported performance numbers would be artificially high, potentially invalidating the claimed state-of-the-art results. This is a common pitfall in co-saliency detection and should be explicitly addressed."
+      },
+      {
+        "finding": "Incomplete reporting of standard deviations: The main results table (Table 2) reports performance metrics without standard deviations or confidence intervals. Given the variability in neural network training, single-run results are insufficient to demonstrate statistically significant improvements over other methods.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Without error bars, it is impossible to assess whether the reported improvements (e.g., 2.5% S_m improvement on CoCA) are within the noise of random initialization and training variability. This is critical for a paper claiming state-of-the-art performance."
+      },
+      {
+        "finding": "Comparison baseline construction issue: The baseline model uses FPN with R2R module, but R2R is a transformer-based method from a different architecture. The ablation study compares against this custom baseline rather than a standard baseline (e.g., FPN alone). The massive improvement from baseline to PAG (3.72% S_m) may partly reflect the inferiority of the chosen baseline rather than the superiority of the proposed method.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The ablation study's baseline is not standard. A more appropriate baseline would be a simple FPN with no inter-image modeling, allowing isolation of the proposed contributions. Current design may overstate the improvement attributable to PAG."
+      },
+      {
+        "finding": "Potential optimization instability: The training uses a learning rate schedule that divides by 10 at the 60,000th iteration, but training runs for 300 epochs. For a batch size of 6 and typical dataset sizes, 300 epochs on DUTS class (8250 images) would mean ~412,500 iterations. The learning rate drop at 60,000 iterations (early in training) may cause suboptimal convergence. No validation of this choice is provided.",
+        "severity": "MINOR",
+        "justification": "While unusual, this learning rate schedule may still work. However, the authors do not discuss why this schedule was chosen or provide evidence that it is optimal. It could affect final performance."
+      },
+      {
+        "finding": "Unclear handling of variable group sizes: The method requires N images per group, but real-world datasets have varying group sizes (e.g., CoCA groups range from 2 to 40 images). The paper sets batchsize=6, but does not explain how it handles groups with fewer or more than 6 images. This could introduce bias or inefficiency in evaluation.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the method is applied to groups of size !=6, the processing must be adjusted. The paper does not specify the protocol, making it impossible to reproduce or verify the reported results on real datasets with variable group sizes."
+      },
+      {
+        "finding": "The object-aware cycle consistency loss uses ground truth masks (G_i^s) during training, as shown in Equation 16. This means the correspondence estimation module is trained with access to ground truth co-salient regions. This could artificially improve the correspondence estimation quality compared to unsupervised methods that do not use any mask supervision.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The paper states it uses 'unsupervised losses' for correspondence, but Equation 16 employs ground truth masks to restrict the loss. This is a form of strong supervision, not unsupervised learning. The claimed 'unsupervised' nature of the correspondence estimation is misleading and the ablation comparing OCC to FCC does not control for this supervision advantage."
+      }
+    ]
+  },
+  "reflection_a": {
+    "defense_for_self": "My original severity ratings were not overstated. I deliberately used MAJOR-REVISION rather than RETRACTION-WORTHY for the central methodological defects because, on the present record, these issues create a serious failure of interpretability, fairness, and reproducibility without yet proving that the numerical results are fabricated or impossible. The strongest case is that several core claims rest on mechanisms that are either misdescribed, underspecified at the point of being non-auditable, or confounded by extra supervision/evaluation mismatch. That is exactly the territory of major revision: the paper may still be salvageable, but its current conclusions are not trustworthy.\n\nThe most important point is that my review did not merely identify 'missing details.' The paper's central scientific claims are causal and mechanistic: CAC is said to improve co-saliency by learning reliable semantic correspondences; OCC is said to supervise that correspondence learning through cycle consistency; the full system is claimed to outperform prior work fairly. My findings target whether those claims are actually supported.\n\n1. Why MAJOR-REVISION is the correct and strongest defensible rating for the mask-guided OCC issue.\nThe object-aware cycle consistency loss is not a cosmetic training detail. As described, it uses ground-truth saliency/co-saliency masks during training to restrict supervision to selected pixels. That means the correspondence estimator is not being trained in the 'unsupervised' or self-supervised way the narrative strongly suggests. This matters because correspondence quality is itself a central claimed contribution. If the module gets privileged access to segmentation annotations while baselines do not use equivalent auxiliary supervision, then any gain attributed to better correspondence modeling is confounded by stronger supervision. This is more serious than the other reviewer's framing only as an evaluation issue. It is a validity issue about what was learned and why. I rated it MAJOR-REVISION, not retraction, because this does not prove the architecture lacks value; it does prove the paper must rewrite its claims, redo fair comparisons or controlled ablations, and transparently characterize supervision sources.\n\n2. Why the non-differentiability concern in CAC is a major methodological defect, not a nitpick.\nThe manuscript claims correspondence estimation is learned and improved via OCC. But the described pipeline uses hard argmax and index-based gathering to select a center correspondence and then condense around it. As written, that path is not differentiable with respect to the selected coordinates. Without an explicit differentiable surrogate, estimator trick, stop-gradient explanation, or alternate gradient path, the claimed end-to-end learning mechanism is incomplete. This is not 'the paper omitted some implementation detail.' It strikes at the causal story of the method. If gradients cannot flow through the correspondence selection step, then either (a) the implementation differs materially from the manuscript, or (b) the claimed OCC-guided learning of correspondence locations is not occurring as stated. In either case the central method section is unreliable. That is textbook MAJOR-REVISION because the paper can in principle be fixed by clarifying and revalidating the actual mechanism, but in its current form the claims are not supportable.\n\nThis assessment remains stronger than the alternative review's emphasis on baseline choice or optimization schedule. A weak baseline can exaggerate gains, but it does not usually make the mechanism itself unintelligible. By contrast, a broken or unreported gradient pathway means the purported contribution may not even be what was tested.\n\n3. Why the tensor-algebra inconsistencies are major, not merely presentational.\nI stand by the judgment that the aggregation network equations are internally inconsistent in a way that impairs verification. The issue is not bad typography alone. The manuscript gives dimensional claims and index manipulations that do not cohere with one another: dimensions appear to be removed and then still indexed; downsampled tensors are used with incompatible axes; averaging over one N dimension is described after a sequence whose output dimensions are not consistently defined. When a paper's core module cannot be followed tensor-by-tensor, the scientific claim 'this architecture causes the observed gain' becomes uncheckable. This is especially serious here because the aggregation pathway is one of the main technical contributions. If the math is not faithful to the code, the paper is misreporting the method; if the code follows the math, the implementation is suspect. Again, this is MAJOR-REVISION because the work might still be valid in code, but the manuscript as a scientific record is presently inadequate.\n\n4. Why the condensation/semantic-correspondence justification deserved MAJOR-REVISION.\nThe paper's motivation for CAC is that full dense associations are noisy and that local condensation around a semantically meaningful match improves robustness. But the initial match is obtained by simply taking the maximum similarity from the same noisy global association tensor. That creates a gap between the narrative and the actual algorithm: the method assumes that a reliable semantic anchor can be recovered by the exact heuristic source it claims is unreliable. Without independent correspondence evaluation, error analysis, or even synthetic/probe tasks showing that top-1 similarity localizes semantically meaningful matches under clutter/scale variation/occlusion, the claimed reason the method works is unsubstantiated. This is not just a lack of extra experiments. It directly affects whether CAC should be interpreted as semantic correspondence modeling or merely a sparsification heuristic. Since the paper's novelty is tied to the stronger interpretation, major revision is justified.\n\n5. Why the warping/operator underspecification in OCC is major.\nA cycle consistency loss based on warped images is only scientifically interpretable if the warp is defined. The paper does not specify the operator, interpolation, coordinate convention, out-of-bounds handling, visibility/occlusion treatment, or how sparse/local correspondence predictions become the dense warp needed for SSIM-style cycle consistency. These are not implementation trivialities; they determine the actual objective being optimized. Different choices can substantially change gradients and outcomes. If the dense warp is ad hoc or inconsistent with the sparse correspondence parameterization, then the OCC term may not correspond to the stated mathematical objective at all. This is precisely the sort of omission that can change ablation conclusions. Hence MAJOR-REVISION is warranted.\n\n6. Why I still defend the evaluation-comparability finding as MAJOR-REVISION, even in light of the other reviewer's stronger overlap concern.\nI originally flagged the benchmarking setup because the manuscript mixes officially released saliency maps from prior methods with retrained versions of the proposed model under multiple dataset combinations, without clear documentation that all methods were trained/evaluated under matched conditions. This alone is major because state-of-the-art claims require fair comparability. The other reviewer's possible train-test overlap concern actually reinforces rather than weakens my position: the evaluation section is not merely underreported; it may conceal substantive comparability problems, including leakage. I was conservative in not asserting leakage without direct confirmation, but the lack of documentation is severe enough already to justify major revision.\n\n7. Why my MINOR ratings remain appropriate for variance reporting, group-size handling, and notation corruption.\nI did not inflate every issue to major. The absence of uncertainty estimates is a real reporting weakness, but by itself it rarely mandates rejection or invalidates the central result unless the claimed gains are tiny and highly unstable. Likewise, variable group-size handling is reproducibility-relevant and can affect generalization, but on the current record it does not by itself overturn the conclusions. The notation/equation corruption is annoying and harmful to clarity; however, I treated it as minor because I isolated the genuinely conclusion-threatening part separately in the tensor inconsistency finding. This calibration shows the major findings were reserved for defects that directly threaten interpretability or fairness.\n\n8. Why none of my findings needed RETRACTION-WORTHY on the available evidence.\nThe key test is whether the error, if confirmed, would mean the paper's central conclusions cannot be supported by the data as presented. I did not see incontrovertible evidence of impossible results, fatal data coding errors, or a statistical design mismatch that necessarily nullifies all conclusions. Even the strongest issues—extra supervision, unclear differentiability, incoherent tensor description, undefined warp, unmatched comparisons—could in principle be repaired by rewriting claims, releasing correct derivations, and rerunning controlled experiments. That is why MAJOR-REVISION was the strongest justified rating. It is firm, not softened: the manuscript in its current form should not be trusted, but the record does not yet compel retraction-level condemnation.\n\nAgainst the other reviewer's alternative framings, I would argue affirmatively that my most serious assessments are at least as fundamental, and in some respects more central, than theirs. Baseline choice, LR schedule, and missing standard deviations are secondary compared with a possible supervision confound in the claimed 'unsupervised' correspondence learning and a non-auditable mechanism for how correspondence is learned at all. If the manuscript is wrong about those, then the novelty claim is mischaracterized at the level of method, not just benchmarking. That is why I stand by my original severity assignments.",
+    "severity_i_now_upgrade": [
+      "Potential data leakage / train-test overlap involving COCO-derived training sets and COCO-containing test sets (raised by the other reviewer): I would now add this as MAJOR-REVISION, possibly bordering on RETRACTION-WORTHY if concrete overlap is demonstrated. If overlap exists at the image or near-duplicate group level, the headline performance comparisons would be materially compromised.",
+      "Unclear handling of variable group sizes: I would upgrade this from MINOR to MAJOR-REVISION if the architecture truly requires fixed N=6 and evaluation on datasets with heterogeneous group sizes used ad hoc subsampling/partitioning without disclosure. That would affect both reproducibility and the validity of benchmark comparisons."
+    ],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      {
+        "finding": "Ground-truth masks are used inside the object-aware cycle consistency loss to restrict correspondence supervision.",
+        "severity": "MAJOR-REVISION",
+        "reason": "This is a direct supervision confound on a central contribution. It changes the interpretation of both novelty and fairness. The method cannot be presented as correspondence learning driven purely by unsupervised cycle consistency if masks shape the learning signal."
+      },
+      {
+        "finding": "CAC appears to rely on hard argmax/index selection without any described differentiable relaxation.",
+        "severity": "MAJOR-REVISION",
+        "reason": "As written, the claimed end-to-end learning pathway is not methodologically credible. Either the implementation is different from the manuscript or the paper's account of how OCC improves correspondence estimation is incomplete/incorrect."
+      },
+      {
+        "finding": "The aggregation-network tensor algebra is internally inconsistent and not dimensionally coherent.",
+        "severity": "MAJOR-REVISION",
+        "reason": "This prevents independent verification of the core module and raises the possibility that the paper is not accurately describing what was implemented. For a methods paper, that is a serious defect."
+      },
+      {
+        "finding": "The semantic-correspondence rationale for condensation is unsupported because initialization comes from a simple max over the same noisy association tensor.",
+        "severity": "MAJOR-REVISION",
+        "reason": "The paper's mechanistic explanation is stronger than the evidence provided. Without correspondence-specific validation, the gains cannot be confidently attributed to improved semantic matching rather than generic sparsification."
+      },
+      {
+        "finding": "The image-warping operator for OCC is undefined in critical respects.",
+        "severity": "MAJOR-REVISION",
+        "reason": "The loss function cannot be interpreted or reproduced without these details, and different choices materially change optimization behavior. This undermines the ablation claims about OCC."
+      },
+      {
+        "finding": "Benchmark comparisons may not be under matched training/evaluation conditions.",
+        "severity": "MAJOR-REVISION",
+        "reason": "State-of-the-art claims require condition-matched comparisons or transparent caveats. Mixing official maps, different training sets, and selective retraining without full protocol disclosure can change rankings."
+      },
+      {
+        "finding": "No repeated-run variance / uncertainty quantification is reported.",
+        "severity": "MINOR",
+        "reason": "Important but common reporting weakness. It limits confidence but does not alone invalidate the conclusions."
+      },
+      {
+        "finding": "Variable group-size handling is not explained.",
+        "severity": "MINOR",
+        "reason": "I originally treated this as reproducibility-limiting rather than conclusion-destroying. I still think that is defensible absent evidence that evaluation protocol choices materially biased results."
+      },
+      {
+        "finding": "Notation/equation corruption and malformed dimensional descriptions appear throughout key sections.",
+        "severity": "MINOR",
+        "reason": "These are presentation flaws in isolation, though they compound the larger methodological concerns. I separated them from the more serious issue of core tensor inconsistency."
+      }
+    ],
+    "new_errors_noticed": [
+      "Possible train-test contamination due to use of COCO-derived training data and test benchmarks containing COCO images/groups was not explicitly in my original findings and should have been examined.",
+      "The paper may be internally inconsistent in describing OCC as 'unsupervised' while employing mask-restricted supervision; this is not only a supervision confound but also a claim-labeling problem.",
+      "The custom baseline construction for ablations may bias the apparent contribution sizes; while not as fundamental as the correspondence-learning issues, it is a genuine methodological concern.",
+      "If the LR schedule and total iteration count are as the other reviewer inferred, the optimization protocol is unusually specified and should be justified, though I still view this as secondary."
+    ]
+  },
+  "reflection_b": {
+    "defense_for_self": "My original severity ratings are defensible and, in several cases, arguably understated. I will now present the strongest case for each of my MAJOR-REVISION ratings, demonstrating that they are not over-stated but instead reflect genuine threats to the paper's claims that require at minimum major revision and, in some instances, approach retraction-worthy territory if confirmed.",
+    "severity_i_now_upgrade": [
+      "Finding 1 (Data leakage) – upgrade to RETRACTION-WORTHY",
+      "Finding 6 (OCC supervision with ground truth masks) – upgrade to RETRACTION-WORTHY"
+    ],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      {
+        "id": "finding_1_potential_data_leakage",
+        "severity": "RETRACTION-WORTHY",
+        "defense": "This is not a minor oversight. The paper's central claim is state-of-the-art performance. If the training sets (DUTS class, COCO-9k, COCO-SEG) contain images that overlap with test sets (CoCA, CoSal2015, CoSOD3k), every single performance number in the main comparison table is potentially inflated. Unlike standard benchmarks where train/test splits are fixed, Co-saliency datasets have documented overlap with COCO (CoCA and CoSal2015 both draw from COCO). The authors' failure to even mention this issue, let alone perform deduplication, means the entire empirical foundation of the paper is suspect. The other reviewer's finding 6 also notes evaluation comparability issues, but the data leakage threat is more fundamental: it can change the ordering of methods, not just the magnitude of gains. If confirmed, this would require retraction, not just revision. I therefore upgrade this finding to RETRACTION-WORTHY."
+      },
+      {
+        "id": "finding_2_missing_standard_deviations",
+        "severity": "MAJOR-REVISION",
+        "defense": "The other reviewer lists this as MINOR, but I maintain MAJOR-REVISION is justified. The paper reports improvements as small as 0.3–1.2% on some metrics. In deep learning, random seed variation alone can produce 0.5–1.0% differences in S_measure on standard benchmarks. Without any error bars, the reader cannot assess whether the claimed gains are statistically significant or within noise. The other reviewer's own finding 7 acknowledges this as a 'common reporting weakness' yet does not elevate the severity. I argue that for a paper claiming 'state-of-the-art' performance, single-run reporting without variance is a MAJOR omission because it precludes any meaningful comparison. The authors should have provided at least 3–5 runs with standard deviations."
+      },
+      {
+        "id": "finding_3_baseline_construction_issue",
+        "severity": "MAJOR-REVISION",
+        "defense": "The other reviewer does not directly address this finding but their finding 5 (correspondence heuristic) touches on related issues with ablation design. My concern is precise: the baseline includes R2R, which itself is a method proposing learnable inter-image modules. The ablation shows a 3.72% improvement of PAG over this baseline, but the crucial question is how much of that gain comes from replacing R2R versus the actual PAG contribution. A proper ablation would use a vanilla FPN (no inter-image modeling) as the lowest baseline, then add PAG, then compare to R2R+FPN. Without this, the claimed improvement is conflated with the choice of baseline. This is not 'minor' – it directly undermines the attribution of improvement to the proposed module."
+      },
+      {
+        "id": "finding_4_optimization_instability",
+        "severity": "MINOR",
+        "defense": "I maintain MINOR here, consistent with the other reviewer's similar assessment (finding 7). This is a methodological curiosity but unlikely to overturn results. The other reviewer's own findings on learning rate schedule are not present, so there is no conflict. I agree this is minor."
+      },
+      {
+        "id": "finding_5_unclear_handling_of_variable_group_sizes",
+        "severity": "MAJOR-REVISION",
+        "defense": "The other reviewer lists this as MINOR (finding 8). I strongly disagree and upgrade this to retraction-worthy, but will argue for MAJOR-REVISION here: If the method is designed for N=6 but test datasets have groups ranging from 2 to 40 images, how are these processed? The paper is silent. Options: (a) Pad/replicate images? This would introduce artificial correspondences. (b) Subsampling? This would lose data. (c) Dynamic batching? Not discussed. Without this specification, the reported test numbers are irreproducible. The other reviewer's MINOR rating underestimates the impact: if the protocol for handling variable group sizes is not defined, a different implementation could produce different results. This is a MAJOR reproducibility gap."
+      },
+      {
+        "id": "finding_6_OCC_uses_ground_truth_masks",
+        "severity": "RETRACTION-WORTHY",
+        "defense": "The other reviewer's finding 1 notes the same issue but rates it MAJOR-REVISION. I argue this is RETRACTION-WORTHY. The paper explicitly presents OCC as an 'unsupervised' correspondence loss (Section 3.3.2 title: 'Object-Aware Cycle Consistency (OCC)'). Yet Equation 16 multiplies the loss by ground truth masks G_i^s, meaning correspondence supervision is restricted to co-salient pixels identified by ground truth. This is NOT unsupervised – it is a form of strong pixel-level mask supervision beyond the standard saliency output supervision. The authors claim the correspondence module learns 'without manual annotations,' but the masks G_i^s are exactly manual annotations. If the correspondence module is trained with access to these masks, any performance gain from OCC over baselines that lack such supervision is not fairly attributed. This could change the ablation conclusions entirely. Moreover, comparison methods (e.g., GCoNet, CoEGAN) also use ground truth masks but differently – the paper does not control for this. This is retraction-worthy because it misrepresents the supervision level of a core component."
+      }
+    ],
+    "new_errors_noticed": [
+      {
+        "finding": "The other reviewer's finding 2 (non-differentiable argmax in CAC) is a critical methodological error I missed in my initial review. Combined with my finding 6, this suggests the correspondence learning pathway described mathematically may not actually be trainable as claimed. If the implementation uses hard argmax without a differentiation trick (soft-argmax, Gumbel-softmax, straight-through estimator), then the gradients for correspondence parameters would be zero, making the OCC loss ineffective for correspondence learning. This would mean the reported benefits of CAC/OCC could be spurious artifacts of the different architecture rather than learned correspondence. This elevates the severity of both my finding 5 (CAC condensation mechanism) and the other reviewer's finding 2."
+      },
+      {
+        "finding": "The other reviewer's finding 3 (tensor dimension inconsistencies) is a serious presentation flaw I underappreciated. If the mathematical description is dimensionally incoherent, the method cannot be independently implemented or verified. This is not 'minor' – the paper claims a novel architectural component but provides an incorrect or ambiguous mathematical specification. Combined with the non-differentiability issue (finding 2 from other reviewer), the entire core module may be ill-specified. This should be rated MAJOR-REVISION at minimum."
+      },
+      {
+        "finding": "The other reviewer's finding 5 (dense warp implementation unspecified) is a significant methodological gap. The OCC loss computes SSIM between warped source and cycle-reconstructed images, but the correspondence field is sparse (KxK offsets around a center). How is this sparse field converted to a dense warp? Without specifying interpolation (bilinear? nearest neighbor? radial basis function?), the cycle consistency signal is uninterpretable. This could mean the OCC loss is computed on heavily interpolated/approximated warps, introducing artifacts that mimic correspondence learning. This should also be rated MAJOR-REVISION."
+      }
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "Both reviewers converge on a set of serious methodological concerns that, taken together, undermine confidence in the paper's central claims. The most critical issues are: (1) the OCC loss uses ground-truth masks while being presented as unsupervised correspondence learning, which is a supervision misrepresentation; (2) the CAC module relies on non-differentiable operations without any described relaxation, casting doubt on whether correspondence learning actually occurs as claimed; (3) possible train-test data overlap involving COCO-derived datasets; (4) tensor-algebra inconsistencies that prevent independent verification of the core module; and (5) an underspecified warping operator for the cycle consistency loss. While several of these issues could individually be addressed through revision, the combination — particularly the supervision mischaracterization and the non-differentiability gap — raises fundamental questions about whether the paper's mechanistic claims are supported. However, none of these issues constitute incontrovertible proof that the empirical results are fabricated or impossible; they instead indicate that the paper's explanations of why the method works are unreliable, comparisons may be unfair, and the method cannot be independently verified from the manuscript. This warrants major revision rather than retraction, because the underlying architecture could still produce valid results even if the paper's account of the learning mechanism is incorrect or incomplete.",
+    "findings": [
+      {
+        "finding": "The Object-Aware Cycle Consistency (OCC) loss uses ground-truth segmentation masks (G_i^s in Eq. 16) to restrict correspondence supervision to co-salient pixels, while the paper presents this as unsupervised correspondence learning. This constitutes a misrepresentation of the supervision level of a core component and creates an unfair comparison with methods that do not use mask-guided auxiliary training for correspondence.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.88,
+        "justification": "Both reviewers flagged this independently, and Reviewer B upgraded it to RETRACTION-WORTHY in reflection. However, all methods in this domain use ground-truth masks for the primary segmentation loss; the question is whether using masks in an auxiliary loss constitutes a fundamentally different supervision regime. It is a serious confound that changes the interpretation of novelty and fairness, and the 'unsupervised' characterization is clearly misleading. However, it does not by itself prove the architecture is without value — it means the claims must be rewritten and controlled ablations must be performed. This is textbook MAJOR-REVISION territory. It approaches but does not cross the RETRACTION-WORTHY threshold because the masks are already available as part of the standard training data; the issue is mischaracterization and unfair attribution, not fabrication.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The CAC condensation step relies on hard argmax selection and index-based gathering of correspondence locations. These operations are non-differentiable with respect to correspondence coordinates, yet the paper claims OCC supervises correspondence learning end-to-end. No differentiable relaxation (soft-argmax, Gumbel-softmax, straight-through estimator) is described.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Reviewer A identified this originally; Reviewer B acknowledged it as a critical issue they missed. If confirmed, the claimed learning pathway for correspondence estimation is broken as described: gradients cannot flow through hard argmax to update correspondence parameters. This means either the implementation differs from the manuscript (making the paper an inaccurate record of the method) or the OCC-guided correspondence learning is not actually occurring. Either way, the paper's central mechanistic claim is not supported by the described method. This is a strong MAJOR-REVISION because it directly undermines the causal story but could be resolved by clarifying the actual implementation.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Potential train-test data overlap: training datasets (COCO-9k, COCO-SEG) and test benchmarks (CoCA, CoSal2015) both draw from COCO images. The paper does not verify or discuss the absence of overlapping images/groups between training and test sets.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "Reviewer B flagged this and upgraded to RETRACTION-WORTHY in reflection. This is indeed a serious concern — if overlap exists, performance numbers are inflated and rankings may change. However, the overlap is not confirmed; it is a plausible risk that has not been verified. Many papers in this domain use similar training/test combinations, and the concern applies broadly. Without concrete evidence of actual overlap, MAJOR-REVISION is the appropriate rating: the authors must demonstrate non-overlap or perform deduplication. If overlap were confirmed to be substantial, this would warrant upgrade to RETRACTION-WORTHY.",
+        "source": "prover_b",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The aggregation network's tensor formulations contain internal dimensional inconsistencies. Equations (6)-(8) index and convolve over axes in ways that are not dimensionally coherent, and intermediate tensor shapes do not match the described operations. The core module cannot be independently verified or reproduced from the manuscript.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.82,
+        "justification": "Reviewer A identified this; Reviewer B acknowledged it as more serious than initially appreciated. For a methods paper whose core contribution is a novel architectural module, having an incoherent mathematical specification is a significant defect. It means the paper does not serve as an accurate record of the method and prevents independent reproduction. Combined with the non-differentiability issue, the entire CAC/aggregation pipeline is not verifiable from the manuscript.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The image-warping operator used in the OCC cycle consistency loss is not specified: no interpolation scheme, coordinate normalization, out-of-bounds handling, occlusion treatment, or mechanism for constructing a dense warp from sparse KxK local correspondences is described.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Identified by Reviewer A and validated by Reviewer B in reflection. The OCC loss based on SSIM between warped images requires a well-defined warping function. Without this specification, the loss function is uninterpretable, and different implementations could produce different results. This undermines the ablation claims about OCC's contribution.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Benchmark comparisons may not be under matched training/evaluation conditions. The paper mixes officially released saliency maps from prior methods with retrained versions under multiple dataset combinations, without clear documentation that all methods were trained and evaluated under identical conditions.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.78,
+        "justification": "Both reviewers raised evaluation comparability concerns. State-of-the-art claims require condition-matched comparisons. The paper reports results under different training set combinations (DC, C9, DC+C9, DC+CS) but does not systematically document which compared methods used which training data, resolution, or post-processing.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The semantic-correspondence rationale for CAC condensation is unsupported: the initial correspondence is obtained by taking the maximum similarity from the same noisy global association tensor that the method claims is unreliable. No independent validation of correspondence quality is provided.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "Reviewer A identified this. The paper's mechanistic explanation claims CAC improves co-saliency through better semantic correspondences, but the evidence does not distinguish this from generic sparsification. Without correspondence-specific metrics, the novelty claim is overstated.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The ablation study's baseline includes R2R (a transformer-based inter-image module), making it difficult to isolate the contribution of PAG versus simply replacing R2R. A standard FPN-only baseline would be more appropriate.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.7,
+        "justification": "Reviewer B identified this. The 3.72% improvement from baseline to PAG may partly reflect the inferiority of R2R rather than the superiority of PAG. While ablation design choices are common concerns, this one directly affects attribution of the improvement to the proposed module.",
+        "source": "prover_b",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The method requires N images per group (fixed at N=6 during training), but test datasets have variable group sizes (e.g., 2 to 40 images). The paper does not specify how variable-sized groups are handled during evaluation.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.72,
+        "justification": "Both reviewers raised this. Reviewer A rated it MINOR; Reviewer B rated it MAJOR-REVISION. The evaluation protocol for variable group sizes is not defined, making reported test numbers irreproducible. Different handling strategies (padding, subsampling, dynamic batching) could produce different results. Given that this directly affects the reproducibility of all reported test metrics, MAJOR-REVISION is warranted.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "No repeated-run variance, standard deviations, or confidence intervals are reported for any experimental results, despite some claimed improvements being small (0.3-1.2% on some metrics).",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.7,
+        "justification": "Both reviewers noted this. Reviewer A rated MINOR; Reviewer B rated MAJOR-REVISION. While important for assessing statistical significance of small gains, this is a pervasive reporting weakness across the field. It limits confidence but does not by itself invalidate the conclusions, especially when larger gains (2-4%) are also reported. The concern is mitigated by the fact that the overall pattern of improvement is consistent across multiple metrics and datasets.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Multiple notation inconsistencies, equation ordering issues, and dimensional description errors appear throughout the core method sections, including redefinition of variables and mismatched indices.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "Reviewer A identified this as separate from the more serious tensor-algebra inconsistency finding. These presentation problems compound the methodological concerns but are insufficient on their own to change conclusions. They are separated from the dimensional inconsistency finding (rated MAJOR-REVISION) which addresses the substantive mathematical errors.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The learning rate schedule (dividing by 10 at iteration 60,000 during 300-epoch training) is unusual and not justified.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.75,
+        "justification": "Reviewer B identified this. Both reviewers agree this is a minor concern — an unusual but not necessarily incorrect optimization choice that is unlikely to overturn results.",
+        "source": "prover_b",
+        "survived_reflection": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 43206,
+    "duration_s": 191.58,
+    "n_api_calls": 14,
+    "cost_usd": 1.3287,
+    "total_input_tokens": 94917,
+    "total_output_tokens": 24991,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 11892,
+        "output_tokens": 1473,
+        "cost_usd": 0.04446,
+        "duration_s": 31.16,
+        "label": "2409.01021v2/b3plus/prover_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7648,
+        "output_tokens": 2050,
+        "cost_usd": 0.26847,
+        "duration_s": 41.76,
+        "label": "2408.04316v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 11892,
+        "output_tokens": 1338,
+        "cost_usd": 0.04311,
+        "duration_s": 30.2,
+        "label": "2409.01021v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 11606,
+        "output_tokens": 1528,
+        "cost_usd": 0.00481442,
+        "duration_s": 22.19,
+        "label": "2409.01021v2/b3plus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 11606,
+        "output_tokens": 1077,
+        "cost_usd": 0.0043183200000000005,
+        "duration_s": 14.82,
+        "label": "2409.01021v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2843,
+        "output_tokens": 2613,
+        "cost_usd": 0.0332375,
+        "duration_s": 50.17,
+        "label": "2408.16162v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3451,
+        "output_tokens": 893,
+        "cost_usd": 0.0175575,
+        "duration_s": 17.38,
+        "label": "2409.01021v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2792,
+        "output_tokens": 1044,
+        "cost_usd": 0.0019022400000000001,
+        "duration_s": 14.66,
+        "label": "2408.16162v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3497,
+        "output_tokens": 1077,
+        "cost_usd": 0.0021288900000000005,
+        "duration_s": 13.52,
+        "label": "2409.01021v2/b3plus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2892,
+        "output_tokens": 2847,
+        "cost_usd": 0.0357,
+        "duration_s": 56.17,
+        "label": "2409.01021v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7361,
+        "output_tokens": 2106,
+        "cost_usd": 0.268365,
+        "duration_s": 41.09,
+        "label": "2408.16162v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 6110,
+        "output_tokens": 2306,
+        "cost_usd": 0.2646,
+        "duration_s": 50.36,
+        "label": "2409.01021v2/b3plus/arbiter"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2931,
+        "output_tokens": 1822,
+        "cost_usd": 0.0027955700000000003,
+        "duration_s": 25.09,
+        "label": "2409.01021v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 8396,
+        "output_tokens": 2817,
+        "cost_usd": 0.337215,
+        "duration_s": 65.29,
+        "label": "2409.01021v2/b3plusplus/arbiter"
+      }
+    ]
+  }
+}

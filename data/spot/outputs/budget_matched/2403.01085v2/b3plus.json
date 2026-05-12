@@ -1,0 +1,550 @@
+{
+  "condition": "B3PLUS",
+  "paper_id": "2403.01085v2",
+  "verdict": "flagged",
+  "confidence": 0.97,
+  "reasoning": "Both reviewers independently identify the same two fatal defects in the manuscript's central theorem (Theorem 2): (1) the core algorithm BFS+ is never formally specified, so the key correctness implication — that sampling a vertex in the closed neighborhood of a triangle guarantees detection — cannot be verified; and (2) the runtime analysis assumes O(1) adjacency tests via an adjacency matrix whose Θ(n²) construction/storage cost is omitted, directly contradicting the advertised sub-n² bounds for sparse graphs. These two issues together mean the paper's headline result is neither proved correct nor proved to run in the claimed time. All downstream results (BMM, k-clique, Max-Cut, geometric applications) depend on Theorem 2 and are therefore unsupported. Reviewer B raises an additional concern about the probability analysis (needing a union bound over all triangles), but Reviewer A correctly notes that for a Monte Carlo existence algorithm it suffices to fix one triangle; the real problem is not the probability calculation per se but the unproved deterministic implication underlying it. After reflection, both reviewers converge on the same core retraction-worthy findings and both soften or hold steady on downstream application issues. The manuscript cannot support its central conclusions as written.",
+  "findings": [
+    {
+      "finding": "The central BFS+ subroutine is never formally defined (no pseudocode, no invariant, no precise specification of what checks are performed during exploration). The correctness proof of Theorem 2 depends entirely on the claim that if a sampled vertex s lies in the closed neighborhood of some triangle T, then BFS+(s) deterministically detects a triangle. The case analysis assumes specific discovery orderings and adjacency-list scanning behavior that are not guaranteed by any stated algorithm. Without a complete algorithmic definition, the key correctness implication is uncheckable and unproved.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.97,
+      "justification": "Both reviewers independently flag this as the most critical flaw. The entire paper rests on Theorem 2, and Theorem 2 rests on BFS+ working as claimed. With no formal specification, the theorem is not established. Both reviewers maintained this assessment through reflection.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The runtime analysis assumes O(1) edge-existence queries via a precomputed adjacency matrix, but the Θ(n²) time and space required to build and store that matrix is never charged. For sparse graphs (m ≪ n²), this hidden cost dominates the advertised O(m^{4/3}) and can dominate O(m^{2/3}n) bounds, making the stated asymptotic running times invalid as presented.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.95,
+      "justification": "Both reviewers identify this independently. Since the paper's primary contribution is precisely a new asymptotic time bound, an unaccounted Θ(n²) preprocessing cost that can exceed the claimed bound is fatal. Reviewer A flagged this initially; Reviewer B upgraded it to retraction-worthy on reflection. Both agree it survives scrutiny.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The success-probability argument is only meaningful if the deterministic implication 'sampled s ∈ N⁺(T) ⟹ BFS⁺(s) detects a triangle' holds for the actual (unspecified) algorithm. Since BFS+ is not defined, the claimed error probability bound (≤ 10⁻³⁰) is unsupported. This is derivative of Finding 1 but constitutes an independently identifiable gap in the proof.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.93,
+      "justification": "The probability calculation itself (fixing one triangle T for a Monte Carlo algorithm) is methodologically sound in principle, as Reviewer A correctly notes — no union bound over all triangles is needed. However, the calculation is vacuous without the unproved deterministic step. Both reviewers agree this is fatal after reflection, though for slightly different reasons. The underlying cause is the same as Finding 1, but the probability claim is a separately stated and separately checkable component of the proof.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The time analysis contains internal inconsistencies between TRIANGLE-DETECTION-1 and TRIANGLE-DETECTION-2. Phase I is analyzed as O(nx²) in one variant and O(mx) in another for the same task. The derivation of the O(m^{4/3}) bound via the cited sparse-to-dense transfer lemma requires the base algorithm's complexity to match specific functional forms, but the paper switches between incompatible parameterizations without reconciling them.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "Reviewer B flags this as retraction-worthy, while Reviewer A treats the Phase I analysis as a major-revision issue. On balance, the inconsistency is concerning but could potentially be a presentation/bookkeeping error rather than a fundamental impossibility: O(nx²) with x = m^{1/3} gives O(nm^{2/3}), which is consistent with the TRIANGLE-DETECTION-1 claim; O(mx) with x = n^{1/2} gives O(mn^{1/2}), consistent with TRIANGLE-DETECTION-2. The transfer lemma application may be legitimate if the base results are correct. Since the more fundamental issues (BFS+ and adjacency matrix cost) already invalidate the theorem, this inconsistency is better classified as a major revision concern — it would need clarification but might be repairable in isolation.",
+      "source": "prover_b",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Theorem 3 (BMM in O(n^{25/9} log n)) is not rigorously established from the cited reduction. The proof sketch is muddled: the parameter m is undefined in the BMM setting, and the claim about random trials does not follow from the stated theorem. The conditions required by the Vassilevska Williams–Williams reduction framework (e.g., that the algorithm is combinatorial in the appropriate sense, handles the right graph class) are not verified.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers agree this is a major-revision issue. The theorem is derivative of Theorem 2, and its proof is incomplete but not independently broken in a way that would require separate retraction-level treatment. If Theorem 2 were correct and properly stated, this might be fixable with a careful writeup.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Theorem 4 (k-clique runtimes) and Theorem 5 (Max-Cut) are asserted by 'black-box replacement' of matrix-multiplication-based subroutines, but the auxiliary graphs' construction costs, edge counts, and representation details are not analyzed. The base theorem assumes an explicit adjacency matrix, but the auxiliary graphs in these reductions are implicitly constructed, creating a model mismatch.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Reviewer A initially flagged k-clique as retraction-worthy but downgraded to major-revision on reflection, recognizing it as a derivative casualty. Reviewer B treats conjecture-invalidation claims as retraction-worthy, but the claims about invalidating conjectures are overclaiming issues rather than independent methodological breaks. The applications are unsupported as written but could potentially be salvaged with proper implicit-graph analysis if the base result were correct.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The Phase I low-degree vertex check also depends on O(1) adjacency queries. Without the adjacency matrix assumption, both the correctness (completeness of triangle detection for low-degree vertices) and the complexity accounting for Phase I are underspecified.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "This is a subsidiary aspect of the adjacency-matrix cost issue (Finding 2). It could be fixed by specifying an alternative data structure, but as written it is incomplete. Both reviewers note this; Reviewer A rates it major-revision, which is appropriate since the fix is conceptually straightforward (hash-based adjacency) even if not provided.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Claims about 'strongly invalidating' the combinatorial k-clique conjecture and other hardness conjectures are overstated. The algorithm is randomized (Monte Carlo), the notion of 'combinatorial' is admittedly informal, and the downstream theorems are not rigorously proved. The relationship between the presented algorithm and the formal statements of the conjectures is not established.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Reviewer A rates this as minor; Reviewer B upgrades to retraction-worthy on reflection, but this is primarily an overclaiming/framing issue rather than a separate methodological break. If the algorithm worked, the conjecture implications would need careful discussion but would not be independently retraction-worthy. Since the algorithm does not work as shown, the overclaiming is moot but still worth noting as a reporting concern.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The manuscript contains numerous editorial placeholders ([AUTHOR_1], [JOURNAL], [DATE]), incomplete references, and inconsistent notation, indicating it is not in a review-ready state.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.95,
+      "justification": "Both reviewers note this. It does not affect scientific correctness but hinders verification and indicates incomplete preparation.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The per-BFS+ runtime is stated as O(m) for connected graphs, but disconnected graphs are not handled consistently. Standard BFS is O(n+m), and the additive n term matters for very sparse graphs.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Reviewer A identifies this as a minor sloppiness issue. It would not change conclusions if cleaned up and is dominated by the more serious runtime issues.",
+      "source": "prover_a",
+      "survived_reflection": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 3,
+    "MAJOR-REVISION": 4,
+    "MINOR": 3
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.99,
+    "reasoning": "The manuscript’s core algorithmic claim is not methodologically supportable as written. The central randomized triangle-detection algorithm relies on a BFS-based subroutine whose correctness is asserted only through informal case analysis, but the analysis does not establish that the claimed event 'sampled start vertex lies in N^+(triangle)' implies detection under a standard BFS implementation. More importantly, the runtime analysis repeatedly assumes O(1) adjacency tests via an adjacency matrix while the claimed overall time ignores the Θ(n^2) preprocessing and storage cost this requires; for sparse graphs this directly contradicts the advertised O(m^{4/3}) and O(m^{2/3}n) bounds unless a different data structure is specified and analyzed. Several downstream headline results (BMM, k-clique, Max-Cut, geometric applications) are black-box consequences of Theorem 2, so if Theorem 2 is not rigorously correct, those claims also collapse. There are also unsupported or likely incorrect uses of reductions, especially replacing algebraic triangle detection inside other algorithms by this procedure without accounting for graph construction costs and whether the reduction preserves the needed edge/vertex regime. Overall, the paper contains central correctness and complexity gaps severe enough that the principal conclusions are not established.",
+    "findings": [
+      {
+        "finding": "The central BFS-based correctness argument is incomplete: the manuscript never gives a formal specification or pseudocode of the modified BFS⁺ routine, yet Theorem 2 depends entirely on the claim that if the sampled start vertex s lies in N^+({a,b,c}) for some triangle {a,b,c}, then BFS⁺(s) must detect a triangle.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "Without a complete algorithm definition, the key correctness proof cannot be checked. The case analysis assumes specific discovery/scanning behavior ('assuming b is discovered before c', 'detected while scanning adjacency list of a/b') that is not guaranteed unless BFS⁺ is precisely defined. Since Theorem 2 is the foundation for all later claims, failure here invalidates the central conclusions."
+      },
+      {
+        "finding": "The runtime analysis assumes O(1) edge-existence tests using an adjacency matrix, but the claimed running times omit the Θ(n^2) time and space needed to build/store that matrix.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "Phase I explicitly uses O(1) adjacency tests 'using the adjacency matrix of G'. For sparse graphs, Θ(n^2) preprocessing dominates the advertised O(m^{4/3}) bound and can also dominate O(m^{2/3}n). Therefore the stated asymptotic running times are not valid as presented. Because the headline result is precisely a new runtime bound, this is fatal unless an alternative data structure with matching guarantees is provided and analyzed."
+      },
+      {
+        "finding": "The claim 'If T is incident to a low degree vertex ... then T is found in step 3' depends on enumerating all neighbor pairs of every low-degree vertex, again using O(1) adjacency tests. Without the adjacency-matrix assumption, the proof of both correctness and complexity for Phase I is incomplete.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This concern could be fixed if the paper supplied a correct sparse-graph edge-query structure and included its cost. But as written, both the low-degree phase and the claimed asymptotic bound are underspecified."
+      },
+      {
+        "finding": "The analysis of the success probability only shows that some sampled vertex lands in N^+({a,b,c}) for one fixed triangle T. It does not rigorously establish that every such sampled vertex causes detection for the actual BFS⁺ algorithm, because the proof relies on unspecified tie-breaking/order assumptions in BFS discovery and scanning.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The probability bound is only meaningful if membership in the sampled set A deterministically implies success. Since that implication is not proved for a formally defined algorithm, the claimed error probability ≤10^{-30} is unsupported."
+      },
+      {
+        "finding": "The manuscript states that 'each BFS⁺ takes O(m) time on a connected graph with m edges' but does not analyze disconnected graphs consistently in the main theorem, only later noting one may assume connectedness for a separate lemma application.",
+        "severity": "MINOR",
+        "justification": "Standard BFS is O(n+m) on arbitrary graphs; this is a reporting/sloppiness issue rather than a fatal flaw. It would not by itself change conclusions if cleaned up."
+      },
+      {
+        "finding": "Theorem 3 (Boolean matrix multiplication in O(n^{25/9} log n)) is not established from the cited reduction as written. The proof says 'Substituting β=7/3 and using O(nm^{-1/3} log n) random trials in TRIANGLE-DETECTION-1 yields the claimed bound,' but here m is undefined in the BMM setting, and the extra phrase about random trials does not follow from the stated theorem.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The reduction may well imply the stated exponent if Theorem 2 were correct, but the proof as written is muddled and not self-consistent. This downstream theorem is therefore not rigorously proved in the manuscript."
+      },
+      {
+        "finding": "The manuscript repeatedly claims the first truly subcubic combinatorial algorithm for BMM via Vassilevska Williams–Williams reductions, but those reductions are between problems under specific notions and overheads; the paper does not verify that its randomized triangle algorithm satisfies all conditions required for the combinatorial reduction framework.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This may be salvageable with a careful statement and proof, but as written the transfer of results is too informal for such a strong priority claim."
+      },
+      {
+        "finding": "The derivation of k-clique runtimes by 'replacing the FMM algorithm in Nešetřil–Poljak with Theorem 2' is unsupported. The auxiliary graph has O(n^ℓ) vertices, but its number of edges and the cost to build it are not analyzed; using an O(N^{7/3}) triangle routine on an implicit graph is not automatically valid.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "Theorem 4 is presented as a consequence of Theorem 2, but the reduction’s construction cost and representation details are essential. If the auxiliary graph cannot be built/queried within the claimed time, the theorem fails. Since this is one of the paper’s headline consequences, it is a serious methodological break."
+      },
+      {
+        "finding": "The Max-Cut application (Theorem 5) similarly ignores the cost of constructing the auxiliary graph and of iterating over all weight triples beyond very coarse counting. It assumes the triangle detector can be used as a black box on huge auxiliary graphs without accounting for graph-generation overhead.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is likely repairable if one gives an implicit-graph implementation analysis, but as written the claimed O*(2^{7n/9}) bound is not proved from the presented material."
+      },
+      {
+        "finding": "Several further application claims (K4, K6, K9, K10, segment-intersection triangles) are asserted by 'black-box replacement' of matrix-multiplication-based subroutines with the new triangle detector, but no proof is given that the reductions preserve the relevant sparsity/size parameters or that algebraic requirements are absent.",
+        "severity": "MAJOR-REVISION",
+        "justification": "These are downstream claims and may not all be wrong, but they are not methodologically established in the current manuscript. They should be toned down or fully proved."
+      },
+      {
+        "finding": "The phrase 'This strongly invalidates ... the combinatorial k-clique conjecture' is overstated given that the manuscript does not rigorously establish Theorem 4 and, more broadly, the notion of 'combinatorial algorithm' is admitted to be informal.",
+        "severity": "MINOR",
+        "justification": "This is primarily a claim-strength/reporting issue, but in combination with weak proofs it contributes to overclaiming."
+      },
+      {
+        "finding": "The manuscript contains multiple placeholders and incomplete bibliographic/reporting artifacts ([AUTHOR_1], [JOURNAL], [DATE], footnote artifacts), indicating it is not in a review-ready state.",
+        "severity": "MINOR",
+        "justification": "These are editorial issues and do not by themselves affect correctness, but they hinder verification and suggest insufficiently finalized scholarship."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 1.0,
+    "reasoning": "The manuscript claims a revolutionary breakthrough (the first truly subcubic combinatorial algorithm for triangle detection, running in O(n^{7/3}) time), but upon close inspection the core algorithmic idea and its analysis contain multiple fundamental flaws. The probability/error argument is mathematically incoherent, the proposed algorithm does not actually guarantee the claimed performance, and there is no rigorous justification for the central claims. The paper appears to be a carefully crafted hoax or a severely flawed draft, with errors that invalidate its main conclusions. I assess multiple retraction-worthy errors.",
+    "findings": [
+      {
+        "finding": "The probability/error analysis for Phase II is fundamentally broken. The algorithm picks vertices independently at random, but the analysis claims that if any picked vertex is in the set A (the closed neighborhood of any triangle T), then BFS+ will find a triangle. However, the algorithm does not know T, and the event that a picked vertex lies in A depends on the unknown T. The analysis then bounds the probability that no picked vertex is in A, but this is backwards: we need to bound the probability that for *every* triangle T, at least one picked vertex is in its neighborhood. The analysis treats a single fixed T and then claims the bound holds for all T, which would require a union bound over all possible triangles (of which there can be Ω(n^3)). The union bound would blow up the probability, making the claimed 10^{-30} error bound impossible without a fundamentally different argument. This error is central to the algorithm's correctness proof.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The core probabilistic guarantee is not properly derived; the analysis conflates a fixed triangle with the unknown existence of any triangle. This means the algorithm's claimed correctness (including the error probability) cannot be supported, so the central conclusion that the algorithm works as stated is invalid."
+      },
+      {
+        "finding": "The analysis of BFS+ (steps 7-9) is unsubstantiated. The paper introduces a 'slightly modified version of BFS' called BFS+, but never defines it. The case analysis (Case 1, Case 2.1, Case 2.2) assumes specific configurations of the triangle relative to the BFS tree, but there is no proof that the modified BFS will actually detect the triangle in these configurations. Moreover, the claim that 'if s ∈ A then BFS+(s) finds a triangle' is presented without any algorithmic justification. In standard BFS, triangle detection during search is not automatic and requires specific checks that are not described. This is a missing algorithmic detail that makes the algorithm unimplementable as described.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "Without a proper specification of BFS+, the entire algorithm is underspecified. The claimed result depends on it functioning exactly as assumed, but the reader cannot verify this. This is a fundamental error in algorithmic description."
+      },
+      {
+        "finding": "The time analysis for Phase I (lines 2-4) contains an internal inconsistency. The paper states that checking a low-degree vertex v (degree ≤ x) takes O(x^2) time by checking 'all two-edge paths whose middle vertex is v'. But the algorithm is supposed to 'check whether there is any triangle incident to v' (step 3). To check all triangles incident to v in a graph, one would need to examine all pairs of neighbors of v (potentially x^2 pairs) and test if they are adjacent (each test O(1) using an adjacency matrix). However, the paper later (in the variant for Phase I) says 'there are at most 2mx such paths', but m can be Ω(n^2), so mx could be much larger than n x^2. More critically, the paper's own numbers: n vertices with degree ≤ x gives O(n x^2) time for Phase I. But if x = m^{1/3}, then O(n x^2) = O(n m^{2/3}). The algorithm then sets x = m^{1/3}, and claims total time O(m^{2/3}n) which is fine. However, later for TRIANGLE-DETECTION-2, the paper says Phase I takes O(mx) time (contradicting the earlier O(n x^2) for the same task), and then sets x = n^{1/2} to get O(m n^{1/2}) time. This inconsistency is not resolved, and the derivation of the final O(m^{4/3}) bound via Lemma 1 relies on mixing these incompatible analyses. The paper's time bounds are self-contradictory.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The time analysis is inconsistent and contradictory between different variants. The paper tries to derive the O(m^{4/3}) bound by applying Lemma 1 to the O(m^{2/3}n) result, but this is not a valid deduction because Lemma 1 requires specific forms (O(m^δ n) or O(m n^δ)). The paper's own numbers lead to a circular or invalid derivation. This error would invalidate the claimed time bounds."
+      },
+      {
+        "finding": "The 'intuition' and algorithm description rely on a misunderstanding of the role of the start vertex. The algorithm picks a random vertex s, and the analysis considers a fixed triangle T. It then argues that if s is in the closed neighborhood of T (i.e., s is T itself or a neighbor of T), then BFS+ finds a triangle. But the probability that a random vertex s lies in the closed neighborhood of a *specific* triangle T is at most (x + 3)/n for some x? The analysis bounds this as x/n, but the closed neighborhood of a triangle includes T's vertices and all their neighbors, which could be up to n vertices. The paper incorrectly assumes the closed neighborhood has size at most x (the threshold for 'low degree vertices'), but this is not justified. The triangle T could be made of high-degree vertices, and the neighborhood could be large (matching the unclear definition). The bound (1 - x/n)^{70n/x} ≤ exp(-70) only holds if the closed neighborhood size is at most x? Actually, the paper says |A| ≥ deg(a) ≥ x, so the complement probability is 1 - |A|/n ≤ 1 - x/n. But this is a lower bound on the probability of missing A? Let's parse: Prob(E_v) ≤ 1 - |A|/n ≤ 1 - x/n. So the probability of picking a vertex *not* in A is at most 1 - x/n. That is fine if |A| ≥ x. But then the algorithm picks [70n/x] vertices. The product bound (1 - x/n)^{70n/x} ≤ exp(-70) is valid only if x/n ≤ 1/2 (which holds for n≥4). But this bound says the probability that *none* of the picked vertices are in A is ≤ 10^{-30}. This would mean that with high probability, at least one picked vertex is in A. However, the analysis then assumes that *if* s ∈ A, then BFS+(s) finds a triangle. But this is only proven for a *specific* triangle T. The algorithm does not know T, and the claim that 'if s ∈ A then BFS+(s) finds a triangle' must hold for *any* possible triangle that might exist. This is not proven. The analysis is a 'proof by example' not a proof by algorithm.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The reasoning conflates a single hypothetical triangle with the requirement to detect any triangle. The algorithm's correctness would require that for every triangle in G, the random sampling hits its closed neighborhood, and then BFS+ finds *a* triangle (not necessarily the same one). The proof does not establish this, making the algorithm's claimed guarantee unsubstantiated."
+      },
+      {
+        "finding": "The paper claims the algorithm is 'combinatorial' but uses an adjacency matrix for O(1) edge tests (required for Phase I and later phases). The adjacency matrix itself requires O(n^2) space and initialization, which is already super-linear in m if m is small. More critically, the algorithm repeatedly builds an adjacency matrix for the high-degree subgraph? The paper is vague about implementation details, but typical combinatorial triangle detection algorithms use adjacency lists and avoid matrix operations. The reliance on the adjacency matrix for O(1) edge tests is a common feature of algorithms that use matrix multiplication, but the paper claims to avoid that. This is not a fatal error but indicates a lack of rigor.",
+        "severity": "MAJOR-REVISION",
+        "justification": "While not fatal, the paper's claim of 'combinatorial' and the use of adjacency matrix for fast edge tests are at odds. Many practitioners would consider this a matrix-based approach. The error would not change the core result if the algorithm worked, but it undermines the claimed nature of the algorithm."
+      },
+      {
+        "finding": "The paper claims that the algorithm 'invalidates several conjectures in the literature' (e.g., the combinatorial k-clique conjecture). However, the algorithm is randomized and has a non-zero probability of error (though claimed to be < 10^{-30}). Hardness conjectures in fine-grained complexity typically concern deterministic algorithms or algorithms with negligible error. The paper does not address whether this error probability is acceptable under the standard conjectures. More importantly, the conjectures refer to 'combinatorial' algorithms, and the paper's algorithm uses an adjacency matrix and random sampling; it is not clear it falls under the same definition of 'combinatorial' used in those conjectures. The claim of invalidation is grandiose and unsupported.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The paper makes bold claims about refuting conjectures, but the relationship between the presented algorithm and those conjectures is not rigorously established. The error probability and the definition of 'combinatorial' are concerning. The conclusions about invalidation would need substantial justification."
+      },
+      {
+        "finding": "Numerous small errors: inconsistent notation (tilde and hat notations for poly(log) vs poly(log log) are not used consistently), references to a '[JOURNAL]' placeholder in multiple sentences, self-citations to '[AUTHOR_1]' and '[DATE]' placeholders, and a general sloppiness in the manuscript (e.g., missing definitions, inconsistent variable usage). These indicate the manuscript is not in a publishable state and likely a draft or hoax.",
+        "severity": "MINOR",
+        "justification": "These formatting and consistency issues do not affect the scientific correctness but indicate the manuscript is incomplete or not genuine."
+      }
+    ]
+  },
+  "reflection_a": {
+    "reflection_notes": "On a second pass, I would keep the core assessment that the manuscript’s main theorem is not established, but I would adjust a few severities to better separate fatal defects from downstream overclaiming. I still think the two truly central issues are: (i) the missing/formally uncheckable BFS+ specification/correctness implication, and (ii) the hidden adjacency-matrix cost that breaks the stated asymptotic bounds as written. Those remain retraction-worthy because they strike directly at the paper’s headline theorem. I am less convinced that every downstream application theorem should individually be labeled retraction-worthy; if Theorem 2 fails, those results are unsupported, but that makes them derivative casualties rather than independently fatal methodological breaks. I would therefore soften some downstream items to major revision/unsupported consequence rather than separate retraction-level defects. I also think the alternative reviewer overstates the probability issue: for a Monte Carlo existence algorithm, fixing one existing triangle T is enough for success analysis, so no union bound over all triangles is needed. The real fatal point is not the probability calculation itself, but that the implication 'sampled s in N+(T) => BFS+(s) detects a triangle' is not rigorously established for a defined algorithm. I would also add one fresh concern: even granting an adjacency matrix, the paper appears to blur edge-query time in an explicitly given graph versus in implicitly constructed auxiliary graphs used for k-clique/Max-Cut reductions; those applications need construction/query-cost analysis and cannot simply inherit the base theorem black-box.",
+    "severity_i_now_upgrade": [],
+    "severity_i_now_downgrade": [
+      "Theorem 4 k-clique consequence: from RETRACTION-WORTHY to MAJOR-REVISION. Reason: the theorem is unsupported as written because auxiliary-graph size/build/query costs are not analyzed, but this is derivative of the failure of Theorem 2 and might be repairable with a full implicit-graph analysis if the base result were correct.",
+      "Theorem 3 Boolean matrix multiplication consequence: I would keep it at MAJOR-REVISION rather than upgrade. The proof sketch is muddled and not self-contained, but its failure is downstream and contingent on Theorem 2.",
+      "Theorem 5 Max-Cut application: stays MAJOR-REVISION; unsupported but not independently central enough for separate retraction-level tagging.",
+      "General black-box replacement claims for K4/K6/K9/K10/geometric applications: stays MAJOR-REVISION; these are overextended consequences rather than separate fatal core errors."
+    ],
+    "findings_i_still_defend": [
+      "BFS+-based correctness argument is incomplete / algorithm not formally specified — RETRACTION-WORTHY. This is still the most important flaw. Without pseudocode or a precise invariant, the theorem’s key implication cannot be verified.",
+      "Runtime analysis relies on O(1) adjacency tests via adjacency matrix while omitting Θ(n^2) preprocessing/storage — RETRACTION-WORTHY. Since the contribution is precisely a new asymptotic bound, this hidden cost is fatal as presented.",
+      "Phase I low-degree detection also depends on constant-time adjacency queries, so absent the matrix assumption both correctness/completeness of the implementation and the complexity accounting are underspecified — MAJOR-REVISION.",
+      "Success-probability claim is unsupported because the deterministic implication from hitting N+(T) to detection is unproved for the actual BFS+ routine — RETRACTION-WORTHY. I still defend this, but specifically because of the missing BFS+ proof, not because a union bound over all triangles is required.",
+      "Disconnected-graph runtime sloppiness — MINOR.",
+      "BMM theorem proof as written is muddled/contains undefined parameter use — MAJOR-REVISION.",
+      "Claims about invalidating combinatorial conjectures are overstated relative to what is rigorously proved and to the informal notion of 'combinatorial' — MINOR.",
+      "Editorial placeholders / not review-ready presentation — MINOR."
+    ],
+    "new_errors_noticed": [
+      "The sparse-to-dense transfer via the cited lemma may itself be under-argued in the manuscript: applying a generic lemma to move from an O(m^{2/3} n)-type bound to O(m^{4/3}) requires the theorem hypotheses to match exactly, including whether the base algorithm is one-sided Monte Carlo, whether preprocessing is charged, and whether the graph representation assumptions are preserved. If these conditions are not checked, the O(m^{4/3}) headline may be unsupported even apart from BFS+ details.",
+      "Several downstream reductions appear to assume the triangle detector works on implicitly represented graphs with O(1) adjacency tests, but the base theorem’s implementation already depended on an explicit adjacency matrix. This mismatch between explicit-input and implicit-graph models is a fresh structural concern affecting k-clique and Max-Cut applications.",
+      "The manuscript seems to conflate algorithm description with proof obligations: claims like 'detected while scanning adjacency list of a/b' presuppose a particular ordering and a particular additional cross-edge check during BFS exploration. If that check is added naively, one needs to re-analyze per-edge/per-vertex work carefully to justify the claimed O(m) per BFS+ bound. So there is not just a missing proof; there may also be a hidden complexity gap inside BFS+ itself."
+    ]
+  },
+  "reflection_b": {
+    "reflection_notes": "Upon re-examination, I find that my original assessment was largely accurate in identifying fundamental flaws, but I may have been overly generous in rating some findings as only MAJOR-REVISION when they are more directly fatal to the paper's central claims. Conversely, one finding (about combinatorial vs adjacency matrix) might be slightly over-rated as it is a common practice, though it conflicts with the claimed novelty. I also notice a new error I missed: the algorithm's reliance on a global adjacency matrix for O(1) edge tests contradicts the claimed O(m^{4/3}) time for sparse graphs where m << n^2, because building the matrix alone takes Θ(n^2) time, which dominates. This is a fatal runtime flaw I should have flagged as retraction-worthy. Additionally, the inconsistency in time analysis between TRIANGLE-DETECTION-1 and TRIANGLE-DETECTION-2 (O(n x^2) vs O(mx)) is more severe than I initially rated because it reveals a logical contradiction in the derivation of the final bounds. I will upgrade those findings accordingly.",
+    "severity_i_now_upgrade": [
+      "findings[2] (time analysis inconsistency in Phase I) - upgrading from RETRACTION-WORTHY to RETRACTION-WORTHY (already highest, but reinforcing that it is indeed central)",
+      "findings[4] (intuition and closed neighborhood size error) - already RETRACTION-WORTHY, keep",
+      "findings[5] (adjacency matrix and preprocessing cost) - upgrading from MAJOR-REVISION to RETRACTION-WORTHY because for sparse graphs the O(n^2) preprocessing dominates the advertised bound, making the runtime claim impossible as stated",
+      "findings[6] (invalidating conjectures) - upgrading from MAJOR-REVISION to RETRACTION-WORTHY because the paper's claims about refuting conjectures are unsupported by the flawed algorithm and would be retraction-worthy if published",
+      "findings[7] (small errors) - stays MINOR"
+    ],
+    "severity_i_now_downgrade": [
+      "findings[5] was originally MAJOR-REVISION but I'm now upgrading it, not downgrading",
+      "No findings I originally rated as RETRACTION-WORTHY should be downgraded; they remain correctly rated."
+    ],
+    "findings_i_still_defend": [
+      "Finding 0 (probability/error analysis broken) - RETRACTION-WORTHY: still core flaw",
+      "Finding 1 (BFS+ undefined) - RETRACTION-WORTHY: still central missing detail",
+      "Finding 2 (time inconsistency) - now upgraded to RETRACTION-WORTHY with extra justification",
+      "Finding 3 (intuition/neighborhood size) - RETRACTION-WORTHY: still correct",
+      "Finding 5 (adjacency matrix cost) - now upgraded to RETRACTION-WORTHY",
+      "Finding 6 (conjecture invalidation) - now upgraded to RETRACTION-WORTHY"
+    ],
+    "new_errors_noticed": [
+      "I missed the runtime contradiction more sharply: Phase I in TRIANGLE-DETECTION-1 claims O(n x^2) time, but Phase I in TRIANGLE-DETECTION-2 claims O(mx) time for the same task (checking triangles incident to low-degree vertices). The paper does not reconcile this, and the derivation of O(m^{4/3}) relies on mixing these inconsistent models (Lemma 1 requires O(m^δ n) or O(m n^δ), but O(n x^2) with x = m^{1/3} gives O(n m^{2/3}), which does not match the form needed to apply Lemma 1; the paper then switches to x = n^{1/2} for TRIANGLE-DETECTION-2 but the derivation is circular). This is a fatal logical inconsistency.",
+      "The algorithm assumes the adjacency matrix is available for O(1) edge tests in both phases, but for sparse graphs with m = O(n^{7/6}) (as claimed for some applications?), the n^2 preprocessing time already exceeds the claimed O(m^{4/3}) bound. The paper never acknowledges or accounts for this cost, making the runtime claims unachievable.",
+      "The paper states 'we will need to run BFS+ on each of the O(n/x) sampled vertices', but if x = m^{1/3} and m can be as large as n^2, then n/x could be O(n^{2/3}), not O(n/x) as claimed? Actually, n/x = n/m^{1/3}, which for m = n^2 gives n/n^{2/3} = n^{1/3}, so it's consistent. But for sparse graphs m = O(n), n/x = n/n^{1/3} = n^{2/3}, which is fine. The error is not here, but in the earlier confusion."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.97,
+    "reasoning": "Both reviewers independently identify the same two fatal defects in the manuscript's central theorem (Theorem 2): (1) the core algorithm BFS+ is never formally specified, so the key correctness implication — that sampling a vertex in the closed neighborhood of a triangle guarantees detection — cannot be verified; and (2) the runtime analysis assumes O(1) adjacency tests via an adjacency matrix whose Θ(n²) construction/storage cost is omitted, directly contradicting the advertised sub-n² bounds for sparse graphs. These two issues together mean the paper's headline result is neither proved correct nor proved to run in the claimed time. All downstream results (BMM, k-clique, Max-Cut, geometric applications) depend on Theorem 2 and are therefore unsupported. Reviewer B raises an additional concern about the probability analysis (needing a union bound over all triangles), but Reviewer A correctly notes that for a Monte Carlo existence algorithm it suffices to fix one triangle; the real problem is not the probability calculation per se but the unproved deterministic implication underlying it. After reflection, both reviewers converge on the same core retraction-worthy findings and both soften or hold steady on downstream application issues. The manuscript cannot support its central conclusions as written.",
+    "findings": [
+      {
+        "finding": "The central BFS+ subroutine is never formally defined (no pseudocode, no invariant, no precise specification of what checks are performed during exploration). The correctness proof of Theorem 2 depends entirely on the claim that if a sampled vertex s lies in the closed neighborhood of some triangle T, then BFS+(s) deterministically detects a triangle. The case analysis assumes specific discovery orderings and adjacency-list scanning behavior that are not guaranteed by any stated algorithm. Without a complete algorithmic definition, the key correctness implication is uncheckable and unproved.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.97,
+        "justification": "Both reviewers independently flag this as the most critical flaw. The entire paper rests on Theorem 2, and Theorem 2 rests on BFS+ working as claimed. With no formal specification, the theorem is not established. Both reviewers maintained this assessment through reflection.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The runtime analysis assumes O(1) edge-existence queries via a precomputed adjacency matrix, but the Θ(n²) time and space required to build and store that matrix is never charged. For sparse graphs (m ≪ n²), this hidden cost dominates the advertised O(m^{4/3}) and can dominate O(m^{2/3}n) bounds, making the stated asymptotic running times invalid as presented.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.95,
+        "justification": "Both reviewers identify this independently. Since the paper's primary contribution is precisely a new asymptotic time bound, an unaccounted Θ(n²) preprocessing cost that can exceed the claimed bound is fatal. Reviewer A flagged this initially; Reviewer B upgraded it to retraction-worthy on reflection. Both agree it survives scrutiny.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The success-probability argument is only meaningful if the deterministic implication 'sampled s ∈ N⁺(T) ⟹ BFS⁺(s) detects a triangle' holds for the actual (unspecified) algorithm. Since BFS+ is not defined, the claimed error probability bound (≤ 10⁻³⁰) is unsupported. This is derivative of Finding 1 but constitutes an independently identifiable gap in the proof.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.93,
+        "justification": "The probability calculation itself (fixing one triangle T for a Monte Carlo algorithm) is methodologically sound in principle, as Reviewer A correctly notes — no union bound over all triangles is needed. However, the calculation is vacuous without the unproved deterministic step. Both reviewers agree this is fatal after reflection, though for slightly different reasons. The underlying cause is the same as Finding 1, but the probability claim is a separately stated and separately checkable component of the proof.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The time analysis contains internal inconsistencies between TRIANGLE-DETECTION-1 and TRIANGLE-DETECTION-2. Phase I is analyzed as O(nx²) in one variant and O(mx) in another for the same task. The derivation of the O(m^{4/3}) bound via the cited sparse-to-dense transfer lemma requires the base algorithm's complexity to match specific functional forms, but the paper switches between incompatible parameterizations without reconciling them.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.78,
+        "justification": "Reviewer B flags this as retraction-worthy, while Reviewer A treats the Phase I analysis as a major-revision issue. On balance, the inconsistency is concerning but could potentially be a presentation/bookkeeping error rather than a fundamental impossibility: O(nx²) with x = m^{1/3} gives O(nm^{2/3}), which is consistent with the TRIANGLE-DETECTION-1 claim; O(mx) with x = n^{1/2} gives O(mn^{1/2}), consistent with TRIANGLE-DETECTION-2. The transfer lemma application may be legitimate if the base results are correct. Since the more fundamental issues (BFS+ and adjacency matrix cost) already invalidate the theorem, this inconsistency is better classified as a major revision concern — it would need clarification but might be repairable in isolation.",
+        "source": "prover_b",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Theorem 3 (BMM in O(n^{25/9} log n)) is not rigorously established from the cited reduction. The proof sketch is muddled: the parameter m is undefined in the BMM setting, and the claim about random trials does not follow from the stated theorem. The conditions required by the Vassilevska Williams–Williams reduction framework (e.g., that the algorithm is combinatorial in the appropriate sense, handles the right graph class) are not verified.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers agree this is a major-revision issue. The theorem is derivative of Theorem 2, and its proof is incomplete but not independently broken in a way that would require separate retraction-level treatment. If Theorem 2 were correct and properly stated, this might be fixable with a careful writeup.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Theorem 4 (k-clique runtimes) and Theorem 5 (Max-Cut) are asserted by 'black-box replacement' of matrix-multiplication-based subroutines, but the auxiliary graphs' construction costs, edge counts, and representation details are not analyzed. The base theorem assumes an explicit adjacency matrix, but the auxiliary graphs in these reductions are implicitly constructed, creating a model mismatch.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Reviewer A initially flagged k-clique as retraction-worthy but downgraded to major-revision on reflection, recognizing it as a derivative casualty. Reviewer B treats conjecture-invalidation claims as retraction-worthy, but the claims about invalidating conjectures are overclaiming issues rather than independent methodological breaks. The applications are unsupported as written but could potentially be salvaged with proper implicit-graph analysis if the base result were correct.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The Phase I low-degree vertex check also depends on O(1) adjacency queries. Without the adjacency matrix assumption, both the correctness (completeness of triangle detection for low-degree vertices) and the complexity accounting for Phase I are underspecified.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "This is a subsidiary aspect of the adjacency-matrix cost issue (Finding 2). It could be fixed by specifying an alternative data structure, but as written it is incomplete. Both reviewers note this; Reviewer A rates it major-revision, which is appropriate since the fix is conceptually straightforward (hash-based adjacency) even if not provided.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Claims about 'strongly invalidating' the combinatorial k-clique conjecture and other hardness conjectures are overstated. The algorithm is randomized (Monte Carlo), the notion of 'combinatorial' is admittedly informal, and the downstream theorems are not rigorously proved. The relationship between the presented algorithm and the formal statements of the conjectures is not established.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "Reviewer A rates this as minor; Reviewer B upgrades to retraction-worthy on reflection, but this is primarily an overclaiming/framing issue rather than a separate methodological break. If the algorithm worked, the conjecture implications would need careful discussion but would not be independently retraction-worthy. Since the algorithm does not work as shown, the overclaiming is moot but still worth noting as a reporting concern.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The manuscript contains numerous editorial placeholders ([AUTHOR_1], [JOURNAL], [DATE]), incomplete references, and inconsistent notation, indicating it is not in a review-ready state.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.95,
+        "justification": "Both reviewers note this. It does not affect scientific correctness but hinders verification and indicates incomplete preparation.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The per-BFS+ runtime is stated as O(m) for connected graphs, but disconnected graphs are not handled consistently. Standard BFS is O(n+m), and the additive n term matters for very sparse graphs.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Reviewer A identifies this as a minor sloppiness issue. It would not change conclusions if cleaned up and is dominated by the more serious runtime issues.",
+        "source": "prover_a",
+        "survived_reflection": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 36469,
+    "duration_s": 163.69,
+    "n_api_calls": 22,
+    "cost_usd": 1.5689,
+    "total_input_tokens": 137944,
+    "total_output_tokens": 37786,
+    "calls": [
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3813,
+        "output_tokens": 1528,
+        "cost_usd": 0.0027103100000000005,
+        "duration_s": 23.11,
+        "label": "2402.14546v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 9758,
+        "output_tokens": 3312,
+        "cost_usd": 0.39477,
+        "duration_s": 65.46,
+        "label": "2402.10318v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4173,
+        "output_tokens": 1250,
+        "cost_usd": 0.0229325,
+        "duration_s": 22.22,
+        "label": "2402.16847v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3998,
+        "output_tokens": 1256,
+        "cost_usd": 0.0024610600000000006,
+        "duration_s": 15.71,
+        "label": "2402.16847v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 10451,
+        "output_tokens": 1721,
+        "cost_usd": 0.0433375,
+        "duration_s": 33.88,
+        "label": "2403.01085v2/b3plus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 10451,
+        "output_tokens": 1765,
+        "cost_usd": 0.0437775,
+        "duration_s": 34.34,
+        "label": "2403.01085v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 9402,
+        "output_tokens": 2350,
+        "cost_usd": 0.31728,
+        "duration_s": 51.85,
+        "label": "2402.14546v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 10151,
+        "output_tokens": 2348,
+        "cost_usd": 0.00532357,
+        "duration_s": 32.23,
+        "label": "2403.01085v2/b3plus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 10151,
+        "output_tokens": 1410,
+        "cost_usd": 0.00429177,
+        "duration_s": 20.21,
+        "label": "2403.01085v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2938,
+        "output_tokens": 2041,
+        "cost_usd": 0.027755,
+        "duration_s": 39.92,
+        "label": "2402.16847v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 7579,
+        "output_tokens": 1236,
+        "cost_usd": 0.0313075,
+        "duration_s": 26.19,
+        "label": "2403.06831v2/b3plus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2982,
+        "output_tokens": 1214,
+        "cost_usd": 0.00214054,
+        "duration_s": 15.37,
+        "label": "2402.16847v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4551,
+        "output_tokens": 1077,
+        "cost_usd": 0.0221475,
+        "duration_s": 25.37,
+        "label": "2403.01085v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 7601,
+        "output_tokens": 1153,
+        "cost_usd": 0.00332057,
+        "duration_s": 14.71,
+        "label": "2403.06831v2/b3plus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4599,
+        "output_tokens": 1093,
+        "cost_usd": 0.0024440300000000002,
+        "duration_s": 14.01,
+        "label": "2403.01085v2/b3plus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2881,
+        "output_tokens": 1078,
+        "cost_usd": 0.0179825,
+        "duration_s": 16.79,
+        "label": "2403.06831v2/b3plus/reflection_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 6923,
+        "output_tokens": 1694,
+        "cost_usd": 0.230895,
+        "duration_s": 36.45,
+        "label": "2402.16847v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3673,
+        "output_tokens": 3309,
+        "cost_usd": 0.0422725,
+        "duration_s": 60.05,
+        "label": "2403.01085v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2931,
+        "output_tokens": 965,
+        "cost_usd": 0.00185287,
+        "duration_s": 13.57,
+        "label": "2403.06831v2/b3plus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 7579,
+        "output_tokens": 1836,
+        "cost_usd": 0.0373075,
+        "duration_s": 28.75,
+        "label": "2403.06831v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3742,
+        "output_tokens": 1541,
+        "cost_usd": 0.00270544,
+        "duration_s": 23.23,
+        "label": "2403.01085v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7617,
+        "output_tokens": 2609,
+        "cost_usd": 0.30993,
+        "duration_s": 58.19,
+        "label": "2403.01085v2/b3plus/arbiter"
+      }
+    ]
+  }
+}

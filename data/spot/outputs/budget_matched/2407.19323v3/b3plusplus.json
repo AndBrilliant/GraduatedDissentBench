@@ -1,0 +1,561 @@
+{
+  "condition": "B3PLUSPLUS",
+  "paper_id": "2407.19323v3",
+  "verdict": "flagged",
+  "confidence": 0.97,
+  "reasoning": "Both reviewers independently identified the same fundamental problem: the manuscript conflates two distinct methods (MSP-MVS and TSAR-MVS) with incompatible pipelines, contributions, and novelty claims. This core identity crisis was rated RETRACTION-WORTHY by both reviewers and survived reflection without downgrade from either side. The manuscript simultaneously proposes TSAR-MVS as a new contribution and cites it as prior work (Yuan et al. 2024b), creating a direct self-contradiction about originality. Beyond this central issue, both reviewers converged on numerous MAJOR-REVISION concerns: missing numerical results, uninterpretable ablations, unvalidated core mechanism (Semantic-SAM edges as depth edges), incomplete experimental protocol, and insufficient implementation details. The manuscript also shows signs of being an unfinished draft (placeholder citations, duplicated paragraphs). The combination of an undefined method identity with absent quantitative evidence means the paper's central conclusions cannot be supported in their current form.",
+  "findings": [
+    {
+      "finding": "The manuscript describes two incompatible methods—MSP-MVS (deformable-patch MVS with multi-granularity segmentation prior, anchor equidistribution, iterative local search) and TSAR-MVS (post-processing pipeline with confidence filtering, superpixel/RANSAC refinement, WMF propagation, textureless-aware segmentation)—under one paper. The evaluated algorithm cannot be uniquely identified, breaking the method-to-results correspondence required for any scientific claim.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.95,
+      "justification": "Both reviewers independently identified this as retraction-worthy and neither downgraded upon reflection. This is not a naming typo—the two described pipelines operate at different stages (full MVS vs. post-processing), have different inputs, different module architectures, and different contribution claims. If confirmed, no reader can determine what algorithm generated the benchmark numbers, making the central SOTA claims scientifically unsupported. This meets the retraction test: the paper's central conclusions cannot be supported by the data as presented because the method generating those data is undefined.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The manuscript explicitly proposes TSAR-MVS ('Therefore, we propose TSAR-MVS') while simultaneously citing 'TSAR-MVS (Yuan et al. 2024b)' as prior work in the related work section, creating a direct contradiction about whether the core contribution is novel or previously published.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.88,
+      "justification": "Reviewer A rated this retraction-worthy and defended it strongly in reflection; Reviewer B identified it as a new error in reflection that strengthened the retraction case. If confirmed, this collapses the novelty claim—a methods paper's central contribution is that a new method is being proposed. However, there is some residual possibility this reflects careless editing of a revision/extension of the authors' own prior work rather than deliberate misrepresentation. Even so, the manuscript as submitted cannot support its novelty claims. The severity remains retraction-worthy because the paper in its current form misrepresents originality at the most fundamental level.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Ablation studies are uninterpretable because the ablated modules (w/o. SAM, w/o. Her., w/o. Agr., w/o. CRF., w/o. Avg., w/o. Cls., w/o. ILS) correspond to MSP-MVS components, not to the TSAR-MVS pipeline described in the contributions and method sections. The component-level evidence does not map to the claimed contributions.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.92,
+      "justification": "Both reviewers identified this mismatch. Reviewer B upgraded this from MINOR to MAJOR-REVISION in reflection. The ablation evidence is the primary means of validating which components drive performance gains; when ablation labels don't correspond to the described method, mechanistic conclusions are unsupported. However, if the method identity were resolved (i.e., one coherent pipeline identified), the ablations might become interpretable, so this is repairable in principle.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The claimed contributions (confidence estimator, disparity discontinuity detector, iterative correlation refinement, textureless-aware segmentation for TSAR-MVS) are internally inconsistent with the technical description and later evaluation sections (which discuss SAM prior, aggregation, edge correction, anchor equidistribution, ILS for MSP-MVS).",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.9,
+      "justification": "Reviewer A identified this and defended it in reflection. The contribution list and the experimental evidence do not align, meaning the paper fails to demonstrate that its stated innovations are responsible for observed gains. This is a structural mismatch that undermines the paper's narrative but could be resolved with a coherent rewrite.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "No concrete quantitative results (numerical tables, per-benchmark metrics, confidence intervals, statistical tests) are reported in the provided manuscript text, despite strong state-of-the-art claims. Only references to absent tables/figures/supplementary material are made.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers flagged this. Without visible numbers, SOTA claims cannot be verified. This may partly reflect excerpt incompleteness rather than manuscript absence, hence MAJOR-REVISION rather than RETRACTION-WORTHY. If tables exist in a full version, the severity would decrease; if they do not, this approaches retraction territory.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The core mechanism—using Semantic-SAM segmentation boundaries as 'depth edges' to constrain patch deformation—is never validated. No precision/recall against ground-truth depth edges, no comparison to other edge detectors, and no analysis of failure cases are provided. Segmentation boundaries are not equivalent to geometric depth discontinuities.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers identified this gap. The entire method's claimed advantage over prior deformable-patch approaches rests on this assumption. If segmentation boundaries do not reliably correspond to depth edges, the central mechanism may be unreliable. This is a major gap but is addressable through additional experiments.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Implementation details are severely lacking: no specification of Semantic-SAM version/weights, inference resolution, edge extraction thresholds, number of sectors for anchor equidistribution, ILS hyperparameters (iterations, convergence criteria, objective function), PatchMatch iteration count, view selection protocol, or post-processing settings.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers flagged this. MVS results are highly sensitive to these parameters. Without them, reproduction is impossible and benchmark comparisons cannot be verified as fair. This is a standard but serious reproducibility failure.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Experimental evaluation is incomplete and potentially biased: only F1/completeness metrics are reported for ETH3D and TNT benchmarks, while standard accuracy metrics and error thresholds are omitted. Comparisons between traditional and learning-based methods lack standardized hardware/protocol context.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers noted selective metric reporting and unfair cross-regime comparisons. Method rankings can change with different metrics, and efficiency claims without harmonized settings are unreliable. Addressable through comprehensive evaluation.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The manuscript contains signs of being an incomplete draft: duplicated paragraphs on Semantic-SAM/depth edges, placeholder citations ([AUTHOR_1], [JOURNAL]), abrupt topic shifts, and assembly corruption that prevents the text from functioning as a coherent scientific record.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers noted this. While draft quality is not itself a scientific error, a corrupted manuscript prevents reliable peer review and undermines confidence that the final text accurately represents the work done. This compounds the method-identity problem.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Claims of 'robust generalization capability' are unsupported by evidence: no cross-domain evaluation, no unseen-domain stress tests, and no isolation of the foundation model's contribution to generalization.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Reviewer A identified this as an overclaim. It weakens interpretation but does not invalidate results. Standard criticism applicable to most papers making generalization claims without cross-domain testing.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Strong causal explanations for baseline failures (e.g., APD-MVS 'mistakenly skips depth edges', learning methods have 'limited generalization') are asserted without controlled evidence or supporting citations.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Reviewer A identified this as interpretive overreach. These claims should be softened or experimentally validated, but they do not independently affect the paper's empirical conclusions.",
+      "source": "prover_a",
+      "survived_reflection": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 2,
+    "MAJOR-REVISION": 7,
+    "MINOR": 2
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.97,
+    "reasoning": "The manuscript contains substantial internal inconsistencies that raise serious methodological and scholarly-integrity concerns. Most importantly, the paper appears to conflate two different methods—MSP-MVS and TSAR-MVS—with incompatible descriptions of contributions, pipeline, and claimed novelty. Because the text alternates between a deformable-patch method using Semantic-SAM priors and a post-processing superpixel/RANSAC/WMF method previously cited as TSAR-MVS (Yuan et al. 2024b), it is impossible to determine what algorithm was actually evaluated. This prevents verification that the reported benchmark results correspond to the described method. In addition, experimental reporting is too incomplete to assess fairness or reproducibility: no actual tables, numerical values, protocol details, or statistical evidence are provided in the excerpt, despite strong state-of-the-art claims. While some issues may stem from manuscript assembly errors, if confirmed they would require major revision at minimum, and possibly invalidate the empirical claims if the evaluated method is not the one described.",
+    "findings": [
+      {
+        "finding": "The manuscript appears to describe two different methods under one paper: an MSP-MVS deformable-patch method with multi-granularity segmentation prior, anchor equidistribution, and iterative local search; and a TSAR-MVS post-processing pipeline with confidence filtering, superpixel/RANSAC refinement, WMF propagation, and textureless-aware segmentation.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "If confirmed, the central conclusions cannot be tied to a well-defined method. A paper cannot validly claim benchmark superiority when the algorithm being evaluated is ambiguous or internally contradictory. This is not a stylistic issue; it breaks the core mapping between method, implementation, and results."
+      },
+      {
+        "finding": "The manuscript explicitly says 'Therefore, we propose TSAR-MVS' and later cites 'TSAR-MVS (Yuan et al. 2024b)' in related work, implying the paper is simultaneously presenting and citing the same method as prior work.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "If this is indeed reused prior work presented as current contribution, the novelty claim is fundamentally compromised. At minimum this is severe self-plagiarism/duplicate-publication ambiguity; at worst, the claimed contribution is not original. That invalidates the paper's main claim of novelty."
+      },
+      {
+        "finding": "The claimed contributions are internally inconsistent with the technical description. The contribution list for TSAR-MVS emphasizes confidence estimator, disparity discontinuity detector, iterative correlation refinement, and textureless-aware segmentation, while later sections and ablations evaluate MSP-MVS components such as SAM prior, aggregation, edge correction, anchor equidistribution, and ILS.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This makes it impossible to identify the actual ablated components and whether the experiments support the stated contributions. Conclusions about which components matter could change completely once the method definition is corrected."
+      },
+      {
+        "finding": "Ablation studies are uninterpretable because the ablated modules do not match the earlier algorithmic pipeline. For example, ablations on 'w/o. SAM', 'w/o. Her.', 'w/o. Agr.', 'w/o. CRF.', 'w/o. Avg.', 'w/o. Cls.', and 'w/o. ILS' correspond to MSP-MVS, not to the TSAR-MVS procedure described earlier.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the ablation labels and the model description are mismatched, the component-wise evidence does not support the claims. This undermines mechanistic conclusions, though the full method could still potentially perform well if correctly described."
+      },
+      {
+        "finding": "No concrete quantitative results are actually reported in the provided manuscript text despite strong claims of state-of-the-art performance; references are made to tables/figures/supplementary material without including values, confidence intervals, or per-benchmark metrics.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Without numerical evidence, benchmark claims cannot be independently assessed for correctness, margin, or practical significance. This does not automatically prove the results are false, but it prevents methodological validation."
+      },
+      {
+        "finding": "The experimental protocol is insufficiently specified for reproducibility and fairness: there is no clear statement of training data (if any), hyperparameters, initialization, number of PatchMatch iterations, view selection protocol, post-processing, or whether all compared methods are evaluated under their official settings.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Benchmark conclusions may change under different protocol choices. Missing protocol details are especially serious in MVS, where evaluation is sensitive to fusion, filtering, image scaling, and parameter tuning."
+      },
+      {
+        "finding": "The use of Semantic-SAM-derived 'depth edges' is conceptually underspecified and potentially misleading. Semantic-SAM produces segmentation masks, not true geometric depth discontinuities, yet the manuscript repeatedly refers to extracted segmentation boundaries as 'depth edges' without a validation showing correspondence or error rates.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If segmentation boundaries do not align reliably with geometric depth edges, the core mechanism restricting deformation within homogeneous depth regions may fail or introduce bias. This could materially alter the claimed advantage over prior deformable-patch methods."
+      },
+      {
+        "finding": "Claims of 'robust generalization capability' are not adequately supported by the evidence described. Evaluation appears limited to standard benchmarks, with no cross-domain protocol, no unseen-domain stress test, and no analysis isolating the contribution of using a foundation segmentation model.",
+        "severity": "MINOR",
+        "justification": "This is an overclaim rather than a fatal flaw. It weakens interpretation but does not by itself invalidate benchmark results."
+      },
+      {
+        "finding": "Comparisons between traditional and learning-based methods may be unfair or at least insufficiently contextualized, because runtime/memory and performance are compared across methods with very different hardware assumptions and training regimes, yet no standardized evaluation setup is reported.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If runtimes or performance are drawn from inconsistent settings, conclusions about efficiency and superiority may change. This affects comparative validity, though not necessarily the raw performance of the proposed method."
+      },
+      {
+        "finding": "The manuscript repeatedly uses strong causal explanations for baseline failures (e.g., APD-MVS 'mistakenly skip depth edges', learning methods have 'limited generalization', GRU methods have constrained spatial recognition) without direct controlled evidence or citations supporting those specific failure modes.",
+        "severity": "MINOR",
+        "justification": "These are weakly supported interpretive claims. They should be toned down or experimentally validated, but they do not independently invalidate the empirical study."
+      },
+      {
+        "finding": "Several key implementation elements are too vague to assess methodological correctness: how multi-granularity edges are aggregated/corrected, how sectors are defined for anchor equidistribution, how candidate variance and cost are combined in ILS, and what objective is optimized.",
+        "severity": "MAJOR-REVISION",
+        "justification": "These omissions prevent reproduction and make it impossible to verify whether the method is sound or whether the implementation matches the textual claims. Correct specification could materially affect outcomes."
+      },
+      {
+        "finding": "The manuscript contains signs of assembly/copy-editing corruption (duplicated paragraphs on Semantic-SAM/depth edges, placeholder citations like [AUTHOR_1] and [JOURNAL], abrupt topic shifts), suggesting the submitted version may not be a coherent finalized scientific record.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the paper text is corrupted, reviewers cannot reliably evaluate the method or claims. This alone may not imply the science is wrong, but the manuscript is not in a reviewable methodological state."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "The manuscript describes a proposed method called 'MSP-MVS' but the text also repeatedly refers to 'TSAR-MVS' in an apparently confused manner. More critically, the paper's central methodological contribution hinges on extracting depth edges from a pretrained segmentation model (Semantic-SAM) to constrain patch deformation. The manuscript does NOT provide any quantitative evaluation of the accuracy or reliability of this edge extraction step, nor does it report implementation details necessary for reproducibility (e.g., specific model weights, inference parameters, resolution, postprocessing). Without these, the claimed improvements over prior work (APD-MVS, SD-MVS) cannot be verified. Additionally, the experimental comparisons appear cherry-picked: only F1/completeness are reported for ETH3D and TNT, while standard accuracy metrics (e.g., error thresholds like 2cm, 5cm) are omitted, and no confidence intervals or statistical tests are provided. The method is also described as both a 'post-processing' method (TSAR-MVS) and a full MVS pipeline (MSP-MVS), creating an ambiguity that undermines its methodological positioning.",
+    "findings": [
+      {
+        "finding": "The paper inconsistently uses two different method names ('MSP-MVS' and 'TSAR-MVS') and appears to conflate two distinct pipelines. The text describing contributions (e.g., iterative correlation refinement, joint hypothesis filter, textureless-aware segmentation) refers to TSAR-MVS, while the title and abstract refer to MSP-MVS. This suggests the manuscript may be a composite or contains a serious internal inconsistency.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "If confirmed, the paper's central methodological identity is ambiguous and the proposed approach is not clearly defined, making all conclusions untrustworthy. A retraction would be needed because the reader cannot determine which method is actually being proposed and evaluated."
+      },
+      {
+        "finding": "The critical component 'multi-granularity depth edges' is extracted using Semantic-SAM, but the paper provides no validation of the quality of these edges (e.g., precision/recall vs ground truth depth edges, ablation without SAM, or comparison to other edge detectors). The contribution depends entirely on this step, and without evidence that it works as claimed, the method is unsubstantiated.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the central innovation is not verified, and the paper's main claims about outperforming prior methods may be unfounded. This is a major gap but could potentially be addressed by adding rigorous edge quality analysis and ablation studies."
+      },
+      {
+        "finding": "Implementation details for reproducibility are severely lacking. The manuscript does not specify which version of Semantic-SAM was used, the inference resolution, threshold levels for edge extraction, the number of sectors in anchor equidistribution, or hyperparameters for iterative local search optimization (e.g., number of iterations, convergence criteria). Without these, the experiments cannot be replicated.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the lack of reproducibility undermines the scientific validity of the work. This requires major revision to include complete implementation details."
+      },
+      {
+        "finding": "Quantitative evaluation is incomplete and potentially biased. Only F1 and completeness metrics are reported for the two benchmarks. Standard error thresholds (e.g., 2cm, 5cm, 10cm) and accuracy metrics are absent. No confidence intervals or statistical significance tests are provided. The selection of compared methods may omit relevant competitors.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the reported 'state-of-the-art' claims may be based on selective reporting of metrics. A more comprehensive evaluation could change the ranking of methods. This is a major but addressable concern."
+      },
+      {
+        "finding": "The ablation study (Section 'Multi-granularity Segmentation Prior') uses abbreviations (w/o. SAM, w/o. Her, w/o. Agr., w/o. CRF.) that are not defined in the text. It is impossible to interpret what components are ablated. Similar unclear abbreviations appear in other ablation sections.",
+        "severity": "MINOR",
+        "justification": "If confirmed, this is a reporting deficiency that does not invalidate the conclusions but makes the paper harder to evaluate. It can be fixed by clarifying the abbreviations."
+      }
+    ]
+  },
+  "reflection_a": {
+    "defense_for_self": "My original severity ratings are justified under the key test: if the flagged issues are confirmed, several of them make the paper’s central conclusions impossible to support from the manuscript as submitted. The most important point is not merely that the writing is messy, but that the manuscript breaks the essential evidentiary chain linking (1) a defined method, to (2) an implementation, to (3) the reported results. When that chain is broken at the level of the core algorithmic identity and novelty claim, the appropriate severity is RETRACTION-WORTHY, not merely MAJOR-REVISION.\n\nFirst RETRACTION-WORTHY finding: the manuscript appears to contain two incompatible methods under one paper. This is genuinely retraction-worthy because benchmark claims are only meaningful if the evaluated system is uniquely identifiable. Here, the text alternates between MSP-MVS, described as a deformable-patch MVS method using multi-granularity segmentation priors, anchor equidistribution, and iterative local search, and TSAR-MVS, described as a post-processing/refinement framework using confidence filtering, superpixels/RANSAC, weighted median filtering, textureless-aware segmentation, and iterative correlation refinement. Those are not two verbal descriptions of the same architecture; they are different method families, with different inputs, operating points in the pipeline, and different claimed contributions. If this is confirmed, then the reader literally cannot know what algorithm generated the benchmark numbers, what code should be reproduced, what ablations correspond to what modules, or what prior art is being surpassed. That is not a patchable reporting flaw in the ordinary sense. It means the primary scientific claim—'this method achieves SOTA'—has no determinate referent. A paper whose central object of study is undefined cannot support its central conclusions. That meets the definition of RETRACTION-WORTHY.\n\nWhy this is not over-stated: a major revision is appropriate when the method is identifiable but incompletely described, or when some implementation details are missing. Here the concern is prior to reproducibility detail: the method itself is ambiguous at the level of conceptual identity. If one section’s pipeline is the one implemented, then another section’s contribution statements, ablations, and novelty framing are false. If instead the other pipeline was implemented, then the first description is false. Either way, the article in its current scientific form cannot be trusted as a valid record of what was studied. The problem is not merely absent detail; it is contradiction at the core object level. That is exactly the sort of defect that invalidates conclusions rather than merely weakening them.\n\nSecond RETRACTION-WORTHY finding: the manuscript both proposes TSAR-MVS and cites TSAR-MVS (Yuan et al. 2024b) as prior work. I continue to defend the RETRACTION-WORTHY rating because, if confirmed, this is not just naming confusion. It would mean the paper presents as novel a method that is also treated in the manuscript as already published prior art. That is a direct collapse of the novelty claim. The central conclusion of a methods paper is not just empirical performance; it is that a new method is being contributed and evaluated. If the allegedly new method is actually previously published, then the principal contribution claim is invalid. And because the manuscript’s result narrative is built around comparative superiority of the 'proposed' method, the entire framing of contribution, originality, and interpretation of experiments is compromised.\n\nThis too is not over-stated. One might argue that the authors simply forgot to rename one occurrence or copied a stale citation. But the issue, as described, is not a single stray typo. The manuscript explicitly says 'Therefore, we propose TSAR-MVS' while elsewhere citing 'TSAR-MVS (Yuan et al. 2024b)' in related work. That creates a direct internal contradiction about whether TSAR-MVS is new or prior. If confirmed, it is severe self-plagiarism/duplicate-publication ambiguity or misrepresentation of originality. In a methods paper, originality is not ancillary; it is central. A paper cannot remain valid if its contribution claim is internally self-negating.\n\nAgainst the other reviewer’s softer framing: the other review correctly recognizes ambiguity between MSP-MVS and TSAR-MVS, but in one key respect it understates the consequence by shifting emphasis toward missing validation of the Semantic-SAM edge extraction step. That edge-validation issue is real, but it is secondary. A paper can survive weak validation of an internal mechanism via major revision, because the method may still be identifiable and evaluable. What it cannot survive is ontological ambiguity about what the method even is. My RETRACTION-WORTHY ratings address the higher-order failure. Without a stable method identity, no amount of extra validation of Semantic-SAM edges would rescue the paper’s conclusions, because we still would not know whether those edges belong to the evaluated system or to one of two conflated manuscripts.\n\nLikewise, the other reviewer labels the edge-extraction validation problem MAJOR-REVISION. I agree with that severity for that point. But that does not weaken my more serious assessments; it strengthens them by contrast. The fact that the other reviewer’s main major concern is about validating one component only highlights that my retraction-worthy concerns target a more fundamental level: not whether one component works, but whether the paper identifies a coherent single method at all.\n\nI also affirmatively defend the MAJOR-REVISION ratings. These are not filler criticisms; each could materially alter conclusions even if the manuscript were cleaned up.\n\nFor the finding that the claimed contributions are inconsistent with the technical description: this is MAJOR-REVISION because if the contribution list names confidence estimation, disparity-discontinuity detection, iterative correlation refinement, and textureless-aware segmentation, while the later method/ablation sections analyze SAM prior, edge correction, aggregation, anchor equidistribution, and ILS, then the empirical evidence does not map to the claimed innovations. Even if one coherent method eventually exists, the current manuscript does not establish which components caused the gains. That can change mechanistic conclusions and novelty attribution.\n\nFor the finding that the ablations are uninterpretable because the module names correspond to MSP-MVS rather than TSAR-MVS: MAJOR-REVISION is exactly right. Ablation evidence is only meaningful if each removed component belongs to the defined baseline/full model. Here the ablations appear to test a different module set than the one introduced earlier. This means the paper’s internal causal claims ('component X improves Y') are unsupported. The full method might still perform well, so this is not necessarily retraction-worthy by itself; but it is a major methodological failure.\n\nFor the finding that no concrete quantitative results are actually reported in the provided text despite strong SOTA claims: MAJOR-REVISION remains appropriate. If the tables and values truly are absent from the submission under review, then benchmark superiority cannot be checked. That does not prove the numbers are wrong, but it prevents validation. The paper cannot be accepted in that state. If this omission reflects excerpt incompleteness rather than manuscript absence, then the severity would depend on the full document; hence MAJOR-REVISION, not RETRACTION-WORTHY.\n\nFor the insufficient experimental protocol finding: MAJOR-REVISION is warranted because MVS outcomes are highly sensitive to training regime, image scale, patchmatch iterations, filtering/fusion, and post-processing. Missing these details can absolutely change rankings. Yet unlike the method-identity contradiction, this problem is in principle repairable by fuller reporting and perhaps reruns.\n\nFor the Semantic-SAM 'depth edges' issue: I still defend MAJOR-REVISION, and more strongly than the other reviewer framed it. The problem is not just missing implementation detail. The manuscript appears to treat segmentation boundaries as depth discontinuities without validating correspondence. That is a conceptual leap. If the method’s patch deformation is constrained by boundaries that are only semantic/appearance partitions rather than geometric edges, then the central claimed mechanism may be partly illusory or brittle. This could materially affect both performance and claimed novelty relative to prior deformable-patch methods. It is not minor.\n\nFor fairness of comparisons between traditional and learning-based methods: MAJOR-REVISION stands because runtime and performance comparisons across differently trained and differently hardware-dependent systems are easy to distort. In MVS especially, reporting speed without harmonized hardware, resolution, and post-processing settings can create misleading efficiency claims. Those claims may influence acceptance and interpretation.\n\nFor vague implementation elements such as edge aggregation/correction, sector definitions, ILS objective, and candidate variance/cost combination: MAJOR-REVISION is justified because these are not cosmetic omissions. They are the details that determine whether the algorithm is even well-defined computationally. A reader cannot reproduce or verify correctness from the present text.\n\nFor manuscript-assembly corruption: MAJOR-REVISION is not excessive. Duplicated paragraphs, placeholders like [AUTHOR_1] or [JOURNAL], and abrupt topic shifts are not ordinary proofreading issues when they affect method identity and literature positioning. They are evidence the submitted record may not be a coherent final manuscript. Review cannot reliably proceed on a corrupted scientific document.\n\nThe MINOR ratings also remain correctly calibrated. Overclaims about generalization and unsupported causal explanations for baseline failure modes weaken rhetoric but do not by themselves change the empirical conclusion if the rest were sound. Those are exactly the kinds of issues that should be toned down or better supported, not grounds for stronger action.\n\nIn short, I stand by the distinction I made: the two RETRACTION-WORTHY findings are not simply severe sloppiness; they invalidate the paper’s ability to support its central conclusions because they destroy the identity and originality of the purported method. The remaining major findings are serious and potentially conclusion-changing but, unlike the first two, are in principle repairable if the authors submit a coherent, corrected manuscript with a single defined method and complete evidence.",
+    "severity_i_now_upgrade": [],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      "RETRACTION-WORTHY — The manuscript appears to describe two different methods under one paper: MSP-MVS versus TSAR-MVS. I still defend this as retraction-worthy because, if confirmed, the central empirical claims are not attached to a uniquely defined algorithm. That makes the headline conclusions scientifically unsupported, not merely under-described.",
+      "RETRACTION-WORTHY — The manuscript both proposes TSAR-MVS and cites TSAR-MVS (Yuan et al. 2024b) as prior work. I still defend this as retraction-worthy because, if confirmed, the novelty claim collapses and the paper misrepresents whether the core contribution is new or previously published.",
+      "MAJOR-REVISION — Claimed contributions are inconsistent with the technical description. I stand by this because the experiments and ablations cannot be said to support the named contributions when the module lists do not match.",
+      "MAJOR-REVISION — Ablation studies are uninterpretable because the ablated modules do not match the earlier pipeline. I stand by this because component-level evidence is invalid if the ablations do not correspond to the described method.",
+      "MAJOR-REVISION — No concrete quantitative results are actually reported in the provided text despite strong claims. I stand by this because claims of SOTA without visible numbers, effect sizes, or benchmark tables cannot be independently evaluated.",
+      "MAJOR-REVISION — Experimental protocol is insufficiently specified for reproducibility and fairness. I stand by this because MVS rankings can change with protocol details, especially scaling, filtering, and iteration settings.",
+      "MAJOR-REVISION — Semantic-SAM-derived 'depth edges' are conceptually underspecified and potentially misleading. I stand by this because segmentation boundaries are not equivalent to geometric depth discontinuities, and the method’s central mechanism depends on that assumption.",
+      "MINOR — Claims of robust generalization capability are not adequately supported. I stand by this because this is an overclaim that weakens interpretation but does not alone invalidate the empirical study.",
+      "MAJOR-REVISION — Comparisons between traditional and learning-based methods may be unfair or insufficiently contextualized. I stand by this because cross-regime runtime/performance comparisons without standardized settings can materially distort conclusions.",
+      "MINOR — Strong causal explanations for baseline failures are asserted without direct evidence. I stand by this because these are interpretive overreaches, not core invalidations.",
+      "MAJOR-REVISION — Several key implementation elements are too vague to assess methodological correctness. I stand by this because these omissions prevent reproduction and may materially affect outcomes.",
+      "MAJOR-REVISION — The manuscript contains signs of assembly/copy-editing corruption. I stand by this because a corrupted manuscript is not a reliable scientific record for peer review."
+    ],
+    "new_errors_noticed": [
+      "The manuscript appears to confuse methodological positioning at a categorical level: one version of the method is a post-processing/refinement stage, while the other is presented as a full MVS pipeline. This is even more serious than simple naming inconsistency because the baseline choice, inputs, and fairness of comparison differ fundamentally across those categories.",
+      "If TSAR-MVS is prior work and MSP-MVS is the new method, then citing and re-proposing TSAR-MVS while reporting ablations for MSP-MVS may amount not only to internal inconsistency but to erroneous attribution of which experiments support which paper’s claimed novelty.",
+      "Because the ablation labels and contribution statements appear to belong to different method variants, even a correct table of numbers would not resolve the evidentiary gap; the mismatch is structural, not just quantitative."
+    ]
+  },
+  "reflection_b": {
+    "defense_for_self": "My RETRACTION-WORTHY finding (inconsistent method names MSP-MVS vs TSAR-MVS) is the strongest and most fundamental issue. The dual-reviewer analysis reveals that both reviewers independently identified this same core contradiction, making it not a subjective interpretation but an objective textual fact. A paper that cannot define which algorithm was actually evaluated violates the most basic requirement of scientific reproducibility: unambiguous method identification. The other reviewer's framing that this 'could be a manuscript assembly error' is dangerously lenient—even if accidental, a published paper with two incompatible method descriptions means NO reader can determine what was actually compared against baselines. This is not a methodological nuance; it destroys the paper's claim to be a coherent scientific contribution. My confidence at 0.95 is validated by the other reviewer's 0.97 agreement on the 'flagged' verdict and their independent identification of the same method conflation as retraction-worthy.\n\nMy MAJOR-REVISION findings (missing edge validation, no reproducibility details, incomplete metrics, uninterpretable ablations, missing numerical results, insufficient protocol specification, underspecified 'depth edges' concept, vague implementation elements, and signs of corruption) are all defendable because each independently prevents verification of a distinct critical component. The other reviewer's agreement that these are major issues (they identified 8 major findings) confirms these are not minor quibbles. The severity of 'major revision' is appropriate because while each individually could be fixed, the paper requires comprehensive revision to all these dimensions simultaneously to become publishable.\n\nMy MINOR finding (undefined abbreviations) is correctly rated—it's a reporting deficiency that does not affect the core claims.",
+    "severity_i_now_upgrade": [
+      "Finding: 'The manuscript once describes SAM edges and then describes TSAR-MVS post-processing, creating an ambiguity that undermines its methodological positioning' — I now rate this as RETRACTION-WORTHY (upgraded from MAJOR-REVISION). The other reviewer's analysis shows this is not just 'positioning' ambiguity but reflects an actually different pipeline being evaluated vs described. This breaks method-results correspondence.",
+      "Finding: 'The ablation study uses undefined abbreviations making it uninterpretable' — I now consider this could be upgraded to MAJOR-REVISION (from MINOR) because the other reviewer independently found that ablated modules mismatch the TSAR-MVS pipeline, meaning even if abbreviations were defined, the ablation experiments test a different method than what is described. This is a structural mismatch, not just unclear notation."
+    ],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      "RETRACTION-WORTHY: Inconsistent method names MSP-MVS vs TSAR-MVS — Both reviewers independently identified this as retraction-worthy. This remains the single most damning issue.",
+      "MAJOR-REVISION: No validation of Semantic-SAM edge quality — The other reviewer agreed this is conceptually underspecified and potentially misleading. This remains a major gap.",
+      "MAJOR-REVISION: Missing implementation details — Both reviewers flagged this as preventing reproducibility. Agreement reinforces severity.",
+      "MAJOR-REVISION: Incomplete/incomparable metrics — The other reviewer also noted missing per-benchmark metrics and lack of confidence intervals.",
+      "MAJOR-REVISION: Ablation mismatch — The other reviewer explicitly noted ablations test MSP-MVS components while text describes TSAR-MVS. This independently confirms my concern.",
+      "MAJOR-REVISION: No concrete numerical results reported in text — Both reviewers noted this makes verification impossible.",
+      "MAJOR-REVISION: Insufficient experimental protocol — Both reviewers noted this for MVS sensitivity.",
+      "MAJOR-REVISION: 'Depth edges' from SAM are underspecified — The other reviewer called this 'potentially misleading'. Agreement confirms severity.",
+      "MINOR: Undefined abbreviations — Still a valid but minor issue. The other reviewer did not dispute this rating."
+    ],
+    "new_errors_noticed": [
+      "The manuscript cites 'TSAR-MVS (Yuan et al. 2024b)' in related work while simultaneously presenting TSAR-MVS as a new contribution in the method section — this is not just inconsistency but suggests the paper may be presenting someone else's prior work (possibly the authors' own) as a novel contribution, which is a self-plagiarism/duplicate-publication integrity violation. This strengthens the case for retraction.",
+      "The other reviewer noted 'placeholder citations like [AUTHOR_1]' — I missed this earlier. This indicates the manuscript is in an incomplete, pre-publication draft state, which undermines the credibility of the entire submission as a finalized scientific product.",
+      "The duplicate paragraphs on Semantic-SAM/depth edges described by the other reviewer suggests the paper contains redundant or corrupted text, further evidence of poor assembly."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.97,
+    "reasoning": "Both reviewers independently identified the same fundamental problem: the manuscript conflates two distinct methods (MSP-MVS and TSAR-MVS) with incompatible pipelines, contributions, and novelty claims. This core identity crisis was rated RETRACTION-WORTHY by both reviewers and survived reflection without downgrade from either side. The manuscript simultaneously proposes TSAR-MVS as a new contribution and cites it as prior work (Yuan et al. 2024b), creating a direct self-contradiction about originality. Beyond this central issue, both reviewers converged on numerous MAJOR-REVISION concerns: missing numerical results, uninterpretable ablations, unvalidated core mechanism (Semantic-SAM edges as depth edges), incomplete experimental protocol, and insufficient implementation details. The manuscript also shows signs of being an unfinished draft (placeholder citations, duplicated paragraphs). The combination of an undefined method identity with absent quantitative evidence means the paper's central conclusions cannot be supported in their current form.",
+    "findings": [
+      {
+        "finding": "The manuscript describes two incompatible methods—MSP-MVS (deformable-patch MVS with multi-granularity segmentation prior, anchor equidistribution, iterative local search) and TSAR-MVS (post-processing pipeline with confidence filtering, superpixel/RANSAC refinement, WMF propagation, textureless-aware segmentation)—under one paper. The evaluated algorithm cannot be uniquely identified, breaking the method-to-results correspondence required for any scientific claim.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.95,
+        "justification": "Both reviewers independently identified this as retraction-worthy and neither downgraded upon reflection. This is not a naming typo—the two described pipelines operate at different stages (full MVS vs. post-processing), have different inputs, different module architectures, and different contribution claims. If confirmed, no reader can determine what algorithm generated the benchmark numbers, making the central SOTA claims scientifically unsupported. This meets the retraction test: the paper's central conclusions cannot be supported by the data as presented because the method generating those data is undefined.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The manuscript explicitly proposes TSAR-MVS ('Therefore, we propose TSAR-MVS') while simultaneously citing 'TSAR-MVS (Yuan et al. 2024b)' as prior work in the related work section, creating a direct contradiction about whether the core contribution is novel or previously published.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.88,
+        "justification": "Reviewer A rated this retraction-worthy and defended it strongly in reflection; Reviewer B identified it as a new error in reflection that strengthened the retraction case. If confirmed, this collapses the novelty claim—a methods paper's central contribution is that a new method is being proposed. However, there is some residual possibility this reflects careless editing of a revision/extension of the authors' own prior work rather than deliberate misrepresentation. Even so, the manuscript as submitted cannot support its novelty claims. The severity remains retraction-worthy because the paper in its current form misrepresents originality at the most fundamental level.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Ablation studies are uninterpretable because the ablated modules (w/o. SAM, w/o. Her., w/o. Agr., w/o. CRF., w/o. Avg., w/o. Cls., w/o. ILS) correspond to MSP-MVS components, not to the TSAR-MVS pipeline described in the contributions and method sections. The component-level evidence does not map to the claimed contributions.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.92,
+        "justification": "Both reviewers identified this mismatch. Reviewer B upgraded this from MINOR to MAJOR-REVISION in reflection. The ablation evidence is the primary means of validating which components drive performance gains; when ablation labels don't correspond to the described method, mechanistic conclusions are unsupported. However, if the method identity were resolved (i.e., one coherent pipeline identified), the ablations might become interpretable, so this is repairable in principle.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The claimed contributions (confidence estimator, disparity discontinuity detector, iterative correlation refinement, textureless-aware segmentation for TSAR-MVS) are internally inconsistent with the technical description and later evaluation sections (which discuss SAM prior, aggregation, edge correction, anchor equidistribution, ILS for MSP-MVS).",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.9,
+        "justification": "Reviewer A identified this and defended it in reflection. The contribution list and the experimental evidence do not align, meaning the paper fails to demonstrate that its stated innovations are responsible for observed gains. This is a structural mismatch that undermines the paper's narrative but could be resolved with a coherent rewrite.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "No concrete quantitative results (numerical tables, per-benchmark metrics, confidence intervals, statistical tests) are reported in the provided manuscript text, despite strong state-of-the-art claims. Only references to absent tables/figures/supplementary material are made.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers flagged this. Without visible numbers, SOTA claims cannot be verified. This may partly reflect excerpt incompleteness rather than manuscript absence, hence MAJOR-REVISION rather than RETRACTION-WORTHY. If tables exist in a full version, the severity would decrease; if they do not, this approaches retraction territory.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The core mechanism—using Semantic-SAM segmentation boundaries as 'depth edges' to constrain patch deformation—is never validated. No precision/recall against ground-truth depth edges, no comparison to other edge detectors, and no analysis of failure cases are provided. Segmentation boundaries are not equivalent to geometric depth discontinuities.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers identified this gap. The entire method's claimed advantage over prior deformable-patch approaches rests on this assumption. If segmentation boundaries do not reliably correspond to depth edges, the central mechanism may be unreliable. This is a major gap but is addressable through additional experiments.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Implementation details are severely lacking: no specification of Semantic-SAM version/weights, inference resolution, edge extraction thresholds, number of sectors for anchor equidistribution, ILS hyperparameters (iterations, convergence criteria, objective function), PatchMatch iteration count, view selection protocol, or post-processing settings.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.88,
+        "justification": "Both reviewers flagged this. MVS results are highly sensitive to these parameters. Without them, reproduction is impossible and benchmark comparisons cannot be verified as fair. This is a standard but serious reproducibility failure.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Experimental evaluation is incomplete and potentially biased: only F1/completeness metrics are reported for ETH3D and TNT benchmarks, while standard accuracy metrics and error thresholds are omitted. Comparisons between traditional and learning-based methods lack standardized hardware/protocol context.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers noted selective metric reporting and unfair cross-regime comparisons. Method rankings can change with different metrics, and efficiency claims without harmonized settings are unreliable. Addressable through comprehensive evaluation.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The manuscript contains signs of being an incomplete draft: duplicated paragraphs on Semantic-SAM/depth edges, placeholder citations ([AUTHOR_1], [JOURNAL]), abrupt topic shifts, and assembly corruption that prevents the text from functioning as a coherent scientific record.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers noted this. While draft quality is not itself a scientific error, a corrupted manuscript prevents reliable peer review and undermines confidence that the final text accurately represents the work done. This compounds the method-identity problem.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Claims of 'robust generalization capability' are unsupported by evidence: no cross-domain evaluation, no unseen-domain stress tests, and no isolation of the foundation model's contribution to generalization.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Reviewer A identified this as an overclaim. It weakens interpretation but does not invalidate results. Standard criticism applicable to most papers making generalization claims without cross-domain testing.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Strong causal explanations for baseline failures (e.g., APD-MVS 'mistakenly skips depth edges', learning methods have 'limited generalization') are asserted without controlled evidence or supporting citations.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Reviewer A identified this as interpretive overreach. These claims should be softened or experimentally validated, but they do not independently affect the paper's empirical conclusions.",
+        "source": "prover_a",
+        "survived_reflection": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 23966,
+    "duration_s": 158.99,
+    "n_api_calls": 23,
+    "cost_usd": 1.6555,
+    "total_input_tokens": 137945,
+    "total_output_tokens": 34624,
+    "calls": [
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3016,
+        "output_tokens": 1024,
+        "cost_usd": 0.0019407200000000002,
+        "duration_s": 14.64,
+        "label": "2407.19061v3/b3plusplus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 6015,
+        "output_tokens": 1543,
+        "cost_usd": 0.0304675,
+        "duration_s": 28.17,
+        "label": "2407.19323v3/b3plusplus/prover_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 5549,
+        "output_tokens": 1905,
+        "cost_usd": 0.22611,
+        "duration_s": 34.99,
+        "label": "2407.19323v3/b3plus/arbiter"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 6025,
+        "output_tokens": 961,
+        "cost_usd": 0.00268385,
+        "duration_s": 13.13,
+        "label": "2407.19323v3/b3plusplus/prover_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 10031,
+        "output_tokens": 2608,
+        "cost_usd": 0.346065,
+        "duration_s": 52.03,
+        "label": "2407.18406v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7454,
+        "output_tokens": 2037,
+        "cost_usd": 0.264585,
+        "duration_s": 42.72,
+        "label": "2407.19061v3/b3plusplus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 12294,
+        "output_tokens": 1269,
+        "cost_usd": 0.043425,
+        "duration_s": 25.93,
+        "label": "2408.04316v2/b3plus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 12294,
+        "output_tokens": 1403,
+        "cost_usd": 0.044765,
+        "duration_s": 27.87,
+        "label": "2408.04316v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 11395,
+        "output_tokens": 1172,
+        "cost_usd": 0.00436585,
+        "duration_s": 15.92,
+        "label": "2408.04316v2/b3plus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4863,
+        "output_tokens": 1651,
+        "cost_usd": 0.0286675,
+        "duration_s": 33.07,
+        "label": "2408.16162v2/b3plus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 11395,
+        "output_tokens": 1304,
+        "cost_usd": 0.00451105,
+        "duration_s": 17.91,
+        "label": "2408.04316v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2911,
+        "output_tokens": 842,
+        "cost_usd": 0.0156975,
+        "duration_s": 17.22,
+        "label": "2408.04316v2/b3plus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3025,
+        "output_tokens": 2839,
+        "cost_usd": 0.0359525,
+        "duration_s": 50.94,
+        "label": "2407.19323v3/b3plusplus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4514,
+        "output_tokens": 1319,
+        "cost_usd": 0.0026696800000000002,
+        "duration_s": 16.87,
+        "label": "2408.16162v2/b3plus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2921,
+        "output_tokens": 618,
+        "cost_usd": 0.0014684700000000001,
+        "duration_s": 8.2,
+        "label": "2408.04316v2/b3plus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3068,
+        "output_tokens": 1049,
+        "cost_usd": 0.00198226,
+        "duration_s": 15.05,
+        "label": "2407.19323v3/b3plusplus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3566,
+        "output_tokens": 1185,
+        "cost_usd": 0.020765,
+        "duration_s": 24.59,
+        "label": "2408.16162v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3510,
+        "output_tokens": 776,
+        "cost_usd": 0.0018013000000000003,
+        "duration_s": 10.44,
+        "label": "2408.16162v2/b3plus/reflection_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 4990,
+        "output_tokens": 1884,
+        "cost_usd": 0.21615,
+        "duration_s": 34.64,
+        "label": "2408.04316v2/b3plus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3221,
+        "output_tokens": 2661,
+        "cost_usd": 0.0346625,
+        "duration_s": 49.37,
+        "label": "2408.04316v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3220,
+        "output_tokens": 967,
+        "cost_usd": 0.0019331,
+        "duration_s": 12.35,
+        "label": "2408.04316v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4863,
+        "output_tokens": 1152,
+        "cost_usd": 0.0236775,
+        "duration_s": 23.52,
+        "label": "2408.16162v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7805,
+        "output_tokens": 2455,
+        "cost_usd": 0.3012,
+        "duration_s": 51.7,
+        "label": "2407.19323v3/b3plusplus/arbiter"
+      }
+    ]
+  }
+}

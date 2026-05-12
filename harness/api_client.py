@@ -30,6 +30,9 @@ MODELS: dict[str, dict[str, str]] = {
     "deepseek": {"provider": "deepseek", "model_id": "deepseek-chat"},
     "opus": {"provider": "anthropic", "model_id": "claude-opus-4-6"},
     "sonnet": {"provider": "anthropic", "model_id": "claude-sonnet-4-6"},
+    "gemini": {"provider": "gemini", "model_id": "gemini-2.5-pro"},
+    "grok": {"provider": "xai", "model_id": "grok-4-fast-reasoning"},
+    "mistral": {"provider": "mistral", "model_id": "mistral-large-latest"},
 }
 
 # Conservative prices in USD per million tokens (input, output).
@@ -39,6 +42,9 @@ PRICES: dict[str, tuple[float, float]] = {
     "deepseek": (0.27, 1.10),
     "opus":     (15.00, 75.00),
     "sonnet":   (3.00, 15.00),
+    "gemini":   (1.25, 10.00),
+    "grok":     (0.20, 0.50),
+    "mistral":  (2.00, 6.00),
 }
 
 
@@ -55,6 +61,9 @@ def load_keys() -> dict[str, bool]:
         ("openai", "OPENAI_API_KEY"),
         ("deepseek", "DEEPSEEK_API_KEY"),
         ("anthropic", "ANTHROPIC_API_KEY"),
+        ("google", "GOOGLE_API_KEY"),
+        ("xai", "XAI_API_KEY"),
+        ("mistral", "MISTRAL_API_KEY"),
     ]:
         if os.environ.get(env_var):
             status[provider] = True
@@ -258,6 +267,28 @@ def call_model(name: str, prompt: str, *, label: str = "",
         text, in_tok, out_tok = _call_openai_compatible(
             model_id, prompt, base_url="https://api.deepseek.com",
             api_key_env="DEEPSEEK_API_KEY",
+            uses_max_completion_tokens=False,
+            temperature=temperature,
+        )
+    elif provider == "gemini":
+        text, in_tok, out_tok = _call_openai_compatible(
+            model_id, prompt,
+            base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+            api_key_env="GOOGLE_API_KEY",
+            uses_max_completion_tokens=False,
+            temperature=temperature,
+        )
+    elif provider == "xai":
+        text, in_tok, out_tok = _call_openai_compatible(
+            model_id, prompt, base_url="https://api.x.ai/v1",
+            api_key_env="XAI_API_KEY",
+            uses_max_completion_tokens=False,
+            temperature=temperature,
+        )
+    elif provider == "mistral":
+        text, in_tok, out_tok = _call_openai_compatible(
+            model_id, prompt, base_url="https://api.mistral.ai/v1",
+            api_key_env="MISTRAL_API_KEY",
             uses_max_completion_tokens=False,
             temperature=temperature,
         )

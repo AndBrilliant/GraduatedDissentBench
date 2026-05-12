@@ -1,0 +1,526 @@
+{
+  "condition": "B3PLUS",
+  "paper_id": "2403.06831v2",
+  "verdict": "flagged",
+  "confidence": 0.84,
+  "reasoning": "Both reviewers independently flagged the paper and converged on several key concerns after reflection. No retraction-worthy errors were identified—the method is conceptually plausible and no impossible results or data fabrication indicators were found. However, a cluster of MAJOR-REVISION issues collectively weaken the paper's central claims: (1) the state-of-the-art claim rests on a single small benchmark with no statistical uncertainty reporting and modest gains; (2) critical architectural details are missing, preventing reproduction; (3) the training regime on a tiny dataset without validation raises overfitting concerns; (4) the computational efficiency comparison is not fully fair; and (5) several descriptive ambiguities undermine clarity about what the method actually does. After reflection, both reviewers moderated some findings but maintained the core set of major concerns. The paper is not fundamentally broken but requires substantial revision before its conclusions can be considered well-supported.",
+  "findings": [
+    {
+      "finding": "State-of-the-art claim insufficiently supported: quantitative evaluation is limited to a single small benchmark (Kalantari: 74 train / 15 test scenes) with modest gains (~0.33–0.34 dB), no statistical uncertainty (no standard deviations, confidence intervals, or significance tests), and only qualitative comparisons on additional datasets without ground truth.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers agree the breadth of the superiority claim exceeds the evidence. Reviewer A initially rated the statistical uncertainty concern as MAJOR then downgraded to MINOR on reflection, while Reviewer B upgraded it from MINOR to MAJOR after reflection. The combination of small test set, modest gains, and no uncertainty quantification means the central ranking conclusion could plausibly change, but there is no definitive evidence the method performs poorly—hence MAJOR-REVISION, not RETRACTION-WORTHY.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Critical architectural details missing for reproduction: the number of Transformer layers (M, N), window sizes, number of attention heads, embedding dimensions, feed-forward dimensions, deformable convolution configurations, and other key hyperparameters are not specified.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers identified this independently and maintained it through reflection. Without these details, independent verification is impossible. This is a reproducibility failure, not evidence of incorrect results, so MAJOR-REVISION is appropriate.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Overfitting risk from training 6000 epochs with batch size 2 on 74 training scenes without any validation set, early stopping, or overfitting analysis.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "Both reviewers flagged this and maintained it through reflection. On such a small dataset with extensive training, overfitting is a realistic concern that could inflate reported test metrics. No validation protocol is described. This could materially affect the claimed superiority but does not prove the results are wrong.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Unfair computational efficiency comparison: inference time for DeepHDR excludes homography preprocessing time, and it is unclear whether all methods were benchmarked under identical hardware/software conditions or numbers were taken from prior publications.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "Reviewer A identified this initially; Reviewer B added it as a new finding during reflection. The efficiency claim is a secondary but promoted conclusion of the paper. If preprocessing time is excluded for one method but included for others, the comparison is not apples-to-apples.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Ambiguous description of Dynamic Weight Fusion Block (DWFB): the text claims spatially adaptive selection but then describes a weight that is 'shared in spatial dimension,' creating a contradiction about the mechanism's actual behavior.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "Reviewer B identified this and maintained it. If the weight is truly spatially shared, the claimed spatial adaptivity is undermined, which would weaken one of the architectural contributions. The ambiguity needs clarification but does not invalidate the overall empirical result.",
+      "source": "prover_b",
+      "survived_reflection": true
+    },
+    {
+      "finding": "No clear distinction between feature alignment and hallucination/inpainting: the TDCAM claims to 'align' features and 'recover occluded regions,' but evaluation does not test whether recovered content is geometrically correct versus perceptually plausible fill-in.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.72,
+      "justification": "Reviewer A initially rated this MAJOR but downgraded to MINOR on reflection, reasoning it is primarily an interpretational/mechanistic overclaim rather than a conclusion-threatening flaw. Reviewer B added it as MAJOR during reflection. On balance, this is a valid concern about the precision of claims but does not undermine the empirical performance numbers; the method may still produce good HDR images regardless of whether the mechanism is true alignment or learned inpainting. Rating as MINOR.",
+      "source": "both",
+      "survived_reflection": false
+    },
+    {
+      "finding": "Loss and evaluation metrics are tied to μ-law tonemapping without justification that superiority in tonemapped space implies superior radiometric HDR fidelity.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.7,
+      "justification": "Reviewer A initially rated MAJOR but downgraded to MINOR on reflection, noting μ-law evaluation is standard in the field. Reviewer B upgraded to MAJOR after reflection. Since μ-law evaluation is indeed the community standard and no evidence is presented that alternative metrics would reverse rankings, this is better classified as a limitation that should be noted rather than a conclusion-changing flaw.",
+      "source": "both",
+      "survived_reflection": false
+    },
+    {
+      "finding": "Ablation studies are insufficiently detailed: no controls for parameter count or compute when removing components, and gradient loss weight (λ_g = 0.6) is not justified by ablation sweep.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.75,
+      "justification": "Reviewer A downgraded from MAJOR to MINOR on reflection; Reviewer B rated the loss weight concern as MINOR throughout. Incomplete ablations weaken causal/mechanistic claims but do not threaten the overall performance result.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Causal attribution of improvements to long-range attention rather than model scale/parameter count is asserted without diagnostic experiments.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Both reviewers rated this as MINOR throughout. Common over-interpretation in deep learning papers; weakens mechanistic narrative but not empirical results.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Editorial issues: citation format errors ('[JOURNAL]'), truncated sections, and other formatting problems impair readability and reviewability.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.92,
+      "justification": "Both reviewers noted this as MINOR. Does not affect scientific validity.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Limited generalizability: only three input exposures with fixed middle-frame reference are tested, following prior convention but not supporting the broad generalization claims.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers rated this as MINOR. Follows field convention; does not invalidate reported results on the tested configuration.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "No code, checkpoints, or data splits are released, further hindering reproducibility beyond the missing architectural details.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Reviewer B flagged this as MINOR. Common in the field and does not invalidate results, but compounds the reproducibility concerns from missing architectural specifications.",
+      "source": "prover_b",
+      "survived_reflection": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 5,
+    "MINOR": 7
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.82,
+    "reasoning": "The manuscript presents a plausible deep HDR architecture, but the methods/reporting are insufficiently specified for methodological verification, and several evaluation choices materially weaken the claim of state-of-the-art performance. I do not see a clear fatal mathematical impossibility from the text alone, but there are important concerns about reproducibility, fairness of comparison, dataset adequacy, and whether the reported evidence actually supports the strength of the conclusions.",
+    "findings": [
+      {
+        "finding": "The central 'state-of-the-art' claim is not adequately supported because the manuscript reports only limited quantitative evaluation on a very small benchmark (Kalantari: 74 train / 15 test scenes) and uses only qualitative comparisons on additional datasets without ground truth.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, this does not prove the method is wrong, but it does mean the broad conclusion of superior performance/generalization is overstated and could change with stronger evaluation on more datasets or repeated runs."
+      },
+      {
+        "finding": "No statistical uncertainty is reported for quantitative comparisons (no standard deviations, confidence intervals, multiple seeds, or significance testing), despite improvements being modest (e.g., 0.33–0.34 dB).",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the reported gains may fall within run-to-run or test-set variability. This would require revision of the strength of the superiority claims, though not retraction."
+      },
+      {
+        "finding": "Training/evaluation reproducibility is inadequate: key implementation details are missing or underspecified, including exact network depth/width, number of TDCAM/RDWFB blocks, values of M and N Transformer layers, window sizes, tokenization details, attention heads, feature dimensions, positional encoding parameterization, deformable convolution configuration, and μ-law tonemapping details used for loss/metrics.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Without these details, the method cannot be independently reproduced or methodologically verified. This is a substantial review concern, though not definitive evidence that conclusions are false."
+      },
+      {
+        "finding": "The comparison may be unfair or at least not fully controlled because computational-budget analysis explicitly excludes homography preprocessing time for DeepHDR while comparing inference times, and it is unclear whether all methods were run under the same hardware/software conditions or taken from prior papers.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, efficiency claims are not comparable across methods and should be revised. This affects a secondary but important conclusion about practicality, not necessarily the accuracy claims."
+      },
+      {
+        "finding": "The manuscript claims the proposed TDCAM 'aligns' features and 'recovers occluded regions,' but the method description does not clearly distinguish alignment from hallucination/inpainting when queried content is absent or heavily saturated. The architecture may retrieve globally similar content, but the evaluation does not rigorously test whether recovered regions are geometrically correct rather than plausible-looking substitutes.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, conclusions about true motion compensation and occlusion recovery are too strong; the method may instead be producing perceptually plausible fill-ins. This could materially change interpretation of results, especially in HDR reconstruction where fidelity matters."
+      },
+      {
+        "finding": "The use of only three input exposures and a fixed reference (the middle exposure) is inherited from prior work, but the manuscript makes broad claims about HDR imaging without demonstrating robustness to different numbers/orderings of exposures or reference-selection strategies.",
+        "severity": "MINOR",
+        "justification": "This limits generalizability but does not invalidate the reported results on the chosen benchmark."
+      },
+      {
+        "finding": "The loss and evaluation are both heavily tied to μ-law tonemapping, yet the manuscript does not justify whether optimizing and scoring in that transformed domain may bias results toward tonemapped appearance rather than physical HDR fidelity.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the conclusions about HDR reconstruction quality could shift depending on metric choice; superiority in tonemapped space does not necessarily imply superior radiometric reconstruction."
+      },
+      {
+        "finding": "Ablation evidence is insufficiently detailed. The text references Table 3 and qualitative figures, but the manuscript excerpt does not report enough experimental controls to verify that ablations isolate the effects of TDCAM, DWFB, and gradient loss rather than changes in parameter count or compute.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the causal claims about why performance improves are weakened and would need revision, though the overall model may still perform well."
+      },
+      {
+        "finding": "The manuscript repeatedly attributes failures of prior CNN methods to 'limited receptive field' and simple convolutional fusion, but this causal explanation is asserted rather than rigorously demonstrated. Competing transformer-based baseline(s) are limited, and no diagnostic experiment directly tests whether long-range attention, rather than model scale or parameter count, causes the gain.",
+        "severity": "MINOR",
+        "justification": "This is a common over-interpretation issue; it weakens mechanistic claims but not necessarily empirical performance."
+      },
+      {
+        "finding": "There are reporting inconsistencies and probable editorial issues (truncated sections, misplaced text, placeholder journal names, malformed references, and interrupted comparison/computational-budget paragraphs), which make it difficult to assess exactly what experiments were performed.",
+        "severity": "MINOR",
+        "justification": "These issues impair clarity and reviewability, but by themselves do not invalidate the method."
+      },
+      {
+        "finding": "The statement that 'LDR images are effective in detecting saturated and noisy regions and HDR domains are effective in detecting moving objects' is presented as fact without supporting analysis or citation, yet it motivates the 6-channel concatenation design.",
+        "severity": "MINOR",
+        "justification": "This is an under-justified design rationale rather than a fatal methodological flaw."
+      },
+      {
+        "finding": "The optimization schedule is unusual for such a small dataset (6000 epochs, batch size 2) and no validation protocol, early stopping criterion, or overfitting analysis is reported.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, overfitting could materially affect the claimed performance on the small benchmark. This warrants revision and stronger validation, though not retraction."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.85,
+    "reasoning": "The manuscript describes a plausible deep learning architecture for HDR deghosting and reports strong quantitative results. However, several methodological concerns are present: (1) critical details of the Transformer Offset Estimator (number of layers, window size, embedding dimension) are omitted, preventing reproducibility; (2) the description of the Dynamic Weight Fusion Block is ambiguous regarding how the dynamic weight is applied (spatially shared vs. fully connected in channel dimension); (3) training hyperparameters (batch size of 2, 6000 epochs on a small dataset) risk overfitting or incomplete training, and no validation scheme is reported; (4) the compared methods' performance numbers (Table 1) are reported without confidence intervals or statistical significance tests; (5) the deployment of the Sobel-based gradient loss (Eq. 7) with a weight of 0.6 is stated without justification or ablation; (6) a citation format error ('[JOURNAL]') suggests editing sloppiness. These issues do not definitively invalidate the core conclusions but collectively raise concerns about reproducibility, robustness, and rigor.",
+    "findings": [
+      {
+        "finding": "Missing detailed architecture specifications for the Transformer Offset Estimator (TOE). The paper states 'M local Transformer layers' and 'N global Transformer layers' but does not specify M, N, window size for local attention, number of heads, embedding dimension, or feed-forward dimension. Without these, the method cannot be reproduced.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Reproducibility is a central requirement. If these details are missing, other researchers cannot verify or build upon the work. However, the core idea (using Transformers for offset prediction) is still described conceptually, so it does not invalidate the existence of the method."
+      },
+      {
+        "finding": "Ambiguous description of Dynamic Weight Fusion Block (DWFB). The text states: 'the weight Δw that is shared in spatial dimension and fully connected in channel dimension to fuse inter-channel information'. 'Fully connected in channel dimension' is unclear — does this mean a learned weighting per channel? If so, how is it applied? The text contradicts itself: earlier it says 'spatially and adaptively selects useful information', then says 'weight Δw that is shared in spatial dimension'. If it is spatially shared, it is not spatially adaptive. This needs clarification.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The ambiguity could mean the method is not as described. If the weight is spatially shared, it cannot adapt to different regions, undermining the claimed advantage. Confirming the error would require revision or retraction depending on the intended design."
+      },
+      {
+        "finding": "Training details suggest potential overfitting or insufficient convergence. The model is trained for 6000 epochs with batch size 2 on a dataset of 74 training scenes (each ~1000x1500 pixels, cropped to 256x256 patches). No validation set is used (e.g., held-out scenes from the training set). The learning rate is 'gradually decreased to 0' without a schedule. Such extensive training on a small dataset without validation risks overfitting, yet the model claims state-of-the-art generalization.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the model is overfitted to the training distribution, its reported performance on the 15 test scenes may be inflated and non-generalizable. This would not necessarily retract the paper but would weaken the conclusion that the method is superior."
+      },
+      {
+        "finding": "No statistical significance tests or confidence intervals reported for quantitative comparisons (Table 1). The paper states performance improvements over the prior method (e.g., 0.34 dB PSNR-μ) without indicating variance across test scenes or statistical testing.",
+        "severity": "MINOR",
+        "justification": "This is common practice in the field and does not invalidate conclusions, but it limits the reliability of the claimed improvements. Adding standard deviations or paired tests would strengthen the paper."
+      },
+      {
+        "finding": "Loss function weighting (λ_g = 0.6) chosen without justification or ablation sweep. The gradient loss weight is set to 0.6, but only a single ablation (removing it entirely) is shown, not a sweep of different values.",
+        "severity": "MINOR",
+        "justification": "The choice is defensible; many papers do this. It would not change conclusions unless the weight is critical. However, the lack of sensitivity analysis is a minor weakness."
+      },
+      {
+        "finding": "Citation format errors in references (e.g., '[JOURNAL]' appears instead of conference or journal names in multiple entries). This indicates sloppy editing but does not affect methodology.",
+        "severity": "MINOR",
+        "justification": "Does not impact scientific validity. Should be corrected during revision."
+      },
+      {
+        "finding": "The text states 'We implement our network using the PyTorch platform' but provides no code, checkpoints, or data splits. While not strictly required, this hinders reproducibility.",
+        "severity": "MINOR",
+        "justification": "Common issue in many papers. Does not invalidate the work but reduces reproducibility assurance."
+      }
+    ]
+  },
+  "reflection_a": {
+    "reflection_notes": "On a second pass, I would soften several of my original MAJOR-REVISION ratings. My first review was likely too aggressive in treating common deep-learning reporting weaknesses as conclusion-threatening rather than as limitations that mainly affect reproducibility, mechanistic interpretation, or breadth of claims. I still think the paper is rightly flagged: the combination of limited benchmark size, sparse methodological detail, and weak uncertainty reporting means the 'state-of-the-art' and efficiency/generalization claims are not as well supported as stated. However, not every such issue would plausibly change the main ranking result on the reported benchmark. The key distinction is whether the issue, if confirmed, would likely require changing conclusions versus simply tempering them or improving reporting. I would keep as MAJOR those issues that directly affect support for broad superiority claims, reproducibility of the proposed method, fairness of efficiency comparisons, and possible overfitting on a tiny dataset without validation. I would downgrade some items about metric choice, ablation insufficiency, and alignment-vs-hallucination interpretation because they weaken interpretation and rigor more than they threaten the central empirical result on the presented benchmark.",
+    "severity_i_now_upgrade": [],
+    "severity_i_now_downgrade": [
+      "Finding: 'The manuscript claims the proposed TDCAM aligns features and recovers occluded regions, but the description does not clearly distinguish alignment from hallucination/inpainting...' — downgrade from MAJOR-REVISION to MINOR. Reason: this chiefly overstates the mechanism and interpretation of recovered content; unless the paper's central claim is specifically geometric correctness in occluded regions, this is better framed as an interpretational weakness rather than a conclusion-changing flaw.",
+      "Finding: 'The loss and evaluation are both heavily tied to μ-law tonemapping...' — downgrade from MAJOR-REVISION to MINOR. Reason: this is a reasonable concern about metric-domain bias, but μ-law evaluation is standard in HDR literature. Without evidence that alternative HDR-fidelity metrics reverse the ranking, this is more a limitation than a major defect.",
+      "Finding: 'Ablation evidence is insufficiently detailed...' — downgrade from MAJOR-REVISION to MINOR. Reason: inadequate ablation weakens causal claims about why the model works, but does not strongly threaten the reported overall performance unless there is evidence of confounding by parameter count/compute.",
+      "Finding: 'No statistical uncertainty is reported for quantitative comparisons...' — downgrade from MAJOR-REVISION to MINOR. Reason: I still think this matters, especially with small gains on a small test set, but in this literature lack of CIs/significance is common and usually grounds for caution rather than a major revision by itself. It should temper the strength of the superiority claim, not necessarily undermine it entirely."
+    ],
+    "findings_i_still_defend": [
+      "MAJOR-REVISION: 'The central state-of-the-art claim is not adequately supported because the manuscript reports only limited quantitative evaluation on a very small benchmark ... and uses only qualitative comparisons on additional datasets without ground truth.' I still defend this as major because the breadth of the conclusion clearly exceeds the evidence base.",
+      "MAJOR-REVISION: 'Training/evaluation reproducibility is inadequate: key implementation details are missing or underspecified ...' I still defend this as major because several central architectural hyperparameters appear absent, preventing independent verification/reproduction.",
+      "MAJOR-REVISION: 'The comparison may be unfair or at least not fully controlled because computational-budget analysis explicitly excludes homography preprocessing time for DeepHDR ...' I still defend this as major for the efficiency/practicality claim, though it is secondary to accuracy.",
+      "MAJOR-REVISION: 'The optimization schedule is unusual for such a small dataset (6000 epochs, batch size 2) and no validation protocol, early stopping criterion, or overfitting analysis is reported.' I still defend this as major because with 74 training scenes this could materially affect claimed superiority/generalization.",
+      "MINOR: 'The use of only three input exposures and a fixed reference ... limits generalizability.' Still minor.",
+      "MINOR: 'The manuscript repeatedly attributes failures of prior CNN methods to limited receptive field ... without direct diagnostic evidence.' Still minor.",
+      "MINOR: 'There are reporting inconsistencies and probable editorial issues ...' Still minor.",
+      "MINOR: 'The statement that LDR images are effective in detecting saturated/noisy regions and HDR domains are effective in detecting moving objects is presented without support ...' Still minor."
+    ],
+    "new_errors_noticed": [
+      "The paper appears to mix distinct claim types—accuracy, perceptual plausibility, motion alignment, and computational efficiency—without clearly matching each claim to an appropriate evaluation protocol. This is not necessarily a separate major flaw, but it reinforces that some conclusions are over-broadened relative to the evidence.",
+      "If inference-time comparisons are partly taken from prior work rather than rerun under matched conditions, the paper should say so explicitly; otherwise readers may infer a controlled benchmark that was not actually performed. This is related to my fairness concern but worth stating more concretely.",
+      "The small test set (15 scenes) means scene-level composition matters a lot; if no per-scene breakdown is given, it is hard to know whether gains are consistent or driven by a few examples. I would treat this as part of the uncertainty/benchmark-size limitation rather than a wholly separate finding."
+    ]
+  },
+  "reflection_b": {
+    "reflection_notes": "After reading the other reviewer's detailed analysis, I see they have identified several concerns that I rated as MAJOR-REVISION where the other reviewer also rated them MAJOR-REVISION (e.g., missing architectural details, training overfitting risk). However, I notice a few areas where my severity ratings may differ. Specifically: (1) The other reviewer rated the absence of statistical uncertainty as MAJOR-REVISION, while I rated it MINOR. On reflection, given that the reported improvements are modest (~0.33 dB), the lack of any uncertainty estimate is more critical than I originally thought—it could mean the claimed 'state-of-the-art' advantage is not statistically significant. (2) The other reviewer also rated the fairness of comparison (computational budget inference time exclusion) as MAJOR-REVISION, which I did not flag at all. I think that is a valid point that I overlooked; the efficiency comparison is materially flawed. (3) The other reviewer raised a compelling concern about the μ-law tonemapping bias for evaluation—I did not flag this, but it could shift interpretation of HDR fidelity. I now consider that at least MAJOR-REVISION. (4) The other reviewer noted the lack of distinction between alignment vs. hallucination—I think that is a conceptual concern but probably still MAJOR-REVISION, not retraction-worthy, as it is a claim about mechanism rather than empirical result. I also notice I did not flag the missing code/checkpoints as a separate 'new' finding, but I had it as MINOR—I still think that's appropriate. Overall, I believe my original ratings were generally reasonable, but I should upgrade the statistical uncertainty and the μ-law tonemapping concerns from MINOR to MAJOR-REVISION, and add the unfair computational comparison as a new finding at MAJOR-REVISION.",
+    "severity_i_now_upgrade": [
+      "Original finding 4 (no statistical uncertainty) – upgrade from MINOR to MAJOR-REVISION: Because the performance gains are small, lack of uncertainty makes the central superiority claim statistically unsubstantiated.",
+      "Original finding (not explicitly listed but implied in reasoning) regarding μ-law tonemapping bias – upgrade from MINOR to MAJOR-REVISION: The loss and metrics are computed in tonemapped space, which may not reflect true HDR fidelity. This could change the interpretation of results.",
+      "New error noticed – unfair computational comparison: The manuscript excludes homography preprocessing time for DeepHDR while including it for others, making efficiency claims non-comparable. This should be MAJOR-REVISION."
+    ],
+    "severity_i_now_downgrade": [
+      "No findings to downgrade. My original MINOR ratings (loss weight justification, citation errors) remain appropriate as they do not affect core conclusions. My original MAJOR-REVISION ratings (missing architecture details, ambiguous DWFB, overfitting risk) are still correctly rated; none cross into retraction-worthy territory because a determined implementer could potentially fill the gaps, and the method is not logically impossible."
+    ],
+    "findings_i_still_defend": [
+      "Missing detailed architecture specs for TOE – MAJOR-REVISION: Still critical for reproducibility.",
+      "Ambiguous DWFB description – MAJOR-REVISION: Still a potential contradiction in claimed adaptability.",
+      "Overfitting risk from 6000 epochs/batch size 2 without validation – MAJOR-REVISION: Still valid and concerning.",
+      "Loss function weighting without ablation sweep – MINOR: Defensible, common in field.",
+      "Citation errors – MINOR: Does not affect methodology.",
+      "Missing code/checkpoints – MINOR: Common, not fatal."
+    ],
+    "new_errors_noticed": [
+      "Unfair computational comparison: Excluding DeepHDR preprocessing time from inference speed comparison while including for others – this materially weakens efficiency claims and should be MAJOR-REVISION.",
+      "No rigorous test of alignment vs. hallucination: The method claims 'alignment' but evaluation does not distinguish geometric correctness from perceptually plausible filling – this is a MAJOR-REVISION concern about interpretation of results.",
+      "Only three exposures with fixed reference – limited generalizability, but still MINOR as it follows prior work convention.",
+      "The manuscript's causal attribution of improvements to attention vs. model scale is unsupported – this is MINOR (common over-interpretation)."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.84,
+    "reasoning": "Both reviewers independently flagged the paper and converged on several key concerns after reflection. No retraction-worthy errors were identified—the method is conceptually plausible and no impossible results or data fabrication indicators were found. However, a cluster of MAJOR-REVISION issues collectively weaken the paper's central claims: (1) the state-of-the-art claim rests on a single small benchmark with no statistical uncertainty reporting and modest gains; (2) critical architectural details are missing, preventing reproduction; (3) the training regime on a tiny dataset without validation raises overfitting concerns; (4) the computational efficiency comparison is not fully fair; and (5) several descriptive ambiguities undermine clarity about what the method actually does. After reflection, both reviewers moderated some findings but maintained the core set of major concerns. The paper is not fundamentally broken but requires substantial revision before its conclusions can be considered well-supported.",
+    "findings": [
+      {
+        "finding": "State-of-the-art claim insufficiently supported: quantitative evaluation is limited to a single small benchmark (Kalantari: 74 train / 15 test scenes) with modest gains (~0.33–0.34 dB), no statistical uncertainty (no standard deviations, confidence intervals, or significance tests), and only qualitative comparisons on additional datasets without ground truth.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.88,
+        "justification": "Both reviewers agree the breadth of the superiority claim exceeds the evidence. Reviewer A initially rated the statistical uncertainty concern as MAJOR then downgraded to MINOR on reflection, while Reviewer B upgraded it from MINOR to MAJOR after reflection. The combination of small test set, modest gains, and no uncertainty quantification means the central ranking conclusion could plausibly change, but there is no definitive evidence the method performs poorly—hence MAJOR-REVISION, not RETRACTION-WORTHY.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Critical architectural details missing for reproduction: the number of Transformer layers (M, N), window sizes, number of attention heads, embedding dimensions, feed-forward dimensions, deformable convolution configurations, and other key hyperparameters are not specified.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers identified this independently and maintained it through reflection. Without these details, independent verification is impossible. This is a reproducibility failure, not evidence of incorrect results, so MAJOR-REVISION is appropriate.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Overfitting risk from training 6000 epochs with batch size 2 on 74 training scenes without any validation set, early stopping, or overfitting analysis.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.82,
+        "justification": "Both reviewers flagged this and maintained it through reflection. On such a small dataset with extensive training, overfitting is a realistic concern that could inflate reported test metrics. No validation protocol is described. This could materially affect the claimed superiority but does not prove the results are wrong.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Unfair computational efficiency comparison: inference time for DeepHDR excludes homography preprocessing time, and it is unclear whether all methods were benchmarked under identical hardware/software conditions or numbers were taken from prior publications.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.78,
+        "justification": "Reviewer A identified this initially; Reviewer B added it as a new finding during reflection. The efficiency claim is a secondary but promoted conclusion of the paper. If preprocessing time is excluded for one method but included for others, the comparison is not apples-to-apples.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Ambiguous description of Dynamic Weight Fusion Block (DWFB): the text claims spatially adaptive selection but then describes a weight that is 'shared in spatial dimension,' creating a contradiction about the mechanism's actual behavior.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "Reviewer B identified this and maintained it. If the weight is truly spatially shared, the claimed spatial adaptivity is undermined, which would weaken one of the architectural contributions. The ambiguity needs clarification but does not invalidate the overall empirical result.",
+        "source": "prover_b",
+        "survived_reflection": true
+      },
+      {
+        "finding": "No clear distinction between feature alignment and hallucination/inpainting: the TDCAM claims to 'align' features and 'recover occluded regions,' but evaluation does not test whether recovered content is geometrically correct versus perceptually plausible fill-in.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.72,
+        "justification": "Reviewer A initially rated this MAJOR but downgraded to MINOR on reflection, reasoning it is primarily an interpretational/mechanistic overclaim rather than a conclusion-threatening flaw. Reviewer B added it as MAJOR during reflection. On balance, this is a valid concern about the precision of claims but does not undermine the empirical performance numbers; the method may still produce good HDR images regardless of whether the mechanism is true alignment or learned inpainting. Rating as MINOR.",
+        "source": "both",
+        "survived_reflection": false
+      },
+      {
+        "finding": "Loss and evaluation metrics are tied to μ-law tonemapping without justification that superiority in tonemapped space implies superior radiometric HDR fidelity.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.7,
+        "justification": "Reviewer A initially rated MAJOR but downgraded to MINOR on reflection, noting μ-law evaluation is standard in the field. Reviewer B upgraded to MAJOR after reflection. Since μ-law evaluation is indeed the community standard and no evidence is presented that alternative metrics would reverse rankings, this is better classified as a limitation that should be noted rather than a conclusion-changing flaw.",
+        "source": "both",
+        "survived_reflection": false
+      },
+      {
+        "finding": "Ablation studies are insufficiently detailed: no controls for parameter count or compute when removing components, and gradient loss weight (λ_g = 0.6) is not justified by ablation sweep.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.75,
+        "justification": "Reviewer A downgraded from MAJOR to MINOR on reflection; Reviewer B rated the loss weight concern as MINOR throughout. Incomplete ablations weaken causal/mechanistic claims but do not threaten the overall performance result.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Causal attribution of improvements to long-range attention rather than model scale/parameter count is asserted without diagnostic experiments.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "Both reviewers rated this as MINOR throughout. Common over-interpretation in deep learning papers; weakens mechanistic narrative but not empirical results.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Editorial issues: citation format errors ('[JOURNAL]'), truncated sections, and other formatting problems impair readability and reviewability.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.92,
+        "justification": "Both reviewers noted this as MINOR. Does not affect scientific validity.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Limited generalizability: only three input exposures with fixed middle-frame reference are tested, following prior convention but not supporting the broad generalization claims.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers rated this as MINOR. Follows field convention; does not invalidate reported results on the tested configuration.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "No code, checkpoints, or data splits are released, further hindering reproducibility beyond the missing architectural details.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Reviewer B flagged this as MINOR. Common in the field and does not invalidate results, but compounds the reproducibility concerns from missing architectural specifications.",
+        "source": "prover_b",
+        "survived_reflection": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 32143,
+    "duration_s": 111.11,
+    "n_api_calls": 16,
+    "cost_usd": 0.9854,
+    "total_input_tokens": 91500,
+    "total_output_tokens": 26733,
+    "calls": [
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 10151,
+        "output_tokens": 2348,
+        "cost_usd": 0.00532357,
+        "duration_s": 32.23,
+        "label": "2403.01085v2/b3plus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 10151,
+        "output_tokens": 1410,
+        "cost_usd": 0.00429177,
+        "duration_s": 20.21,
+        "label": "2403.01085v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2938,
+        "output_tokens": 2041,
+        "cost_usd": 0.027755,
+        "duration_s": 39.92,
+        "label": "2402.16847v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 7579,
+        "output_tokens": 1236,
+        "cost_usd": 0.0313075,
+        "duration_s": 26.19,
+        "label": "2403.06831v2/b3plus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2982,
+        "output_tokens": 1214,
+        "cost_usd": 0.00214054,
+        "duration_s": 15.37,
+        "label": "2402.16847v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4551,
+        "output_tokens": 1077,
+        "cost_usd": 0.0221475,
+        "duration_s": 25.37,
+        "label": "2403.01085v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 7601,
+        "output_tokens": 1153,
+        "cost_usd": 0.00332057,
+        "duration_s": 14.71,
+        "label": "2403.06831v2/b3plus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4599,
+        "output_tokens": 1093,
+        "cost_usd": 0.0024440300000000002,
+        "duration_s": 14.01,
+        "label": "2403.01085v2/b3plus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2881,
+        "output_tokens": 1078,
+        "cost_usd": 0.0179825,
+        "duration_s": 16.79,
+        "label": "2403.06831v2/b3plus/reflection_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 6923,
+        "output_tokens": 1694,
+        "cost_usd": 0.230895,
+        "duration_s": 36.45,
+        "label": "2402.16847v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3673,
+        "output_tokens": 3309,
+        "cost_usd": 0.0422725,
+        "duration_s": 60.05,
+        "label": "2403.01085v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2931,
+        "output_tokens": 965,
+        "cost_usd": 0.00185287,
+        "duration_s": 13.57,
+        "label": "2403.06831v2/b3plus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 7579,
+        "output_tokens": 1836,
+        "cost_usd": 0.0373075,
+        "duration_s": 28.75,
+        "label": "2403.06831v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3742,
+        "output_tokens": 1541,
+        "cost_usd": 0.00270544,
+        "duration_s": 23.23,
+        "label": "2403.01085v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7617,
+        "output_tokens": 2609,
+        "cost_usd": 0.30993,
+        "duration_s": 58.19,
+        "label": "2403.01085v2/b3plus/arbiter"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 5602,
+        "output_tokens": 2129,
+        "cost_usd": 0.243705,
+        "duration_s": 39.84,
+        "label": "2403.06831v2/b3plus/arbiter"
+      }
+    ]
+  }
+}

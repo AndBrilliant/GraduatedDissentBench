@@ -1,0 +1,559 @@
+{
+  "condition": "B3PLUSPLUS",
+  "paper_id": "2405.20571v2",
+  "verdict": "flagged",
+  "confidence": 0.97,
+  "reasoning": "Both reviewers independently identified fatal errors in the proof chain supporting Theorem 2.1, the paper's central result. Reviewer A identified that Lemma 4.5 incorrectly substitutes endpoint-conditioned asymptotics for path-survival-conditioned asymptotics—a change of measure that invalidates the derivation of the asymptotic hazard rate α and hence the explicit eigenvalue formula. Reviewer B identified that Lemma 4.4 itself contains a mathematical error in the CLT-based density argument (scaling/evaluation mistake). Crucially, Reviewer A's second-pass reflection demonstrated that even if Lemma 4.4 were repaired (addressing Reviewer B's concern), the proof would still fail because Lemma 4.4 addresses the wrong conditional law (endpoint conditioning vs. path-survival conditioning). This means there are two independent fatal flaws in the proof chain: (1) the CLT argument in Lemma 4.4 may be technically flawed, and (2) even a correct version of Lemma 4.4 would be insufficient for the path-conditioned asymptotics needed in Lemma 4.5 and Theorem 2.1. Both reviewers agree the main theorem is unsupported. Additional issues include incomplete theorem statements (Theorem 2.3), garbled conditions (Condition 4.1), sign convention inconsistencies, and unjustified steps in Proposition 4.6. The paper's central conclusions cannot be supported by the arguments as presented.",
+  "findings": [
+    {
+      "finding": "Lemma 4.5 replaces conditioning on the full path-survival event {S_1∈D,...,S_n∈D} with conditioning only on the terminal event {S_n∈D}, substituting the wrong conditional measure. This invalidates the derivation of the asymptotic one-step hazard rate α that underpins the explicit eigenvalue formula in Theorem 2.1.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.95,
+      "justification": "The quantity governing Theorem 2.1 is A(x,n,D) = P_x(S_1∈D,...,S_n∈D), requiring asymptotics under path-survival conditioning. The manuscript instead uses endpoint conditioning, which is a fundamentally different conditional law. This is not a missing epsilon-delta step but a substitution of the wrong mathematical object. Even a fully correct Lemma 4.4 would not rescue this step. Without it, the explicit formula for λ₁ is entirely unsupported.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Lemma 4.4's proof contains a mathematical error in the CLT-based density argument: it evaluates the density j_n of the standardized sum S_n/(σ√n) at points v/(σ√n) that shrink to zero and claims convergence to γ(0), but this confuses the density of the standardized sum with its value at a vanishing argument. The scaling is mishandled.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.85,
+      "justification": "This is a separate mathematical error from the conditioning issue. If the density convergence argument is invalid, Lemma 4.4 is unproven, breaking the proof chain at an even earlier stage. However, there is some possibility that a corrected local CLT argument could salvage Lemma 4.4 itself (though not the downstream conditioning error in Lemma 4.5). Given that even a correct Lemma 4.4 is insufficient for the main theorem due to the conditioning error, the combined effect is definitively retraction-worthy.",
+      "source": "prover_b",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Lemma 4.4, even if technically correct, proves only convergence of the law of S_n conditioned on {S_n∈D} to uniformity on D—not convergence under the path-survival conditioning {S_1∈D,...,S_n∈D} that the subsequent proof requires.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.93,
+      "justification": "This is logically independent of whether the CLT computation in Lemma 4.4 is correct. The lemma addresses the wrong conditional law. Path-survival conditioning biases the endpoint distribution toward the interior of D (quasi-stationary behavior), which generally differs from endpoint conditioning. No argument bridging these two conditioning regimes is provided. This gap is structural and cannot be fixed by minor revision of the existing proof strategy.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Condition 4.1 is incomplete/garbled in the manuscript: only part (1) is visible, while part (2) is referenced but missing. The CLT machinery (Lemma 4.3) requires finite variance and characteristic function integrability conditions that are not stated.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.9,
+      "justification": "The main theorem is stated under Condition 4.1, but the condition is not fully specified. This makes the theorem non-reproducible and non-verifiable. However, this is fixable by properly stating the assumptions, so it does not independently invalidate the result.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The spectral/eigenvalue sign convention is internally inconsistent: the manuscript writes P_t^D φ_n = e^{-tλ_n}φ_n alongside Lφ_n = λ_n φ_n, but for P_t = e^{tL} these are contradictory when λ_n > 0.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "This creates ambiguity in interpreting the principal eigenvalue throughout Sections 2-3. It may be a purely notational error, but because the paper repeatedly identifies principal eigenvalues through semigroup formulas, it affects correctness of multiple statements. Not retraction-worthy because it is likely a fixable sign convention choice, but it is more than cosmetic.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Formula (3.2) for recovering λ₁ from Q_D^Y(t) is stated without the necessary qualification that the ground-state coefficient (∫_D φ₁)² is nonzero.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "This is a standard assumption in spectral theory of killed semigroups that is typically satisfied for positivity-preserving operators, but the manuscript does not state or verify it. Since (3.2) is a foundational identification step, the omission is methodologically significant but likely fixable.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Theorem 2.3 is incompletely stated: the list of equivalent conditions is missing.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.9,
+      "justification": "A theorem claiming to establish equivalences but omitting the equivalent statements cannot be reviewed or verified. This is one of the paper's headline results on uniqueness/failure of uniqueness.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "In Proposition 4.6, the argument that equality of Q_D^X(t) for some t>0 implies termwise equality in the jump decomposition (equality for each n) is unjustified without an analytic continuation or linear independence argument.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "The jump decomposition involves an infinite sum over n of Poisson-weighted terms. Equality of the sum for one value of t does not automatically force termwise equality. An analytic continuation argument using the fact that the Poisson weights form a complete system could work but is not provided. This gap affects Proposition 4.6 and consequently Theorem 2.3. Reviewer B upgraded this to RETRACTION-WORTHY in reflection, but since Theorem 2.3 is itself incompletely stated and this gap might be fillable with a proper analytic argument, MAJOR-REVISION is the appropriate classification.",
+      "source": "prover_b",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The proof of Theorem 2.1 is incomplete and fragmented, with lower-bound steps presented out of order.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "An incomplete proof of the main theorem cannot be verified. The lower bound is essential for the exact exponential decay rate. This is major even apart from the deeper conditioning error.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Proposition 4.7 uses 'without loss of generality x=0 and 0∈D' but then derives an integrated identity requiring uniformity over all starting points x∈D without justifying translation invariance of the relevant quantity.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "The result may be salvageable using translation invariance and the assumption D-D⊆A, but the proof as written is not rigorous. The argument needs explicit justification for all x∈D.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Several notation and integration variable errors in displayed formulas (e.g., dw vs dv mismatch, j(x+u) vs j(y-x) forms).",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "These obstruct checking but are likely typographical and would not independently change conclusions.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The manuscript overstates that the jump decomposition (3.3) is a property 'only' of compound Poisson processes.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Variants of path decompositions exist more generally. This is an expositional overstatement, not a methodological error.",
+      "source": "both",
+      "survived_reflection": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 3,
+    "MAJOR-REVISION": 7,
+    "MINOR": 2
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.98,
+    "reasoning": "The manuscript contains a central methodological/mathematical flaw in the derivation of the explicit formula for the principal eigenvalue (Theorem 2.1). The proof relies on Lemmas 4.4–4.5, but Lemma 4.5 is not actually proved and, as written, improperly replaces conditioning on the path event {S_1,...,S_n in D} by conditioning only on S_n in D. This is a substantial change of measure and is exactly what drives the claimed asymptotic hazard rate. In addition, there are serious internal inconsistencies about eigenvalue sign conventions and spectral formulas, and several displayed computations are incomplete or unjustified. Because Theorem 2.1 underpins the paper’s main novelty and feeds the uniqueness/minimization claims, the current data/arguments do not support the central conclusions as presented.",
+    "findings": [
+      {
+        "finding": "The proof of Lemma 4.5 is invalid: it replaces conditioning on the survival event \\(\\cap_{k=1}^n\\{S_k\\in D\\}\\) with conditioning on only the terminal event \\(S_n\\in D\\).",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This is the core step used to show that the one-step conditional survival probability converges to the spatial average \\(\\alpha=|D|^{-1}\\int_D\\mathbb P_z(J_1\\in D)dz\\). But the law of \\(S_n\\) under the path-conditioned measure \\(\\mathbb P_x(\\cdot\\mid S_1,\\dots,S_n\\in D)\\) is not the same as the law under \\(\\mathbb P_x(\\cdot\\mid S_n\\in D)\\); earlier path constraints bias the endpoint distribution. Without this step, the bounds yielding \\(\\log Q_D^X(t)/t\\to-r(1-\\alpha)\\) and thus Theorem 2.1 collapse. Since Theorem 2.1 is the manuscript’s central claimed explicit formula, this flaw means the main conclusion is unsupported."
+      },
+      {
+        "finding": "Lemma 4.4 itself proves only convergence of the law of \\(S_n\\) conditioned on \\(S_n\\in D\\), not conditioned on staying in \\(D\\) up to time \\(n\\), which is what the subsequent argument requires.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "Even if Lemma 4.4 is correct, it is insufficient for Lemma 4.5 and Theorem 2.1. The jump decomposition involves \\(A(x,n,D)=\\mathbb P_x(S_1\\in D,\\dots,S_n\\in D)\\), so the relevant asymptotics concern the endpoint distribution under path survival. The manuscript never establishes such a result. Therefore the bridge from the CLT-based endpoint statement to the long-time decay of the spectral heat content is missing at the exact place where the explicit eigenvalue formula is derived."
+      },
+      {
+        "finding": "The spectral/eigenvalue sign convention is internally inconsistent: the manuscript states the generator of the killed semigroup is non-positive definite, yet defines eigenpairs by \\(P_t^D\\varphi_n=e^{-t\\lambda_n}\\varphi_n\\) and simultaneously writes \\(\\mathcal L\\varphi_n=\\lambda_n\\varphi_n\\).",
+        "severity": "MAJOR-REVISION",
+        "justification": "For a contraction semigroup with \\(P_t=e^{t\\mathcal L}\\), one expects \\(\\mathcal L\\varphi_n=-\\lambda_n\\varphi_n\\) if \\(P_t\\varphi_n=e^{-t\\lambda_n}\\varphi_n\\) with \\(\\lambda_n>0\\). As written, the generator spectrum has the wrong sign relative to the semigroup. This may be only a notation/sign error, but because the paper repeatedly identifies the principal eigenvalue via (3.1)–(3.2), such inconsistency undermines correctness of several statements and needs repair."
+      },
+      {
+        "finding": "Formula (3.2) for recovering \\(\\lambda_1\\) from \\(Q_D^Y(t)\\) is stated without the necessary qualification that the coefficient of the ground-state term be nonzero, i.e. \\((\\int_D\\varphi_1)^2>0\\).",
+        "severity": "MAJOR-REVISION",
+        "justification": "In general, \\(-\\lim_{t\\to\\infty}t^{-1}\\log Q_D^Y(t)=\\min\\{\\lambda_n: \\int_D\\varphi_n\\neq 0\\}\\). For symmetric positivity-preserving killed semigroups the ground state is typically strictly positive, so the statement is often true, but the manuscript does not state the assumptions needed to justify it. Since (3.2) is used as a foundational identification step, this omission is methodologically significant."
+      },
+      {
+        "finding": "Condition 4.1 is incomplete/garbled in the manuscript, yet Theorem 2.1 is asserted under it and Lemma 4.3 appears to require additional assumptions (finite variance, integrable power of characteristic function).",
+        "severity": "MAJOR-REVISION",
+        "justification": "The text shows only 'Condition 4.1 1. J_1 has a symmetric probability density function j(x)' and later refers to 'condition (2) in (4.1)'. The CLT-based Lemma 4.3 needs stronger assumptions than symmetry. Because the main theorem explicitly depends on Condition 4.1, but the condition is not fully and coherently specified, the theorem is not reproducible or verifiable as stated."
+      },
+      {
+        "finding": "The proof of Theorem 2.1 is incomplete in the submitted text, with lower-bound steps fragmented and inserted later out of order.",
+        "severity": "MAJOR-REVISION",
+        "justification": "A proof that is not presented in a complete logical sequence cannot be checked. Since the lower bound is essential to derive the exact exponential decay rate and hence the claimed explicit eigenvalue formula, the current presentation does not permit validation of the theorem."
+      },
+      {
+        "finding": "Theorem 2.3 is incompletely stated: the listed 'followings are equivalent' are missing in both cases.",
+        "severity": "MAJOR-REVISION",
+        "justification": "An incompletely stated theorem cannot be reviewed or verified. Because Theorem 2.3 is one of the paper’s headline results on failure of uniqueness, this is more than a cosmetic issue."
+      },
+      {
+        "finding": "In Proposition 4.7, the proof informally assumes 'without loss of generality, x=0 and 0 in D' when analyzing \\(A(0,n,D)\\), but then uses this to compute \\(\\int_D A(x,n,D)dx\\) as if \\(A(x,n,D)\\) were independent of \\(x\\) without clearly stating/justifying translation invariance of the quantity for all starting points.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The conclusion \\(Q_D^X(t)=|D|\\sum_n (|D|/|A|)^n e^{-rt}(rt)^n/n!\\) requires that for every starting point \\(x\\in D\\), the conditional one-step stay probability equals \\(|D|/|A|\\). This is true if one carefully uses \\((D-x)- (D-x)=D-D\\subset A\\), but the proof as written does not present that argument cleanly and instead fixes \\(x=0\\). The result may be salvageable, but the current proof is not rigorous."
+      },
+      {
+        "finding": "There are several mathematical notation/errors suggesting unverified derivations, e.g. in Lemma 4.5 the final expression uses \\(\\int_D\\int_D j(x+u)\\,du\\,dx\\) instead of the translation-invariant form \\(\\int_D\\int_D j(y-x)\\,dy\\,dx\\), and a limit line ends with integration variable mismatch 'dw' vs 'dv'.",
+        "severity": "MINOR",
+        "justification": "These may be typographical rather than substantive, but they obstruct checking and suggest the proofs were not fully polished. By themselves they would not invalidate conclusions if the core arguments were sound."
+      },
+      {
+        "finding": "The manuscript claims for compound Poisson processes that the jump decomposition (3.3) is a 'crucial property that holds only for compound Poisson processes.' This is overstated and potentially misleading.",
+        "severity": "MINOR",
+        "justification": "While the exact finite-jump decomposition indeed relies on finite activity, variants of path decompositions exist more generally. This is mainly an exposition issue and does not directly affect the main theorem."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "The manuscript contains a critical methodological error in Lemma 4.4 that invalidates the proof of the main Theorem 2.1 and consequently Corollary 2.2. The lemma attempts to prove convergence of the conditional distribution of the jump chain to a uniform distribution, but the argument relies on an incorrect application of the Central Limit Theorem that uses a rescaled density evaluated at a point scaled by 1/√n, leading to a mathematically invalid limit. This error is fundamental and cannot be fixed with minor revisions; it undermines the central results of the paper.",
+    "findings": [
+      {
+        "finding": "In Lemma 4.4, the proof attempts to show that the conditional distribution of S_n given S_n ∈ D converges uniformly to a uniform distribution on D. The argument uses a change of variables and evaluates the density j_n(v/(σ√n)) at arguments v/(σ√n), then compares this to γ(0), a constant. However, j_n is the density of S_n/(σ√n), and after the change of variable, the term (σ√n)^{-d} j_n(v/(σ√n)) should appear. The author incorrectly asserts that j_n(v/(σ√n)) converges to γ(0) uniformly for v in D-x, but j_n is a density for a standardized sum, and j_n(v/(σ√n)) evaluated at points v/(σ√n) that tend to 0 as n→∞ does not converge to γ(0) in any meaningful way—the argument confuses the density of the standardized sum with its value at a point that shrinks to zero. The limit should involve the density of the original sum, not the standardized one, and the scaling is mishandled. This renders the lemma unproven, and since Theorem 2.1 relies on Lemma 4.4, the main result is unsupported.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The error is fatal: the proof of Lemma 4.4 is mathematically invalid, and without it, the derivation of the explicit formula for λ₁ in Theorem 2.1 collapses. This is not a minor oversight—it directly undermines the paper's central conclusion."
+      },
+      {
+        "finding": "The proof of Lemma 4.5 relies on Lemma 4.4 to justify that the conditional probability P_{S_n}(J_{n+1} ∈ D) converges to (1/|D|)∫_D P_z(J_1 ∈ D) dz. Since Lemma 4.4 is unproven, Lemma 4.5 is also unsubstantiated. The subsequent bounds for A(x,n,D) in the proof of Theorem 2.1 depend on Lemma 4.5, so the entire chain of reasoning for the eigenvalue formula fails.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If Lemma 4.4 could be fixed, Lemma 4.5 might still be salvageable, but as presented, it is unsupported. This is classified as MAJOR because it is a consequence of the RETRACTION-WORTHY error in Lemma 4.4."
+      },
+      {
+        "finding": "The manuscript claims that the spectral heat content for compound Poisson processes has the jump decomposition (3.3) 'since there are only a countable number of jumps of which the duration of the next jump is strictly positive.' This phrasing is ambiguous but not incorrect; however, the reasoning that this decomposition is unique to compound Poisson processes is misleading but not a methodological error. More concerning is that the derivation of the bound for Q_D^X(t) in the proof of Theorem 2.1 uses an inequality that sums from n=N to ∞ and replaces (α+ε)^{n-N+1} with (α+ε)^{-N+1} e^{rt(α+ε)} incorrectly when summing the Poisson terms. The algebra appears to conflate the sum over n of (rt)^n/n! with an exponential, but the factor (α+ε)^{n-N+1} is inside the sum; the manipulation to pull out (α+ε)^{-N+1} and claim the sum equals e^{rt(α+ε)} is not justified because the Poisson weights are not multiplied by (α+ε)^n but by (α+ε)^{n-N+1}, which requires careful handling. The final expression (α+ε)^{-N+1} e^{rt(α+ε-1)} is plausible but the step is sloppy.",
+        "severity": "MINOR",
+        "justification": "This is a technical sloppiness in the bounding argument; even if the algebra is cleaned up, the overall approach might still work, and it does not independently invalidate the result. It is a minor reporting gap."
+      },
+      {
+        "finding": "The proof of Lemma 4.4 also assumes that Var(J_1) < ∞ and that |φ(ξ)|^k is integrable for some k, but Condition 4.1 only states that J_1 has a symmetric density and that the characteristic function is integrable (second condition is missing from the manuscript—the text says 'Condition 4.1 1. J_1 has a symmetric probability density function j(x).' but then references 'condition (2) in (4.1)' which is not clearly stated. This is a missing assumption that may affect the applicability of the CLT version quoted.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The conditions for Lemma 4.3 (the CLT result) are not fully specified in Condition 4.1, and the manuscript does not verify that these hold for the jump density under consideration. This could limit the generality of the theorem if the density does not satisfy integrability of the characteristic function, requiring revision."
+      },
+      {
+        "finding": "In Proposition 4.6, the derivation linking the equality of spectral heat content to the equality of the Riesz inequality for indicator functions uses the expression ∫_D A(x,1,D)dx = J(1_{-D}, 1_D, 1_A). However, the argument that the equality for some t>0 implies equality for all n (i.e., for the integral of A(x,n,D)) is not fully justified. The jump decomposition (3.3) involves an infinite sum over n, and equality for a single t>0 does not necessarily force equality termwise unless one assumes linear independence of the functions e^{-rt}(rt)^n/n! or some analytic continuation argument. This gap is nontrivial.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The claim that equality of Q_D^X(t) for one t implies equality for each n (i.e., the integrals ∫ A(x,n,D)dx) is not justified and could affect the conclusions of Proposition 4.6 and Theorem 2.3. This is a significant methodological gap."
+      }
+    ]
+  },
+  "reflection_a": {
+    "defense_for_self": "The strongest defense of my original severity ratings is that my RETRACTION-WORTHY findings identify not merely a gap, not merely an unproven lemma, and not merely a repairable technical misuse of a limit theorem, but the precise logical place where the manuscript’s main theorem changes the conditioned process being analyzed. That is a fatal defect because the paper’s explicit principal-eigenvalue formula is derived from long-time decay of path survival probabilities, whereas the manuscript substitutes an endpoint-conditioned distribution for a path-conditioned one.\n\nWhy findings 1 and 2 are genuinely RETRACTION-WORTHY, not overstated:\n\n1. The object governing Theorem 2.1 is path survival, not endpoint location.\n   The key quantity is A(x,n,D)=P_x(S_1 in D,...,S_n in D). The one-step hazard relevant to the asymptotic decay of A(x,n,D) is\n   P_x(S_{n+1} in D | S_1,...,S_n in D),\n   equivalently an expectation of P_{S_n}(J_1 in D) under the law of S_n conditioned on the entire survival event up to n. That is a different conditional law from the law of S_n given only S_n in D.\n\n2. Lemma 4.4, even if fully correct, addresses the wrong conditional law.\n   At best it says the endpoint S_n, conditional on S_n in D, becomes asymptotically uniform on D. But the theorem needs asymptotics under the Doob-type survival conditioning\n   Law(S_n | S_1,...,S_n in D),\n   which is a quasi-stationary/path-biased law. These are not asymptotically interchangeable by any argument given in the manuscript, and in general they are not equal.\n\n3. The manuscript’s central asymptotic hazard α is created exactly by this invalid substitution.\n   The claimed formula\n   lim_{n->infty} P_x(S_{n+1} in D | S_1,...,S_n in D) = (1/|D|)∫_D P_z(J_1 in D) dz\n   is not derived. Instead, the proof effectively computes\n   E[P_{S_n}(J_1 in D) | S_n in D],\n   which is a different quantity. This is not a technical slip in notation. It changes the measure under which the endpoint is sampled, and therefore changes the asymptotic hazard that drives the exponent in Q_D^X(t).\n\n4. Once that substitution fails, Theorem 2.1 collapses at its core.\n   The theorem’s novelty is an explicit formula for the principal eigenvalue via\n   -lim_{t->∞} (1/t) log Q_D^X(t) = r(1-α).\n   But α is obtained only through the invalid conditioning step. No alternative route in the manuscript establishes that decay rate. Thus the main conclusion is unsupported as presented. Under the severity taxonomy, that is exactly RETRACTION-WORTHY: the central conclusion cannot be supported by the arguments given.\n\n5. This is stronger than the other reviewer’s framing because it identifies a structural error, not just a flawed CLT manipulation.\n   The other reviewer focuses on Lemma 4.4 and a possible scaling mistake in the density argument. Even if that criticism is accepted, it still leaves open the possibility that Lemma 4.4 could be repaired by a local CLT or corrected scaling. My critique goes deeper: a perfectly repaired Lemma 4.4 would still not prove Lemma 4.5 or Theorem 2.1, because it solves the wrong problem. The theorem requires endpoint asymptotics under path survival. The manuscript only discusses endpoint conditioning. So my RETRACTION-WORTHY assessment is not overstated; it isolates a logically irreparable gap in the current proof architecture.\n\n6. Why this is not merely MAJOR-REVISION.\n   A MAJOR-REVISION issue would be something like missing assumptions or an omitted estimate that could plausibly be inserted without changing the proof strategy. Here the strategy itself is invalid: it infers path-survival asymptotics from endpoint-conditioning asymptotics. That is not a patch; it is a replacement of the central probabilistic argument. If confirmed, the current theorem proof cannot stand, and the principal formula is unsupported. That meets the retraction-worthy threshold in the review framework supplied.\n\nDefense against the other reviewer’s alternative framing:\n\nA. On Lemma 4.4 vs Lemma 4.5.\n   The other reviewer puts the fatal error in Lemma 4.4. I agree Lemma 4.4 may also be flawed, but even granting Lemma 4.4, the paper still fails. That is why my primary RETRACTION-WORTHY findings target Lemmas 4.4-4.5 together at the point where endpoint conditioning is used as though it were path conditioning. This is the more serious and more decisive defect.\n\nB. On whether the issue is merely 'unproven' versus 'invalid.'\n   It is invalid. The proof does not simply omit a step; it takes a mathematically different conditional law and uses it as though it were the needed one. In stochastic process arguments, changing from conditioning on {S_n in D} to conditioning on {S_1,...,S_n in D} is a substantive change of measure. The latter biases toward trajectories that avoid the boundary and generally yields a non-uniform endpoint law even when the former tends toward uniformity. This is not a missing epsilon-delta argument but a wrong object.\n\nC. On whether the main result might still be true.\n   Possibly, but that is irrelevant to severity under the requested standard. RETRACTION-WORTHY here means the central conclusion cannot be supported by the manuscript as presented. Since Theorem 2.1 is the paper’s central claim and the current proof mechanism does not establish it, the severity stands.\n\nDefense of the remaining severity ratings:\n\nFinding 3 (sign convention inconsistency) — MAJOR-REVISION:\nThis is not cosmetic because the paper explicitly identifies principal eigenvalues through semigroup formulas. If P_t^D φ_n = e^{-t λ_n} φ_n with λ_n > 0 for a killed contraction semigroup, then the generator relation should be Lφ_n = -λ_n φ_n. Writing simultaneously that the generator is non-positive definite and Lφ_n = λ_n φ_n creates a sign mismatch in the spectral parameter used throughout Sections 2–3. I did not rate this RETRACTION-WORTHY because it may be a notation error, but it is serious enough that claims involving 'principal eigenvalue' and formulas (3.1)-(3.2) cannot be safely interpreted without correction.\n\nFinding 4 (formula (3.2) lacks the nonzero ground-state coefficient qualification) — MAJOR-REVISION:\nThe identification of λ1 from the logarithmic asymptotic of Q_D^Y(t) is only valid when the ground state contributes to the heat content expansion, i.e. the coefficient (∫_D φ1)^2 is nonzero. In positivity-preserving symmetric settings this is often true because φ1 is strictly positive, but the manuscript does not say this. Since (3.2) is used as a foundational reduction from heat content to principal eigenvalue, the missing qualification is material. I did not elevate it because the fix may be straightforward under standard assumptions, but as written it is not rigorous.\n\nFinding 5 (Condition 4.1 incomplete/garbled) — MAJOR-REVISION:\nThis directly affects reproducibility and validity. The theorem is stated under Condition 4.1, but the condition is visibly incomplete, while later arguments invoke a second part and use CLT/local-CLT type input that needs finite variance and regularity/integrability conditions. A theorem depending on an incompletely stated hypothesis is not verifiable. This is major because it may alter the theorem’s scope or applicability, but by itself it does not definitively refute the theorem.\n\nFinding 6 (Theorem 2.1 proof incomplete/out of order) — MAJOR-REVISION:\nA fragmented proof cannot be checked, especially for the lower bound that is essential for obtaining the exact rate. I did not mark this as RETRACTION-WORTHY only because incompleteness alone could be editorial. But in combination with the invalid conditioning step, it reinforces that the theorem is not validated in the submission.\n\nFinding 7 (Theorem 2.3 incompletely stated) — MAJOR-REVISION:\nA theorem claiming equivalence but omitting the list of equivalent statements is not reviewable. Since Theorem 2.3 is one of the paper’s stated headline results, this is plainly major.\n\nFinding 8 (Proposition 4.7 proof uses x=0 / 0 in D loosely) — MAJOR-REVISION:\nThe proof as written is not rigorous because it fixes x=0 and then appears to infer an integrated identity requiring a statement for all x. I acknowledged in my original review that the proposition may be salvageable using translation invariance and the assumption D-D ⊂ A, but the manuscript does not present that argument cleanly. Hence MAJOR-REVISION is exactly the right level: substantial proof repair is needed, but the result is not necessarily false.\n\nFinding 9 (notation/integration variable errors) — MINOR:\nThese are genuine but not outcome-determinative. They impede checking but would not alter conclusions if the main arguments were sound.\n\nFinding 10 (overstatement that decomposition is 'only' for compound Poisson) — MINOR:\nThis is expository overreach, not a central methodological failure.\n\nIn sum: my two RETRACTION-WORTHY findings remain the strongest and best-grounded criticisms because they show the manuscript proves the wrong asymptotic object. That is more fundamental than the alternative review’s attack on the CLT computation in Lemma 4.4. Even a repaired CLT would not rescue Theorem 2.1 without a new argument for the endpoint distribution under path survival. Therefore the original severity ratings are justified and should be defended affirmatively.",
+    "severity_i_now_upgrade": [],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      {
+        "finding": "Lemma 4.5 is invalid because it replaces conditioning on survival up to time n with conditioning only on the terminal event S_n in D.",
+        "severity": "RETRACTION-WORTHY",
+        "reason": "This is the decisive logical error producing the asymptotic hazard rate used in Theorem 2.1. It changes the conditional measure, and without that step the explicit eigenvalue formula is unsupported."
+      },
+      {
+        "finding": "Lemma 4.4, even if correct, proves only endpoint-conditioned convergence and is insufficient for the path-conditioned asymptotics required later.",
+        "severity": "RETRACTION-WORTHY",
+        "reason": "The theorem needs the law of S_n under survival conditioning. The manuscript never establishes it. Therefore the bridge from CLT-style endpoint asymptotics to the long-time decay of A(x,n,D) is missing at the critical point."
+      },
+      {
+        "finding": "The manuscript has an internal sign inconsistency between generator/eigenvalue conventions and semigroup formulas.",
+        "severity": "MAJOR-REVISION",
+        "reason": "This undermines interpretation of the principal eigenvalue throughout the paper, though it may be reparable by notational correction."
+      },
+      {
+        "finding": "Formula (3.2) is stated without the necessary qualification that the ground-state coefficient in the heat-content expansion is nonzero.",
+        "severity": "MAJOR-REVISION",
+        "reason": "The identification of λ1 from the asymptotic of Q_D^Y(t) is not automatic without positivity/ground-state contribution assumptions."
+      },
+      {
+        "finding": "Condition 4.1 is incomplete/garbled and appears insufficient for the CLT/local-limit machinery actually invoked.",
+        "severity": "MAJOR-REVISION",
+        "reason": "The theorem’s assumptions are not fully stated, so the main result is not reproducible or verifiable as written."
+      },
+      {
+        "finding": "The proof of Theorem 2.1 is incomplete and fragmented, especially in the lower-bound argument.",
+        "severity": "MAJOR-REVISION",
+        "reason": "An incomplete proof of the paper’s main theorem is a major defect, even aside from the deeper conditioning error."
+      },
+      {
+        "finding": "Theorem 2.3 is incompletely stated.",
+        "severity": "MAJOR-REVISION",
+        "reason": "A theorem missing the very statements claimed to be equivalent cannot be reviewed or validated."
+      },
+      {
+        "finding": "Proposition 4.7 uses an unjustified 'without loss of generality x=0' step in a context requiring a statement uniform in x.",
+        "severity": "MAJOR-REVISION",
+        "reason": "The current proof is not rigorous, though the result may be salvageable with a proper translation-invariance argument."
+      },
+      {
+        "finding": "There are several notation and variable-mismatch errors in displayed formulas.",
+        "severity": "MINOR",
+        "reason": "These obstruct checking but are not independently conclusion-changing."
+      },
+      {
+        "finding": "The manuscript overstates that the jump decomposition is a property 'only' of compound Poisson processes.",
+        "severity": "MINOR",
+        "reason": "This is misleading exposition, not a fatal mathematical error."
+      }
+    ],
+    "new_errors_noticed": [
+      "The manuscript appears to move from asymptotics of A(x,n+1,D)/A(x,n,D) for fixed x to asymptotics of the integrated spectral heat content Q_D^X(t) without addressing whether the needed convergence is uniform in x or how x-dependence is controlled. Even if the pointwise ratio limit existed, additional justification would be needed to pass to the integrated quantity.",
+      "Relatedly, the proof strategy seems to assume that a single limiting hazard α controls the long-time decay for all starting points x in D. For killed Markov chains/processes this is typically tied to quasi-stationary behavior and principal eigenfunctions; it is not automatic from endpoint CLT arguments.",
+      "Because the claimed formula for λ1 is explicit and domain-averaged, the manuscript effectively asserts that the principal decay rate depends only on the average one-step retention probability under a uniform law on D. That is a very strong structural claim and should require a robust spectral or quasi-stationary argument, none of which is supplied."
+    ]
+  },
+  "reflection_b": {
+    "raw": "{\n  \"defense_for_self\": \"My original severity ratings are justified and, if anything, understate the gravity of the errors. The RETRACTION-WORTHY finding in Lemma 4.4 is not merely a technical slip—it is a fundamental mathematical error that cannot be salvaged. The attempted CLT argument evaluates the density of a standardized sum at points that shrink to zero, which is a category mistake: the density of \\(S_n/(\\sigma\\sqrt{n})\\) at \\(v/(\\sigma\\sqrt{n})\\) is a function of \\(v\\), not a constant approaching \\(\\gamma(0)\\). This invalidates the entire convergence argument. The other reviewer's different framing of Lemma 4.5 as 'invalid' actually reinforces my point: if the conditioning error in Lemma 4.5 is RETRACTION-WORTHY, then Lemma 4.4, which is even more fundamental and mathematically unsound, must also be RETRACTION-WORTHY. My MAJOR and MINOR findings are also correct but now appear too lenient given the structural collapse of the proof chain.\",\n  \"severity_i_now_upgrade\": [\n    \"Finding 2 (Lemma 4.5) from 'MAJOR-REVISION' to 'RETRACTION-WORTHY': The conditioning error is not a salvageable oversight—it is a direct substitution of the wrong conditional measure. The other reviewer correctly identifies this as fatal. My original rating underestimated the severity because I treated it as a consequence; in fact, it is an independent fatal flaw that, combined with Lemma 4.4, guarantees the main theorem is unproven.\",\n    \"Finding 5 (Proposition 4.6) from 'MAJOR-REVISION' to 'RETRACTION-WORTHY': The claim that equality of \\(Q_D^X(t)\\) for one \\(t\\) implies termwise equality in the jump decomposition is mathematically unjustified without an analytic continuation argument that is absent. This gap is not 'nontrivial'—it is a logical leap that undermines Theorem 2.3 entirely, making the central conclusion about uniqueness unsupported.\"\n  ],\n  \"severity_i_now_downgrade\": [],\n  \"findings_i_still_defend\": {\n    \"Finding 1 (Lemma 4.4) - RETRACTION-WORTHY\": \"The density scaling error is mathematically invalid. The other reviewer's alternative framing of Lemma 4.5 does not negate this; both errors are independent and fatal. My rating is correct and should not be softened.\",\n    \"Finding 2 (Lemma 4.5) - Now RETRACTION-WORTHY\": \"Agreeing with the other reviewer that this is fatal. My original MAJOR rating was too generous; this is indeed RETRACTION-WORTHY.\",\n    \"Finding 3 (Poisson sum bound) - MINOR\": \"This remains a minor algebraic sloppiness. Even if corrected, the bound could still work, so it does not rise to MAJOR or RETRACTION.\",\n    \"Finding 4 (Condition 4.1) - MAJOR-REVISION\": \"The missing assumptions are a significant methodological gap that could affect generality, but they are fixable if the authors properly specify conditions. This remains MAJOR.\",\n    \"Finding 5 (Proposition 4.6) - Now RETRACTION-WORTHY\": \"As argued above, the unjustified termwise equality claim is fatal to Theorem 2.3. My original MAJOR rating was too lenient.\"\n  },\n  \"new_errors_noticed\": [\n    \"The proof of Proposition 4.7 assumes translation invariance without justification, as noted by the other reviewer. If the domain is not convex or symmetric, the argument that \\(A(0,n,D)\\) equals \\(\\int_D A(x,n,D)dx/|D|\\) is not generally valid. This could be RETRACTION-WORTHY if it is essential to the explicit formula in Theorem 2.1, but I need to re-check the dependency.\",\n    \"The spectral sign inconsistency (Finding 3 in other review) is more serious than I initially thought: if the manuscript defines eigenpairs with \\(P_t^D\\varphi_n = e^{-t\\lambda_n}\\varphi_n\\) and also writes \\(\\mathcal{L}\\varphi_n = \\lambda_n\\varphi_n\\), then for \\(P_t = e^{t\\mathcal{L}}\\) we would have \\(P_t\\varphi_n = e^{t\\lambda_n}\\varphi_n\\), contradicting the sign. This could propagate sign errors in the eigenvalue formula for \\(\\lambda_1\\), making it potentially RETRACTION-WORTHY if uncorrected.\"\n  ]\n}",
+    "parse_error": true,
+    "truncated": true
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.97,
+    "reasoning": "Both reviewers independently identified fatal errors in the proof chain supporting Theorem 2.1, the paper's central result. Reviewer A identified that Lemma 4.5 incorrectly substitutes endpoint-conditioned asymptotics for path-survival-conditioned asymptotics—a change of measure that invalidates the derivation of the asymptotic hazard rate α and hence the explicit eigenvalue formula. Reviewer B identified that Lemma 4.4 itself contains a mathematical error in the CLT-based density argument (scaling/evaluation mistake). Crucially, Reviewer A's second-pass reflection demonstrated that even if Lemma 4.4 were repaired (addressing Reviewer B's concern), the proof would still fail because Lemma 4.4 addresses the wrong conditional law (endpoint conditioning vs. path-survival conditioning). This means there are two independent fatal flaws in the proof chain: (1) the CLT argument in Lemma 4.4 may be technically flawed, and (2) even a correct version of Lemma 4.4 would be insufficient for the path-conditioned asymptotics needed in Lemma 4.5 and Theorem 2.1. Both reviewers agree the main theorem is unsupported. Additional issues include incomplete theorem statements (Theorem 2.3), garbled conditions (Condition 4.1), sign convention inconsistencies, and unjustified steps in Proposition 4.6. The paper's central conclusions cannot be supported by the arguments as presented.",
+    "findings": [
+      {
+        "finding": "Lemma 4.5 replaces conditioning on the full path-survival event {S_1∈D,...,S_n∈D} with conditioning only on the terminal event {S_n∈D}, substituting the wrong conditional measure. This invalidates the derivation of the asymptotic one-step hazard rate α that underpins the explicit eigenvalue formula in Theorem 2.1.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.95,
+        "justification": "The quantity governing Theorem 2.1 is A(x,n,D) = P_x(S_1∈D,...,S_n∈D), requiring asymptotics under path-survival conditioning. The manuscript instead uses endpoint conditioning, which is a fundamentally different conditional law. This is not a missing epsilon-delta step but a substitution of the wrong mathematical object. Even a fully correct Lemma 4.4 would not rescue this step. Without it, the explicit formula for λ₁ is entirely unsupported.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Lemma 4.4's proof contains a mathematical error in the CLT-based density argument: it evaluates the density j_n of the standardized sum S_n/(σ√n) at points v/(σ√n) that shrink to zero and claims convergence to γ(0), but this confuses the density of the standardized sum with its value at a vanishing argument. The scaling is mishandled.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.85,
+        "justification": "This is a separate mathematical error from the conditioning issue. If the density convergence argument is invalid, Lemma 4.4 is unproven, breaking the proof chain at an even earlier stage. However, there is some possibility that a corrected local CLT argument could salvage Lemma 4.4 itself (though not the downstream conditioning error in Lemma 4.5). Given that even a correct Lemma 4.4 is insufficient for the main theorem due to the conditioning error, the combined effect is definitively retraction-worthy.",
+        "source": "prover_b",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Lemma 4.4, even if technically correct, proves only convergence of the law of S_n conditioned on {S_n∈D} to uniformity on D—not convergence under the path-survival conditioning {S_1∈D,...,S_n∈D} that the subsequent proof requires.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.93,
+        "justification": "This is logically independent of whether the CLT computation in Lemma 4.4 is correct. The lemma addresses the wrong conditional law. Path-survival conditioning biases the endpoint distribution toward the interior of D (quasi-stationary behavior), which generally differs from endpoint conditioning. No argument bridging these two conditioning regimes is provided. This gap is structural and cannot be fixed by minor revision of the existing proof strategy.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Condition 4.1 is incomplete/garbled in the manuscript: only part (1) is visible, while part (2) is referenced but missing. The CLT machinery (Lemma 4.3) requires finite variance and characteristic function integrability conditions that are not stated.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.9,
+        "justification": "The main theorem is stated under Condition 4.1, but the condition is not fully specified. This makes the theorem non-reproducible and non-verifiable. However, this is fixable by properly stating the assumptions, so it does not independently invalidate the result.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The spectral/eigenvalue sign convention is internally inconsistent: the manuscript writes P_t^D φ_n = e^{-tλ_n}φ_n alongside Lφ_n = λ_n φ_n, but for P_t = e^{tL} these are contradictory when λ_n > 0.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "This creates ambiguity in interpreting the principal eigenvalue throughout Sections 2-3. It may be a purely notational error, but because the paper repeatedly identifies principal eigenvalues through semigroup formulas, it affects correctness of multiple statements. Not retraction-worthy because it is likely a fixable sign convention choice, but it is more than cosmetic.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Formula (3.2) for recovering λ₁ from Q_D^Y(t) is stated without the necessary qualification that the ground-state coefficient (∫_D φ₁)² is nonzero.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "This is a standard assumption in spectral theory of killed semigroups that is typically satisfied for positivity-preserving operators, but the manuscript does not state or verify it. Since (3.2) is a foundational identification step, the omission is methodologically significant but likely fixable.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Theorem 2.3 is incompletely stated: the list of equivalent conditions is missing.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.9,
+        "justification": "A theorem claiming to establish equivalences but omitting the equivalent statements cannot be reviewed or verified. This is one of the paper's headline results on uniqueness/failure of uniqueness.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "In Proposition 4.6, the argument that equality of Q_D^X(t) for some t>0 implies termwise equality in the jump decomposition (equality for each n) is unjustified without an analytic continuation or linear independence argument.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "The jump decomposition involves an infinite sum over n of Poisson-weighted terms. Equality of the sum for one value of t does not automatically force termwise equality. An analytic continuation argument using the fact that the Poisson weights form a complete system could work but is not provided. This gap affects Proposition 4.6 and consequently Theorem 2.3. Reviewer B upgraded this to RETRACTION-WORTHY in reflection, but since Theorem 2.3 is itself incompletely stated and this gap might be fillable with a proper analytic argument, MAJOR-REVISION is the appropriate classification.",
+        "source": "prover_b",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The proof of Theorem 2.1 is incomplete and fragmented, with lower-bound steps presented out of order.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "An incomplete proof of the main theorem cannot be verified. The lower bound is essential for the exact exponential decay rate. This is major even apart from the deeper conditioning error.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Proposition 4.7 uses 'without loss of generality x=0 and 0∈D' but then derives an integrated identity requiring uniformity over all starting points x∈D without justifying translation invariance of the relevant quantity.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "The result may be salvageable using translation invariance and the assumption D-D⊆A, but the proof as written is not rigorous. The argument needs explicit justification for all x∈D.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Several notation and integration variable errors in displayed formulas (e.g., dw vs dv mismatch, j(x+u) vs j(y-x) forms).",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "These obstruct checking but are likely typographical and would not independently change conclusions.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The manuscript overstates that the jump decomposition (3.3) is a property 'only' of compound Poisson processes.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Variants of path decompositions exist more generally. This is an expositional overstatement, not a methodological error.",
+        "source": "both",
+        "survived_reflection": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 39191,
+    "duration_s": 161.24,
+    "n_api_calls": 20,
+    "cost_usd": 2.0834,
+    "total_input_tokens": 311980,
+    "total_output_tokens": 35814,
+    "calls": [
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4180,
+        "output_tokens": 818,
+        "cost_usd": 0.0020284,
+        "duration_s": 10.73,
+        "label": "2405.20571v2/b3plus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 15205,
+        "output_tokens": 1849,
+        "cost_usd": 0.0565025,
+        "duration_s": 29.74,
+        "label": "2405.20571v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7319,
+        "output_tokens": 2206,
+        "cost_usd": 0.275235,
+        "duration_s": 46.86,
+        "label": "2405.20105v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 13525,
+        "output_tokens": 1510,
+        "cost_usd": 0.005312750000000001,
+        "duration_s": 17.17,
+        "label": "2405.20571v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7172,
+        "output_tokens": 2370,
+        "cost_usd": 0.28533,
+        "duration_s": 45.9,
+        "label": "2405.20571v2/b3plus/arbiter"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 10360,
+        "output_tokens": 3012,
+        "cost_usd": 0.3813,
+        "duration_s": 75.72,
+        "label": "2405.11232v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 46707,
+        "output_tokens": 1728,
+        "cost_usd": 0.1340475,
+        "duration_s": 30.35,
+        "label": "2406.01892v2/b3plus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 40737,
+        "output_tokens": 942,
+        "cost_usd": 0.012035190000000003,
+        "duration_s": 12.5,
+        "label": "2406.01892v2/b3plus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 46707,
+        "output_tokens": 1848,
+        "cost_usd": 0.1352475,
+        "duration_s": 32.73,
+        "label": "2406.01892v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 40737,
+        "output_tokens": 174,
+        "cost_usd": 0.011190390000000001,
+        "duration_s": 3.45,
+        "label": "2406.01892v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3129,
+        "output_tokens": 945,
+        "cost_usd": 0.0172725,
+        "duration_s": 19.72,
+        "label": "2406.01892v2/b3plus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3895,
+        "output_tokens": 3159,
+        "cost_usd": 0.0413275,
+        "duration_s": 51.63,
+        "label": "2405.20571v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3089,
+        "output_tokens": 848,
+        "cost_usd": 0.00176683,
+        "duration_s": 10.55,
+        "label": "2406.01892v2/b3plus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3831,
+        "output_tokens": 985,
+        "cost_usd": 0.00211787,
+        "duration_s": 12.27,
+        "label": "2405.20571v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 23622,
+        "output_tokens": 3084,
+        "cost_usd": 0.089895,
+        "duration_s": 53.09,
+        "label": "2406.03201v2/b3plus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2519,
+        "output_tokens": 2503,
+        "cost_usd": 0.0313275,
+        "duration_s": 44.22,
+        "label": "2406.01892v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 21590,
+        "output_tokens": 1881,
+        "cost_usd": 0.0078984,
+        "duration_s": 22.67,
+        "label": "2406.03201v2/b3plus/prover_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 5771,
+        "output_tokens": 2213,
+        "cost_usd": 0.25254,
+        "duration_s": 41.73,
+        "label": "2406.01892v2/b3plus/arbiter"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2508,
+        "output_tokens": 1092,
+        "cost_usd": 0.0018783600000000001,
+        "duration_s": 13.62,
+        "label": "2406.01892v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 9377,
+        "output_tokens": 2647,
+        "cost_usd": 0.33918,
+        "duration_s": 50.42,
+        "label": "2405.20571v2/b3plusplus/arbiter"
+      }
+    ]
+  }
+}

@@ -1,0 +1,465 @@
+{
+  "condition": "B3PLUS",
+  "paper_id": "2408.04316v2",
+  "verdict": "flagged",
+  "confidence": 0.82,
+  "reasoning": "Both reviewers converge after reflection on a core set of methodological concerns that, while not retraction-worthy, collectively represent significant weaknesses in the paper's empirical validation and the strength of its claimed conclusions. The mathematical derivation itself appears internally consistent (no reviewer identified a proven error in the central formula or theorem statements), but the numerical evidence presented to support claims of 'high accuracy' and 'high efficiency' is methodologically insufficient. Specifically: (1) using quadruple-precision output as ground truth without residual/backward-error analysis or condition-number-aware assessment is inadequate for ill-conditioned structured matrix computations; (2) the stability discussion acknowledges cancellation and algorithm failure at large n yet still draws broad accuracy conclusions; and (3) the empirical comparison between different software pathways overstates practical advantages. These are real methodological issues that could change how strongly the conclusions are supported, warranting major revision. Several additional minor issues (notation, proof traceability, flop-count derivations, scope mismatch) were identified but would not change conclusions.",
+  "findings": [
+    {
+      "finding": "Accuracy validation relies on treating quadruple-precision results as 'exact' ground truth, without residual checks (e.g., ||VW - HV||), backward-error analysis, or condition-number-aware assessment. This is insufficient to support the paper's central claim of 'high accuracy' for potentially ill-conditioned structured matrix computations.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers agree after reflection that this is a substantive methodological gap. Quadruple-precision agreement is a useful heuristic but does not establish correctness or high accuracy for structured problems where catastrophic cancellation can occur. The paper's accuracy conclusions are materially under-supported without proper validation. However, this does not invalidate the closed-form formula itself, only the empirical accuracy claims.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The stability discussion acknowledges cancellation in diagonal terms and failure of Algorithm 3.2 at large n, yet the paper still draws broad conclusions about high accuracy without providing node-dependent error bounds, condition-number analysis, or precision-adaptation recommendations.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers converge on this after reflection. The paper's own numerical results show failure modes, making blanket accuracy claims misleading. Proper qualification or sharper error analysis is needed; otherwise practical conclusions may be unreliable. This is a significant overclaiming problem but does not invalidate the theoretical contribution.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The empirical comparison in Section 4.1 between Mathematica's built-in computation of A and symbolic computation of W_n from the explicit formula is not a fair like-for-like comparison, yet the paper concludes the inverse is 'much easier to compute.'",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "Reviewer A originally flagged this as MAJOR-REVISION, then downgraded to MINOR on reflection, while Reviewer B upgraded it to MAJOR-REVISION on reflection. The concern is legitimate: comparing different software pathways with different internal algorithms does not establish an intrinsic complexity advantage. However, the practical observation is not unreasonable, and the core contribution (explicit formula + O(n²) algorithms) stands independently. On balance, this warrants revision of the claim's framing rather than retraction, placing it at the boundary of MAJOR-REVISION and MINOR. I classify as MAJOR-REVISION because it directly concerns one of the paper's headline conclusions.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Apparent inconsistency in Lemma 2.1's derivative-evaluation identity: one version gives ∏_{k≠j}(c_j−c_k) while another gives ∏_{k≠i,j}(c_j−c_k). This feeds into Theorem 2.2.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Both reviewers converge after reflection that this is most likely a typographical/OCR artifact rather than a genuine mathematical error, since the theorem statement appears to use the correct form. The paper needs correction for proof traceability, but no demonstrated propagation into incorrect results has been shown.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Exact flop-count claims (e.g., 11n²+12n, 7n²+15n, 7n²+9n) are stated without derivation, transparent counting model, or accounting for overflow-avoidance logic and memory costs.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers agree this is minor. The O(n²) asymptotic claim is plausible and the algorithms are described in enough detail for expert verification. The exact constants are not critical to the paper's main contribution.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Equation numbering/citation inconsistencies in the proof of Theorem 2.2 reference formulas not clearly present in the excerpt, hindering proof verification.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers agree this is a traceability/reporting issue that does not by itself invalidate results.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Conceptual ambiguity around W being singular (as a similarity transform of the nilpotent H) versus the invertible submatrix W_n used in applications to IRK/BIM matrices.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Likely expositional rather than a correctness issue, but clarification is needed to avoid confusion about what is being inverted in the applications.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Theory is stated for distinct real or complex nodes, but algorithms and numerical tests are restricted to ordered real nodes; the full claimed domain is not validated.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Scope/generalizability mismatch that does not affect correctness within the tested domain.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Non-standard 'generalized binomial coefficient' notation in equation (2.8) may confuse readers but is algebraically justified as notational convenience.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers agree this is purely a clarity issue with no impact on correctness.",
+      "source": "prover_b",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Missing actual computation time values in Section 4.1 for the Mathematica comparison; only qualitative statements ('takes significantly more time') are provided.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Reporting gap that limits reproducibility of the efficiency comparison but does not affect the core contribution.",
+      "source": "prover_b",
+      "survived_reflection": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 3,
+    "MINOR": 7
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.88,
+    "reasoning": "The manuscript appears mathematically substantial and many formulas are internally consistent, but there are several methodological and validation problems. The most important issue is that the numerical evidence treats quadruple precision output as 'exact' and then uses agreement with it as the main accuracy benchmark for algorithms intended for potentially ill-conditioned structured matrices; this is not a valid correctness validation in general and could materially overstate accuracy claims. There are also notable derivational/reporting inconsistencies in key formulas and complexity accounting, and the paper's evidence for claims such as 'highly efficient and accurate' is weaker than stated. I do not see a clear retraction-level contradiction in the central closed-form formula from the provided text alone, but the manuscript requires major revision before its methodological claims can be trusted.",
+    "findings": [
+      {
+        "finding": "Accuracy validation in Section 4.2 is based on treating quadruple-precision results W^q as 'exact' and measuring long-double errors against them.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is not a reliable ground truth for structured matrix computations that can be highly ill-conditioned and suffer cancellation/overflow. Agreement with 128-bit arithmetic does not establish correctness or high accuracy, especially for n up to 10000. If confirmed, the paper's empirical claims of accuracy are insufficiently supported and may change with proper validation against exact/symbolic results, residual checks, or condition-aware error analysis."
+      },
+      {
+        "finding": "The manuscript claims the algorithms are 'highly efficient and accurate,' but the numerical study provides no backward-error/residual analysis for the defining identity W = V^{-1}HV, nor condition-number-aware assessment.",
+        "severity": "MAJOR-REVISION",
+        "justification": "For numerical linear algebra algorithms, especially involving Vandermonde structure, raw agreement with another finite-precision computation is inadequate. A residual such as ||VW-HV|| or verification on cases with known exact formulas is needed to substantiate correctness. Without this, the central numerical-performance conclusion is materially under-supported."
+      },
+      {
+        "finding": "There is an apparent inconsistency in Lemma 2.1 / the displayed derivative-evaluation identity: one version gives the i≠j case as ∏_{k≠j}(c_j-c_k), while the corrected OCR later gives ∏_{k≠i,j}(c_j-c_k). These are not the same.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This identity feeds directly into Theorem 2.2. If the wrong version is used in the proof, the derivation is incorrect. The later theorem formula suggests the corrected version is intended, but the manuscript as presented contains a serious derivational inconsistency that must be reconciled line-by-line. If confirmed as a proof error only, revision is needed; if it propagates to theorem statements, conclusions could change."
+      },
+      {
+        "finding": "Equation numbering/citation inconsistency in the proof of Theorem 2.2 ('from (1.1), (2.3), (2.11) and Lemma 2.1') references formulas not clearly present in the excerpt, while the theorem conclusion then cites (2.8), (2.9), and (2.12).",
+        "severity": "MINOR",
+        "justification": "This is primarily a reporting/proof-traceability issue, but in a mathematical paper explicit derivation traceability is important. It does not by itself invalidate the result, but it obstructs verification and raises concern that the proof was not carefully checked."
+      },
+      {
+        "finding": "The paper repeatedly describes W as 'singular,' although W = V^{-1}HV and H is the differentiation matrix/Jordan block with zero eigenvalue; similarity preserves singularity, but the manuscript simultaneously develops formulas that look like a full inverse-related object without clearly distinguishing W from the invertible submatrix W_n. This creates conceptual ambiguity around what is invertible and what is not.",
+        "severity": "MINOR",
+        "justification": "Likely expositional rather than fatal, but the distinction matters because the applications concern inverses of IRK/BIM matrices via submatrices of W^T, not inversion of W itself. Clarification is needed to avoid methodological confusion."
+      },
+      {
+        "finding": "The complexity claims are presented as exact flop counts (e.g., 11n^2+12n, 7n^2+15n, 7n^2+9n) without a clear flop model and while omitting costs of overflow-avoidance logic, reciprocal operations, and potential memory traffic; the empirical timing methodology is also insufficiently specified.",
+        "severity": "MINOR",
+        "justification": "This likely does not alter asymptotic O(n^2) claims, but the detailed efficiency claims are not reproducible or rigorously supported as stated."
+      },
+      {
+        "finding": "The empirical comparison in Section 4.1 compares symbolic computation of A from Mathematica built-ins with symbolic computation of W_n from the explicit formula and concludes the inverse is 'much easier to compute than themselves.' This is not a fair methodological benchmark.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Comparing different software pathways with different internal algorithms and representations does not establish an intrinsic complexity advantage of computing the inverse over computing the matrix. This overstates the practical conclusion and should be revised or replaced with like-for-like comparisons."
+      },
+      {
+        "finding": "The manuscript's stability discussion acknowledges cancellation in diagonal terms but still concludes broad high accuracy without giving node-dependent error bounds or identifying when the algorithms should not be used in standard precision.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Because the examples themselves show severe cancellation and failure of Algorithm 3.2 at large n, the blanket conclusion is too strong. Proper methodological qualification, error analysis, or adaptive-precision recommendations are needed; otherwise practical conclusions may be misleading."
+      },
+      {
+        "finding": "The formulas and algorithms assume ordered real nodes in several places ('Given c(0)<...<c(n)'), while the theory is stated for distinct real or complex numbers. The numerical algorithms are not validated for the full claimed domain.",
+        "severity": "MINOR",
+        "justification": "This is a scope/generalizability mismatch rather than a direct correctness failure. The manuscript should restrict claims or provide analysis for complex/unordered nodes."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "not_flagged",
+    "confidence": 0.9,
+    "reasoning": "The manuscript presents a mathematically sound derivation of an explicit formula for inverting a specific class of matrices (W = V⁻¹HV) and provides fast O(n²) algorithms for its computation. The theoretical results are derived step-by-step from known properties of Vandermonde matrices and elementary symmetric functions. The applications to IRK and BIM matrices are correctly identified and proven. The numerical experiments are appropriate for demonstrating the efficiency and accuracy of the proposed algorithms, and the authors honestly discuss numerical issues like overflow, underflow, and cancellation. I found no fundamental methodological errors that would invalidate the central claims. The severity of identified issues is limited to minor reporting or clarity concerns that would not require major revision.",
+    "findings": [
+      {
+        "finding": "The manuscript uses 'the well-known implicit Runge-Kutta schemes' and 'block implicit methods' but does not cite the original or most standard references for these methods in the introduction. Reference [6, 4, 10, 17, 16, 18, 21, 22] are listed but the text does not clearly tie each to the specific statement (e.g., which references are for IRK and which for BIM?). This is a minor citation and clarity issue.",
+        "severity": "MINOR",
+        "justification": "This does not affect the validity of the mathematical results. The manuscript's core contribution (the explicit formula and algorithms) is independent of the completeness of the background citation. Confirming this omission would only require adding a few more targeted citations or clarifying the existing ones, not revising the paper's conclusions."
+      },
+      {
+        "finding": "In Section 4.1, the manuscript compares computation time ('compute time of A and Wₙ grows fast with the increase of n') between their formula and Mathematica's built-in 'ImplicitRungeKuttaGaussCoefficients'. The manuscript states that 'the calculation of Wₙ is much faster than that of A'. However, it does not report the actual computation times for the Mathematica command, only that it 'takes significantly more time (seconds)'. This is a minor reporting gap; the reader cannot assess the magnitude of the claimed improvement.",
+        "severity": "MINOR",
+        "justification": "Even if the timing comparison were missing, the central methodological point (that an explicit formula exists and can be computed efficiently) is still proven by the symbolic correctness check (Err in Tables 1 and 2). The timing comparison is illustrative but not necessary for the paper's core conclusions. Confirming this missing detail would only add a valuable data point, not change the conclusions."
+      },
+      {
+        "finding": "The manuscript defines 'generalized binomial coefficient' in equation (2.8) but this definition is non-standard and its use is not fully justified beyond the immediate algebraic manipulation. The notation is used to express W_{ij} in a compact form, but it may cause confusion for readers unfamiliar with the formalism.",
+        "severity": "MINOR",
+        "justification": "The paper's proofs do not rely on the properties of this generalized binomial coefficient; it is simply a notational convenience derived from the original expression. The underlying algebra is fully justified through standard elementary symmetric functions and Vandermonde inverses. Confirming that this notation is non-standard would only suggest the authors should add a brief justification or note, not revise any conclusions."
+      },
+      {
+        "finding": "In the discussion of Algorithm 3.1, the manuscript states that the 'computational complexity is 11n² + 12n flops'. However, it does not provide a derivation or breakdown of this flop count. Similarly, for Algorithms 3.2 and 3.3, the stated complexities (e.g., '7n² + 15n', '7n² + 9n') are given without derivation. While these are likely correct given the step-by-step descriptions, the lack of a clear flop analysis is a minor omission.",
+        "severity": "MINOR",
+        "justification": "The claims about O(n²) complexity are plausible and the algorithms are described in sufficient detail for an expert to verify them. The exact constant factors are not critical to the paper's main point (that the algorithms are O(n²) and fast). Confirming that a detailed flop breakdown is missing would not change the conclusions but would be a nice addition for completeness."
+      },
+      {
+        "finding": "The manuscript states (Section 2, proof of Theorem 2.4) 'It is clear that c₀ = (0,0,...,0)ᵀ ∈ ℝⁿ since c₀ = 0'. However, earlier in the paper, c₀ is defined as a scalar (e.g., in the Vandermonde matrix V, the second row starts with c₀, c₁, ...). In the context of (2.17), the intended meaning is that the vector c₀ = [c₀, c₀², ..., c₀ⁿ]ᵀ, which is indeed the zero vector if c₀=0. The phrasing is confusing but the mathematics is correct.",
+        "severity": "MINOR",
+        "justification": "This is a minor ambiguity in notation that does not affect the validity of the proof. A careful reader can infer the intended meaning from the context. Confirming this would require a minor clarification in the text, not a revision of the results."
+      }
+    ]
+  },
+  "reflection_a": {
+    "reflection_notes": "On a second pass, I still think my original review was directionally right in flagging methodological overclaiming, but a few of my severity labels were probably too high. The strongest concern remains the validation strategy: using quadruple precision as a practical reference is common, but by itself it is not enough to support broad claims of 'high accuracy' for potentially ill-conditioned structured problems. That said, this is better characterized as insufficient validation for the strength of the empirical claims, not necessarily a flaw that threatens the core mathematical formula. I therefore still view the numerical-accuracy claims as needing substantial revision/qualification. By contrast, some issues I labeled MAJOR-REVISION are better treated as MINOR because they are derivational/reporting ambiguities unless one can show they actually propagate into incorrect theorem statements or computed results. In particular, the lemma/proof indexing inconsistency is serious enough to require correction, but from the theorem form it looks more like a typographical/proof-traceability problem than a demonstrated mathematical failure. Likewise, the unfair benchmarking claim in Section 4.1 overstates practical significance, but it does not materially alter the paper's central theoretical contribution. So overall: I would still flag for revision, but with a narrower set of truly major issues than I originally listed.",
+    "severity_i_now_upgrade": [],
+    "severity_i_now_downgrade": [
+      "The apparent inconsistency in Lemma 2.1 / derivative-evaluation identity should be downgraded from MAJOR-REVISION to MINOR unless it is shown that the incorrect version is actually used in the proof or algorithms. As currently described, it looks like a serious typographical/proof-reporting inconsistency, but not yet a demonstrated failure of the central theorem.",
+      "The empirical comparison in Section 4.1 between Mathematica's built-in computation of A and symbolic computation of W_n from the explicit formula should be downgraded from MAJOR-REVISION to MINOR. It is an unfair benchmark and overstates the practical conclusion that the inverse is 'much easier to compute,' but it does not threaten the correctness of the explicit formula or the O(n^2) algorithms."
+    ],
+    "findings_i_still_defend": [
+      "Accuracy validation based primarily on treating quadruple-precision output as 'exact' remains MAJOR-REVISION. I still think this is the paper's main methodological weakness: it can support a heuristic comparison, but not strong correctness/accuracy claims for ill-conditioned structured computations.",
+      "The absence of residual/backward-error or condition-aware validation for the identity W = V^{-1}HV remains MAJOR-REVISION. For a numerical linear algebra paper making accuracy claims, this is a substantive omission that could change how strong the conclusions are.",
+      "The stability discussion and blanket conclusion of broad/high accuracy remain MAJOR-REVISION. The paper itself appears to acknowledge cancellation and failure modes; conclusions should therefore be more qualified or supported by sharper analysis.",
+      "Equation-numbering/proof-traceability inconsistencies remain MINOR.",
+      "Conceptual ambiguity about W being singular versus the invertible submatrix W_n remains MINOR.",
+      "Exact flop-count claims without a transparent counting model remain MINOR.",
+      "Restriction/generalizability mismatch between theory for distinct real/complex nodes and algorithms/tests for ordered real nodes remains MINOR."
+    ],
+    "new_errors_noticed": [
+      "From a fresh perspective, the key issue is less 'quadruple precision is invalid' in absolute terms and more that the manuscript appears to conflate reference-computation agreement with demonstrated numerical accuracy. If confirmed in the wording of the conclusions, this should be explicitly criticized as an overclaiming problem.",
+      "If the applications to IRK/BIM rely only on a submatrix W_n, the paper should explicitly separate claims about the full matrix W from claims about W_n. This is not a new severe error, but the distinction may affect how the application theorems are interpreted.",
+      "A useful additional check missing from the manuscript is validation on small-n cases where exact rational/arbitrary-precision symbolic results are feasible and can directly test the closed-form formula and algorithms. I view this as part of the broader validation weakness rather than a separate major error."
+    ]
+  },
+  "reflection_b": {
+    "reflection_notes": "Upon re-examining my original review in light of the other reviewer's assessment, I see that I may have under-weighted some methodological concerns, particularly regarding numerical validation and the fairness of the empirical comparison. My original severity ratings were influenced by a focus on the mathematical derivation's internal consistency, but I now recognize that several issues touch more directly on the paper's central claims of efficiency and accuracy, and thus warrant higher severity. However, I still do not see errors that rise to the level of retraction; all are addressable via revision. I also note one minor reporting gap I missed (the missing derivation for Lemma 2.1's key formula).",
+    "severity_i_now_upgrade": [
+      "Accuracy validation in Section 4.2 based on quadruple-precision as ground truth (upgraded from no finding to MAJOR-REVISION, as it directly undermines accuracy claims without residual checks)",
+      "Empirical comparison in Section 4.1 comparing symbolic computation in different software pathways (upgraded from no finding to MAJOR-REVISION, as it overstates practical advantage)",
+      "Stability discussion acknowledges cancellation but still concludes high accuracy broadly (upgraded from no finding to MAJOR-REVISION, as it overreaches without error bounds)"
+    ],
+    "severity_i_now_downgrade": [
+      "Apparent inconsistency in Lemma 2.1 derivative identity (downgraded from no finding to MINOR, as the OCR confusion is likely explainable and the intended formula is clear from context)",
+      "Equation numbering/citation inconsistency (downgraded from no finding to MINOR, as it's a traceability issue not affecting correctness)"
+    ],
+    "findings_i_still_defend": [
+      "Citation clarity for IRK/BIM references – MINOR (no impact on results)",
+      "Missing actual timing values in Section 4.1 – MINOR (timing comparison is illustrative only)",
+      "Non-standard 'generalized binomial coefficient' notation – MINOR (notational convenience only)",
+      "Missing flop count derivation – MINOR (asymptotic claim is sufficient)",
+      "Ambiguous notation 'c₀' vector vs scalar – MINOR (clear from context)",
+      "Missing derivation for Lemma 2.1 formula (newly noticed) – MINOR (does not invalidate proof, but reporting gap)"
+    ],
+    "new_errors_noticed": [
+      "The manuscript does not provide a derivation or justification for the key formula in Lemma 2.1 (the derivative identity), which is central to Theorem 2.2. This is a reporting gap that could be rectified with a short proof or reference.",
+      "The claim that Algorithms 3.2 and 3.3 avoid overflow/underflow is not supported by any analysis or explicit handling in the pseudocode; this is a missing validation step for practical reliability."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.82,
+    "reasoning": "Both reviewers converge after reflection on a core set of methodological concerns that, while not retraction-worthy, collectively represent significant weaknesses in the paper's empirical validation and the strength of its claimed conclusions. The mathematical derivation itself appears internally consistent (no reviewer identified a proven error in the central formula or theorem statements), but the numerical evidence presented to support claims of 'high accuracy' and 'high efficiency' is methodologically insufficient. Specifically: (1) using quadruple-precision output as ground truth without residual/backward-error analysis or condition-number-aware assessment is inadequate for ill-conditioned structured matrix computations; (2) the stability discussion acknowledges cancellation and algorithm failure at large n yet still draws broad accuracy conclusions; and (3) the empirical comparison between different software pathways overstates practical advantages. These are real methodological issues that could change how strongly the conclusions are supported, warranting major revision. Several additional minor issues (notation, proof traceability, flop-count derivations, scope mismatch) were identified but would not change conclusions.",
+    "findings": [
+      {
+        "finding": "Accuracy validation relies on treating quadruple-precision results as 'exact' ground truth, without residual checks (e.g., ||VW - HV||), backward-error analysis, or condition-number-aware assessment. This is insufficient to support the paper's central claim of 'high accuracy' for potentially ill-conditioned structured matrix computations.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers agree after reflection that this is a substantive methodological gap. Quadruple-precision agreement is a useful heuristic but does not establish correctness or high accuracy for structured problems where catastrophic cancellation can occur. The paper's accuracy conclusions are materially under-supported without proper validation. However, this does not invalidate the closed-form formula itself, only the empirical accuracy claims.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The stability discussion acknowledges cancellation in diagonal terms and failure of Algorithm 3.2 at large n, yet the paper still draws broad conclusions about high accuracy without providing node-dependent error bounds, condition-number analysis, or precision-adaptation recommendations.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers converge on this after reflection. The paper's own numerical results show failure modes, making blanket accuracy claims misleading. Proper qualification or sharper error analysis is needed; otherwise practical conclusions may be unreliable. This is a significant overclaiming problem but does not invalidate the theoretical contribution.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The empirical comparison in Section 4.1 between Mathematica's built-in computation of A and symbolic computation of W_n from the explicit formula is not a fair like-for-like comparison, yet the paper concludes the inverse is 'much easier to compute.'",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "Reviewer A originally flagged this as MAJOR-REVISION, then downgraded to MINOR on reflection, while Reviewer B upgraded it to MAJOR-REVISION on reflection. The concern is legitimate: comparing different software pathways with different internal algorithms does not establish an intrinsic complexity advantage. However, the practical observation is not unreasonable, and the core contribution (explicit formula + O(n²) algorithms) stands independently. On balance, this warrants revision of the claim's framing rather than retraction, placing it at the boundary of MAJOR-REVISION and MINOR. I classify as MAJOR-REVISION because it directly concerns one of the paper's headline conclusions.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Apparent inconsistency in Lemma 2.1's derivative-evaluation identity: one version gives ∏_{k≠j}(c_j−c_k) while another gives ∏_{k≠i,j}(c_j−c_k). This feeds into Theorem 2.2.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "Both reviewers converge after reflection that this is most likely a typographical/OCR artifact rather than a genuine mathematical error, since the theorem statement appears to use the correct form. The paper needs correction for proof traceability, but no demonstrated propagation into incorrect results has been shown.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Exact flop-count claims (e.g., 11n²+12n, 7n²+15n, 7n²+9n) are stated without derivation, transparent counting model, or accounting for overflow-avoidance logic and memory costs.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers agree this is minor. The O(n²) asymptotic claim is plausible and the algorithms are described in enough detail for expert verification. The exact constants are not critical to the paper's main contribution.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Equation numbering/citation inconsistencies in the proof of Theorem 2.2 reference formulas not clearly present in the excerpt, hindering proof verification.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers agree this is a traceability/reporting issue that does not by itself invalidate results.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Conceptual ambiguity around W being singular (as a similarity transform of the nilpotent H) versus the invertible submatrix W_n used in applications to IRK/BIM matrices.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "Likely expositional rather than a correctness issue, but clarification is needed to avoid confusion about what is being inverted in the applications.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Theory is stated for distinct real or complex nodes, but algorithms and numerical tests are restricted to ordered real nodes; the full claimed domain is not validated.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "Scope/generalizability mismatch that does not affect correctness within the tested domain.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Non-standard 'generalized binomial coefficient' notation in equation (2.8) may confuse readers but is algebraically justified as notational convenience.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers agree this is purely a clarity issue with no impact on correctness.",
+        "source": "prover_b",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Missing actual computation time values in Section 4.1 for the Mathematica comparison; only qualitative statements ('takes significantly more time') are provided.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Reporting gap that limits reproducibility of the efficiency comparison but does not affect the core contribution.",
+        "source": "prover_b",
+        "survived_reflection": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 32498,
+    "duration_s": 101.91,
+    "n_api_calls": 16,
+    "cost_usd": 1.0356,
+    "total_input_tokens": 104256,
+    "total_output_tokens": 22917,
+    "calls": [
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 6025,
+        "output_tokens": 961,
+        "cost_usd": 0.00268385,
+        "duration_s": 13.13,
+        "label": "2407.19323v3/b3plusplus/prover_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 10031,
+        "output_tokens": 2608,
+        "cost_usd": 0.346065,
+        "duration_s": 52.03,
+        "label": "2407.18406v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7454,
+        "output_tokens": 2037,
+        "cost_usd": 0.264585,
+        "duration_s": 42.72,
+        "label": "2407.19061v3/b3plusplus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 12294,
+        "output_tokens": 1269,
+        "cost_usd": 0.043425,
+        "duration_s": 25.93,
+        "label": "2408.04316v2/b3plus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 12294,
+        "output_tokens": 1403,
+        "cost_usd": 0.044765,
+        "duration_s": 27.87,
+        "label": "2408.04316v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 11395,
+        "output_tokens": 1172,
+        "cost_usd": 0.00436585,
+        "duration_s": 15.92,
+        "label": "2408.04316v2/b3plus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4863,
+        "output_tokens": 1651,
+        "cost_usd": 0.0286675,
+        "duration_s": 33.07,
+        "label": "2408.16162v2/b3plus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 11395,
+        "output_tokens": 1304,
+        "cost_usd": 0.00451105,
+        "duration_s": 17.91,
+        "label": "2408.04316v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2911,
+        "output_tokens": 842,
+        "cost_usd": 0.0156975,
+        "duration_s": 17.22,
+        "label": "2408.04316v2/b3plus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3025,
+        "output_tokens": 2839,
+        "cost_usd": 0.0359525,
+        "duration_s": 50.94,
+        "label": "2407.19323v3/b3plusplus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4514,
+        "output_tokens": 1319,
+        "cost_usd": 0.0026696800000000002,
+        "duration_s": 16.87,
+        "label": "2408.16162v2/b3plus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2921,
+        "output_tokens": 618,
+        "cost_usd": 0.0014684700000000001,
+        "duration_s": 8.2,
+        "label": "2408.04316v2/b3plus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3068,
+        "output_tokens": 1049,
+        "cost_usd": 0.00198226,
+        "duration_s": 15.05,
+        "label": "2407.19323v3/b3plusplus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3566,
+        "output_tokens": 1185,
+        "cost_usd": 0.020765,
+        "duration_s": 24.59,
+        "label": "2408.16162v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3510,
+        "output_tokens": 776,
+        "cost_usd": 0.0018013000000000003,
+        "duration_s": 10.44,
+        "label": "2408.16162v2/b3plus/reflection_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 4990,
+        "output_tokens": 1884,
+        "cost_usd": 0.21615,
+        "duration_s": 34.64,
+        "label": "2408.04316v2/b3plus/arbiter"
+      }
+    ]
+  }
+}

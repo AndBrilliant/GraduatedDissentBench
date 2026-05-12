@@ -1,0 +1,397 @@
+{
+  "condition": "B3PLUSPLUS",
+  "paper_id": "2402.16847v2",
+  "verdict": "flagged",
+  "confidence": 0.95,
+  "reasoning": "Both reviewers independently identify serious methodological gaps in the manuscript's claimed Õ(n + d_max)-time algorithm. The two most critical issues are: (1) the algorithm's core split operation may be undefined on general instances due to the mismatch between the maintained string length and the required split position (Reviewer A's central point), and (2) the bitwise OR merge operation needed to compute S_j is not supported by the listed dynamic string data structure operations (Reviewer B's central point). Both issues strike at the heart of the paper's main contribution. After careful consideration, I classify the combination of these issues as RETRACTION-WORTHY: the algorithm as described cannot be executed, and the paper's central theorem is therefore unsupported by the method as presented. Neither issue is a mere presentation gap—they represent fundamental algorithmic design deficiencies that cannot be resolved by adding a sentence or two. The multi-machine extension is additionally unsupported but is secondary to the single-machine result. The running-time analysis is also incomplete, but this is downstream of the more fundamental problem that the algorithm itself is not well-defined.",
+  "findings": [
+    {
+      "finding": "The bitwise OR (merge) operation required to compute S_j = L_{j-1} shifted ∪ R_{j-1} is not implementable with the listed dynamic string data structure operations (split, concatenate, make_string). The manuscript defers to Fischer and Wennmann without explaining how OR is performed in the new setting where strings have length d_max+1 rather than P. Split and concatenation alone cannot implement bitwise OR on indicator strings. Without this operation, the algorithm cannot compute its central recurrence.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.88,
+      "justification": "The OR merge is the step that combines the shifted left part with the right part to produce S_j. If this operation cannot be performed within the data structure, the algorithm is fundamentally incomplete. The manuscript's only justification is a reference to prior work that operated in a different setting (strings of length P, not d_max). This is not a missing detail—it is a missing core algorithm. However, there is some possibility that the referenced Fischer-Wennmann machinery does contain a transferable OR implementation that works in this context and the authors simply failed to explain the adaptation. This slight uncertainty prevents full confidence, but the burden of proof is on the manuscript, and it fails to meet it.",
+      "source": "prover_b",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The algorithm's core split step requires splitting x_{S_{j-1}} at position d_j - p_j, but S_{j-1} ⊆ [0..d_{j-1}] and the maintained indicator string may only cover indices up to d_{j-1}. When d_j > d_{j-1} (common since deadlines are sorted non-decreasingly), the split position can exceed the actual string length unless a length-u padding invariant is maintained. The manuscript neither specifies such padding nor analyzes its cost implications.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "This is a genuine algorithmic gap: the split operation is undefined on the represented object for many instances. However, unlike the OR issue, this problem has a plausible fix (maintaining full-length padded strings), and the authors may have intended this without stating it. The fix would require explicit specification and cost analysis, which could change the claimed bounds. Because a natural repair exists, I classify this as MAJOR-REVISION rather than RETRACTION-WORTHY, though it is a serious concern that must be addressed for the result to stand.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The running-time analysis is incomplete. The total number of data structure operations per job is not bounded, the cost of the OR merge operation is unspecified (because the operation itself is unspecified), the initialization and reuse of zero strings is hand-waved, and the persistence/sharing model is not formally established. The claimed Õ(n + d_max) bound is not rigorously justified.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "The time bound is the paper's headline quantitative claim. Without a complete accounting of all operations and their costs, the bound is unsubstantiated. This is downstream of the OR issue (no cost for a non-existent operation), but even setting that aside, the analysis of split/concat costs, zero-string construction, and amortized persistence is insufficiently rigorous. This could change the claimed asymptotics.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The multi-machine extension (Section 4) is presented without any algorithmic detail. No multi-dimensional dynamic string data structure is specified, no operations are defined, no complexity analysis is provided, and the claimed Õ(n + d_max^m) bound is completely unjustified.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers independently flag this as a major gap. The extension is advertised as a contribution but provides no verifiable content. Since it is a secondary result (after the single-machine theorem), it does not independently warrant retraction, but it is a serious unsupported claim that requires either full development or withdrawal.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The correctness of the refined update (splitting into L_{j-1} and R_{j-1}, shifting only L_{j-1}, then merging) is asserted equivalent to the standard Lawler-Moore / Fischer-Wennmann DP transition without a formal proof of equivalence.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.7,
+      "justification": "The paper's contribution is precisely this modified implementation. The equivalence is plausible but not proven. Since the algorithm's correctness depends on exact equivalence, this is a non-trivial proof obligation. However, the equivalence appears straightforward to verify for someone working through the DP carefully, so this is less likely to be fatally wrong than the other issues.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The manuscript contains notation errors: representing sets as S ⊆ [n] instead of subsets of processing time slots [0..d_max], and indexing inconsistencies in Lemma 3.2 (mixing indices i and j in summation).",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "These are exposition/notation errors that do not independently invalidate any claim but contribute to the overall lack of rigor and make the paper harder to verify.",
+      "source": "both",
+      "survived_reflection": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 1,
+    "MAJOR-REVISION": 4,
+    "MINOR": 1
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.98,
+    "reasoning": "The manuscript’s main claimed contribution—an \\u007eO(n + d_max)-time algorithm obtained by a refined implementation of Fischer and Wennmann’s method—is not methodologically supported as written. The central issue is that the proposed implementation relies on splitting the current indicator string at a job-dependent position d_j - p_j, but the maintained strings are claimed to have fixed length u = d_max + 1 while S_{j-1} in general only occupies [0..d_{j-1}]. Since deadlines are sorted nondecreasingly, typically d_j \\u2265 d_{j-1}; thus the split position can exceed the actual length of the current string unless the representation is padded to length u at every step. The paper does not specify or justify such padding, yet its correctness and complexity argument depend on it. In addition, the initialization/zero-string construction cost is misstated, and the extension to multiple machines is asserted without enough detail to validate that the required multidimensional dynamic-string operations and OR/shift implementations preserve the claimed bounds. These are not mere presentation issues: the single-machine omission directly affects whether the algorithm can even be executed as described, undermining the main theorem.",
+    "findings": [
+      {
+        "finding": "The core implementation step is not well-defined: to compute L_{j-1} = S_{j-1} \\u2229 [0..d_j-p_j], the paper says to split x_{S_{j-1}} at position d_j-p_j while representing sets by strings of size u = d_max+1. But the maintained invariant only gives S_{j-1} \\u2286 [0..d_{j-1}], so unless every x_{S_{j-1}} is explicitly padded to length u after each iteration, the split index may exceed the current string length whenever d_j > d_{j-1}. The manuscript neither specifies such padding nor analyzes its effect.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "If this is confirmed, the proposed algorithm cannot be carried out as described for general instances, so the claimed \\u007eO(n+d_max) algorithm is not established. This breaks the paper’s central contribution, not just a peripheral detail."
+      },
+      {
+        "finding": "The initialization cost for constructing 0^u is incorrect/incomplete. The manuscript claims that inserting w=0 and self-concatenating it log u times yields 0^u in O(log^2 u) time. However, make_string(0) is O(1+log s), and each concat is O(log s); with s growing with the total length of stored strings and number of operations, this should be analyzed as O(log u \\u00b7 polylog u), not plainly O(log^2 u) without qualification, and only for special choices of logarithm/base and ignoring dependence on s. More importantly, repeated splitting of the precomputed 0^u to obtain 0^{p_j} also requires careful persistence/reuse accounting that is omitted.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The stated complexity analysis is not rigorous enough to verify the claimed bound. This may be fixable with a correct amortized/persistent accounting, but as written the time bound is insufficiently supported."
+      },
+      {
+        "finding": "The manuscript does not fully define the recurrence/equations (3b)/(3c) it modifies, yet the correctness of the new method depends on exact equivalence to the Lawler–Moore / Fischer–Wennmann DP update. In particular, it asserts that replacing the usual shift-and-trim by splitting into L_{j-1}, R_{j-1} and shifting only L_{j-1} is equivalent, but no formal proof is given.",
+        "severity": "MAJOR-REVISION",
+        "justification": "A proof of equivalence is necessary because the algorithm’s correctness hinges on it. The argument is plausible, but without a complete formal derivation it remains an unsupported methodological step that could alter conclusions if wrong."
+      },
+      {
+        "finding": "The proof of Lemma 3.2 has indexing inconsistencies and relies on a monotonicity argument without clearly distinguishing between newly inserted states into the data structure and set membership in the DP. The summation is written as \\u2211_{i\\in[n]} |\\u007eS_j \\ S_{j-1}|, mixing indices i and j, which suggests the proof may have been transcribed imprecisely.",
+        "severity": "MINOR",
+        "justification": "This appears to be a notation/reporting issue rather than a substantive flaw. It does not by itself invalidate the claim, but it weakens confidence in the proof as presented."
+      },
+      {
+        "finding": "The extension to the multi-machine setting is asserted at too high a level. The manuscript states that one can apply the trimming strategy point-wise on vectors in [0..P]^m and that the 'adapted multi-dimensional dynamic string data structure' remains the same as in Fischer and Wennmann [5], but it does not specify the representation, the supported operations, nor how OR/shift/split generalize while maintaining the claimed \\u007eO(n + d_max^m) bound.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The multi-machine theorem is not adequately justified from the text provided. This may be salvageable with a complete construction, but as written the extension is not methodologically established."
+      },
+      {
+        "finding": "The representation paragraph says 'We represent a set S \\u2286 [n] by its corresponding indicator string x_S \\u2208 {0,1}^u, i.e., i \\u2208 S iff x_S[i]=1.' This is inconsistent with the actual DP states, which are subsets of processing times in [0..u-1], not subsets of jobs [n].",
+        "severity": "MINOR",
+        "justification": "This is a clear exposition/notation error. It likely does not affect the intended algorithm, but it contributes to ambiguity in a correctness-critical part of the manuscript."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "The manuscript claims to achieve a breakthrough Õ(n + d_max)-time algorithm for the classic scheduling problem 1||∑pjUj by a 'refined implementation' of Fischer and Wennmann's algorithm. However, the methodological description is critically incomplete and contains a fundamental flaw in the claimed algorithm's implementation. The core operation of merging sets (bitwise OR of indicator strings) is not supported by the dynamic string data structure operations listed, and the entire multi-machine extension is presented without any algorithmic detail. The central Lemma 3.2 is not algorithmically validated by the text provided. The manuscript reads more like an extended abstract for a talk than a rigorous scientific paper; crucial algorithmic steps are missing, making the claims unverifiable and the method as described unimplementable.",
+    "findings": [
+      {
+        "finding": "The merging operation of sets (bitwise OR of indicator strings) is not supported by the listed dynamic string data structure operations. The text states 'Merging ... can be implemented in the same way as by Fischer and Wennmann [5]' without any adaptation, but Fischer and Wennmann's algorithm operated on strings of length P, not d_max. The manuscript provides no description or citation of how OR can be performed on strings maintained in a split/concatenate-only data structure, and no operation is described to set individual bits in the string. This is not a 'refined implementation' but an entirely different algorithmic requirement that is unaddressed.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The central contribution of the algorithm (the bitwise OR merge) is not implementable with the described data structure operations. Without this operation, the algorithm cannot compute S_j. This is not a minor omission—the entire algorithm hinges on it, and the paper provides no mechanism to accomplish it. Therefore, the claimed result cannot be supported by the data structure as presented."
+      },
+      {
+        "finding": "The algorithm fails to specify how the split point (d_j - p_j) is obtained and how the substrings L_{j-1} and R_{j-1} are actually used after splitting. The text says 'we split x_{S_{j-1}} at position d_j - p_j. Afterward, we can compute ~S_j by shifting x_{L_{j-1}} by p_j positions.' But after split, the data structure returns two new strings; the algorithm must treat L_{j-1} as a string value and feed it into a concat operation. The dynamic string data structure stores strings in a collection X; it is never specified how to retrieve a specific string for use as an operand rather than referencing it.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is a critical implementation detail that is missing. The dynamic string data structure operations (make_string, concat, split) create new strings in the collection but do not inherently support 'using a string as an operand' in a subsequent operation. The algorithm needs to explain how L_{j-1} is identified and passed to concat. Without this, the algorithm is not reproducible."
+      },
+      {
+        "finding": "The multi-machine extension (Section 4) is presented without any algorithmic detail. The text merely states 'we can apply our refined algorithm for the single-machine setting to this setting as well' and 'The adapted multi-dimensional dynamic string data structure remains the same as in Fischer and Wennmann'. However, Fischer and Wennmann's algorithm does not operate on multi-dimensional strings, and no description or citation is provided for a multi-dimensional dynamic string data structure capable of the operations needed. The Lemma 4.1 bound is meaningless without an algorithmic framework to realize it.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The multi-machine result is advertised as a contribution ('Our analysis also extends to the multi-machine setting'), yet the paper provides no algorithm, no data structure, no pseudocode, and no analysis of how the single-machine technique generalizes. The claim is unsupported and unreviewable. If the authors cannot provide the algorithmic details, this portion of the result should be withdrawn."
+      },
+      {
+        "finding": "The manuscript states 'using the dynamic string data structure with string-size u = d_max + 1, we obtain an Õ(n + d_max)-time algorithm' but provides no running time analysis of the data structure operations in terms of n and d_max. The total number of operations (splits, concatenations) per job is not bounded, and the cost of initializing the 0^u string is handwaved as O(log^2 u). There is no accounting for the cost of the OR merge operation (which is not specified). Without a full analysis, the claimed running time is not justified.",
+        "severity": "MAJOR-REVISION",
+        "justification": "A central result of the paper is the running time guarantee. Without a detailed accounting for all operations (including the missing OR merge), the Õ(n + d_max) claim is unsubstantiated. At a minimum, the paper must provide a lemma bounding the total number of data structure operations and their costs."
+      },
+      {
+        "finding": "The manuscript references 'the dynamic string data structure [6, 7]' (references are missing from the manuscript text, only [9,10,11] appear at the end) and 'Fischer and Wennmann [5]' but provides no citation details for these key works. The paper cannot be independently evaluated without access to these references.",
+        "severity": "MINOR",
+        "justification": "This is a reporting deficiency. While the verdict does not depend on the availability of these specific references (the methodological flaws are apparent from the text alone), proper citation would assist reviewers."
+      }
+    ]
+  },
+  "reflection_a": {
+    "defense_for_self": "My strongest defense is that my lone RETRACTION-WORTHY rating targets the one defect that, if confirmed, destroys the paper’s central theorem at the level of executable definition, not merely proof polish or omitted detail. The manuscript’s headline claim is an Õ(n + d_max)-time algorithm for the single-machine problem. That claim depends on a very specific implementation invariant: at each step j, the indicator string for S_{j-1} must support a split at position d_j - p_j. But the manuscript simultaneously says (i) strings represent the current reachable set S_{j-1}, and (ii) by the DP itself S_{j-1} lives only on indices up to d_{j-1}, while deadlines are sorted so typically d_j >= d_{j-1}. Therefore the requested split index can exceed the actual represented domain unless the string is maintained as a length-u object with trailing zeros all the way to d_max. The paper never states that invariant, never explains how it is maintained, and never analyzes its cost consequences. This is not a cosmetic omission. Without that padding invariant, the algorithm as written is literally undefined on generic instances. A theorem whose proof relies on an operation that cannot in general be performed on the maintained object is not merely incomplete; its central conclusion is unsupported.\n\nWhy this is genuinely retraction-worthy rather than over-stated:\n1. The defect strikes the main result, not a side lemma. The claimed refinement over Fischer–Wennmann is exactly the implementation trick of trimming before shifting. If that trick is not executable, the claimed time bound is not established.\n2. The problem is structural, not presentational. One cannot wave this away by saying 'the authors surely meant padding,' because adding such padding is itself an algorithmic invariant with implications for initialization, persistence, split behavior, and total running time. The whole claimed refinement hinges on the representation.\n3. The theorem is not saved by plausibility. Even if there exists some fix, the paper did not prove the theorem it states. Under the provided severity rubric, if the error means the paper’s central conclusions cannot be supported by the method as presented, that is RETRACTION-WORTHY. This fits exactly.\n4. The issue is easily instantiated. Take any instance with d_{j-1} << d_j and p_j small. Then d_j - p_j may be far beyond the end of the currently represented string if it is only stored up to d_{j-1}. The algorithm then asks for split(x_{S_{j-1}}, d_j-p_j) on an object of insufficient length. That is not a missing optimization; it is an invalid operation.\n\nAgainst the other reviewer’s alternative framing: their strongest concern was the missing OR implementation. I did not rate that RETRACTION-WORTHY because the manuscript explicitly says merging can be done as in Fischer and Wennmann, so there is at least a claimed dependence on prior machinery; whether that citation/transfer is adequately adapted is serious, but potentially reparable by exposition or by importing known machinery. By contrast, the split-index defect is intrinsic to this manuscript’s own proposed refinement and cannot be outsourced to prior work. It is the new contribution itself that is broken as written. So my RETRACTION-WORTHY assignment is not merely defensible; it is the cleanest target for that severity.\n\nI also affirm my MAJOR-REVISION assessments as correctly calibrated:\n\nFinding 2 (initialization/zero-string cost): I stand by MAJOR-REVISION because the paper’s complexity accounting is materially under-argued, but this by itself does not prove the main theorem false. The bound may still be salvaged with a careful persistent accounting. The point is that the current analysis is not rigorous enough to verify Õ(n + d_max). That is a real methodological gap capable of changing the claimed asymptotics, hence major, but not yet grounds for saying the result is impossible.\n\nFinding 3 (equivalence of modified recurrence/update): This is MAJOR-REVISION, not minor, because the correctness of the refined algorithm depends on exact equivalence between 'trim-then-shift-only-the-left-part' and the standard Lawler–Moore/Fischer–Wennmann update. The manuscript asserts equivalence without formal derivation. Since the paper’s contribution is precisely this modified implementation, the proof obligation is central. Still, unlike the split-index defect, this is plausibly repairable by a full proof, so major is the right level.\n\nFinding 4 (Lemma 3.2 indexing inconsistency): I keep this as MINOR. The notation slip and imprecise summation do undermine confidence, but they do not independently invalidate the theorem. This is exactly the kind of error one flags without claiming the result collapses.\n\nFinding 5 (multi-machine extension): MAJOR-REVISION remains the right rating. The extension is not methodologically established from the manuscript text; there is no sufficiently specified multidimensional representation, no operational details, and no complexity proof for the claimed Õ(n + d_max^m) bound. But because this is an extension rather than the main single-machine theorem, and because a complete construction might exist, I did not overstate it as retraction-worthy. If anything, this restraint shows my ratings were disciplined.\n\nFinding 6 (set representation says S subseteq [n] instead of time domain): MINOR is correct. It is plainly a notation/exposition error, not the source of the fundamental break.\n\nDefending my most serious assessment against the other reviewer’s framing:\n- The other reviewer focuses on OR/merge as the central unimplemented operation. That is indeed serious, but my RETRACTION-WORTHY point is stronger because it does not depend on uncertain capabilities of the referenced data structure. It uses only the manuscript’s own declared invariants and the monotonicity of deadlines. The contradiction is internal and immediate.\n- Their 'major' framing of the split/use of substrings understates the issue. The problem is not merely that the authors failed to say how one references L_{j-1} after a split. Any reasonable abstract data type can return handles to resulting substrings; that is implementation-detail territory. My point is more basic: in many instances there is no valid split to perform on the represented object. That is not a handle-management omission; it is a failure of algorithm definition.\n- Their criticism that the paper reads like an extended abstract actually reinforces, rather than weakens, my severity logic. A paper may be sketchy yet still have a sound core. Here, the core refinement itself is not soundly specified. That is why one specific finding crosses into RETRACTION-WORTHY while several others stay major.\n\nIn short: my severities are not inflated. I reserved RETRACTION-WORTHY for the one defect that directly prevents execution of the claimed new algorithm and therefore defeats the main theorem. I used MAJOR-REVISION for defects that are serious but potentially repairable with proper proof or analysis, and MINOR for notation/reporting issues. That is exactly the classification the rubric requires.",
+    "severity_i_now_upgrade": [
+      "None. My original distribution was already appropriately aggressive where warranted and restrained elsewhere."
+    ],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      "Finding 1 — RETRACTION-WORTHY: The algorithm’s core split step is undefined on general instances unless a length-u padding invariant is maintained, but that invariant is absent from the manuscript and is essential to both correctness and complexity. This breaks the central single-machine theorem as presented.",
+      "Finding 2 — MAJOR-REVISION: The construction and reuse of 0^u, and the complexity accounting for dynamic-string operations, are analyzed too loosely to justify the stated asymptotic bound. Serious, but potentially fixable with proper amortized analysis.",
+      "Finding 3 — MAJOR-REVISION: The paper’s refined update is asserted equivalent to the standard DP transition without a complete proof. Since correctness depends on this equivalence, the omission is central and could change conclusions, but it is plausibly reparable.",
+      "Finding 4 — MINOR: The indexing/summation inconsistency in Lemma 3.2 weakens confidence but looks like a transcription/notation error rather than an independently theorem-killing flaw.",
+      "Finding 5 — MAJOR-REVISION: The multi-machine extension is claimed without enough representation, algorithmic, or complexity detail to validate the theorem. Unsupported as written, but not necessarily false.",
+      "Finding 6 — MINOR: Saying S subseteq [n] instead of a subset of time indices is an exposition error that contributes to ambiguity but does not itself alter the claimed result."
+    ],
+    "new_errors_noticed": [
+      "The manuscript appears to conflate two different representation invariants: 'string-size u = d_max + 1' and 'current reachable set only over [0..d_j]'. That ambiguity is not just stylistic; it infects every claimed split, shift, and trim cost.",
+      "If full-length padding were intended, the paper also owes an explicit statement of what happens under split at positions beyond the last 1-bit but within the padded zero suffix. The semantics matter because the refinement relies on trailing-zero structure, not merely set membership.",
+      "The complexity discussion seems to ignore that persistence/sharing assumptions of the dynamic-string data structure are doing substantial hidden work. Without an explicit persistence model, repeated derivation of 0^{p_j} and reuse of prior strings are not formally costed.",
+      "For the multi-machine claim, the manuscript does not even specify what the analogue of 'split at d_j - p_j' means geometrically in [0..P]^m, i.e., whether trimming is along one coordinate, total load, or a deadline-induced orthant. This is a deeper gap than mere omitted implementation detail."
+    ]
+  },
+  "reflection_b": {
+    "defense_for_self": "My original severity ratings are robust and necessary because the flaws I identified are not merely presentation issues—they strike at the very core of the claimed algorithmic breakthrough. The first finding (RETRACTION-WORTHY) is not over-stated: the bitwise OR merge operation is absolutely essential for computing S_j, and the manuscript provides no data structure operation that supports it. The dynamic string data structure listed only supports split, concatenate, and substring queries—none of which implement bitwise OR on indicator strings. Claiming 'same as Fischer and Wennmann' is misleading because Fischer and Wennmann worked with strings of length P (the maximum processing time), not d_max, and their operations do not include OR. This is not a missing detail; it is a missing algorithm. Without it, the central recurrence (shifting L_{j-1} and OR-ing with R_{j-1}) is unimplementable. The other reviewer attempts to frame this as an issue of padding or split-point validity, but they miss the far deeper problem: even if padding were handled, there is still no operation to OR two strings in the data structure. My finding is more fundamental and thus warrants retraction. My other findings (MAJOR-REVISION) address crucial gaps: specifying how split results are retrieved and used (Finding 2), the complete absence of algorithmic detail for the multi-machine extension (Finding 3), and the lack of rigorous running-time analysis (Finding 4). These are not minor; they prevent reproducibility and verification. The other reviewer’s focus on padding and initialization costs, while valid, does not invalidate my points but rather complements them. My confidence (0.95) is consistent with a strong but not absolute judgment—this is appropriate for a review requiring reasoned assessment. The other reviewer’s confidence (0.98) is similarly justified but reflects a different emphasis. My severity ratings stand.",
+    "severity_i_now_upgrade": [
+      "Finding 4 (MAJOR-REVISION) should be upgraded to RETRACTION-WORTHY. The absence of any running-time analysis for the non-existent OR operation means the claimed Õ(n + d_max) bound is not just unsubstantiated—it is based on a phantom operation. If the OR cannot be performed, the algorithm cannot achieve any time bound; the claim is vacuous. This is not a matter of incomplete analysis; it is a fundamental impossibility within the stated data structure model. The paper asserts a time bound for an algorithm that does not exist as described. This directly undermines the central theorem, meeting the retraction-worthy criterion: 'the paper's central conclusions cannot be supported by the data as presented.'"
+    ],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      "Finding 1 (RETRACTION-WORTHY): The missing OR operation is a fatal defect. The other reviewer does not address this at all; they focus on padding issues, which are secondary. My finding is more severe because it identifies an operation that the data structure simply cannot perform. No amount of refinement to split/concat can implement bitwise OR. This is a design-level impossibility. Retraction is the correct call.",
+      "Finding 2 (MAJOR-REVISION): The manuscript fails to specify how L_{j-1} is obtained as a string value from the dynamic data structure. The other reviewer’s findings touch on split-point validity but do not address this retrieval issue. My finding remains major: it blocks reproducibility. Even if the OR problem were solved, the algorithm would fail at this step without explicit specification.",
+      "Finding 3 (MAJOR-REVISION): The multi-machine extension is entirely absent in algorithmic detail. The other reviewer independently confirms this with their Finding 5, which also rates it as MAJOR-REVISION. This convergence strengthens my case. The paper claims a result but provides no method, no operations, no complexity analysis. This is not a minor omission; it is a missing contribution.",
+      "Finding 4 (MAJOR-REVISION, now upgraded to RETRACTION-WORTHY per above): The running-time analysis is absent for the missing OR operation. The other reviewer’s Finding 2 notes issues with initialization cost, but that is a smaller problem. The core issue is that the main algorithmic operation (OR) has no cost because it has no implementation. This makes the time bound unsupportable.",
+      "Finding 5 (MINOR): The missing citations are indeed minor. The other reviewer does not contest this. I maintain this rating."
+    ],
+    "new_errors_noticed": [
+      "The manuscript states 'We represent a set S ⊆ [n] by its corresponding indicator string x_S ∈ {0,1}^u' but the DP states are subsets of processing time slots [0..d_max], not subsets of jobs. This error, also noted by the other reviewer (Finding 6), is minor but indicative of sloppy exposition. It does not change my severity ratings but contributes to the overall lack of rigor.",
+      "The paper claims that shifting L_{j-1} by p_j positions is a simple string operation, but shifting a substring within a dynamic string data structure that only supports split and concat would require (a) extracting L_{j-1} as a stand-alone string, (b) creating a zero string of length p_j, and (c) concatenating the zero string before L_{j-1}. The paper does not specify how to obtain or reuse zero strings of arbitrary length for each job, which would incur additional cost unaccounted for in the analysis. This is a further unaddressed cost, strengthening the case for upgrading Finding 4 to retraction-worthy."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "Both reviewers independently identify serious methodological gaps in the manuscript's claimed Õ(n + d_max)-time algorithm. The two most critical issues are: (1) the algorithm's core split operation may be undefined on general instances due to the mismatch between the maintained string length and the required split position (Reviewer A's central point), and (2) the bitwise OR merge operation needed to compute S_j is not supported by the listed dynamic string data structure operations (Reviewer B's central point). Both issues strike at the heart of the paper's main contribution. After careful consideration, I classify the combination of these issues as RETRACTION-WORTHY: the algorithm as described cannot be executed, and the paper's central theorem is therefore unsupported by the method as presented. Neither issue is a mere presentation gap—they represent fundamental algorithmic design deficiencies that cannot be resolved by adding a sentence or two. The multi-machine extension is additionally unsupported but is secondary to the single-machine result. The running-time analysis is also incomplete, but this is downstream of the more fundamental problem that the algorithm itself is not well-defined.",
+    "findings": [
+      {
+        "finding": "The bitwise OR (merge) operation required to compute S_j = L_{j-1} shifted ∪ R_{j-1} is not implementable with the listed dynamic string data structure operations (split, concatenate, make_string). The manuscript defers to Fischer and Wennmann without explaining how OR is performed in the new setting where strings have length d_max+1 rather than P. Split and concatenation alone cannot implement bitwise OR on indicator strings. Without this operation, the algorithm cannot compute its central recurrence.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.88,
+        "justification": "The OR merge is the step that combines the shifted left part with the right part to produce S_j. If this operation cannot be performed within the data structure, the algorithm is fundamentally incomplete. The manuscript's only justification is a reference to prior work that operated in a different setting (strings of length P, not d_max). This is not a missing detail—it is a missing core algorithm. However, there is some possibility that the referenced Fischer-Wennmann machinery does contain a transferable OR implementation that works in this context and the authors simply failed to explain the adaptation. This slight uncertainty prevents full confidence, but the burden of proof is on the manuscript, and it fails to meet it.",
+        "source": "prover_b",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The algorithm's core split step requires splitting x_{S_{j-1}} at position d_j - p_j, but S_{j-1} ⊆ [0..d_{j-1}] and the maintained indicator string may only cover indices up to d_{j-1}. When d_j > d_{j-1} (common since deadlines are sorted non-decreasingly), the split position can exceed the actual string length unless a length-u padding invariant is maintained. The manuscript neither specifies such padding nor analyzes its cost implications.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "This is a genuine algorithmic gap: the split operation is undefined on the represented object for many instances. However, unlike the OR issue, this problem has a plausible fix (maintaining full-length padded strings), and the authors may have intended this without stating it. The fix would require explicit specification and cost analysis, which could change the claimed bounds. Because a natural repair exists, I classify this as MAJOR-REVISION rather than RETRACTION-WORTHY, though it is a serious concern that must be addressed for the result to stand.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The running-time analysis is incomplete. The total number of data structure operations per job is not bounded, the cost of the OR merge operation is unspecified (because the operation itself is unspecified), the initialization and reuse of zero strings is hand-waved, and the persistence/sharing model is not formally established. The claimed Õ(n + d_max) bound is not rigorously justified.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "The time bound is the paper's headline quantitative claim. Without a complete accounting of all operations and their costs, the bound is unsubstantiated. This is downstream of the OR issue (no cost for a non-existent operation), but even setting that aside, the analysis of split/concat costs, zero-string construction, and amortized persistence is insufficiently rigorous. This could change the claimed asymptotics.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The multi-machine extension (Section 4) is presented without any algorithmic detail. No multi-dimensional dynamic string data structure is specified, no operations are defined, no complexity analysis is provided, and the claimed Õ(n + d_max^m) bound is completely unjustified.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers independently flag this as a major gap. The extension is advertised as a contribution but provides no verifiable content. Since it is a secondary result (after the single-machine theorem), it does not independently warrant retraction, but it is a serious unsupported claim that requires either full development or withdrawal.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The correctness of the refined update (splitting into L_{j-1} and R_{j-1}, shifting only L_{j-1}, then merging) is asserted equivalent to the standard Lawler-Moore / Fischer-Wennmann DP transition without a formal proof of equivalence.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.7,
+        "justification": "The paper's contribution is precisely this modified implementation. The equivalence is plausible but not proven. Since the algorithm's correctness depends on exact equivalence, this is a non-trivial proof obligation. However, the equivalence appears straightforward to verify for someone working through the DP carefully, so this is less likely to be fatally wrong than the other issues.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The manuscript contains notation errors: representing sets as S ⊆ [n] instead of subsets of processing time slots [0..d_max], and indexing inconsistencies in Lemma 3.2 (mixing indices i and j in summation).",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "These are exposition/notation errors that do not independently invalidate any claim but contribute to the overall lack of rigor and make the paper harder to verify.",
+        "source": "both",
+        "survived_reflection": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 13002,
+    "duration_s": 129.67,
+    "n_api_calls": 18,
+    "cost_usd": 1.4074,
+    "total_input_tokens": 117505,
+    "total_output_tokens": 29606,
+    "calls": [
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 5103,
+        "output_tokens": 2080,
+        "cost_usd": 0.232545,
+        "duration_s": 41.94,
+        "label": "2402.16847v2/b3plus/arbiter"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3813,
+        "output_tokens": 1528,
+        "cost_usd": 0.0027103100000000005,
+        "duration_s": 23.11,
+        "label": "2402.14546v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 9758,
+        "output_tokens": 3312,
+        "cost_usd": 0.39477,
+        "duration_s": 65.46,
+        "label": "2402.10318v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4173,
+        "output_tokens": 1250,
+        "cost_usd": 0.0229325,
+        "duration_s": 22.22,
+        "label": "2402.16847v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3998,
+        "output_tokens": 1256,
+        "cost_usd": 0.0024610600000000006,
+        "duration_s": 15.71,
+        "label": "2402.16847v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 10451,
+        "output_tokens": 1721,
+        "cost_usd": 0.0433375,
+        "duration_s": 33.88,
+        "label": "2403.01085v2/b3plus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 10451,
+        "output_tokens": 1765,
+        "cost_usd": 0.0437775,
+        "duration_s": 34.34,
+        "label": "2403.01085v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 9402,
+        "output_tokens": 2350,
+        "cost_usd": 0.31728,
+        "duration_s": 51.85,
+        "label": "2402.14546v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 10151,
+        "output_tokens": 2348,
+        "cost_usd": 0.00532357,
+        "duration_s": 32.23,
+        "label": "2403.01085v2/b3plus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 10151,
+        "output_tokens": 1410,
+        "cost_usd": 0.00429177,
+        "duration_s": 20.21,
+        "label": "2403.01085v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2938,
+        "output_tokens": 2041,
+        "cost_usd": 0.027755,
+        "duration_s": 39.92,
+        "label": "2402.16847v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 7579,
+        "output_tokens": 1236,
+        "cost_usd": 0.0313075,
+        "duration_s": 26.19,
+        "label": "2403.06831v2/b3plus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2982,
+        "output_tokens": 1214,
+        "cost_usd": 0.00214054,
+        "duration_s": 15.37,
+        "label": "2402.16847v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4551,
+        "output_tokens": 1077,
+        "cost_usd": 0.0221475,
+        "duration_s": 25.37,
+        "label": "2403.01085v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 7601,
+        "output_tokens": 1153,
+        "cost_usd": 0.00332057,
+        "duration_s": 14.71,
+        "label": "2403.06831v2/b3plus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4599,
+        "output_tokens": 1093,
+        "cost_usd": 0.0024440300000000002,
+        "duration_s": 14.01,
+        "label": "2403.01085v2/b3plus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2881,
+        "output_tokens": 1078,
+        "cost_usd": 0.0179825,
+        "duration_s": 16.79,
+        "label": "2403.06831v2/b3plus/reflection_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 6923,
+        "output_tokens": 1694,
+        "cost_usd": 0.230895,
+        "duration_s": 36.45,
+        "label": "2402.16847v2/b3plusplus/arbiter"
+      }
+    ]
+  }
+}

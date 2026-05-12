@@ -1,0 +1,412 @@
+{
+  "condition": "B3PLUS",
+  "paper_id": "2401.09543v2",
+  "verdict": "flagged",
+  "confidence": 0.96,
+  "reasoning": "Both reviewers independently identified two critical breakpoints in the proof of the main theorem — the invalidity of Claim 1 (trivial YES when |C1| >= 4k) and the broken equivalence argument in Claim 7 — and after reflection both converged on classifying these as RETRACTION-WORTHY. The proof pipeline has no valid chain of implications from the stated claims to the central conclusion. Multiple additional gaps (unproven linear-forest structure, incomplete topological arguments, sketchy Claim 5) compound the problem but are individually more likely repairable. The central result — existence of a linear kernel for ISR-TJ on planar graphs — is not supported by the arguments as written.",
+  "findings": [
+    {
+      "finding": "Claim 1 is invalid as stated: the argument that |C1| >= 4k yields a trivial YES instance does not produce a valid token-jumping sequence. The 4-coloring gives an independent set of size k, but moving tokens from Is (or It) to that set one at a time is not shown to preserve independence at each step. No ordering, matching, or Hall-type argument is provided. This eliminates an entire branch of the main proof.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.93,
+      "justification": "Both reviewers flagged this. Reviewer A rated it RETRACTION-WORTHY from the start; Reviewer B upgraded it to RETRACTION-WORTHY on reflection. The argument as written assumes simultaneous or unconstrained moves, which token jumping does not permit. Since this branch is used to reduce to |C1| < 4k, its failure means the kernel construction is not justified for all instances.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The final equivalence/correctness argument (Claim 7) is broken. It (1) cites 'Claim 4' (a size bound) where it needs a reconfiguration result (presumably Claim 5), (2) asserts without proof that G[Js ∪ Jt ∪ Jm] is a linear forest, and (3) provides only a heuristic sketch of how reconfiguration sequences in G can be simulated in G'. Without a valid equivalence proof, kernel correctness is unestablished.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.95,
+      "justification": "Both reviewers independently identified this as a fundamental break. The mis-citation is not cosmetic — it reveals a missing logical link. The unproven linear-forest assertion is load-bearing: the entire rerouting argument depends on it. Reviewer A rated RETRACTION-WORTHY throughout; Reviewer B rated RETRACTION-WORTHY and strengthened the justification on reflection.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Claim 5 (universal reconfigurability in linear forests via at most 2k token jumps) is only sketched and not rigorously proven. The sketch does not verify that each intermediate configuration is independent across all components, nor that the canonical-form procedure works for all path lengths and token distributions.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers agree this is plausible but unproven. Reviewer A classified as MAJOR-REVISION; Reviewer B added it as a new finding at MAJOR-REVISION on reflection. The claim is used as a black box in the final argument. If false, the kernel reduction fails; if true, a full proof is needed but likely obtainable.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Claim 3 (non-adjacency of interior vertices from different X-pairs) relies on topological/Jordan-curve arguments that are incomplete. The proof assumes simple disjoint cycles and nesting properties without establishing that the embedding yields such structures, especially when Y1 and Y2 may share a vertex.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers initially considered RETRACTION-WORTHY but both downgraded to MAJOR-REVISION on reflection, agreeing that the gap is serious but likely repairable with a rigorous planar embedding argument. No concrete counterexample was produced.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The bound |C3| = O(k) via Claim 2 is insufficiently justified. The correspondence between sets Y with |Y| >= 3 and faces of a plane graph is only informally described, injectivity is not demonstrated, and the K3,3-freeness argument for |CY| <= 2 omits key steps.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Both reviewers flagged this as a genuine gap. The intended argument is plausible but compressed beyond verifiability. If the bound fails, the linear kernel size claim is unsupported, but the argument is likely repairable.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The assertion that each G[CY] is a linear forest (vertices have edges only to predecessors/successors in the ordering) is stated without proof. The recursive outer-face ordering does not by itself establish that no edge skips over vertices in the order; a noncrossing argument is needed.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Reviewer A flagged this as MAJOR-REVISION. The linear-forest structure is used repeatedly in size bounds and reconfiguration arguments. The claim is plausible for planar graphs but requires a noncrossing proof.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The bound on |∪_{Y∈P} CY| in Claim 4 uses '2α(H) >= |V(H)|' for linear forests, but the union over different CY is implicitly treated as a disjoint union, and the linear-forest structure of the union graph is not established (depends on unproven Claim 3 and linear-forest assertion).",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "Reviewer B flagged this. The chain of inequalities for the 40k bound depends on multiple unproven upstream claims. If those are repaired, this step likely follows; it is not independently broken.",
+      "source": "prover_b",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Numbering and logical consistency problems around Claims 4–7 (e.g., 'by Claim 4' where Claim 5 is meant, no clearly labeled Claim 6). These obscure which propositions support which conclusions.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers noted this. Reviewer A classified as MINOR; Reviewer B folded it into the larger Claim 7 issue. As a standalone finding it is a presentation problem, but it contributes to the ambiguity that enables the logical breaks above.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The Js construction is ambiguously phrased, conflating properties of Y-pairs with properties of vertices in CY. The kernel construction is not specified algorithmically enough to verify correctness or computability.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Reviewer A flagged as MINOR. Likely repairable by rewriting, but as stated the kernel construction cannot be fully reconstructed.",
+      "source": "prover_a",
+      "survived_reflection": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 2,
+    "MAJOR-REVISION": 5,
+    "MINOR": 2
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.98,
+    "reasoning": "The manuscript’s main theorem is not methodologically supported by the proof as written. Several core claims used to establish the linear kernel are either unproved, incorrectly justified, or invoked with the wrong numbering/logic. Most seriously, the final equivalence argument relies on constructing a reconfiguration inside a set asserted to be a linear forest, but the paper does not establish that structure for the retained set, and it cites the wrong claim for the needed reconfiguration property. In addition, Claim 1’s ‘trivially YES’ argument is not valid as stated because it assumes token moves into a size-k independent set in C1 without guaranteeing enough currently legal target vertices at each step. Since these flaws occur in the kernel-correctness proof itself, the central conclusion is currently unsupported.",
+    "findings": [
+      {
+        "finding": "Claim 1 is invalid as stated: from |C1| >= 4k the paper derives an independent set Im of size k inside C1 and then claims one can move tokens from Is to Im by first moving each token with a neighbor in Im to such a neighbor, then greedily moving the rest. This does not establish that every intermediate set is independent. In particular, if v in Is has no neighbor in Im, then moving its token directly to an unoccupied w in Im can be illegal because w may be adjacent to other tokens still remaining on Is. The argument lacks an ordering or Hall-type matching guaranteeing enough currently legal destinations at each step.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "If this claim fails, the proof cannot reduce to the case |C1|<4k, and the kernel bound may collapse. This is not a peripheral issue: Claim 1 is a foundational branch in the main theorem proof."
+      },
+      {
+        "finding": "The final correctness argument (Claim 7) depends on the assertion that G[Js ∪ Jt ∪ Jm] is a linear forest and then invokes 'by Claim 4' to conclude the answer is YES. But Claim 4 is a size bound, not a reconfiguration theorem; the relevant reconfiguration statement is Claim 5. More importantly, the paper never proves that G[Js ∪ Jt ∪ Jm] is a linear forest. Claim 3 only controls edges between interior vertices from distinct X-pairs, and the construction of Js and Jt explicitly includes endpoints/leftmost/rightmost vertices from many classes, which may have adjacencies through X or within classes. Thus the crucial structure needed for the final YES-certificate is neither established nor correctly cited.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This directly breaks the proof that the reduced instance is equivalent to the original. Without a valid argument that the retained graph region admits universal reconfiguration, kernel correctness is unproven and the central theorem is unsupported."
+      },
+      {
+        "finding": "Claim 5 is only a proof sketch and is insufficiently justified for the role it plays. It states that in every linear forest, every independent set of size k can be reconfigured to every other in at most 2k token jumps, via a canonical form. The sketch does not verify that each jump preserves independence globally across components, nor that the proposed canonical filling process works for all path lengths and token distributions under token jumping. Since this claim is used as a black-box engine in the final argument, a full proof is needed.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The claim is plausible, but as written it is not rigorously established. If a corrected proof exists, conclusions may survive; if not, the final equivalence proof fails."
+      },
+      {
+        "finding": "Claim 3’s proof is topologically under-argued. It assumes that the 4-cycles Ci = y_i' z_i^ℓ y_i'' z_i^r define regions Ri with the property that any interior vertex z_i lies 'inside Ci', and that if one region is nested in the other then one chosen interior vertex lies outside the other cycle. This relies on Jordan-curve behavior and non-self-intersection properties not established, especially when Y1 and Y2 may share a vertex and when the relevant edges/embeddings are not shown to produce simple cycle boundaries. The conclusion z1z2 notin E(G) may be true, but the proof given is incomplete.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This claim underpins the independence between different pair-classes and feeds later arguments about linear-forest structure and independent-set construction. A repaired planar-topology proof might save the result, but the current one is inadequate."
+      },
+      {
+        "finding": "The proof of Claim 2 is too compressed to verify correctness. The correspondence between subsets Y with |Y|>=3 and faces of a plane graph GX is only informally described ('each such set Y corresponds to a face'), and injectivity is not demonstrated. It is also not fully justified that each CY has size at most 2 merely from K3,3-freeness: one must show that three vertices with the same neighborhood Y, where |Y|>=3, indeed create a K3,3 subdivision/subgraph on appropriate chosen neighbors. The intended argument may be correct, but key steps are omitted.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This affects the bound |C3|=O(k), one of the three main pieces of the kernel size analysis. If the bound or mapping is wrong, the linear kernel proof may fail."
+      },
+      {
+        "finding": "There is a numbering and logical consistency problem around Claims 4–7. The manuscript refers to 'Claim 6' for the 67k bound, but no Claim 6 is clearly presented; later it says 'by Claim 4 the answer ... is YES' when Claim 4 is not a reconfiguration statement. These are not mere cosmetic issues because they obscure which propositions are actually being used and whether the dependencies are valid.",
+        "severity": "MINOR",
+        "justification": "This alone would not invalidate the theorem, but it strongly suggests the proof has not been checked carefully and contributes to ambiguity in critical logical steps."
+      },
+      {
+        "finding": "The statement 'for each Y in P, G[CY] is a linear forest, since each z in CY has edges only to (possibly) its predecessor and/or successor in the linear order' is asserted without proof. The recursive outer-face ordering does not by itself establish that no edge can skip over another vertex in that order. A noncrossing argument is needed.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This structural claim is used repeatedly in the size bounds and in later reconfiguration arguments. If false, multiple downstream claims break; if true, it needs proof."
+      },
+      {
+        "finding": "In the construction and analysis of Js, the text says 'include, for all Y in P1, each vertex in CY such that Is contains at most one vertex of Y, up to the point...' This is ambiguously phrased and appears to conflate a property of Y with a property of vertices in CY. The resulting set-building process is not specified algorithmically enough to verify correctness or kernel computability.",
+        "severity": "MINOR",
+        "justification": "Likely repairable by rewriting, but as stated the kernel construction is hard to reconstruct and check."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.92,
+    "reasoning": "The manuscript contains several serious methodological flaws that undermine the claimed result of a linear kernel for the independent set reconfiguration problem under token jumping on planar graphs. The proof relies on unsubstantiated claims about planarity-induced ordering, unsupported combinatorial bounds, non-sequitur deductions about equivalence of instances, and a critical gap in the handling of the 'trivial YES' case that does not follow from standard results. These issues collectively mean the central conclusion — that a linear kernel exists — is not supported by the arguments presented.",
+    "findings": [
+      {
+        "finding": "The argument that |C_3| = O(k) via a claimed plane graph construction is insufficiently justified and likely flawed. The claim that 'the number of sets Y with |Y|>=3 and C_Y nonempty is less than 2|X|' is not properly derived; the attempted embedding argument is incomplete and the bound on faces does not directly bound the number of such Y in the original graph. The step 'assign the resulting newly created face to Y' is vague, and the conclusion that |C_Y| ≤ 2 for all such Y because G is K_3,3-free is unproven in context.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If this bound is incorrect, the kernel size might not be O(k), undermining the linear kernel claim."
+      },
+      {
+        "finding": "Claim 1 (trivial YES when |C_1| >= 4k) is not convincingly supported. While planar graphs are 4-colorable, the coloring partitions vertices into independent sets, but there is no guarantee that an independent set of size k from that partition can be reached via valid token jumps from I_s and I_t. The description 'move the token on v to some such w_v' assumes a perfect matching between I_s and the chosen independent set, which is not argued. Additionally, simultaneous moves are not allowed in token jumping, and no sequence of single jumps is provided.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This claim is used to reduce to the case |C_1| < 4k. If it is false, the kernel construction may not cover all instances, potentially invalidating the overall result."
+      },
+      {
+        "finding": "The linear ordering of C_Y for each X-pair Y is not rigorously defined or justified. The description uses embedding arguments that assume properties (e.g., outer face contains exactly two vertices of C_Y) that are not proven for arbitrary planar embeddings of the whole graph. The recursive deletion argument is not clearly tied to the original embedding, and the claim that the order is linear is asserted without proof.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The entire later argument about interior vertices (N^{Int}) and Claim 3 depends on this ordering. If the ordering does not exist or has multiple components, subsequent bounds and equivalence claims fail."
+      },
+      {
+        "finding": "Claim 3 (non-adjacency of interior vertices from different pairs) is insufficiently justified. The reasoning about cycles C_i and regions assumes that the embedding yields simple disjoint cycles, but the boundaries may not be simple closed curves in the plane due to crossings or degenerate cases, and the claim that |Y_1 ∩ Y_2| ≤ 1 does not guarantee the topological separation described. The conclusion that z_1z_2 is not an edge does not follow from the given geometric argument.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "If Claim 3 is false, then the independence properties used later (e.g., in forming J_s, J_t, and the equivalence proof) are unsubstantiated, and the kernel construction collapses."
+      },
+      {
+        "finding": "The bound on |∪_{Y∈P} C_Y| in Claim 4 uses the inequality '2α(H) ≥ |V(H)|' for linear forests, but this holds only if H is a disjoint union of paths (linear forest). The manuscript implicitly treats the union over different Y as a disjoint union, but vertices from different C_Y may be adjacent (Claim 3 attempts to address this but is unproven). Moreover, the calculation that |∪_{Y∈P_Big} N^{Int}(Y)| ≤ 2(k-1) assumes the union has no independent set of size k, but the relationship to the bound is not properly derived.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The kernel size bound of 40k relies on this chain of inequalities. If broken, the claimed O(k) size is unsupported."
+      },
+      {
+        "finding": "The construction of G' (deleting vertices from ∪_{Y∈P_Big} N^{Int}(Y) except J_m ∪ J_s ∪ J_t) and the equivalence proof (Claim 7) are vague and not logically complete. The proof attempts to handle the case where σ uses a vertex not in G' by constructing alternative paths using J_m, J_s, J_t, but the steps are not shown to preserve the token-jumping constraints. For example, moving tokens from I_s to J_s ∪ J_m is described heuristically but no valid sequence is given, and the induction argument in the later part is incomplete (e.g., it assumes existence of specific non-adjacent pairs in J_m without ensuring they are not adjacent to other tokens).",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The central claim of equivalence between G and G' is unproven. Without a valid reduction, the linear kernel theorem is not established."
+      },
+      {
+        "finding": "The paper contains multiple non-sequiturs and gaps in reasoning, such as 'by Claim 4 the answer to ISR-TJ(G', I_s, I_t) is YES' where Claim 4 does not state that, and the assumption that G[J_s ∪ J_t ∪ J_m] is a linear forest is not justified. These make the proof unreliable as a whole.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The argument construction is fragmented and contains leaps that invalidate the logical flow; the paper's central result cannot be supported."
+      }
+    ]
+  },
+  "reflection_a": {
+    "reflection_notes": "On a second pass, I still think the manuscript’s core problem is that the kernel-correctness proof is not presently established. My original review correctly identified two central breakpoints: the unsupported 'trivially YES' branch (Claim 1) and the final equivalence step (Claim 7). Those are the places where, if the arguments are wrong, the main theorem is not proved. I do think I may have been somewhat too aggressive in one place: the criticism of Claim 3 as itself retraction-worthy. The topological proof given is definitely incomplete/under-argued, but incompleteness there does not by itself show the central theorem is impossible to rescue; it is better classified as a major revision issue unless one can produce a concrete counterexample. Similarly, the sketchiness of Claim 5 is serious, but more naturally a major-revision problem unless the claim is actually false. I continue to regard the final equivalence argument as retraction-worthy because, as written, it invokes the wrong claim and relies on an unproved structural property that is essential to correctness. I also continue to regard Claim 1 as retraction-worthy because it is used to discharge an entire branch of instances and the current argument does not validly produce a token-jumping sequence. In short: one downgrade for overstatement, otherwise my original severity calibration was mostly appropriate.",
+    "severity_i_now_upgrade": [],
+    "severity_i_now_downgrade": [
+      "Claim 3’s proof is topologically under-argued: downgrade from RETRACTION-WORTHY to MAJOR-REVISION. The proof is incomplete and important, but absent a concrete counterexample this is better viewed as a serious gap that may be repairable rather than a definitive collapse of the theorem by itself."
+    ],
+    "findings_i_still_defend": [
+      "Claim 1 is invalid as stated — RETRACTION-WORTHY. This is not just exposition; the argument as written does not establish a valid token-jumping sequence to the chosen independent set, yet it is used to eliminate the |C1| >= 4k case entirely.",
+      "The final correctness/equivalence argument (Claim 7) is broken — RETRACTION-WORTHY. It cites the wrong claim, depends on an unproved assertion that the relevant induced subgraph is a linear forest, and that assertion is crucial to showing the reduced instance is equivalent to the original.",
+      "Claim 5 is insufficiently justified — MAJOR-REVISION. Plausible, but too sketchy for the load it bears in the proof.",
+      "Claim 2 is too compressed to verify and may hide a real gap in the |C3| bound — MAJOR-REVISION.",
+      "Numbering/logical consistency problems around Claims 4–7 — MINOR. Not decisive alone, but symptomatic and contributes to ambiguity in the proof dependencies.",
+      "The assertion that each G[CY] is a linear forest is unproved — MAJOR-REVISION.",
+      "The Js construction is ambiguously specified — MINOR."
+    ],
+    "new_errors_noticed": [
+      "There is a cumulative dependency problem: several later bounds and correctness steps rely simultaneously on (i) each G[CY] being a linear forest, (ii) Claim 3-style nonadjacency across classes, and (iii) Claim 5’s universal reconfigurability for linear forests. Because all three are either unproved or underproved, the manuscript does not merely have isolated local gaps; the main proof pipeline lacks a fully established chain of implications.",
+      "The paper appears to conflate two distinct tasks in the final reduction proof: bounding the size of the retained vertex set and proving reconfiguration equivalence. Even if the size bound were correct, the correctness argument needs a fully explicit simulation/shortcut argument for sequences using deleted vertices. That simulation is not actually supplied.",
+      "A fresh concern is that the proof repeatedly argues from the existence of large independent subsets inside certain regions to reachability under token jumping, but existence of a target independent set and reachability to it are materially different claims. This conceptual slippage occurs not only in Claim 1 but also in later heuristic rerouting arguments. I would not add this as a wholly separate headline finding, but it reinforces the severity of the kernel-correctness issues."
+    ]
+  },
+  "reflection_b": {
+    "reflection_notes": "After comparing my original review with the second reviewer's analysis, I have reconsidered each finding carefully. I notice that my original severity ratings were calibrated defensively against the extreme 'RETRACTION-WORTHY' label, but the provided definition requires that label when the error fundamentally breaks the central conclusion. The second reviewer correctly identified that Claim 1 and the final equivalence argument (Claim 7) are not just fixable gaps but actual logical breaks that directly invalidate the proof as written. My original ratings of 'MAJOR-REVISION' for those were under-rated given the definition. Conversely, the ordering argument (finding 3) and the bound on C_3 (finding 1) might be salvageable with significant rewriting, so 'MAJOR-REVISION' remains appropriate. I also failed to flag the critical mis-citation ('by Claim 4' instead of 'Claim 5') as a separate RETRACTION-WORTHY error in my original assessment. I am now upgrading two findings and downgrading one.",
+    "severity_i_now_upgrade": [
+      "Finding 2 (Claim 1 trivial YES condition): Upgrade from MAJOR-REVISION to RETRACTION-WORTHY. The second reviewer correctly notes that the argument lacks a valid sequence of legal token jumps; it assumes a simultaneous matching that token jumping does not permit. This is not just a missing detail—it is a fundamental flaw in a branching condition of the main theorem proof.",
+      "Finding 6 (Claim 7 equivalence proof): Upgrade from RETRACTION-WORTHY to RETRACTION-WORTHY (same severity, but I now more strongly justify it). The second reviewer's point about mis-citing Claim 4 instead of Claim 5, plus the unproven claim that G[Js∪Jt∪Jm] is a linear forest, shows this is not merely a vague proof but an unsupported assertion. This directly breaks kernel correctness."
+    ],
+    "severity_i_now_downgrade": [
+      "Finding 4 (Claim 3 non-adjacency of interior vertices): Downgrade from RETRACTION-WORTHY to MAJOR-REVISION. The second reviewer also calls this 'MAJOR-REVISION', and I now agree. While the topological argument is incomplete, it is plausible that a rigorous planar embedding argument could fix it. The error does not definitively break the paper if repaired—it is a gap, not a logical impossibility."
+    ],
+    "findings_i_still_defend": [
+      "Finding 1 (|C_3| = O(k) bound): Still rate as MAJOR-REVISION. The second reviewer agrees this is insufficiently justified. It is a methodological concern that could change conclusions but is not fundamentally broken.",
+      "Finding 5 (bound on |∪_{Y∈P} C_Y|): Still rate as MAJOR-REVISION. Both reviews note the unproven linear-forest structure and misapplication of inequalities. This is a genuine gap, but a corrected combinatorial bound might exist.",
+      "Finding 7 (non-sequiturs, e.g., 'by Claim 4'): Downgraded implicitly—see below. I now see this as part of a larger RETRACTION-WORTHY pattern in finding 6, not a standalone flaw."
+    ],
+    "new_errors_noticed": [
+      "Finding 8 (NEW - Mis-citation of Claim 4 as a reconfiguration statement): The manuscript says 'by Claim 4 the answer to ISR-TJ(G', I_s, I_t) is YES', but Claim 4 is a size bound. This is not a minor typo; it signals that the proof's logical chain is broken. This should have been flagged as RETRACTION-WORTHY in my original review, as it indicates the author does not have the correct proposition to support the conclusion.",
+      "Finding 9 (NEW - Claim 5 is invoked as a black box without proof): The second reviewer correctly notes that Claim 5 (reconfiguration in linear forests) is only sketched. This is a MAJOR-REVISION finding I missed: the final argument depends on this claim, but it is not proven. If Claim 5 is false, the kernel reduction fails. I should have flagged this."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.96,
+    "reasoning": "Both reviewers independently identified two critical breakpoints in the proof of the main theorem — the invalidity of Claim 1 (trivial YES when |C1| >= 4k) and the broken equivalence argument in Claim 7 — and after reflection both converged on classifying these as RETRACTION-WORTHY. The proof pipeline has no valid chain of implications from the stated claims to the central conclusion. Multiple additional gaps (unproven linear-forest structure, incomplete topological arguments, sketchy Claim 5) compound the problem but are individually more likely repairable. The central result — existence of a linear kernel for ISR-TJ on planar graphs — is not supported by the arguments as written.",
+    "findings": [
+      {
+        "finding": "Claim 1 is invalid as stated: the argument that |C1| >= 4k yields a trivial YES instance does not produce a valid token-jumping sequence. The 4-coloring gives an independent set of size k, but moving tokens from Is (or It) to that set one at a time is not shown to preserve independence at each step. No ordering, matching, or Hall-type argument is provided. This eliminates an entire branch of the main proof.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.93,
+        "justification": "Both reviewers flagged this. Reviewer A rated it RETRACTION-WORTHY from the start; Reviewer B upgraded it to RETRACTION-WORTHY on reflection. The argument as written assumes simultaneous or unconstrained moves, which token jumping does not permit. Since this branch is used to reduce to |C1| < 4k, its failure means the kernel construction is not justified for all instances.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The final equivalence/correctness argument (Claim 7) is broken. It (1) cites 'Claim 4' (a size bound) where it needs a reconfiguration result (presumably Claim 5), (2) asserts without proof that G[Js ∪ Jt ∪ Jm] is a linear forest, and (3) provides only a heuristic sketch of how reconfiguration sequences in G can be simulated in G'. Without a valid equivalence proof, kernel correctness is unestablished.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.95,
+        "justification": "Both reviewers independently identified this as a fundamental break. The mis-citation is not cosmetic — it reveals a missing logical link. The unproven linear-forest assertion is load-bearing: the entire rerouting argument depends on it. Reviewer A rated RETRACTION-WORTHY throughout; Reviewer B rated RETRACTION-WORTHY and strengthened the justification on reflection.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Claim 5 (universal reconfigurability in linear forests via at most 2k token jumps) is only sketched and not rigorously proven. The sketch does not verify that each intermediate configuration is independent across all components, nor that the canonical-form procedure works for all path lengths and token distributions.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers agree this is plausible but unproven. Reviewer A classified as MAJOR-REVISION; Reviewer B added it as a new finding at MAJOR-REVISION on reflection. The claim is used as a black box in the final argument. If false, the kernel reduction fails; if true, a full proof is needed but likely obtainable.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Claim 3 (non-adjacency of interior vertices from different X-pairs) relies on topological/Jordan-curve arguments that are incomplete. The proof assumes simple disjoint cycles and nesting properties without establishing that the embedding yields such structures, especially when Y1 and Y2 may share a vertex.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers initially considered RETRACTION-WORTHY but both downgraded to MAJOR-REVISION on reflection, agreeing that the gap is serious but likely repairable with a rigorous planar embedding argument. No concrete counterexample was produced.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The bound |C3| = O(k) via Claim 2 is insufficiently justified. The correspondence between sets Y with |Y| >= 3 and faces of a plane graph is only informally described, injectivity is not demonstrated, and the K3,3-freeness argument for |CY| <= 2 omits key steps.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Both reviewers flagged this as a genuine gap. The intended argument is plausible but compressed beyond verifiability. If the bound fails, the linear kernel size claim is unsupported, but the argument is likely repairable.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The assertion that each G[CY] is a linear forest (vertices have edges only to predecessors/successors in the ordering) is stated without proof. The recursive outer-face ordering does not by itself establish that no edge skips over vertices in the order; a noncrossing argument is needed.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Reviewer A flagged this as MAJOR-REVISION. The linear-forest structure is used repeatedly in size bounds and reconfiguration arguments. The claim is plausible for planar graphs but requires a noncrossing proof.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The bound on |∪_{Y∈P} CY| in Claim 4 uses '2α(H) >= |V(H)|' for linear forests, but the union over different CY is implicitly treated as a disjoint union, and the linear-forest structure of the union graph is not established (depends on unproven Claim 3 and linear-forest assertion).",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "Reviewer B flagged this. The chain of inequalities for the 40k bound depends on multiple unproven upstream claims. If those are repaired, this step likely follows; it is not independently broken.",
+        "source": "prover_b",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Numbering and logical consistency problems around Claims 4–7 (e.g., 'by Claim 4' where Claim 5 is meant, no clearly labeled Claim 6). These obscure which propositions support which conclusions.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers noted this. Reviewer A classified as MINOR; Reviewer B folded it into the larger Claim 7 issue. As a standalone finding it is a presentation problem, but it contributes to the ambiguity that enables the logical breaks above.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The Js construction is ambiguously phrased, conflating properties of Y-pairs with properties of vertices in CY. The kernel construction is not specified algorithmically enough to verify correctness or computability.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Reviewer A flagged as MINOR. Likely repairable by rewriting, but as stated the kernel construction cannot be fully reconstructed.",
+        "source": "prover_a",
+        "survived_reflection": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 16501,
+    "duration_s": 116.66,
+    "n_api_calls": 12,
+    "cost_usd": 1.0105,
+    "total_input_tokens": 64029,
+    "total_output_tokens": 20998,
+    "calls": [
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4442,
+        "output_tokens": 1717,
+        "cost_usd": 0.00308804,
+        "duration_s": 21.62,
+        "label": "10.5539_jsd.v17n6p137/b3plusplus/reflection_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 5861,
+        "output_tokens": 1978,
+        "cost_usd": 0.236265,
+        "duration_s": 41.92,
+        "label": "2401.06455/b3plus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 6004,
+        "output_tokens": 1489,
+        "cost_usd": 0.0299,
+        "duration_s": 28.53,
+        "label": "2401.09543v2/b3plus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3305,
+        "output_tokens": 2443,
+        "cost_usd": 0.0326925,
+        "duration_s": 50.74,
+        "label": "2401.06455/b3plusplus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 5658,
+        "output_tokens": 1369,
+        "cost_usd": 0.0030335600000000002,
+        "duration_s": 18.66,
+        "label": "2401.09543v2/b3plus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 6004,
+        "output_tokens": 1978,
+        "cost_usd": 0.03479,
+        "duration_s": 36.46,
+        "label": "2401.09543v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3315,
+        "output_tokens": 863,
+        "cost_usd": 0.0169175,
+        "duration_s": 16.89,
+        "label": "2401.09543v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3360,
+        "output_tokens": 1472,
+        "cost_usd": 0.0025264000000000003,
+        "duration_s": 20.43,
+        "label": "2401.06455/b3plusplus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3348,
+        "output_tokens": 928,
+        "cost_usd": 0.0019247600000000002,
+        "duration_s": 13.11,
+        "label": "2401.09543v2/b3plus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 5658,
+        "output_tokens": 1561,
+        "cost_usd": 0.00324476,
+        "duration_s": 21.08,
+        "label": "2401.09543v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 11269,
+        "output_tokens": 3233,
+        "cost_usd": 0.41151,
+        "duration_s": 70.59,
+        "label": "10.5539_jsd.v17n6p137/b3plusplus/arbiter"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 5805,
+        "output_tokens": 1967,
+        "cost_usd": 0.2346,
+        "duration_s": 39.46,
+        "label": "2401.09543v2/b3plus/arbiter"
+      }
+    ]
+  }
+}

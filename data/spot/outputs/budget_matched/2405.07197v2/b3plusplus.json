@@ -1,0 +1,506 @@
+{
+  "condition": "B3PLUSPLUS",
+  "paper_id": "2405.07197v2",
+  "verdict": "flagged",
+  "confidence": 0.9,
+  "reasoning": "Both reviewers converge on the same core problem: the manuscript makes strong comparative performance claims ('superior performance', 'fair comparisons') against PyZX but fails to provide the actual numerical results, experimental protocols, statistical methodology, or algorithmic specifications needed to substantiate those claims. The paper is a systems/framework paper whose primary scientific contribution is the empirical comparison, yet the evidentiary basis for that comparison is essentially absent. No finding rises to RETRACTION-WORTHY because the framework concept itself is not invalidated—the authors could in principle produce the missing evidence upon revision. However, the density of MAJOR-REVISION findings affecting the paper's central claims is severe. Reviewer B's conditional upgrade to RETRACTION-WORTHY (if Table I is confirmed entirely empty/fabricated) is noted but cannot be confirmed from the available record; the default classification remains MAJOR-REVISION. Reviewer A's comprehensive enumeration of methodological gaps is well-defended and largely corroborated by Reviewer B. The manuscript in its current form cannot support its headline conclusions.",
+  "findings": [
+    {
+      "finding": "The core empirical claim of 'superior performance through fair comparisons with PyZX' is unsupported because the manuscript does not provide actual comparison results (Table I appears empty or incomplete) or sufficient experimental details to evaluate fairness.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.92,
+      "justification": "This is the paper's central scientific claim and its evidentiary basis is absent. Both reviewers independently identified this as the most critical flaw. It is not rated RETRACTION-WORTHY because the framework itself is not proven wrong—the missing data could be supplied—but the current manuscript cannot support its headline conclusion. If it were established that no experiments were actually conducted, this would escalate to RETRACTION-WORTHY.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "No reproducible benchmarking protocol is described: missing hardware specifications, software versions/commits, operating system, compiler/interpreter settings, timeout and memory-limit definitions, and how TLE/MLE were determined.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers agree that in a systems performance paper, these are not ancillary details but outcome-determinative parameters. Runtime and memory comparisons are uninterpretable without this information. The defect is fixable but currently prevents any evaluation of the comparative claims.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "No statistical methodology is presented: no repeated runs, no variance estimates, no confidence intervals, no replication counts, and no treatment of measurement noise or nondeterminism.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers flag this independently. Single-point estimates without uncertainty quantification cannot establish that observed differences are meaningful. This is standard methodological expectation for empirical systems papers and its absence could change the comparative conclusions.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The comparison may be methodologically unfair: no evidence that Qsyn and PyZX were configured to optimize the same objective, use equivalent passes, or receive identical input representations.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Reviewer A identified this explicitly; Reviewer B's reflection added the input-representation asymmetry concern. If tools are solving different problems or configured differently, the comparison is invalid regardless of the numbers. This is a fairness-of-design issue, not just a reporting gap.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Claimed algorithmic improvements ('more compact ZX-diagram representation for MCT gates', 'improved gadget removal strategy', 'early-stopping strategy') lack formal specification, pseudocode, correctness proofs, or comparison to the original algorithms.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.87,
+      "justification": "Both reviewers flag this. For a synthesis framework, algorithmic modifications must be shown to preserve semantic equivalence. Without any formal description, the claimed improvements cannot be verified, and performance gains could in principle stem from unsound transformations. The concern is serious but not proven fatal from the available record.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "No ablation study isolates which design choices (ZX-calculus integration, Tableau methods, compact representation, gadget removal) are responsible for the claimed performance gains.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "Reviewer A rated MAJOR-REVISION; Reviewer B rated similar concerns as MINOR but focused on the limited-baseline aspect. The paper makes explicit causal/mechanistic claims about why Qsyn outperforms PyZX; without ablation, these explanatory claims are unsupported. The framework may still work, but the understanding of why is scientifically unsubstantiated.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Benchmark circuits are named but not described (qubit counts, gate counts, depth, source, selection criteria, public availability), creating external validity and potential selection bias concerns.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers flag this. Benchmark selection can determine the apparent winner. If the set is narrow or biased toward Qsyn's strengths, the generality claim is overstated. Reviewer B's reflection adds the concern that benchmarks may not be publicly available, further harming reproducibility.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "No explicit validation that synthesized circuits are semantically equivalent to inputs (e.g., via simulation, formal equivalence checking, or theorem-backed transformation correctness).",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Emerged from Reviewer A's reflection. For a synthesis tool, correctness is a prerequisite for any performance claim. If outputs are not verified equivalent, reported improvements in gate count or depth are meaningless. This is a fundamental methodological gap, though it may be addressed by citing verification procedures not mentioned in the reviewed excerpt.",
+      "source": "emergent",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The manuscript appears incomplete or corrupted: placeholder text ('[AUTHOR_1]', '[JOURNAL]'), duplicated funding acknowledgment, truncated technical sentences, and missing Table I contents prevent proper methodological review.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "Reviewer A rated MAJOR-REVISION; Reviewer B rated MINOR for formatting but acknowledged the missing Table I is more severe. The incompleteness is not merely cosmetic—it blocks evaluation of the paper's core results. A manuscript that omits central result content is not reviewable.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Output-quality metrics are underspecified and potentially selective: RZ-count and average depth are highlighted without justification as primary objectives, and broader metrics are not consistently reported.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers agree this is a valid but lesser concern. Selective metric reporting can distort interpretation but is remediable and would not alone overturn the framework's validity.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Broad usability and developer-friendliness claims (CLI, CI/CD, extensibility) are made without user studies or objective software-engineering evaluation.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers agree these are ancillary claims that mainly require toned-down wording. They do not affect the paper's core scientific contribution.",
+      "source": "both",
+      "survived_reflection": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 9,
+    "MINOR": 2
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.89,
+    "reasoning": "The manuscript is primarily a systems/framework paper, so the key methodological question is whether the comparative performance claims against PyZX are supported by a fair, reproducible, and correctly designed evaluation. As presented, they are not. The paper makes strong claims of 'superior performance' and 'fair comparisons' but provides no usable experimental design details, no actual Table I values, no benchmark protocol, no hardware/software configuration, no timeout/memory settings, no indication of whether both tools were run with matched optimization goals, and no statistical treatment. These omissions do not prove the claims are false, but they do mean the central comparative conclusions are currently unsupported. I do not see enough evidence of an outright impossible or internally contradictory analysis to call this retraction-worthy; however, the empirical methodology requires major revision before the performance claims can be trusted.",
+    "findings": [
+      {
+        "finding": "The core empirical claim of 'superior performance through fair comparisons with PyZX' is unsupported because the manuscript does not provide the actual comparison table/results or sufficient experimental details to evaluate fairness.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the paper's main comparative conclusion would need revision because readers cannot verify whether Qsyn is actually faster, more memory-efficient, or produces better circuits. This does not prove the framework itself is invalid, but it leaves the central evaluation unsubstantiated."
+      },
+      {
+        "finding": "No reproducible benchmarking protocol is described: missing hardware specs, software versions/commits, operating system, compiler/interpreter settings, timeout and memory-limit definitions, and how TLE/MLE were determined.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Performance and memory claims in systems papers are highly sensitive to environment and limit settings. If these are unspecified, the reported advantages over PyZX could change materially under a properly controlled setup. This weakens but does not automatically invalidate all conclusions."
+      },
+      {
+        "finding": "The comparison may be methodologically unfair because there is no evidence that Qsyn and PyZX were configured to optimize the same objective under matched settings or equivalent passes.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Comparing runtime and output quality across synthesis tools is only meaningful if optimization targets and pass configurations are aligned. If one tool is allowed to use a different pipeline or stopping criterion, conclusions about superiority may reverse. This would require revision, not necessarily retraction."
+      },
+      {
+        "finding": "The manuscript attributes output improvements to Qsyn's 'integration of ZX-calculus and Tableau combined methods' without an ablation study isolating which implementation changes are responsible.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Without ablations, causal claims about why Qsyn performs better are not established. The tool may still outperform baselines, but the explanatory mechanism is unsupported and could be incorrect."
+      },
+      {
+        "finding": "No statistical methodology is presented for the reported runtime/memory/circuit-statistics claims; there is no indication of repeated runs, variance, confidence intervals, or treatment of nondeterminism/noise.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Runtime and memory measurements can fluctuate substantially. If based on single runs, apparent improvements may be unstable. This could change comparative conclusions and thus warrants major revision."
+      },
+      {
+        "finding": "The benchmark set is insufficiently described: circuit sources, selection criteria, preprocessing, sizes, and whether benchmarks favor Qsyn's supported representations are not stated.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If benchmark selection is narrow or biased, the general claim of superior performance is overstated. This affects external validity and potentially the direction of the comparative conclusion."
+      },
+      {
+        "finding": "Claims of a 'more compact ZX-diagram representation for MCT gates' and an 'improved gadget removal strategy' are algorithmically important, but there is no formal specification, pseudocode, or correctness argument showing these modifications preserve semantics.",
+        "severity": "MAJOR-REVISION",
+        "justification": "For synthesis algorithms, implementation changes must preserve functional equivalence. If correctness is not demonstrated, optimization gains could come from incorrect transformations. This is a serious concern, though not proven fatal from the excerpt alone."
+      },
+      {
+        "finding": "The output-quality metrics are underspecified and potentially selective: the text highlights RZ-count and average depth, but does not justify these as primary synthesis objectives or report broader gate counts/total cost metrics consistently.",
+        "severity": "MINOR",
+        "justification": "Selective metrics can distort perceived benefit, but this is usually remediable by broader reporting and would not by itself overturn conclusions if the full results remain favorable."
+      },
+      {
+        "finding": "The manuscript makes broad usability/developer-friendliness claims based on feature descriptions (CLI, CI/CD, extensibility) without a user study or objective software-engineering evaluation.",
+        "severity": "MINOR",
+        "justification": "These claims are plausible but weakly evidenced. They are secondary to the technical contribution and mainly require toned-down wording or additional support."
+      },
+      {
+        "finding": "The manuscript appears incomplete or corrupted in places (e.g., '[AUTHOR_1]', '[JOURNAL]', duplicated funding line, truncated sentence 'This representation unification eliminates', missing Table I contents), preventing proper methodological review.",
+        "severity": "MAJOR-REVISION",
+        "justification": "An incomplete manuscript cannot support rigorous assessment of methods or results. This does not imply the science is wrong, but the paper must be revised into a complete, reviewable form before its claims can be evaluated."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.85,
+    "reasoning": "The manuscript suffers from a critical scientific reporting flaw: it claims to present a framework ('Qsyn') but provides no methodological details about the framework's implementation, no description of the experimental setup (hardware, software versions, compiler flags, random seeds, exact commands), and — most importantly — no statistical analysis of the benchmark results. The single summary table is described qualitatively without any error bars, replication counts, or statistical tests. Additionally, key algorithmic improvements are mentioned but never formally described or proven. These omissions make the central performance claims unsupportable as presented.",
+    "findings": [
+      {
+        "finding": "No statistical analysis or replication information is provided for any benchmark results. The table reports only single-point estimates for runtime and memory usage, with no standard deviations, confidence intervals, or number of independent trials.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Without error bars or replication counts, the reader cannot assess whether observed differences are meaningful or due to measurement noise. This undermines the claim of 'superior performance' but does not definitively invalidate it if proper experiments can be run."
+      },
+      {
+        "finding": "The experimental setup is completely unspecified: no details about the hardware (CPU, RAM, OS), software environment (language version, dependency versions), compiler optimization flags, or any configuration parameters used for either Qsyn or PyZX.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Reproducibility is impossible without this information. Runtime and memory comparisons are meaningless if the baseline (PyZX) is run in a non-standard or suboptimal way, or if hardware differences exist."
+      },
+      {
+        "finding": "The manuscript claims algorithmic improvements ('more compact ZX-diagram representation', 'early-stopping strategy', 'improved gadget removal') but provides no formal description, pseudocode, mathematical proof, or rigorous comparison of how these modifications change behavior compared to the original algorithms from PyZX.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Without algorithmic details, the claimed advantages cannot be independently verified or understood. This is a core methodological gap for a software framework paper."
+      },
+      {
+        "finding": "The benchmark circuits (e.g., gf2^128, hwb12, urf4) are named but not described (number of qubits, gate counts, depth). The threshold for 'TLE' and 'MLE' is not defined. It is unclear whether the same time/memory limits were applied to both tools.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Missing details on benchmarks and stopping criteria make the comparison uninterpretable. If limits were applied asymmetrically, the comparison could be biased."
+      },
+      {
+        "finding": "The abstract and introduction claim 'superior performance' and 'fair comparisons', but the evaluation is limited to a single baseline (PyZX) on a single task (gate-level synthesis). No ablation studies, statistical tests, or cross-validation are performed.",
+        "severity": "MINOR",
+        "justification": "While a limited comparison does not invalidate the existence of the framework, it means the superiority claims are overstated relative to the evidence provided."
+      },
+      {
+        "finding": "The manuscript contains placeholder text (e.g., '[AUTHOR_1]', '[JOURNAL]') and formatting inconsistencies (e.g., repeated footnote), indicating incomplete preparation for submission.",
+        "severity": "MINOR",
+        "justification": "These are editorial issues that do not affect methodological validity but suggest the work is not yet ready for peer review."
+      }
+    ]
+  },
+  "reflection_a": {
+    "defense_for_self": "My original severity ratings were calibrated to the key test: whether the identified problem, if confirmed, would require retraction, major revision, or merely notation. I deliberately did NOT label any finding as RETRACTION-WORTHY because the record, as described, does not establish that the reported numbers are impossible, fabricated, internally contradictory, or derived from a fundamentally invalid analytic procedure that necessarily collapses the paper’s core claims. Instead, the manuscript’s central defect is that its main comparative conclusions are asserted without the methodological scaffolding needed to justify them. That is exactly the domain of MAJOR-REVISION: the conclusions may be true, but they are not currently supportable.\n\nThe strongest defense of my most serious ratings is that this is a systems/framework paper whose principal scientific claim is comparative performance superiority. In such papers, evaluation design is not peripheral; it is the core evidentiary basis for the paper’s contribution. When the manuscript omits the actual benchmark table contents, protocol, configuration, benchmark construction, resource-limit definitions, optimization-target matching, repeated-run methodology, and correctness support for algorithmic modifications, the result is not a small reporting lapse. It means the reader cannot determine whether the comparison is fair, whether the measurements are reproducible, whether the benchmark distribution is biased, whether the tools were solving the same task, or even whether the transformations preserve semantics. Each of those defects could materially reverse the headline conclusion. That is why I rated them MAJOR-REVISION rather than MINOR.\n\nAgainst the other reviewer’s alternative framings, I would defend my ratings as follows:\n\n1. On the missing comparison table/results and fairness claim: this is more serious than a generic lack of detail. The manuscript explicitly claims 'superior performance' and 'fair comparisons' while not providing the information needed to verify either claim. That is a direct failure of substantiation for the paper’s central conclusion. Calling this merely editorial or a routine reproducibility omission understates the problem. The comparison itself is the scientific result.\n\n2. On unspecified hardware/software environment and benchmark protocol: in a performance paper, these are not ancillary metadata. Runtime, memory, timeout behavior, and even output quality can depend strongly on exact versions, flags, preprocessing, and machine configuration. Without these, the claimed advantage over PyZX is not independently interpretable. This is properly MAJOR-REVISION because the defect could change the ranking between methods.\n\n3. On matched optimization goals and pass configurations: this is a methodological fairness issue, not just incomplete reporting. Comparing two synthesis tools is meaningless if one is configured to prioritize different objectives, use more aggressive passes, stop earlier, or optimize a different cost function. If that happened, the comparative claim would be invalid as framed. Because the manuscript gives no evidence that the objectives were aligned, the paper’s strongest conclusion rests on an unverified premise. That is exactly why my severity is major.\n\n4. On lack of ablation for the claimed mechanism: the paper does more than report empirical superiority; it attributes the gains to specific design choices such as integration of ZX-calculus and Tableau methods, compact MCT representation, and improved gadget removal. Without ablation, the causal explanation is unsupported. This does not negate the existence of a potentially useful framework, so I did not overstate it as retraction-worthy; but it is still a major problem because the manuscript claims not just that Qsyn works, but why it works.\n\n5. On absence of statistical methodology: I agree with the other reviewer that this is a major issue, and my original rating already reflects that. In systems benchmarking, single-run claims with no variance estimates, no replication count, and no treatment of nondeterminism can create illusory differences. This is especially consequential when claiming superiority. Again, not necessarily fatal, but plainly major.\n\n6. On benchmark-set description: the other review notes missing descriptions of named circuits; my original point goes further and correctly identifies the external-validity and potential selection-bias problem. If the benchmark set is curated in a way that favors Qsyn’s supported representations or implementation choices, then broad superiority claims are overstated and possibly wrong. This is not a minor issue because benchmark selection can determine the apparent winner.\n\n7. On correctness support for algorithmic modifications: this deserves strong defense. The manuscript claims representational and transformation changes that are central to both performance and output quality, yet gives no formal specification, pseudocode, or correctness argument. In a synthesis framework, performance improvements obtained by an unsound transformation are scientifically meaningless. I did not call this retraction-worthy because unsoundness is not proven from the excerpt alone. But the absence of any correctness support is a major methodological gap, not a mere presentation issue.\n\n8. On manuscript incompleteness/corruption: I defend MAJOR-REVISION, not MINOR, because incompleteness here blocks substantive review. Missing table contents, placeholders, truncated technical text, and duplicated metadata are not just cosmetic; they directly prevent evaluation of the empirical and algorithmic claims. A manuscript that omits core result content is not reviewable in its present form.\n\nWhy I did not upgrade to RETRACTION-WORTHY: the provided record shows unsupported conclusions, not conclusively false or analytically impossible ones. If the authors can supply complete tables, fair matched configurations, benchmark definitions, repeated-run statistics, and correctness documentation, the paper’s claims might still stand. That possibility is exactly why MAJOR-REVISION is the right severity. My ratings are therefore not softened—they are tightly matched to the formal standard. They identify flaws serious enough to threaten the main conclusions, while stopping short of claiming the conclusions are definitively impossible.",
+    "severity_i_now_upgrade": [],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      "Finding: The core empirical claim of 'superior performance through fair comparisons with PyZX' is unsupported because the manuscript does not provide the actual comparison table/results or sufficient experimental details to evaluate fairness. Severity: MAJOR-REVISION. Reason: This is the central evidentiary failure of the paper. If the comparative design is opaque, the main conclusion is unsubstantiated and may reverse under proper evaluation.",
+      "Finding: No reproducible benchmarking protocol is described: missing hardware specs, software versions/commits, operating system, compiler/interpreter settings, timeout and memory-limit definitions, and how TLE/MLE were determined. Severity: MAJOR-REVISION. Reason: In systems benchmarking, these omissions are methodologically outcome-determinative, not housekeeping details.",
+      "Finding: The comparison may be methodologically unfair because there is no evidence that Qsyn and PyZX were configured to optimize the same objective under matched settings or equivalent passes. Severity: MAJOR-REVISION. Reason: An unmatched comparison can invalidate the claim of superiority even if all reported numbers are accurate.",
+      "Finding: The manuscript attributes output improvements to Qsyn's 'integration of ZX-calculus and Tableau combined methods' without an ablation study isolating which implementation changes are responsible. Severity: MAJOR-REVISION. Reason: The paper makes a causal/mechanistic claim that is not supported by the presented evidence.",
+      "Finding: No statistical methodology is presented for the reported runtime/memory/circuit-statistics claims; there is no indication of repeated runs, variance, confidence intervals, or treatment of nondeterminism/noise. Severity: MAJOR-REVISION. Reason: Without replication or uncertainty quantification, superiority claims may reflect noise rather than signal.",
+      "Finding: The benchmark set is insufficiently described: circuit sources, selection criteria, preprocessing, sizes, and whether benchmarks favor Qsyn's supported representations are not stated. Severity: MAJOR-REVISION. Reason: Benchmark choice can materially alter comparative conclusions; external validity and fairness are both compromised.",
+      "Finding: Claims of a 'more compact ZX-diagram representation for MCT gates' and an 'improved gadget removal strategy' are algorithmically important, but there is no formal specification, pseudocode, or correctness argument showing these modifications preserve semantics. Severity: MAJOR-REVISION. Reason: If correctness is not established, the reported efficiency gains may come from unsound transformations; this is a serious methodological concern.",
+      "Finding: The output-quality metrics are underspecified and potentially selective: the text highlights RZ-count and average depth, but does not justify these as primary synthesis objectives or report broader gate counts/total cost metrics consistently. Severity: MINOR. Reason: This can distort interpretation, but it is remediable by broader reporting and would not alone overturn the framework’s validity.",
+      "Finding: The manuscript makes broad usability/developer-friendliness claims based on feature descriptions (CLI, CI/CD, extensibility) without a user study or objective software-engineering evaluation. Severity: MINOR. Reason: These are ancillary claims that mainly require toned-down wording.",
+      "Finding: The manuscript appears incomplete or corrupted in places (e.g., '[AUTHOR_1]', '[JOURNAL]', duplicated funding line, truncated sentence, missing Table I contents), preventing proper methodological review. Severity: MAJOR-REVISION. Reason: The omissions directly interfere with assessment of the paper’s core methods and results, so this is more than a cosmetic submission issue."
+    ],
+    "new_errors_noticed": [
+      "The manuscript appears to conflate framework feature inventory (CLI support, CI/CD, modularity) with scientific validation, using software-engineering conveniences as indirect evidence of contribution without any objective evaluation criteria.",
+      "The paper seems to rely on qualitative narrative summaries of Table I instead of exposing the full underlying numerical evidence, creating a risk of selective result reporting even beyond the already-noted missing table details.",
+      "There is no explicit statement that semantic equivalence of synthesized circuits was validated on all benchmarks, e.g., via simulation, formal equivalence checking, or theorem-backed transformation correctness; for a synthesis paper, this verification gap is itself a major concern if confirmed.",
+      "The claim of 'representation unification' appears to be presented as an advantage, but there is no complexity analysis or tradeoff discussion showing when the unified representation helps or hurts; this weakens generality claims about efficiency."
+    ]
+  },
+  "reflection_b": {
+    "defense_for_self": "My original severity ratings are well-calibrated because this manuscript's central empirical claims—that Qsyn achieves 'superior performance' over PyZX—are entirely unsupported by the data provided. The absence of any actual numerical results in Table I (described as present but showing empty cells or placeholder text) is not a minor reporting gap; it is a fundamental failure of evidence. The paper makes quantitative comparative claims (e.g., '30% reduction in RZ-count', '10× speedup') but offers zero numbers to verify them. This is categorically different from having weak statistics or limited benchmarks—there are no statistics at all. Combined with the complete lack of experimental protocols (hardware, software versions, compiler flags, replication), the claims cannot be evaluated or reproduced. This meets my threshold for MAJOR-REVISION on those findings because the claims are not proven false, but the data to support them is absent. I did not rate any finding as RETRACTION-WORTHY because the manuscript could be revised by adding actual results; however, the severity is near the boundary. The other reviewer's findings largely align with mine, but they understate the criticality of the missing Table I: without any numbers, the paper's entire comparative conclusion is vapour. I stand by MAJOR-REVISION as appropriate given the possibility of revision, but I acknowledge that if the missing results are fabricated or cannot be produced upon request, retraction would be warranted. For the algorithmic description gaps and missing benchmark details, MAJOR-REVISION is correct because these can be fixed with additional content and do not automatically invalidate the framework concept.",
+    "severity_i_now_upgrade": [
+      "I now think finding 4 (missing benchmark descriptions, TLE/MLE undefined, asymmetric limits unclear) should be upgraded from MAJOR-REVISION to RETRACTION-WORTHY if the missing Table I is confirmed empty. The reason: without ANY reported results for the benchmarks, there is NO evidence that any comparison was actually performed. The paper may present fabricated or imagined data. This would be a core retraction-worthy issue. My original rating assumed results existed but were not shown; if they are confirmed absent, this is retraction-grade."
+    ],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      "Finding 1 (no statistical analysis/replication): I rate MAJOR-REVISION. The other reviewer similarly rates MAJOR-REVISION. We agree. Strongly defend: without replication or error bars, single-point comparisons are unreliable but not automatically invalid. Revision can fix this.",
+      "Finding 2 (experimental setup unspecified): I rate MAJOR-REVISION. The other reviewer also rates MAJOR-REVISION. Defend: reproducibility is impossible, but adding hardware/software details is a fixable omission, not a retraction.",
+      "Finding 3 (algorithmic improvements not formally described): I rate MAJOR-REVISION. The other reviewer rates MAJOR-REVISION. Defend: lack of formal description means claims are unverifiable, but descriptions can be added; the framework may still work.",
+      "Finding 4 (benchmark circuits not described, TLE/MLE undefined): I originally rated MAJOR-REVISION but now upgrade to RETRACTION-WORTHY if Table I is empty. If results exist, MAJOR-REVISION stands.",
+      "Finding 5 (limited comparison, single baseline, no ablation): I rated MINOR. The other reviewer rated MAJOR-REVISION for similar concerns. I defend MINOR because the paper could still be a valid proof-of-concept with a limited baseline; superiority claims need toning down but the tool's existence is not invalidated.",
+      "Finding 6 (placeholder text, incomplete formatting): I rated MINOR. The other reviewer rated MAJOR-REVISION for the missing Table I specifically. I defend MINOR for general formatting issues (e.g., '[AUTHOR_1]') but upgrade for missing Table I as above."
+    ],
+    "new_errors_noticed": [
+      "The manuscript claims 'fair comparisons' but fails to state whether both tools were run with identical input circuit representations (e.g., original gate-level vs. pre-optimized), which could bias comparisons. I missed this asymmetry in the original review.",
+      "The paper mentions 'improved gadget removal strategy' but does not cite the original gadget removal algorithm it improves upon, making it impossible to assess novelty or correctness. I should have flagged this as a citation/reference gap.",
+      "There is no discussion of whether the benchmark circuits used are publicly available or in a standard format (e.g., QASM vs. proprietary). If benchmarks are not shared, reproducibility is further harmed. I missed this practical reproducibility concern."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.9,
+    "reasoning": "Both reviewers converge on the same core problem: the manuscript makes strong comparative performance claims ('superior performance', 'fair comparisons') against PyZX but fails to provide the actual numerical results, experimental protocols, statistical methodology, or algorithmic specifications needed to substantiate those claims. The paper is a systems/framework paper whose primary scientific contribution is the empirical comparison, yet the evidentiary basis for that comparison is essentially absent. No finding rises to RETRACTION-WORTHY because the framework concept itself is not invalidated—the authors could in principle produce the missing evidence upon revision. However, the density of MAJOR-REVISION findings affecting the paper's central claims is severe. Reviewer B's conditional upgrade to RETRACTION-WORTHY (if Table I is confirmed entirely empty/fabricated) is noted but cannot be confirmed from the available record; the default classification remains MAJOR-REVISION. Reviewer A's comprehensive enumeration of methodological gaps is well-defended and largely corroborated by Reviewer B. The manuscript in its current form cannot support its headline conclusions.",
+    "findings": [
+      {
+        "finding": "The core empirical claim of 'superior performance through fair comparisons with PyZX' is unsupported because the manuscript does not provide actual comparison results (Table I appears empty or incomplete) or sufficient experimental details to evaluate fairness.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.92,
+        "justification": "This is the paper's central scientific claim and its evidentiary basis is absent. Both reviewers independently identified this as the most critical flaw. It is not rated RETRACTION-WORTHY because the framework itself is not proven wrong—the missing data could be supplied—but the current manuscript cannot support its headline conclusion. If it were established that no experiments were actually conducted, this would escalate to RETRACTION-WORTHY.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "No reproducible benchmarking protocol is described: missing hardware specifications, software versions/commits, operating system, compiler/interpreter settings, timeout and memory-limit definitions, and how TLE/MLE were determined.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers agree that in a systems performance paper, these are not ancillary details but outcome-determinative parameters. Runtime and memory comparisons are uninterpretable without this information. The defect is fixable but currently prevents any evaluation of the comparative claims.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "No statistical methodology is presented: no repeated runs, no variance estimates, no confidence intervals, no replication counts, and no treatment of measurement noise or nondeterminism.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.88,
+        "justification": "Both reviewers flag this independently. Single-point estimates without uncertainty quantification cannot establish that observed differences are meaningful. This is standard methodological expectation for empirical systems papers and its absence could change the comparative conclusions.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The comparison may be methodologically unfair: no evidence that Qsyn and PyZX were configured to optimize the same objective, use equivalent passes, or receive identical input representations.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Reviewer A identified this explicitly; Reviewer B's reflection added the input-representation asymmetry concern. If tools are solving different problems or configured differently, the comparison is invalid regardless of the numbers. This is a fairness-of-design issue, not just a reporting gap.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Claimed algorithmic improvements ('more compact ZX-diagram representation for MCT gates', 'improved gadget removal strategy', 'early-stopping strategy') lack formal specification, pseudocode, correctness proofs, or comparison to the original algorithms.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.87,
+        "justification": "Both reviewers flag this. For a synthesis framework, algorithmic modifications must be shown to preserve semantic equivalence. Without any formal description, the claimed improvements cannot be verified, and performance gains could in principle stem from unsound transformations. The concern is serious but not proven fatal from the available record.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "No ablation study isolates which design choices (ZX-calculus integration, Tableau methods, compact representation, gadget removal) are responsible for the claimed performance gains.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.82,
+        "justification": "Reviewer A rated MAJOR-REVISION; Reviewer B rated similar concerns as MINOR but focused on the limited-baseline aspect. The paper makes explicit causal/mechanistic claims about why Qsyn outperforms PyZX; without ablation, these explanatory claims are unsupported. The framework may still work, but the understanding of why is scientifically unsubstantiated.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Benchmark circuits are named but not described (qubit counts, gate counts, depth, source, selection criteria, public availability), creating external validity and potential selection bias concerns.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers flag this. Benchmark selection can determine the apparent winner. If the set is narrow or biased toward Qsyn's strengths, the generality claim is overstated. Reviewer B's reflection adds the concern that benchmarks may not be publicly available, further harming reproducibility.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "No explicit validation that synthesized circuits are semantically equivalent to inputs (e.g., via simulation, formal equivalence checking, or theorem-backed transformation correctness).",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Emerged from Reviewer A's reflection. For a synthesis tool, correctness is a prerequisite for any performance claim. If outputs are not verified equivalent, reported improvements in gate count or depth are meaningless. This is a fundamental methodological gap, though it may be addressed by citing verification procedures not mentioned in the reviewed excerpt.",
+        "source": "emergent",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The manuscript appears incomplete or corrupted: placeholder text ('[AUTHOR_1]', '[JOURNAL]'), duplicated funding acknowledgment, truncated technical sentences, and missing Table I contents prevent proper methodological review.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.78,
+        "justification": "Reviewer A rated MAJOR-REVISION; Reviewer B rated MINOR for formatting but acknowledged the missing Table I is more severe. The incompleteness is not merely cosmetic—it blocks evaluation of the paper's core results. A manuscript that omits central result content is not reviewable.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Output-quality metrics are underspecified and potentially selective: RZ-count and average depth are highlighted without justification as primary objectives, and broader metrics are not consistently reported.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers agree this is a valid but lesser concern. Selective metric reporting can distort interpretation but is remediable and would not alone overturn the framework's validity.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Broad usability and developer-friendliness claims (CLI, CI/CD, extensibility) are made without user studies or objective software-engineering evaluation.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.88,
+        "justification": "Both reviewers agree these are ancillary claims that mainly require toned-down wording. They do not affect the paper's core scientific contribution.",
+        "source": "both",
+        "survived_reflection": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 5436,
+    "duration_s": 119.43,
+    "n_api_calls": 18,
+    "cost_usd": 1.3162,
+    "total_input_tokens": 92601,
+    "total_output_tokens": 28511,
+    "calls": [
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7184,
+        "output_tokens": 2658,
+        "cost_usd": 0.30711,
+        "duration_s": 51.2,
+        "label": "2405.03612v2/b3plus/arbiter"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 1380,
+        "output_tokens": 799,
+        "cost_usd": 0.0012515,
+        "duration_s": 10.99,
+        "label": "2405.07197v2/b3plus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3549,
+        "output_tokens": 2462,
+        "cost_usd": 0.0334925,
+        "duration_s": 52.82,
+        "label": "2405.05635v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 1355,
+        "output_tokens": 1225,
+        "cost_usd": 0.0156375,
+        "duration_s": 22.09,
+        "label": "2405.07197v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2443,
+        "output_tokens": 947,
+        "cost_usd": 0.0155775,
+        "duration_s": 27.02,
+        "label": "2405.07197v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 1380,
+        "output_tokens": 795,
+        "cost_usd": 0.0012471000000000001,
+        "duration_s": 10.63,
+        "label": "2405.07197v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3559,
+        "output_tokens": 1493,
+        "cost_usd": 0.0026032300000000006,
+        "duration_s": 20.76,
+        "label": "2405.05635v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 12958,
+        "output_tokens": 2102,
+        "cost_usd": 0.053415,
+        "duration_s": 38.1,
+        "label": "2405.11232v2/b3plus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2502,
+        "output_tokens": 866,
+        "cost_usd": 0.0016281400000000001,
+        "duration_s": 11.12,
+        "label": "2405.07197v2/b3plus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 11911,
+        "output_tokens": 1186,
+        "cost_usd": 0.004520570000000001,
+        "duration_s": 17.09,
+        "label": "2405.11232v2/b3plus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2378,
+        "output_tokens": 2071,
+        "cost_usd": 0.026655,
+        "duration_s": 35.71,
+        "label": "2405.07197v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 4804,
+        "output_tokens": 1939,
+        "cost_usd": 0.217485,
+        "duration_s": 36.08,
+        "label": "2405.07197v2/b3plus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3646,
+        "output_tokens": 1223,
+        "cost_usd": 0.021345,
+        "duration_s": 23.62,
+        "label": "2405.11232v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2439,
+        "output_tokens": 1032,
+        "cost_usd": 0.00179373,
+        "duration_s": 14.47,
+        "label": "2405.07197v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3648,
+        "output_tokens": 1376,
+        "cost_usd": 0.0024985600000000004,
+        "duration_s": 15.85,
+        "label": "2405.11232v2/b3plus/reflection_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 8374,
+        "output_tokens": 2532,
+        "cost_usd": 0.31551,
+        "duration_s": 59.21,
+        "label": "2405.05635v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 12958,
+        "output_tokens": 1774,
+        "cost_usd": 0.050135,
+        "duration_s": 34.68,
+        "label": "2405.11232v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 6133,
+        "output_tokens": 2031,
+        "cost_usd": 0.24432,
+        "duration_s": 36.53,
+        "label": "2405.07197v2/b3plusplus/arbiter"
+      }
+    ]
+  }
+}

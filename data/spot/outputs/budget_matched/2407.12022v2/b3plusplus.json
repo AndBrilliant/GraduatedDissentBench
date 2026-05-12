@@ -1,0 +1,596 @@
+{
+  "condition": "B3PLUSPLUS",
+  "paper_id": "2407.12022v2",
+  "verdict": "flagged",
+  "confidence": 0.94,
+  "reasoning": "Both reviewers independently flagged serious methodological concerns and converged during reflection. The paper's central claims — state-of-the-art Verilog generation with only ~37% of reference data via an iterative fine-tuning method — rest on an evaluation protocol that appears to select hyperparameters (temperature, iteration/checkpoint) on the test benchmark itself, compare against baselines under uncontrolled conditions, and present theoretically unsound derivations as principled justification. No single issue is definitively retraction-worthy because the underlying method might still show improvement under a proper protocol, but the cumulative effect of multiple MAJOR-REVISION issues means the headline claims are not currently supportable as presented. Both reviewers defended their MAJOR-REVISION ratings through reflection and identified additional concerns that reinforced rather than weakened their initial assessments.",
+  "findings": [
+    {
+      "finding": "Test-set tuning / metric selection leakage: The paper evaluates multiple temperatures ({0, 0.2, 0.5, 0.8}) on the benchmark and selects the best result per metric (pass@1, pass@5, pass@10). This is hyperparameter optimization on the test set itself, inflating all reported primary outcomes.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.93,
+      "justification": "Both reviewers converged on this as a clear evaluation protocol flaw. It directly inflates the headline numbers and destroys comparability with baselines evaluated under fixed decoding settings. However, it is repairable: re-evaluation under a single pre-specified temperature could still show improvement. Not retraction-worthy because the method is not proven to fail — only the current numbers are suspect.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Unfair/unclear comparison to prior work: Baseline numbers are imported from other papers without harmonizing prompting templates, decoding strategy, number of samples, stopping criteria, benchmark version, or evaluation code. Combined with the authors' own best-of-temperature selection, cross-paper comparisons are not valid.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.9,
+      "justification": "The paper's primary claim is comparative superiority and data efficiency. Without matched evaluation conditions, these claims are not established. Reviewer A raised this explicitly; Reviewer B's concerns about pass@1 ambiguity and missing validation splits reinforce it. Fixable with controlled in-house reproduction, so not retraction-worthy.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Checkpoint/iteration selection appears benchmark-informed: The paper describes performance peaking around iteration 5 and declining thereafter, implying the reported iteration was chosen based on test-set performance rather than a held-out validation set.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers converged on this during reflection. Combined with temperature selection, this constitutes a second layer of test-set overfitting. A proper validation split would resolve it. Not retraction-worthy because the iterative trend might still hold under correct model selection.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "No validation/test split documented: The paper does not describe how model selection (iterations, hyperparameters α, β, λ) was performed independently of the evaluation benchmark.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers independently identified this. It is the root cause enabling the temperature-selection and checkpoint-selection leakage issues above. Standard methodology requires either a separate validation set or fully pre-specified hyperparameters. Fixable but currently undermines all reported results.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The 37% reference-sample efficiency claim is confounded: The central efficiency claim depends on strict comparability with baselines trained on different data under different conditions. Without controlled reproduction, the gain cannot be causally attributed to the iterative method.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.87,
+      "justification": "Reviewer A identified this as a separate concern from generic baseline comparison. The efficiency claim is the paper's most prominent selling point and is not causally identified under the current experimental design. Requires controlled ablation or matched reproduction to verify.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Theoretical derivations are mathematically unsound or heuristic: Equations 6–8 conflate token-level and sequence-level distributions, treat constants and expectations inconsistently, and invoke asymptotic arguments (law of large numbers) without justification for the claimed objective transformation.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers agreed the theory is poorly grounded. Reviewer A was harsher ('mathematically unsound'), Reviewer B called it 'informal.' Both agreed on MAJOR-REVISION because the empirical results could potentially stand independently. The theory section needs substantial rewriting or removal, but does not alone invalidate the empirical contribution.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Mixing of 'unbiased pass@k' language with incompatible evaluation regimes: The paper invokes the Chen et al. unbiased estimator while using greedy decoding for pass@1 and best-of-temperature selection across metrics, destroying the statistical interpretation of the estimator.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.86,
+      "justification": "Reviewer A identified the broader incompatibility; Reviewer B focused on the greedy-pass@1 ambiguity. Both concerns are valid and complementary. The result is that reported pass@k values are not interpretable under a fixed sampling policy. Fixable with standardized evaluation, but currently misleading.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Potential train-test contamination not addressed: No deduplication or leakage checks between RTLCoder/open-source training data and VerilogEval benchmark problems/solutions are documented, despite working in a niche domain with limited public data.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Reviewer A raised this; Reviewer B acknowledged it as a valid missed concern during reflection. In a small specialized domain, overlap risk is non-trivial. If contamination exists, results would be substantially inflated. Not retraction-worthy because contamination is not demonstrated, but the absence of any check is a serious methodological gap.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "No statistical uncertainty reported despite small benchmarks (143 and 156 problems): Claimed improvements of 1–1.3 percentage points may correspond to only 1–2 additional problems solved and may not be statistically significant.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers agreed this is a valid but minor concern. It weakens confidence in small numerical improvements but does not negate broader trends if they survive a properly controlled evaluation.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Surrogate reward function insufficiently specified for reproducibility: The Pyverilog + Rough-L quality signal is described only in passing with no formula, thresholds, or validation of its correlation with functional correctness.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers agreed this is a reproducibility/reporting issue and an acknowledged limitation, not a finding that would change the paper's conclusions. The authors themselves note the surrogate does not reflect functional correctness.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Ablation study (softmax normalization) reported only qualitatively without numerical results or significance tests.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Reviewer B raised this. It is a minor reporting gap about a design choice. Does not affect central conclusions.",
+      "source": "prover_b",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Metadata inconsistencies (placeholder dates, conference fields, DOI) suggest poor reporting hygiene.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Reviewer A noted this. Likely a template artifact. Signals carelessness but not methodological failure.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Claim that iterative resampling 'reduces estimation error' is asserted but not empirically demonstrated; no analysis of diversity collapse or self-training artifacts is provided.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.82,
+      "justification": "Reviewer A raised this. It is an over-claimed mechanism interpretation rather than a direct flaw in reported results. Would benefit from ablation but does not change the paper's fundamental status.",
+      "source": "prover_a",
+      "survived_reflection": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 8,
+    "MINOR": 5
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "The manuscript has promising empirical ideas, but there are serious methodological and reporting problems that prevent reliable assessment of the claimed gains. The most important issues are (i) a selection-on-test evaluation procedure that appears to choose the best decoding setting using the benchmark itself, inflating reported results; (ii) unclear comparability of SOTA claims because baseline numbers are taken from prior papers under potentially different prompting/decoding/model conditions; and (iii) theoretical derivations that are mathematically unsound or only heuristic while being used to justify the method. These issues do not necessarily prove the method fails, but they could materially change the conclusions and require major revision. I do not see a clear retraction-worthy fatal flaw from the text alone because the core experiments might still show improvement under a proper protocol, but the current presentation does not support the strongest claims.",
+    "findings": [
+      {
+        "finding": "Test-set tuning / metric selection leakage: the paper states that during testing it evaluates multiple temperatures ({0, 0.2, 0.5, 0.8}) and for each test metric (pass@1, pass@5, pass@10) 'the best result is chosen.' This appears to select hyperparameters on the benchmark test set itself.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, reported benchmark numbers are optimistically biased and not directly comparable to methods evaluated under a fixed decoding protocol. This could materially alter the headline SOTA/pass@1 claims, but it does not necessarily invalidate the underlying method."
+      },
+      {
+        "finding": "Unfair/unclear comparison to prior work: Table 1 aggregates results from different papers and compares them directly to the proposed model, but the manuscript does not establish that prompting templates, decoding strategy, number of samples, stopping criteria, or benchmark version are harmonized. Their own protocol explicitly picks the best decoding setting per metric, which likely differs from reported baselines.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If comparisons are not run under matched conditions, the SOTA and relative-improvement claims may be unreliable. This can change conclusions about superiority, but not necessarily whether iterative training helps relative to their own baseline."
+      },
+      {
+        "finding": "Primary claim of 'with only about 37% reference samples, we outperform the state-of-the-art open-source model' may confound method and dataset size because the compared baseline numbers come from external sources and the manuscript does not report a controlled in-house reproduction with identical base model, prompt format, evaluation code, and decoding protocol.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The central efficiency claim depends on strict comparability. Without controlled reproduction, the effect attributed to iteration versus other implementation differences remains uncertain."
+      },
+      {
+        "finding": "Theoretical derivations are not methodologically rigorous. Several displayed equalities/approximations are mathematically dubious: e.g., converting cross-entropy minimization to sums of KL terms appears incorrect as written; the derivation around Equations 6–8 mixes token-level and sequence-level distributions, treats constants/expectations loosely, and invokes the law of large numbers where it does not justify the stated objective transformation.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the theoretical justification is unsound and should not be used to support causal/mechanistic claims. This would require substantial revision of the theory section, though the empirical results could still stand independently."
+      },
+      {
+        "finding": "The paper claims an 'unbiased' pass@k estimate, but then emphasizes pass@1 under greedy decoding and separately chooses the best decoding setup from multiple temperatures. This mixes incompatible evaluation regimes and undermines the interpretation of pass@k as an unbiased estimator under a fixed sampling process.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This affects the validity and comparability of the reported metrics. It could inflate scores and obscure what exactly is being measured, but it is repairable with a fixed preregistered decoding protocol."
+      },
+      {
+        "finding": "No statistical uncertainty is reported despite small benchmark sizes (143 and 156 problems). Differences of roughly 1-1.3 percentage points over baselines may correspond to only 1-2 problems and may not be statistically meaningful.",
+        "severity": "MINOR",
+        "justification": "This weakens confidence in small claimed improvements, especially over external baselines, but does not by itself invalidate the broader trend if larger controlled gains remain."
+      },
+      {
+        "finding": "Potential train-test contamination is not addressed. The reference data are taken from RTLCoder/open-source instruction-code pairs, but the manuscript does not document deduplication or leakage checks against VerilogEval problems/solutions/prompts.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If benchmark tasks or near-duplicates appear in training/reference data, evaluation could be substantially inflated. This could materially change the main conclusions, especially in a niche domain with limited public data."
+      },
+      {
+        "finding": "The reward/quality signal used for iterative sampling is only briefly described as 'Pyverilog and Rough-L following [12]' with no sufficient operational detail, and the paper itself admits this surrogate does not reflect functional correctness. It is therefore unclear exactly what signal is optimized and how reproducible it is.",
+        "severity": "MINOR",
+        "justification": "This is primarily a reproducibility/reporting issue and a limitation of the surrogate objective. It should be clarified, but by itself does not overturn the empirical findings."
+      },
+      {
+        "finding": "The stopping rule appears to be informed by benchmark performance across iterations ('from the fifth to the seventh iteration, pass@1 gradually decreases'). If the best iteration/model checkpoint was selected based on benchmark outcomes rather than a held-out validation set, this is another form of test-set overfitting.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Selecting iteration/checkpoint on the evaluation benchmark can inflate reported results and may materially alter claimed gains. Proper model selection should use a separate validation set."
+      },
+      {
+        "finding": "The manuscript presents itself with obvious metadata inconsistencies (e.g., 2018 citation/date for an LLM paper citing GPT-4-era work, placeholder conference/DOI fields). While likely a template artifact, this raises concern about the care taken in reporting and version control.",
+        "severity": "MINOR",
+        "justification": "This does not directly affect methodological correctness, but it signals poor documentation quality and warrants editorial correction."
+      },
+      {
+        "finding": "The claim that iterative resampling 'reduces estimation error' is asserted rather than demonstrated. Resampling from the current model may reduce one kind of distribution mismatch but can also amplify model biases or collapse diversity; no robustness analysis is provided to show that gains are not due to repeated self-training on self-generated artifacts.",
+        "severity": "MINOR",
+        "justification": "This is a limitation of the causal interpretation more than a fatal flaw. Additional ablations/diagnostics would strengthen the claim."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.85,
+    "reasoning": "The manuscript presents an iterative fine-tuning method for LLMs generating Verilog code. While the general approach is sound and the empirical results are potentially interesting, there are several methodological issues that, individually and collectively, undermine confidence in the reported findings. The most critical issues are the non-standard and unvalidated evaluation metric (pass@k with greedy decoding), incomplete reporting of training and evaluation splits, and theoretical claims that are only loosely connected to the experiments. These issues do not definitively invalidate all conclusions but require major clarification and additional analysis to support the central claims.",
+    "findings": [
+      {
+        "finding": "The pass@1 metric is reported for 'greedy decoding' but pass@k is defined in a way that presupposes multiple decoded samples. The paper states 'we mainly focus on the pass@1 value under greedy decoding', but the estimator used for pass@k (Chen et al., 2021) counts successes across multiple independently sampled completions. Greedy decoding produces only one deterministic output per problem, making the standard pass@k calculation invalid for that case. The paper later reports generating n=10 samples for pass@5 and pass@10, but does not specify that pass@1 under greedy is computed differently (i.e., as a simple fraction of problems solved by a single greedy output). This introduces ambiguity and potential overestimation if any form of sampling was used without disclosure.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If pass@1 for greedy decoding is computed as a simple accuracy (fraction of problems solved), it is not comparable to reported values from prior work that use the unbiased estimator with n>1. The numerical results could differ substantially, potentially changing comparisons with baselines. However, the paper does include other pass@k results that are properly computed, so the central conclusions are not necessarily invalidated—only the headline greedy-pass@1 numbers are suspect."
+      },
+      {
+        "finding": "The paper does not describe any split of data into training, validation, and test sets. The RTLCoder-derived dataset of ~27k samples is mentioned, but it is not clear whether model selection (e.g., number of iterations, hyperparameters like α, β, λ) was performed on a held-out validation set or the same VerilogEval test set. If the VerilogEval benchmark was used for both early stopping/iteration selection and final evaluation, results are likely optimistically biased due to overfitting to the test set.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Proper reporting requires either a separate validation set or a clear statement that no validation-based early stopping was used (e.g., fixed iterations). Without this, the improvement over iterations (Figure 2) could be misleading. This is a standard methodological concern that could change the interpretation of results."
+      },
+      {
+        "finding": "The theoretical analysis in Section 3.2 claims that the iterative method reduces 'distribution mismatch' and improves reward maximization, but the derivations rely on informal approximations (e.g., '≈' steps in Equations 6 and 7 that mix expectation and loss terms). The equivalence between the ranking loss and a reward-maximization objective is not rigorously proved—the manuscript states 'we can also transform the optimization objective' but does not provide a formal mapping. The connection to EM is similarly heuristic and not tested in the experiments.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The theoretical framework is used to justify the algorithm and explain why it should outperform non-iterative methods. If the theoretical claims are not well-founded, the core motivation for the iterative procedure is weakened. However, the paper also provides empirical comparisons that could stand on their own, so this does not warrant retraction but rather clarification and strengthening of the theory."
+      },
+      {
+        "finding": "The surrogate reward function used for ranking (based on Pyverilog and Rough-L) is mentioned in passing but never described in sufficient detail for replication. The manuscript states it evaluates 'code quality merely from a syntax perspective' but provides no formula, thresholds, or validation of its correlation with functional correctness. The fact that the final pass@1 performance saturates and declines after 5 iterations is attributed to this surrogate-reward mismatch, but without any diagnostic experiments (e.g., measuring the correlation between surrogate rewards and actual test pass rates), this explanation is speculative.",
+        "severity": "MINOR",
+        "justification": "This is a common limitation in iterative RL-style methods, and the authors acknowledge it. It does not invalidate the reported results, but it limits the generality and interpretability of the findings. A dedicated validation of the surrogate reward would strengthen the paper."
+      },
+      {
+        "finding": "The ablation study comparing with and without softmax normalization (Figure 4) is reported only qualitatively ('smoother variations across iterations'). No numerical results or significance tests are provided. The claim that softmax leads to 'vanishing gradients' and thus worse final performance is plausible but not supported by any gradient analysis or convergence diagnostics.",
+        "severity": "MINOR",
+        "justification": "This is a minor finding that would not change the overall conclusions of the paper. It is a routine design choice that can be left to follow-up work."
+      }
+    ]
+  },
+  "reflection_a": {
+    "defense_for_self": "My ratings were appropriately strict and, if anything, conservative. I did not label any item RETRACTION-WORTHY because from the manuscript alone I cannot prove the underlying method fails; however, I strongly defend the MAJOR-REVISION ratings because they concern methodological choices that directly bear on the validity and comparability of the headline claims.\n\nThe strongest point is the evaluation protocol. The manuscript reportedly evaluates multiple temperatures on the benchmark and then, for each metric, chooses the best result. That is not a mere reporting imperfection; it is benchmark-driven hyperparameter selection. The relevant question under the severity rubric is: if confirmed, would this require retraction, revision, or merely noting? The answer is revision, but a major one, because this procedure can materially inflate the reported pass@1/pass@k numbers and invalidate direct comparison to baselines evaluated under fixed decoding settings. It is not enough to say, as the other reviewer does, that the issue is mainly ambiguity around pass@1 under greedy decoding. The deeper problem is that the manuscript appears to optimize decoding policy on the test benchmark itself, separately per metric. That contaminates the primary outcomes regardless of whether pass@1 is computed as simple accuracy or via a pass@k estimator. A paper claiming SOTA or efficiency gains cannot do per-benchmark metric-wise tuning and still present the resulting numbers as comparable model performance.\n\nI also stand by the MAJOR-REVISION rating on unfair/unclear comparison to prior work. The manuscript makes claims like outperforming the state-of-the-art open-source model with only ~37% reference samples, yet the baseline numbers are imported from other papers without a controlled reproduction under matched prompting, decoding, sample budget, stop criteria, benchmark version, and evaluation script. Once combined with the manuscript's own best-of-temperature selection, the comparison is especially fragile. This is not a cosmetic issue. The central claim is comparative superiority and data efficiency. If the comparison conditions are not harmonized, then the claim is not established. That is exactly what MAJOR-REVISION is for: the conclusion may survive under a clean re-run, but in the current form it is not supportable.\n\nThe efficiency claim itself deserved separate MAJOR-REVISION treatment because it is stronger than a generic SOTA table claim. Saying 'with only about 37% reference samples, we outperform...' attributes the gain to the proposed iterative method and sample efficiency. But as presented, that inference is confounded by uncontrolled implementation differences across studies. Without an in-house reproduction or at minimum a rigorously matched evaluation setting, the paper cannot isolate whether the gain comes from iterative training, decoding choices, prompt formatting, benchmark preprocessing, or some other hidden variable. The other reviewer's framing about incomplete split reporting is valid but narrower; it does not negate the need to challenge the core causal attribution behind the sample-efficiency headline.\n\nI strongly defend the MAJOR-REVISION rating on the theoretical derivations. This is not just 'loosely connected theory.' The reported derivations appear mathematically unsound in specific ways: they conflate token-level and sequence-level quantities, treat constants and expectations inconsistently, and invoke asymptotic language such as the law of large numbers in places where it does not justify the claimed objective transformation. If these derivations are wrong, then the paper should not present them as a principled explanation of why the algorithm reduces distribution mismatch or optimizes reward in the claimed manner. The empirical section might still survive, which is why I did not call this retraction-worthy, but the theory section in its current state is not merely incomplete; it is potentially incorrect in substance.\n\nI also stand by the MAJOR-REVISION rating on the paper's use of 'unbiased pass@k' language while mixing incompatible evaluation regimes. The issue is broader than the other reviewer's concern about greedy pass@1. If the manuscript chooses the best temperature per metric, then the sampling process is not fixed. The Chen et al.-style pass@k estimator is unbiased under a defined sampling scheme. Once one searches over temperatures and reports the maximum observed score, the final reported value is no longer an unbiased estimate of performance under a pre-specified generation policy. In other words, the problem is not just that greedy pass@1 may need to be reported as accuracy; it is that the paper rhetorically invokes 'unbiased' pass@k while using a benchmark-adaptive evaluation protocol that destroys that interpretation. That is a major methodological inconsistency.\n\nThe potential train-test contamination issue also merits MAJOR-REVISION, not MINOR. In a niche domain like Verilog generation, public data are limited and overlap risks are real. The manuscript uses RTLCoder/open-source instruction-code pairs as references but apparently does not document any deduplication or contamination checks against VerilogEval prompts, solutions, or close paraphrases. If leakage exists, benchmark performance could be substantially inflated. Under the severity rubric, this is not automatically RETRACTION-WORTHY because leakage is not yet demonstrated, but it plainly could change the main conclusions and therefore requires major revision-level scrutiny. In specialized benchmarks, contamination checks are not optional housekeeping.\n\nLikewise, the stopping-rule concern is properly MAJOR-REVISION. If the authors selected the best iteration or checkpoint based on benchmark outcomes (e.g., observing that performance peaks around a given iteration and reporting from there), then that is another layer of test-set overfitting. The other reviewer notes the lack of validation split generally; I agree, but I singled out the iteration-selection issue because it is a concrete mechanism by which benchmark leakage could have occurred. This is not hypothetical nitpicking: iterative methods are especially vulnerable to post hoc checkpoint selection, and the manuscript's own narrative suggests benchmark-informed iteration choice.\n\nFor the MINOR items, I also stand by the ratings. Lack of statistical uncertainty matters because on test sets of 143 and 156 tasks, one or two problems can move the percentage by around the size of the claimed improvements. That weakens confidence, but by itself it does not overturn the broader claim if a properly controlled evaluation still shows a gain. The under-specified surrogate reward is a reproducibility issue and an admitted limitation; it should be fixed, but the paper could still be true. The metadata inconsistencies signal sloppiness rather than scientific invalidity. And the claim that iterative resampling reduces estimation error is more of an over-interpretation problem than a direct fatal flaw.\n\nAgainst the other reviewer's alternative framing, my central defense is this: their concerns are real but in places too narrow. The manuscript's biggest risk is not simply that one metric is non-standard or ambiguously computed. It is that the evaluation appears benchmark-adaptive in multiple ways: decoding temperature selection per metric, possible iteration/checkpoint selection based on benchmark outcomes, and uncontrolled cross-paper baseline comparisons. Those choices strike at the core of the paper's headline claims. That is exactly why I rated them MAJOR-REVISION. I did not overstate them as retraction-worthy because the method may still work under a proper protocol, but I also should not soften them into minor clarifications, because if corrected they could materially change whether the paper is actually SOTA, actually sample-efficient, or even meaningfully better than baseline.",
+    "severity_i_now_upgrade": [
+      "No upgrades to RETRACTION-WORTHY on the current evidentiary record; my original review was already appropriately severe while staying within what can be established from the manuscript alone."
+    ],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      {
+        "finding": "Test-set tuning / metric selection leakage",
+        "severity": "MAJOR-REVISION",
+        "reason": "Selecting the best temperature on the benchmark, separately for each reported metric, is test-set hyperparameter tuning. This can directly inflate primary outcomes and destroy comparability to fixed-protocol baselines."
+      },
+      {
+        "finding": "Unfair/unclear comparison to prior work",
+        "severity": "MAJOR-REVISION",
+        "reason": "The paper's main claims are comparative. Without matched prompting, decoding, sample counts, stopping criteria, benchmark version, and evaluation code, cross-paper numbers do not support a superiority claim."
+      },
+      {
+        "finding": "37% reference-sample efficiency claim is confounded",
+        "severity": "MAJOR-REVISION",
+        "reason": "The paper attributes gains to iterative training and lower reference-data usage without a controlled in-house reproduction. As written, the efficiency conclusion is not causally identified."
+      },
+      {
+        "finding": "Theoretical derivations are mathematically unsound or heuristic",
+        "severity": "MAJOR-REVISION",
+        "reason": "The derivations appear incorrect in form, not merely informal. If the math is wrong, the claimed principled justification must be withdrawn or rewritten, though the empirical method could still be evaluated separately."
+      },
+      {
+        "finding": "Claim of 'unbiased' pass@k while mixing incompatible decoding/evaluation regimes",
+        "severity": "MAJOR-REVISION",
+        "reason": "An unbiased pass@k interpretation requires a fixed sampling process. Best-of-temperature selection and mixed greedy/sampled regimes undermine that interpretation and comparability."
+      },
+      {
+        "finding": "No statistical uncertainty reported on small benchmarks",
+        "severity": "MINOR",
+        "reason": "This weakens confidence in small numerical improvements but does not by itself negate the broader empirical trend if a clean evaluation is done."
+      },
+      {
+        "finding": "Potential train-test contamination not addressed",
+        "severity": "MAJOR-REVISION",
+        "reason": "In a small, specialized domain, absence of deduplication/leakage checks can materially affect benchmark validity. This is a serious but still reparable omission unless contamination is actually demonstrated."
+      },
+      {
+        "finding": "Reward/quality signal insufficiently specified",
+        "severity": "MINOR",
+        "reason": "The paper is not reproducible enough on this point, and the surrogate may be weakly aligned with correctness, but this alone does not invalidate the reported outcomes."
+      },
+      {
+        "finding": "Stopping rule / iteration selection may be benchmark-informed",
+        "severity": "MAJOR-REVISION",
+        "reason": "If the chosen iteration or checkpoint was selected based on test-benchmark performance, that is another direct source of optimistic bias in the reported results."
+      },
+      {
+        "finding": "Metadata inconsistencies",
+        "severity": "MINOR",
+        "reason": "These indicate poor reporting hygiene, not a methodological failure."
+      },
+      {
+        "finding": "Claim that iterative resampling reduces estimation error is not demonstrated",
+        "severity": "MINOR",
+        "reason": "This is an over-claimed mechanism rather than a proven result. It merits caveating and ablation, but not a change in the paper's basic status."
+      }
+    ],
+    "new_errors_noticed": [
+      "The paper appears to conflate model selection and metric reporting in multiple dimensions at once: temperature, iteration/checkpoint, and possibly decoding regime. The cumulative selection burden may be larger than any single issue suggests.",
+      "If different temperatures are chosen separately for pass@1, pass@5, and pass@10, then the reported table may not correspond to any single deployable model/policy at all. That further weakens claims of overall performance.",
+      "Because pass@k estimates depend on the number of samples n and sampling policy, importing baseline pass@k numbers from prior papers without harmonizing n and decoding settings may be even less valid than ordinary cross-paper comparison.",
+      "The manuscript's emphasis on benchmark curves across iterations may itself indicate repeated peeking at the test benchmark during development, not just final checkpoint choice."
+    ]
+  },
+  "reflection_b": {
+    "defense_for_self": "My severity ratings are justified because I applied a clear threshold: does the issue definitively invalidate the central conclusions, or does it merely weaken confidence and require correction? For all findings I rated MAJOR-REVISION, the errors are genuine methodological concerns that could change the direction of conclusions if not addressed, but they do not prove the method fails—the core empirical trend might survive proper correction. For MINOR findings, the issues are real but peripheral. No finding in my original review met the RETRACTION-WORTHY threshold because I saw no evidence of falsified data, impossible statistics, or an error that renders all claims unsupportable. The other reviewer's additional identifications strengthen my view: the test-set tuning, best-temperature selection, and checkpoint selection on the benchmark are indeed MAJOR-REVISION issues, but they are still repairable with a proper validation protocol. Even combined, these do not prove the iterative method is a total failure—only that the current numbers are suspect. A retraction would require knowing that the method actually fails under correct evaluation, which the text does not demonstrate.",
+    "severity_i_now_upgrade": [
+      "finding about test-set tuning (selecting best temperature per metric on the benchmark): I originally missed this. The other reviewer correctly identifies this as a selection-on-test problem. I upgrade this to MAJOR-REVISION from 'missed' (it was not in my original list). This is not RETRACTION-WORTHY because one could re-evaluate with a fixed temperature and still see a trend, albeit weaker. But it is a more serious evaluation protocol flaw than I originally caught.",
+      "finding about checkpoint/iteration selection on benchmark pass@1: The other reviewer notes that the stopping rule 'from the fifth to the seventh iteration, pass@1 gradually decreases' implies the authors selected iteration 5 based on benchmark performance. This is test-set leakage. I upgrade this to MAJOR-REVISION. However, it does not rise to RETRACTION-WORTHY because the iteration trend might still be robust under a held-out split—the paper simply didn't use one. That is fixable, not fatal."
+    ],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      "Finding 1 (pass@1 with greedy decoding — MAJOR-REVISION): I stand by this. The other reviewer lists a separate but related issue (mixing temperature selection with pass@k estimation). My original point was that pass@1 reported as 'greedy decoding' is ambiguous and incomparable to prior unbiased estimates. The other reviewer's point about temperature selection is an additional, different problem. Both are MAJOR-REVISION. My rating is correct.",
+      "Finding 2 (no validation split — MAJOR-REVISION): The other reviewer identifies additional test-set leakage issues (temperature selection, checkpoint selection) that reinforce my original concern. If anything, this makes my MAJOR-REVISION rating look generous—it is at minimum MAJOR-REVISION and perhaps should be elevated. But I stand by MAJOR-REVISION because the method's core trend might survive with a proper split. Not retraction-worthy.",
+      "Finding 3 (theoretical derivations — MAJOR-REVISION): The other reviewer is harsher on the math, calling it 'mathematically unsound.' I agree that the derivations are informal, but I rated this MAJOR-REVISION because the empirical results could stand independently. The theory section is motivating, not the primary evidence. The other reviewer's additional 'dubious equalities' observations support my rating—they do not push it to RETRACTION-WORTHY because the paper's claims do not hinge on mathematical proof.",
+      "Finding 4 (surrogate reward—MINOR): I rated this MINOR because it is a common limitation. The other reviewer agrees ('primarily a reproducibility/reporting issue'). No disagreement.",
+      "Finding 5 (ablation for softmax—MINOR): I stand by MINOR. The other reviewer did not comment on this specifically, but it is a minor design choice analysis. No upgrade needed."
+    ],
+    "new_errors_noticed": [
+      "Test-set tuning via temperature selection per metric: The paper states 'the best result is chosen' across temperatures {0, 0.2, 0.5, 0.8} for each of pass@1, pass@5, pass@10. This is a clear evaluation protocol flaw I missed. It is MAJOR-REVISION, not RETRACTION-WORTHY.",
+      "Checkpoint/iteration selection on benchmark performance: The authors describe performance degradation after iteration 5 and imply they report iteration 5 results. If the best iteration was chosen based on the test set, this is another leakage. I missed this. MAJOR-REVISION.",
+      "Potential train-test contamination from RTLCoder dataset: The other reviewer notes no deduplication against VerilogEval was documented. This is a valid concern I overlooked. It is MAJOR-REVISION because it could inflate scores, but it is fixable by checking for overlap. Not retraction-worthy unless overlap is confirmed.",
+      "No statistical uncertainty reported for small benchmarks (143/156 problems): I considered this but did not list it. The other reviewer correctly flags it as MINOR. I should have included it. It weakens confidence but does not change conclusions.",
+      "Metadata inconsistencies (2018 citation, placeholder fields): The other reviewer flags this. I agree it is MINOR—a carelessness indicator, not a methodological error."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.94,
+    "reasoning": "Both reviewers independently flagged serious methodological concerns and converged during reflection. The paper's central claims — state-of-the-art Verilog generation with only ~37% of reference data via an iterative fine-tuning method — rest on an evaluation protocol that appears to select hyperparameters (temperature, iteration/checkpoint) on the test benchmark itself, compare against baselines under uncontrolled conditions, and present theoretically unsound derivations as principled justification. No single issue is definitively retraction-worthy because the underlying method might still show improvement under a proper protocol, but the cumulative effect of multiple MAJOR-REVISION issues means the headline claims are not currently supportable as presented. Both reviewers defended their MAJOR-REVISION ratings through reflection and identified additional concerns that reinforced rather than weakened their initial assessments.",
+    "findings": [
+      {
+        "finding": "Test-set tuning / metric selection leakage: The paper evaluates multiple temperatures ({0, 0.2, 0.5, 0.8}) on the benchmark and selects the best result per metric (pass@1, pass@5, pass@10). This is hyperparameter optimization on the test set itself, inflating all reported primary outcomes.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.93,
+        "justification": "Both reviewers converged on this as a clear evaluation protocol flaw. It directly inflates the headline numbers and destroys comparability with baselines evaluated under fixed decoding settings. However, it is repairable: re-evaluation under a single pre-specified temperature could still show improvement. Not retraction-worthy because the method is not proven to fail — only the current numbers are suspect.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Unfair/unclear comparison to prior work: Baseline numbers are imported from other papers without harmonizing prompting templates, decoding strategy, number of samples, stopping criteria, benchmark version, or evaluation code. Combined with the authors' own best-of-temperature selection, cross-paper comparisons are not valid.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.9,
+        "justification": "The paper's primary claim is comparative superiority and data efficiency. Without matched evaluation conditions, these claims are not established. Reviewer A raised this explicitly; Reviewer B's concerns about pass@1 ambiguity and missing validation splits reinforce it. Fixable with controlled in-house reproduction, so not retraction-worthy.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Checkpoint/iteration selection appears benchmark-informed: The paper describes performance peaking around iteration 5 and declining thereafter, implying the reported iteration was chosen based on test-set performance rather than a held-out validation set.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.88,
+        "justification": "Both reviewers converged on this during reflection. Combined with temperature selection, this constitutes a second layer of test-set overfitting. A proper validation split would resolve it. Not retraction-worthy because the iterative trend might still hold under correct model selection.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "No validation/test split documented: The paper does not describe how model selection (iterations, hyperparameters α, β, λ) was performed independently of the evaluation benchmark.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers independently identified this. It is the root cause enabling the temperature-selection and checkpoint-selection leakage issues above. Standard methodology requires either a separate validation set or fully pre-specified hyperparameters. Fixable but currently undermines all reported results.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The 37% reference-sample efficiency claim is confounded: The central efficiency claim depends on strict comparability with baselines trained on different data under different conditions. Without controlled reproduction, the gain cannot be causally attributed to the iterative method.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.87,
+        "justification": "Reviewer A identified this as a separate concern from generic baseline comparison. The efficiency claim is the paper's most prominent selling point and is not causally identified under the current experimental design. Requires controlled ablation or matched reproduction to verify.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Theoretical derivations are mathematically unsound or heuristic: Equations 6–8 conflate token-level and sequence-level distributions, treat constants and expectations inconsistently, and invoke asymptotic arguments (law of large numbers) without justification for the claimed objective transformation.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers agreed the theory is poorly grounded. Reviewer A was harsher ('mathematically unsound'), Reviewer B called it 'informal.' Both agreed on MAJOR-REVISION because the empirical results could potentially stand independently. The theory section needs substantial rewriting or removal, but does not alone invalidate the empirical contribution.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Mixing of 'unbiased pass@k' language with incompatible evaluation regimes: The paper invokes the Chen et al. unbiased estimator while using greedy decoding for pass@1 and best-of-temperature selection across metrics, destroying the statistical interpretation of the estimator.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.86,
+        "justification": "Reviewer A identified the broader incompatibility; Reviewer B focused on the greedy-pass@1 ambiguity. Both concerns are valid and complementary. The result is that reported pass@k values are not interpretable under a fixed sampling policy. Fixable with standardized evaluation, but currently misleading.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Potential train-test contamination not addressed: No deduplication or leakage checks between RTLCoder/open-source training data and VerilogEval benchmark problems/solutions are documented, despite working in a niche domain with limited public data.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Reviewer A raised this; Reviewer B acknowledged it as a valid missed concern during reflection. In a small specialized domain, overlap risk is non-trivial. If contamination exists, results would be substantially inflated. Not retraction-worthy because contamination is not demonstrated, but the absence of any check is a serious methodological gap.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "No statistical uncertainty reported despite small benchmarks (143 and 156 problems): Claimed improvements of 1–1.3 percentage points may correspond to only 1–2 additional problems solved and may not be statistically significant.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.88,
+        "justification": "Both reviewers agreed this is a valid but minor concern. It weakens confidence in small numerical improvements but does not negate broader trends if they survive a properly controlled evaluation.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Surrogate reward function insufficiently specified for reproducibility: The Pyverilog + Rough-L quality signal is described only in passing with no formula, thresholds, or validation of its correlation with functional correctness.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers agreed this is a reproducibility/reporting issue and an acknowledged limitation, not a finding that would change the paper's conclusions. The authors themselves note the surrogate does not reflect functional correctness.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Ablation study (softmax normalization) reported only qualitatively without numerical results or significance tests.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Reviewer B raised this. It is a minor reporting gap about a design choice. Does not affect central conclusions.",
+        "source": "prover_b",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Metadata inconsistencies (placeholder dates, conference fields, DOI) suggest poor reporting hygiene.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Reviewer A noted this. Likely a template artifact. Signals carelessness but not methodological failure.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Claim that iterative resampling 'reduces estimation error' is asserted but not empirically demonstrated; no analysis of diversity collapse or self-training artifacts is provided.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.82,
+        "justification": "Reviewer A raised this. It is an over-claimed mechanism interpretation rather than a direct flaw in reported results. Would benefit from ablation but does not change the paper's fundamental status.",
+        "source": "prover_a",
+        "survived_reflection": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 27242,
+    "duration_s": 158.23,
+    "n_api_calls": 19,
+    "cost_usd": 1.3505,
+    "total_input_tokens": 163917,
+    "total_output_tokens": 36676,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 33900,
+        "output_tokens": 3261,
+        "cost_usd": 0.11736,
+        "duration_s": 53.95,
+        "label": "2407.09178v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7700,
+        "output_tokens": 3453,
+        "cost_usd": 0.374475,
+        "duration_s": 70.4,
+        "label": "2407.09178v2/b3plus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 6484,
+        "output_tokens": 1864,
+        "cost_usd": 0.03485,
+        "duration_s": 33.59,
+        "label": "2407.12022v2/b3plus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 30934,
+        "output_tokens": 1511,
+        "cost_usd": 0.01001428,
+        "duration_s": 20.79,
+        "label": "2407.09178v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 6484,
+        "output_tokens": 1382,
+        "cost_usd": 0.03003,
+        "duration_s": 27.22,
+        "label": "2407.12022v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 6397,
+        "output_tokens": 1229,
+        "cost_usd": 0.00307909,
+        "duration_s": 16.28,
+        "label": "2407.12022v2/b3plus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 6397,
+        "output_tokens": 1144,
+        "cost_usd": 0.00298559,
+        "duration_s": 16.38,
+        "label": "2407.12022v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 9770,
+        "output_tokens": 2181,
+        "cost_usd": 0.046235,
+        "duration_s": 35.67,
+        "label": "2407.18406v2/b3plus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3422,
+        "output_tokens": 1978,
+        "cost_usd": 0.028335,
+        "duration_s": 26.98,
+        "label": "2407.12022v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 8961,
+        "output_tokens": 1365,
+        "cost_usd": 0.00392097,
+        "duration_s": 19.04,
+        "label": "2407.18406v2/b3plus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3475,
+        "output_tokens": 1202,
+        "cost_usd": 0.0022604500000000002,
+        "duration_s": 15.78,
+        "label": "2407.12022v2/b3plus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 5392,
+        "output_tokens": 3823,
+        "cost_usd": 0.05171,
+        "duration_s": 66.47,
+        "label": "2407.09178v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4079,
+        "output_tokens": 1713,
+        "cost_usd": 0.0273275,
+        "duration_s": 26.19,
+        "label": "2407.18406v2/b3plus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3026,
+        "output_tokens": 2460,
+        "cost_usd": 0.032165,
+        "duration_s": 52.71,
+        "label": "2407.12022v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4049,
+        "output_tokens": 872,
+        "cost_usd": 0.0020524300000000005,
+        "duration_s": 9.84,
+        "label": "2407.18406v2/b3plus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 5339,
+        "output_tokens": 1311,
+        "cost_usd": 0.0028836300000000003,
+        "duration_s": 16.2,
+        "label": "2407.09178v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3079,
+        "output_tokens": 1217,
+        "cost_usd": 0.0021700300000000003,
+        "duration_s": 17.7,
+        "label": "2407.12022v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7551,
+        "output_tokens": 2376,
+        "cost_usd": 0.291465,
+        "duration_s": 43.36,
+        "label": "2407.12022v2/b3plus/arbiter"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7478,
+        "output_tokens": 2334,
+        "cost_usd": 0.28722,
+        "duration_s": 44.21,
+        "label": "2407.12022v2/b3plusplus/arbiter"
+      }
+    ]
+  }
+}

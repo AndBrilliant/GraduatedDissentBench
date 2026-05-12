@@ -1,0 +1,698 @@
+{
+  "condition": "B3PLUS",
+  "paper_id": "2402.10318v2",
+  "verdict": "flagged",
+  "confidence": 0.95,
+  "reasoning": "Both reviewers converge on a central, fatal problem: the paper's headline claim—that temporal repetition coding can replace transmit beamforming 'without reducing the data rate or the link budget'—is not supported by a valid system model and is physically incorrect for multi-antenna spatial channels. Beamforming gain arises from coherent spatial combining through a propagation channel with directional EIRP increase; temporal repetition provides processing gain at the cost of additional channel uses and does not recreate directional gain or compensate path loss equivalently. This is not a matter of missing simulations that could be added later—it is a conceptual category error that invalidates the paper's main thesis as stated. Both reviewers independently identified this and both upgraded or maintained it at RETRACTION-WORTHY after reflection. Beyond this central flaw, the paper lacks any end-to-end performance evaluation under noise or realistic propagation for the claimed mmWave/THz use case, uses a loosely applied AWGN capacity argument to justify the architecture, and makes multiple unsupported claims about spectral shaping not affecting error performance. These are serious MAJOR-REVISION issues that compound the central problem. Reviewer B's claim about the Shannon capacity formula being itself RETRACTION-WORTHY is less convincing upon careful examination—the formula R = log2(1+SNR) is standard for a complex AWGN channel per channel use, and the low-SNR linear approximation is textbook—but the broader misapplication of this formula to justify the space-time equivalence argument is indeed a significant methodological weakness.",
+  "findings": [
+    {
+      "finding": "The central claim that transmit beamforming 'can be replaced by a temporal repetition code without reducing the data rate or the link budget' is not supported and is physically incorrect for multi-antenna spatial channels.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.93,
+      "justification": "Beamforming provides coherent spatial combining with directional EIRP gain through the propagation channel, dependent on array geometry and channel state. Temporal repetition provides processing gain but consumes additional time-frequency resources and does not create equivalent directional gain or path-loss compensation. The paper treats these as interchangeable via a 'space-time swap on AWGN' argument that ignores the spatial channel entirely. Both reviewers identified this independently; Reviewer A maintained RETRACTION-WORTHY and Reviewer B upgraded to RETRACTION-WORTHY after reflection. Since this is the paper's main thesis and it is conceptually flawed rather than merely unsupported, it meets the RETRACTION-WORTHY threshold.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "No end-to-end link simulation under noise or realistic propagation is provided for the claimed mmWave/THz use case; the only quantitative result is a self-interference SIR metric with zero AWGN.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.9,
+      "justification": "The paper claims suitability for link-budget-critical mmWave/THz operation but provides no BER, FER, capacity, or outage results under AWGN, fading, path loss, or phase noise. Reviewer A downgraded this from RETRACTION-WORTHY to MAJOR-REVISION on reflection (recognizing it as an absence-of-evidence problem rather than a proven impossibility), and Reviewer B upgraded it from MINOR to MAJOR-REVISION. This convergence at MAJOR-REVISION is appropriate: the absence makes the practical claims unsubstantiated but could in principle be remedied.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The comparison between temporal repetition and spatial beamforming lacks defined fairness conditions (equal total radiated power, EIRP, bandwidth, latency, aperture) and conflates coding gain with antenna gain.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Reviewer A downgraded this from RETRACTION-WORTHY to MAJOR-REVISION on reflection, recognizing it as an underdefined comparison rather than a mathematically impossible result in isolation. The unfairness of the comparison is closely related to the central claim (Finding 1) but is a separable methodological issue that could be addressed by proper normalization and baseline definition. MAJOR-REVISION is appropriate because fixing the comparison framework could materially change the conclusions.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The paper claims spectral shaping via phase-shift offsets ω can be performed 'without influencing the performance, e.g., error and information rate,' but no proof of Euclidean distance preservation, trellis analysis, or error-rate evidence is provided.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Changing phase-shift sets (e.g., ±π vs. ±π/2) changes the signal constellation and potentially the minimum Euclidean distance, which directly affects detection performance. The paper's spectral confinement claims rest on this optimization, so the unsupported assertion of no performance impact is a substantial gap. Both reviewers flagged this; it is a real concern but could potentially be resolved with analysis or simulation.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The scalar AWGN capacity formula is used as the foundational justification for the architecture, but the actual system involves multi-antenna transmission, CPM memory, constrained modulation, FFT demodulation, and subcarrier interference—rendering the simple capacity argument inappropriate.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "Reviewer A consistently rated this MAJOR-REVISION. Reviewer B rated the capacity formula itself as RETRACTION-WORTHY, but upon examination, the formula R = log2(1+SNR) per complex channel use is standard; the real problem is its misapplication to justify the space-time equivalence for a system that is neither scalar nor memoryless. This is a serious theoretical motivation gap but is subsumed by and secondary to the central RETRACTION-WORTHY finding about beamforming replacement. As a standalone issue it is MAJOR-REVISION: the theoretical motivation is flawed but could be reformulated.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The heuristic optimization criterion for subcarrier phase-shift sets (minimize maximal instantaneous-frequency deviation) is ad hoc and not tied to spectral confinement metrics such as ACLR or spectral mask compliance.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "The paper positions spectral containment as a core practical benefit, yet optimizes using an unvalidated surrogate objective. Reviewer A flagged this consistently; it is a substantive methodological weakness that affects the credibility of the spectral shaping results.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The relationship between repetition codes, differential precoding, and the resulting spectral shape is not rigorously derived; key claims (e.g., that code R_l produces an all-one sequence of at least 147 symbols after precoding) lack proof.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "Reviewer B identified this as a gap in the mathematical derivation chain. The spectral shaping mechanism is central to the paper, and without a rigorous derivation the results cannot be independently verified. This could be fixed with a proper mathematical model.",
+      "source": "prover_b",
+      "survived_reflection": true
+    },
+    {
+      "finding": "There is no formal, reproducible definition of the transmitted signal, receiver processing, synchronization assumptions, or PSD estimation procedure.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Both reviewers noted the absence of precise signal models. For a paper proposing a new physical-layer architecture, this prevents independent verification and could conceal modeling errors. Reviewer A maintained MAJOR-REVISION after reflection.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Benchmarking against single-carrier GMSK and linear PSK is not reproducible or fair: no matched pulse shapes, normalization, equal-rate/bandwidth constraints, or spectral-mask metrics are specified.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "Visual PSD comparison alone is insufficient when spectral competitiveness is a key claim. Reviewer A maintained MAJOR-REVISION; this is a standard but important methodological gap.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The paper ambiguously uses 'rate' to mean information bit rate, modulation symbol rate, and code rate, making the 'no data rate reduction' claim unverifiable.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "Reviewer A identified this in reflection. The headline claim hinges on rate accounting, and the ambiguity prevents fair evaluation of whether throughput is actually maintained.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The claim that 'the more antennas are utilized, the larger the symbol period, making MA-TISK more robust against channel dispersion' is unsupported and potentially false (more subcarriers may increase Doppler/phase-noise sensitivity at mmWave).",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "Both reviewers flagged this. Reviewer B noted the Doppler/phase-noise counterargument. The claim is used to support the mmWave/THz positioning and is not substantiated.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Latency and coherence-time costs of temporal repetition (T=70 channel uses per information symbol) are not incorporated into the comparison with beamforming.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Reviewer A raised this in reflection. Temporal repetition requires the channel to remain stable over T symbol periods, which may be problematic at mmWave with mobility, and introduces latency that beamforming does not. This is a material omission in the comparative argument.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The statement that restricting to phase modulation has 'a very similar effect as a repetition code of rate one half, if the SNR is high' is unsupported.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.72,
+      "justification": "This is used to justify spectral efficiency sacrifices but has no derivation. Reviewer A maintained MAJOR-REVISION. It is not central enough to be retraction-worthy but is a real unsupported claim.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The manuscript argues that narrow angular spread from beamforming reduces multipath diversity and motivates avoiding beamforming, without quantitative support.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers view this as overstated motivation rather than a core methodological defect. It does not change conclusions on its own.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Notation inconsistencies (e.g., R used for both data rate and code rate) and ambiguous gain accounting reduce clarity.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.88,
+      "justification": "Valid but does not change conclusions independently. Both reviewers noted this.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "References contain placeholders ([DATE], [JOURNAL], [AUTHOR_1]) and critical citations are unresolved.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.92,
+      "justification": "Editorial issue. Does not affect technical validity but impedes verification of prior-art claims.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Synchronization requirements for multicarrier CPFSK are not discussed despite the claim of 'fast setup without serious overhead.'",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Practical implementation concern, not a methodological error. Reviewer B maintained MINOR after reflection.",
+      "source": "prover_b",
+      "survived_reflection": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 1,
+    "MAJOR-REVISION": 12,
+    "MINOR": 4
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.96,
+    "reasoning": "The manuscript is conceptually interesting, but its core methodological claims are not supported by a valid system model or comparative analysis. The central claim—that temporal repetition over subcarriers/antennas can replace transmit beamforming 'without reducing the data rate or the link budget'—is not established and appears physically inconsistent for multi-antenna links. The paper mixes coding gain, multiplexing structure, antenna mapping, and beamforming gain in a way that ignores the spatial channel. Most results are spectral illustrations and an interference-only simulation with no realistic propagation, no noise, no fading, no array geometry, and no comparison under equal radiated power / aperture / EIRP assumptions. Several quantitative claims are also internally inconsistent (e.g., rate/combing gain/orthogonality choices). As written, the main engineering conclusions about replacing beamforming and suitability for mmWave/THz cannot be supported.",
+    "findings": [
+      {
+        "finding": "The central claim that transmit beamforming 'can be replaced by a temporal repetition code without reducing the data rate or the link budget' is not supported by an appropriate channel model and is generally false for the stated multi-antenna setting.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "Beamforming gain arises from coherent spatial combining through the propagation channel and depends on array geometry and channel phase alignment. Repeating symbols in time provides coding/processing gain only if the channel remains stable and does not recreate directional EIRP gain or compensate path loss in the same way. The manuscript explicitly argues by 'exchanging space and time on an AWGN channel,' but mmWave/THz links are spatial channels, not scalar AWGN channels detached from antenna aperture and directivity. If this equivalence is invalid, the paper's main conclusion—that MA-TISK makes transmit beamforming dispensable for critical link budgets—cannot be supported."
+      },
+      {
+        "finding": "No physically meaningful end-to-end link simulation is provided for the main use case (mmWave/THz multi-antenna communication); results omit the spatial channel, path loss, fading, synchronization burden, phase noise, and antenna-array effects.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The manuscript claims suitability for millimeter/terahertz communications specifically because link budget is critical, yet the only quantitative result is transmit PSD and an interference-only FFT demodulation metric with no AWGN added. There is no BER/BLER/capacity/outage under realistic channel conditions, no path-loss-limited link comparison, and no array/aperture-normalized benchmark against beamforming. Without a propagation model, the claimed replacement of beamforming is untestable; the central practical conclusion therefore cannot be supported by the presented data."
+      },
+      {
+        "finding": "The comparison between spatial repetition (beamforming) and temporal repetition ignores power/aperture/EIRP fairness and conflates coding gain with antenna gain.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "A valid comparison must specify whether total radiated power, per-antenna power, EIRP, occupied bandwidth, array aperture, and latency are held fixed. Beamforming can provide directional gain without increasing occupied time, while temporal repetition spends extra channel uses and changes latency/redundancy structure. The manuscript asserts equivalence based on code rate 1/N versus 1/T and SNR gain N versus T, but this is not a sufficient physical or information-theoretic comparison in a multi-antenna wireless system. If the fairness conditions are not defined correctly, the main replacement claim is fundamentally unsupported."
+      },
+      {
+        "finding": "The manuscript's use of the scalar AWGN capacity formula as foundational justification is methodologically inappropriate for the claimed multi-antenna, repetition-coded, spectrally shaped, constant-envelope system.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The statement 'information theory does not care if we exchange space and time on an AWGN channel' is used to motivate the architecture, but the actual system is neither a memoryless scalar channel nor an abstract dimension-swapped equivalent. It has constrained modulation, CPM memory, FFT demodulation, subcarrier interference, and a spatially distributed transmit array. The low-SNR approximation R ≈ SNR/ln2 does not establish that temporal repetition and beamforming are interchangeable under these constraints. This undermines the paper's theoretical motivation and could materially change conclusions if corrected."
+      },
+      {
+        "finding": "The paper provides no decoder-performance evidence for MA-TISK under noise; it reports only SIR from self-interference with zero added Gaussian noise.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Claims about communication viability, coherent demodulation ease, and suitability for critical-link-budget operation require BER/FER/capacity or achievable information rate under AWGN and, ideally, fading/phase-noise conditions. Reporting a self-interference SIR of 34.4 dB (or 8 dB for T=N) without noise does not demonstrate error performance. Since the method is intended for low-SNR operation, omission of noise-performance results is a major methodological gap that could alter conclusions."
+      },
+      {
+        "finding": "The claim that subcarriers can be 'perfectly separated via FFT' when T > N is not rigorously derived and appears to ignore CPM memory, pulse tails, windowing mismatch, and channel dispersion.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The argument rests on the instantaneous frequency being constant for N symbol periods, but orthogonal FFT separation requires a precise discrete-time signal model, timing alignment, and phase evolution consistent with DFT bins over the observation window. In CPM/CPFSK with finite pulse memory and continuous phase, constant instantaneous frequency over part of a symbol is not by itself sufficient to guarantee perfect orthogonality after sampling. If this assumption fails, the proposed low-complexity receiver may not function as claimed."
+      },
+      {
+        "finding": "The manuscript repeatedly treats different phase shifts modulo 2π as spectrally distinct while also claiming unchanged communication performance, but it does not prove symbol-wise or sequence-wise equivalence at the receiver for the proposed mappings.",
+        "severity": "MAJOR-REVISION",
+        "justification": "In CPM, adding 2π to phase increments can alter continuous-time trajectories and spectral occupancy, but whether the resulting signals remain equivalent for detection depends on the exact modulator, pulse shape, state evolution, and receiver. The paper assumes one can optimize the vector ω per subcarrier 'without influencing performance' yet provides no proof of Euclidean distance preservation, no trellis/state analysis, and no error-rate evidence. If this assumption is wrong, the spectral shaping may come at a nontrivial detection-performance cost."
+      },
+      {
+        "finding": "The heuristic optimization criterion for choosing subcarrier-dependent phase-shift sets ('minimize maximal deviation of instantaneous frequency from band center') is ad hoc and not tied to the stated objective of spectral confinement or adjacent-channel leakage.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The paper explicitly states that proper optimization is left open, yet uses the heuristic to support the proposed method's effectiveness. Minimizing instantaneous-frequency deviation is not equivalent to minimizing PSD sidelobes, ACLR, occupied bandwidth, or spectral-mask violation. Since the central practical benefit claimed is improved spectral confinement, using an unvalidated surrogate objective is a substantive methodological weakness."
+      },
+      {
+        "finding": "The benchmarking against 'state-of-the-art' single-carrier methods is not reproducible or fair as presented.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The paper states that MA-TISK is compared to single-carrier GMSK and linear PSK, but it does not specify comparable pulse shapes, filter roll-off, normalization, equal power constraints, equal information rate, equal occupied bandwidth definitions, or spectral-mask metrics. Visual PSD comparison alone is insufficient. Because the manuscript's conclusions rely on spectral competitiveness, inadequate benchmarking could materially change the result."
+      },
+      {
+        "finding": "There is no formal definition of the transmitted signal, receiver processing, synchronization assumptions, or PSD estimation procedure sufficient for reproducibility.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The method involves differential precoding, subcarrier/antenna-dependent constellations, CPM frequency pulses, repetition factor T, FFT windowing, and coherent demodulation, but these are described qualitatively. Missing are exact discrete/continuous-time equations, normalization constants, sampling rates, window positions, channel assumptions, and how PSD and SIR were computed. This prevents independent verification and could conceal modeling errors."
+      },
+      {
+        "finding": "The asserted robustness trend with antenna count ('The more antennas are utilized, the larger the symbol period ... This makes MA-TISK the more robust against channel dispersion') is not generally valid and is unsupported.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Increasing N while partitioning bandwidth into narrower subbands can reduce per-subcarrier symbol rate, but overall robustness to multipath depends on delay spread relative to symbol time, array-channel variation, synchronization, and equalization strategy. Since the paper proposes one antenna per subcarrier and no beamforming, more antennas also mean more RF chains and potentially more channel estimation/synchronization complexity. The broad claim may be false under realistic channels and affects the intended mmWave/THz positioning."
+      },
+      {
+        "finding": "The manuscript argues that narrow angular spread from beamforming reduces multipath diversity and motivates avoiding beamforming, but this tradeoff is presented without a quantitative system model and may misrepresent practical mmWave operation.",
+        "severity": "MINOR",
+        "justification": "This is more of a motivation issue than a fatal flaw, but the text uses strong claims about beamforming disadvantages without balanced modeling of the substantial SNR and interference benefits of directionality. As motivation alone this is acceptable, yet it overstates the case."
+      },
+      {
+        "finding": "The statement that restricting to phase modulation has 'a very similar effect as a repetition code of rate one half, if the SNR is high' is unsupported and potentially misleading.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This appears to compare loss from omitting amplitude degrees of freedom with a 1/2-rate repetition penalty, but no derivation is given and the claim depends strongly on constellation, coding, and SNR regime. Because it is used to justify spectral-efficiency sacrifices, it needs proof or should be removed."
+      },
+      {
+        "finding": "Several numerical and definitional inconsistencies weaken confidence in the quantitative analysis, including overloaded notation for R (data rate vs code rate), and ambiguous gain accounting.",
+        "severity": "MINOR",
+        "justification": "For example, R is used for both data rate and repetition-code rate; 'temporal combining gain' is stated as 18.1 dB because T=70 while comparison is to N=64 antennas; and some claims about spectral waste and overhead are qualitative rather than quantitatively defined. These issues do not by themselves invalidate conclusions but hinder precise interpretation."
+      },
+      {
+        "finding": "The manuscript is incomplete from a scholarly-methods perspective: references contain placeholders ([DATE], [JOURNAL], [AUTHOR_1]) and critical prior-art/context citations are not properly resolved.",
+        "severity": "MINOR",
+        "justification": "This is not a methodological flaw in the signal-processing sense, but incomplete references impede verification of supporting claims and prior-art positioning."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.85,
+    "reasoning": "The manuscript presents a novel concept (MA-TISK) for combining repetition coding, CPFSK, and multi-antenna transmission, but it contains several significant methodological gaps and questionable claims that undermine its central conclusions. The most critical issues include an incorrectly stated Shannon capacity formula (which invalidates the core theoretical motivation), confusion between differential precoding and the actual modulation mapping, lack of a proper information-theoretic rate analysis, poorly justified optimization claims without a defined criterion, and missing key performance comparisons (e.g., with beamforming or standard multicarrier schemes). These issues collectively call into question whether the proposed scheme actually achieves the claimed benefits.",
+    "findings": [
+      {
+        "finding": "The manuscript states the Shannon capacity as R = log2(1 + SNR) for a complex AWGN channel, which is incorrect for complex signals (should be log2(1 + SNR) per complex dimension, or more commonly R = log2(1 + SNR) for a real channel, but for a complex channel with two dimensions the formula is typically R = log2(1 + SNR) where SNR is the SNR per complex symbol). This error is used to derive a linear approximation for low SNR and to motivate repetition coding as near-optimal.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The formula error undermines the fundamental theoretical motivation for the entire scheme. The claim that 'you can hardly do anything better than concatenating standard methods of forward-error correction coding designed for moderate rates with repetition coding' relies on this flawed derivation. If the capacity expression is corrected, the linear approximation and the optimality argument for repetition coding at low SNR may not hold, potentially invalidating the central thesis that MA-TISK is a competitive alternative to beamforming."
+      },
+      {
+        "finding": "The paper claims that differential precoding converts a bit sequence into a sequence of phase shifts, but then uses the repetition codes R_u and R_l to generate specific phase patterns. However, the relationship between the repetition code, differential precoding, and the observed spectrum is not rigorously derived. The claim that the code R_l leads to an all-one sequence of at least 147 symbols after differential precoding is not justified, and the mapping (4) changes the phase offsets inconsistently with standard GMSK.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the mapping between repetition codewords, differential precoding, and the resulting phase/frequency is not mathematically sound, the spectral shaping claims (the key innovation) may be incorrect. The authors need to provide a precise derivation or cite an authoritative source."
+      },
+      {
+        "finding": "The paper claims that the temporal repetition code can achieve a 'temporal combining gain' of up to 18.1 dB with T=70 repetitions, equivalent to a factor of about 64 in SNR improvement. However, for a repetition code on an AWGN channel, the SNR gain from coherent combining is linear in T, not logarithmic. A gain of 18.1 dB corresponds to a factor of ~64, which is consistent with T=70. But the paper does not account for the fact that this gain comes at the expense of data rate (since the effective rate is 1/T of the original). The comparison to beamforming is misleading because beamforming provides the same SNR gain without reducing the data rate (spatial degrees of freedom).",
+        "severity": "MAJOR-REVISION",
+        "justification": "The central claim of the paper is that temporal repetition coding can replace spatial beamforming 'without reducing the data rate or the link budget.' This is only true if the total bandwidth and time resources are reallocated, which the authors do not properly address. The data rate in the proposed scheme is 160 Mbit/s with 64 subcarriers and QPSK at 1.25 Msymbols/s each (64 * 1.25e6 * 2 = 160 Mbit/s). This is the same as a single-carrier system with 64 antennas using beamforming? The lack of a clear baseline makes the claim unverifiable. This could be resolved with a proper comparison, but as written it is a major omission."
+      },
+      {
+        "finding": "The paper states that the authors can 'optimize the spectral shape without influencing the performance, e.g., error and information rate' by choosing the phase-shift offsets ω. However, changing the phase shifts to ±π (as in mapping 4) versus ±π/2 changes the Euclidean distance between constellation points and thus the error rate. The claim that the receiver 'will hardly notice the difference' is vague and not supported by analysis or simulation. The optimization of ω is described as minimizing the 'maximal deviation of the instantaneous frequency from the center of band,' but no formal optimization criterion or algorithm is given.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the phase-shift offsets affect bit error rate or mutual information, then the claim of no performance impact is false, and the entire spectral confinement optimization may come at a cost that is ignored. The authors need to include an analysis of error performance or at least acknowledge this trade-off."
+      },
+      {
+        "finding": "The numerical results section reports a signal-to-interference ratio (SIR) of 34.4 dB due to crosstalk for T=70, but does not provide a bit error rate (BER) or frame error rate (FER) simulation for a realistic channel (including noise). The only performance metric is SIR, which is insufficient to evaluate the system's viability. The paper claims that SIR of 8 dB is 'more than sufficient for reliable communication with quaternary modulation' without citing any coding scheme or Eb/N0 requirements.",
+        "severity": "MINOR",
+        "justification": "While this does not invalidate the core idea, it weakens the evidence for the system's practical performance. A more complete set of simulations (BER vs. SNR, including forward error correction) would strengthen the paper. However, this is a common limitation in conceptual papers."
+      },
+      {
+        "finding": "The paper claims that 'MA-TISK does not require beam alignment' and that 'radio links can be set up fast without serious overhead.' While this is a potential benefit of not using spatial beamforming, the authors do not discuss the required time/frequency synchronization for multicarrier CPFSK, which typically requires accurate carrier and timing recovery. The GMSK frequency correction burst (used in GSM for synchronization) is mentioned, but it is not shown how MA-TISK achieves initial synchronization without training sequences or pilots.",
+        "severity": "MINOR",
+        "justification": "This is a practical implementation concern, not a methodological error. It does not affect the validity of the proposed technique but limits the claim of 'fast setup' without additional overhead. This could be addressed in future work."
+      }
+    ]
+  },
+  "reflection_a": {
+    "reflection_notes": "On second pass, I still think the manuscript’s main engineering claim is not supported: the paper does not establish that temporal repetition across subcarriers/antennas can replace transmit beamforming in mmWave/THz links under any physically fair system model. That remains the core problem. However, I do think a few of my original severity labels were too strong. In particular, some issues I labeled RETRACTION-WORTHY are better framed as MAJOR-REVISION when they concern missing fairness conditions or missing simulations rather than a demonstrably false numerical result. The key distinction is: the central replacement claim is fundamentally unsupported as written, but some supporting deficiencies are evidentiary gaps rather than standalone fatal errors. I also think the other reviewer overstates the Shannon-formula issue; whatever notation sloppiness may exist there, it is not the decisive flaw compared with the invalid space-time/beamforming equivalence argument.",
+    "severity_i_now_upgrade": [],
+    "severity_i_now_downgrade": [
+      {
+        "finding": "No physically meaningful end-to-end link simulation is provided for the main use case (mmWave/THz multi-antenna communication); results omit the spatial channel, path loss, fading, synchronization burden, phase noise, and antenna-array effects.",
+        "from": "RETRACTION-WORTHY",
+        "to": "MAJOR-REVISION",
+        "why": "This is a very serious evidentiary gap, but by itself it is an absence-of-validation problem rather than a proven impossibility. It means the practical claims are unsupported, but if realistic simulations were later added the conclusion could in principle change."
+      },
+      {
+        "finding": "The comparison between spatial repetition (beamforming) and temporal repetition ignores power/aperture/EIRP fairness and conflates coding gain with antenna gain.",
+        "from": "RETRACTION-WORTHY",
+        "to": "MAJOR-REVISION",
+        "why": "This remains central and serious, but the issue is that the comparison is underdefined and likely unfair, not that a specific reported result is mathematically impossible in isolation. Proper normalization could materially change the claims, so MAJOR-REVISION is the better fit."
+      },
+      {
+        "finding": "The claim that subcarriers can be 'perfectly separated via FFT' when T > N is not rigorously derived and appears to ignore CPM memory, pulse tails, windowing mismatch, and channel dispersion.",
+        "from": "MAJOR-REVISION",
+        "to": "MINOR",
+        "why": "I still think the derivation is incomplete, but 'perfectly separated' may have been intended under an idealized no-channel, perfectly synchronized model. Since the manuscript’s bigger problems already invalidate the practical conclusions, this specific point is less central than I initially treated it. It is still worth noting, but likely not a decisive methodological flaw on its own."
+      }
+    ],
+    "findings_i_still_defend": [
+      {
+        "finding": "The central claim that transmit beamforming 'can be replaced by a temporal repetition code without reducing the data rate or the link budget' is not supported by an appropriate channel model and is generally false for the stated multi-antenna setting.",
+        "severity": "RETRACTION-WORTHY",
+        "why": "This is still the main fatal problem. The paper’s headline conclusion depends on treating temporal redundancy as interchangeable with coherent spatial beamforming in a way that ignores directional gain, aperture, propagation geometry, and array-channel interaction. As presented, the paper does not support that claim."
+      },
+      {
+        "finding": "The manuscript's use of the scalar AWGN capacity formula as foundational justification is methodologically inappropriate for the claimed multi-antenna, repetition-coded, spectrally shaped, constant-envelope system.",
+        "severity": "MAJOR-REVISION",
+        "why": "Even if not the single fatal flaw, the information-theoretic motivation is too loose to justify the architectural equivalence being claimed. The dimension-swapping argument is not a valid derivation for the actual system studied."
+      },
+      {
+        "finding": "The paper provides no decoder-performance evidence for MA-TISK under noise; it reports only SIR from self-interference with zero added Gaussian noise.",
+        "severity": "MAJOR-REVISION",
+        "why": "For a communications paper making practical viability claims, this is a major omission. It does not alone prove the method fails, but it leaves the main performance claims unsubstantiated."
+      },
+      {
+        "finding": "The manuscript repeatedly treats different phase shifts modulo 2π as spectrally distinct while also claiming unchanged communication performance, but it does not prove symbol-wise or sequence-wise equivalence at the receiver for the proposed mappings.",
+        "severity": "MAJOR-REVISION",
+        "why": "This still matters because the claimed spectral optimization rests on the assertion that receiver performance is unaffected. That assertion needs proof or simulation."
+      },
+      {
+        "finding": "The heuristic optimization criterion for choosing subcarrier-dependent phase-shift sets ('minimize maximal deviation of instantaneous frequency from band center') is ad hoc and not tied to the stated objective of spectral confinement or adjacent-channel leakage.",
+        "severity": "MAJOR-REVISION",
+        "why": "The manuscript sells spectral shaping as a core benefit, so optimizing with an unvalidated surrogate objective is a substantive weakness."
+      },
+      {
+        "finding": "The benchmarking against 'state-of-the-art' single-carrier methods is not reproducible or fair as presented.",
+        "severity": "MAJOR-REVISION",
+        "why": "Since competitiveness on spectral containment is a key claim, visual or underdefined PSD comparisons are not enough."
+      },
+      {
+        "finding": "There is no formal definition of the transmitted signal, receiver processing, synchronization assumptions, or PSD estimation procedure sufficient for reproducibility.",
+        "severity": "MAJOR-REVISION",
+        "why": "The presentation is too incomplete for independent verification of the claimed effects."
+      },
+      {
+        "finding": "The asserted robustness trend with antenna count ('The more antennas are utilized, the larger the symbol period ... This makes MA-TISK the more robust against channel dispersion') is not generally valid and is unsupported.",
+        "severity": "MAJOR-REVISION",
+        "why": "This is a strong practical claim attached to the proposed architecture and is not justified by the analysis given."
+      },
+      {
+        "finding": "The manuscript argues that narrow angular spread from beamforming reduces multipath diversity and motivates avoiding beamforming, but this tradeoff is presented without a quantitative system model and may misrepresent practical mmWave operation.",
+        "severity": "MINOR",
+        "why": "I still view this mostly as overstated motivation rather than a core methodological defect."
+      },
+      {
+        "finding": "The statement that restricting to phase modulation has 'a very similar effect as a repetition code of rate one half, if the SNR is high' is unsupported and potentially misleading.",
+        "severity": "MAJOR-REVISION",
+        "why": "This is not adequately derived and is used to support efficiency arguments that matter to the overall case."
+      },
+      {
+        "finding": "Several numerical and definitional inconsistencies weaken confidence in the quantitative analysis, including overloaded notation for R (data rate vs code rate), and ambiguous gain accounting.",
+        "severity": "MINOR",
+        "why": "Still not central, but it contributes to lack of clarity."
+      },
+      {
+        "finding": "The manuscript is incomplete from a scholarly-methods perspective: references contain placeholders ([DATE], [JOURNAL], [AUTHOR_1]) and critical prior-art/context citations are not properly resolved.",
+        "severity": "MINOR",
+        "why": "Editorial and scholarly, not decisive."
+      }
+    ],
+    "new_errors_noticed": [
+      {
+        "finding": "The manuscript appears to shift between at least three different notions of 'rate' without clearly separating them: information bit rate, modulation symbol rate per subcarrier, and effective code rate after temporal repetition.",
+        "severity": "MAJOR-REVISION",
+        "why": "This ambiguity is central to the headline claim of 'no reduction in data rate.' Without a precise accounting of time-frequency resources and net information throughput, the claim cannot be evaluated fairly."
+      },
+      {
+        "finding": "The paper does not establish the appropriate baseline architecture for the beamforming comparison: single stream with array gain, spatial multiplexing, OFDM-like multicarrier with beamforming, or per-antenna/subcarrier mapping under equal bandwidth and hardware constraints.",
+        "severity": "MAJOR-REVISION",
+        "why": "Because the claimed advantage is comparative, the absence of a clearly defined baseline makes the central conclusion too elastic to test."
+      },
+      {
+        "finding": "Latency and coherence-time costs of temporal repetition are not incorporated into the comparison with beamforming.",
+        "severity": "MAJOR-REVISION",
+        "why": "Temporal repetition consumes additional channel uses and may be much less attractive in short-packet, time-varying, or low-latency regimes. Ignoring this weakens the claim of practical interchangeability with spatial beamforming."
+      }
+    ]
+  },
+  "reflection_b": {
+    "reflection_notes": "Upon re-examination, I see that my original review correctly identified several problems, but I under-rated two critical findings. The misinformation about Shannon capacity is indeed retraction-worthy because it underpins the entire motivation. However, my central 'temporal combining gain vs beamforming' finding (which I labeled MAJOR-REVISION) is actually more severe: the paper's primary claim that temporal repetition can replace beamforming 'without reducing data rate or link budget' is physically and information-theoretically false in a multi-antenna spatial channel. This is not just a missing comparison—it's a fundamental category error. The second reviewer is right to call this RETRACTION-WORTHY. Similarly, the lack of link simulations for mmWave/THz, when the paper explicitly claims to solve that link budget problem, is an absence that makes the central conclusion untestable. I also realize my original 'optimization without performance impact' finding was under-rated: without a proof or simulation, the claim that spectral shaping doesn't affect error rate is an unsupported assertion that could invalidate the spectral efficiency claims. Some of my MINOR findings (synchronization, SIR-only simulation) are valid but not retraction-worthy. I stand by my earlier correct identification of the capacity formula error and differential precoding confusion, but I now upgrade their severity classifications to align with the second reviewer's more rigorous standards.",
+    "severity_i_now_upgrade": [
+      "Finding 3 (temporal combining gain vs beamforming): Upgrade from MAJOR-REVISION to RETRACTION-WORTHY. The paper's central replacement claim is fundamentally unsupported and likely false for the stated multi-antenna spatial channel. Beamforming gain is directional and depends on array geometry and channel phase alignment; temporal repetition on a scalar AWGN channel is not equivalent. This is the paper's main thesis and cannot be sustained without a complete reformulation.",
+      "Finding 4 (optimization without performance impact): Upgrade from MAJOR-REVISION to MAJOR-REVISION (keep same, but note it could be RETRACTION-WORTHY if the spectral shaping causes unrecoverable performance loss that invalidates the claimed spectral efficiency benefits). I'll keep it at MAJOR-REVISION because the paper could potentially add a proof that distance is preserved.",
+      "Finding 5 (SIR-only simulation): Upgrade from MINOR to MAJOR-REVISION. For a paper claiming to solve mmWave/THz link budget problems, omitting AWGN and realistic propagation in the only quantitative evaluation is a critical gap that directly undermines the 'suitable for critical link budgets' conclusion."
+    ],
+    "severity_i_now_downgrade": [
+      "No findings to downgrade. All my original severity ratings are either correct or under-rated."
+    ],
+    "findings_i_still_defend": [
+      "Finding 1 (Shannon capacity error) as RETRACTION-WORTHY — the formula and derived linear approximation are fundamentally wrong and invalidate the theoretical motivation.",
+      "Finding 2 (differential precoding mapping confusion) as MAJOR-REVISION — the relationship between repetition codes, precoding, and spectrum is not rigorously derived; this could be fixed with a clear mathematical model.",
+      "Finding 6 (synchronization not addressed) as MINOR — this is a practical concern, not a methodological error that invalidates the core idea."
+    ],
+    "new_errors_noticed": [
+      "The paper claims 'the more antennas, the larger the symbol period' as a robustness advantage, but this conflates two different parameters. If N is the number of antennas and also the number of subcarriers (as they claim), then more antennas means narrower subcarrier spacing, which increases sensitivity to Doppler/phase noise in mmWave — exactly the opposite of robustness. This is an additional unsupported claim that could be RETRACTION-WORTHY if it's central to the mmWave argument.",
+      "The manuscript uses 'repetition coding' in two different senses: temporal repetition (T=70) for gain, and antenna/subcarrier repetition for spectral shaping. But the spectral shaping mechanism appears to rely on the phase-shift assignments (omega vector), not on repetition per se. The paper never explains how the repetition code maps to the spectral shaping benefit it actually demonstrates. This could be a MAJOR-REVISION gap."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "Both reviewers converge on a central, fatal problem: the paper's headline claim—that temporal repetition coding can replace transmit beamforming 'without reducing the data rate or the link budget'—is not supported by a valid system model and is physically incorrect for multi-antenna spatial channels. Beamforming gain arises from coherent spatial combining through a propagation channel with directional EIRP increase; temporal repetition provides processing gain at the cost of additional channel uses and does not recreate directional gain or compensate path loss equivalently. This is not a matter of missing simulations that could be added later—it is a conceptual category error that invalidates the paper's main thesis as stated. Both reviewers independently identified this and both upgraded or maintained it at RETRACTION-WORTHY after reflection. Beyond this central flaw, the paper lacks any end-to-end performance evaluation under noise or realistic propagation for the claimed mmWave/THz use case, uses a loosely applied AWGN capacity argument to justify the architecture, and makes multiple unsupported claims about spectral shaping not affecting error performance. These are serious MAJOR-REVISION issues that compound the central problem. Reviewer B's claim about the Shannon capacity formula being itself RETRACTION-WORTHY is less convincing upon careful examination—the formula R = log2(1+SNR) is standard for a complex AWGN channel per channel use, and the low-SNR linear approximation is textbook—but the broader misapplication of this formula to justify the space-time equivalence argument is indeed a significant methodological weakness.",
+    "findings": [
+      {
+        "finding": "The central claim that transmit beamforming 'can be replaced by a temporal repetition code without reducing the data rate or the link budget' is not supported and is physically incorrect for multi-antenna spatial channels.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.93,
+        "justification": "Beamforming provides coherent spatial combining with directional EIRP gain through the propagation channel, dependent on array geometry and channel state. Temporal repetition provides processing gain but consumes additional time-frequency resources and does not create equivalent directional gain or path-loss compensation. The paper treats these as interchangeable via a 'space-time swap on AWGN' argument that ignores the spatial channel entirely. Both reviewers identified this independently; Reviewer A maintained RETRACTION-WORTHY and Reviewer B upgraded to RETRACTION-WORTHY after reflection. Since this is the paper's main thesis and it is conceptually flawed rather than merely unsupported, it meets the RETRACTION-WORTHY threshold.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "No end-to-end link simulation under noise or realistic propagation is provided for the claimed mmWave/THz use case; the only quantitative result is a self-interference SIR metric with zero AWGN.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.9,
+        "justification": "The paper claims suitability for link-budget-critical mmWave/THz operation but provides no BER, FER, capacity, or outage results under AWGN, fading, path loss, or phase noise. Reviewer A downgraded this from RETRACTION-WORTHY to MAJOR-REVISION on reflection (recognizing it as an absence-of-evidence problem rather than a proven impossibility), and Reviewer B upgraded it from MINOR to MAJOR-REVISION. This convergence at MAJOR-REVISION is appropriate: the absence makes the practical claims unsubstantiated but could in principle be remedied.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The comparison between temporal repetition and spatial beamforming lacks defined fairness conditions (equal total radiated power, EIRP, bandwidth, latency, aperture) and conflates coding gain with antenna gain.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.88,
+        "justification": "Reviewer A downgraded this from RETRACTION-WORTHY to MAJOR-REVISION on reflection, recognizing it as an underdefined comparison rather than a mathematically impossible result in isolation. The unfairness of the comparison is closely related to the central claim (Finding 1) but is a separable methodological issue that could be addressed by proper normalization and baseline definition. MAJOR-REVISION is appropriate because fixing the comparison framework could materially change the conclusions.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The paper claims spectral shaping via phase-shift offsets ω can be performed 'without influencing the performance, e.g., error and information rate,' but no proof of Euclidean distance preservation, trellis analysis, or error-rate evidence is provided.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Changing phase-shift sets (e.g., ±π vs. ±π/2) changes the signal constellation and potentially the minimum Euclidean distance, which directly affects detection performance. The paper's spectral confinement claims rest on this optimization, so the unsupported assertion of no performance impact is a substantial gap. Both reviewers flagged this; it is a real concern but could potentially be resolved with analysis or simulation.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The scalar AWGN capacity formula is used as the foundational justification for the architecture, but the actual system involves multi-antenna transmission, CPM memory, constrained modulation, FFT demodulation, and subcarrier interference—rendering the simple capacity argument inappropriate.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.82,
+        "justification": "Reviewer A consistently rated this MAJOR-REVISION. Reviewer B rated the capacity formula itself as RETRACTION-WORTHY, but upon examination, the formula R = log2(1+SNR) per complex channel use is standard; the real problem is its misapplication to justify the space-time equivalence for a system that is neither scalar nor memoryless. This is a serious theoretical motivation gap but is subsumed by and secondary to the central RETRACTION-WORTHY finding about beamforming replacement. As a standalone issue it is MAJOR-REVISION: the theoretical motivation is flawed but could be reformulated.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The heuristic optimization criterion for subcarrier phase-shift sets (minimize maximal instantaneous-frequency deviation) is ad hoc and not tied to spectral confinement metrics such as ACLR or spectral mask compliance.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "The paper positions spectral containment as a core practical benefit, yet optimizes using an unvalidated surrogate objective. Reviewer A flagged this consistently; it is a substantive methodological weakness that affects the credibility of the spectral shaping results.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The relationship between repetition codes, differential precoding, and the resulting spectral shape is not rigorously derived; key claims (e.g., that code R_l produces an all-one sequence of at least 147 symbols after precoding) lack proof.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.78,
+        "justification": "Reviewer B identified this as a gap in the mathematical derivation chain. The spectral shaping mechanism is central to the paper, and without a rigorous derivation the results cannot be independently verified. This could be fixed with a proper mathematical model.",
+        "source": "prover_b",
+        "survived_reflection": true
+      },
+      {
+        "finding": "There is no formal, reproducible definition of the transmitted signal, receiver processing, synchronization assumptions, or PSD estimation procedure.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Both reviewers noted the absence of precise signal models. For a paper proposing a new physical-layer architecture, this prevents independent verification and could conceal modeling errors. Reviewer A maintained MAJOR-REVISION after reflection.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Benchmarking against single-carrier GMSK and linear PSK is not reproducible or fair: no matched pulse shapes, normalization, equal-rate/bandwidth constraints, or spectral-mask metrics are specified.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.78,
+        "justification": "Visual PSD comparison alone is insufficient when spectral competitiveness is a key claim. Reviewer A maintained MAJOR-REVISION; this is a standard but important methodological gap.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The paper ambiguously uses 'rate' to mean information bit rate, modulation symbol rate, and code rate, making the 'no data rate reduction' claim unverifiable.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.82,
+        "justification": "Reviewer A identified this in reflection. The headline claim hinges on rate accounting, and the ambiguity prevents fair evaluation of whether throughput is actually maintained.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The claim that 'the more antennas are utilized, the larger the symbol period, making MA-TISK more robust against channel dispersion' is unsupported and potentially false (more subcarriers may increase Doppler/phase-noise sensitivity at mmWave).",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.78,
+        "justification": "Both reviewers flagged this. Reviewer B noted the Doppler/phase-noise counterargument. The claim is used to support the mmWave/THz positioning and is not substantiated.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Latency and coherence-time costs of temporal repetition (T=70 channel uses per information symbol) are not incorporated into the comparison with beamforming.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Reviewer A raised this in reflection. Temporal repetition requires the channel to remain stable over T symbol periods, which may be problematic at mmWave with mobility, and introduces latency that beamforming does not. This is a material omission in the comparative argument.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The statement that restricting to phase modulation has 'a very similar effect as a repetition code of rate one half, if the SNR is high' is unsupported.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.72,
+        "justification": "This is used to justify spectral efficiency sacrifices but has no derivation. Reviewer A maintained MAJOR-REVISION. It is not central enough to be retraction-worthy but is a real unsupported claim.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The manuscript argues that narrow angular spread from beamforming reduces multipath diversity and motivates avoiding beamforming, without quantitative support.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers view this as overstated motivation rather than a core methodological defect. It does not change conclusions on its own.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Notation inconsistencies (e.g., R used for both data rate and code rate) and ambiguous gain accounting reduce clarity.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.88,
+        "justification": "Valid but does not change conclusions independently. Both reviewers noted this.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "References contain placeholders ([DATE], [JOURNAL], [AUTHOR_1]) and critical citations are unresolved.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.92,
+        "justification": "Editorial issue. Does not affect technical validity but impedes verification of prior-art claims.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Synchronization requirements for multicarrier CPFSK are not discussed despite the claim of 'fast setup without serious overhead.'",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Practical implementation concern, not a methodological error. Reviewer B maintained MINOR after reflection.",
+        "source": "prover_b",
+        "survived_reflection": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 25821,
+    "duration_s": 172.64,
+    "n_api_calls": 17,
+    "cost_usd": 1.1311,
+    "total_input_tokens": 117350,
+    "total_output_tokens": 37866,
+    "calls": [
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 8967,
+        "output_tokens": 1459,
+        "cost_usd": 0.00402599,
+        "duration_s": 22.13,
+        "label": "2402.10307v2/b3plus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 8967,
+        "output_tokens": 2394,
+        "cost_usd": 0.00505449,
+        "duration_s": 33.72,
+        "label": "2402.10307v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 14870,
+        "output_tokens": 2024,
+        "cost_usd": 0.057415,
+        "duration_s": 119.63,
+        "label": "2402.01549v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4919,
+        "output_tokens": 2477,
+        "cost_usd": 0.0370675,
+        "duration_s": 35.26,
+        "label": "2402.10307v2/b3plus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 6130,
+        "output_tokens": 2468,
+        "cost_usd": 0.040005,
+        "duration_s": 48.27,
+        "label": "2402.10318v2/b3plus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 5000,
+        "output_tokens": 1121,
+        "cost_usd": 0.0025831000000000005,
+        "duration_s": 13.71,
+        "label": "2402.10307v2/b3plus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 6027,
+        "output_tokens": 1483,
+        "cost_usd": 0.00325859,
+        "duration_s": 21.47,
+        "label": "2402.10318v2/b3plus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 13883,
+        "output_tokens": 2677,
+        "cost_usd": 0.00669311,
+        "duration_s": 32.12,
+        "label": "2402.01549v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4958,
+        "output_tokens": 3671,
+        "cost_usd": 0.049105,
+        "duration_s": 65.73,
+        "label": "2402.10307v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4300,
+        "output_tokens": 1937,
+        "cost_usd": 0.03012,
+        "duration_s": 29.05,
+        "label": "2402.10318v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 5028,
+        "output_tokens": 1829,
+        "cost_usd": 0.00336946,
+        "duration_s": 22.42,
+        "label": "2402.10307v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4347,
+        "output_tokens": 942,
+        "cost_usd": 0.0022098900000000004,
+        "duration_s": 13.61,
+        "label": "2402.10318v2/b3plus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2908,
+        "output_tokens": 2851,
+        "cost_usd": 0.03578,
+        "duration_s": 55.17,
+        "label": "2402.01549v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 9779,
+        "output_tokens": 4038,
+        "cost_usd": 0.449535,
+        "duration_s": 73.97,
+        "label": "2402.10307v2/b3plus/arbiter"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2881,
+        "output_tokens": 1215,
+        "cost_usd": 0.00211437,
+        "duration_s": 16.44,
+        "label": "2402.01549v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 6130,
+        "output_tokens": 2037,
+        "cost_usd": 0.035695,
+        "duration_s": 36.76,
+        "label": "2402.10318v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 8256,
+        "output_tokens": 3243,
+        "cost_usd": 0.367065,
+        "duration_s": 60.24,
+        "label": "2402.10318v2/b3plus/arbiter"
+      }
+    ]
+  }
+}

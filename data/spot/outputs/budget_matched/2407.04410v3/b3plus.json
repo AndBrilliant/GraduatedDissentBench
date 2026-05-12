@@ -1,0 +1,490 @@
+{
+  "condition": "B3PLUS",
+  "paper_id": "2407.04410v3",
+  "verdict": "flagged",
+  "confidence": 0.95,
+  "reasoning": "Both reviewers independently identified the same core gaps in Theorem 8's existence proof: (1) L²-boundedness is never established, so weak sequential compactness is unjustified; (2) pointwise convergence at 0 (needed for Theorem 6) is never derived from the modes of convergence actually obtained; (3) integral positive definiteness of the weak limit is not proven. Reviewer A initially labeled (1) and (2) as RETRACTION-WORTHY but downgraded to MAJOR-REVISION on reflection, reasoning that the central claim is plausibly salvageable even though the proof as written fails. Reviewer B moved in the opposite direction, upgrading (1) and (3) to RETRACTION-WORTHY. The key arbiter question is: do these gaps mean the paper's central conclusion CANNOT be supported, or that the proof as written does not support it but could be repaired? The gaps are serious and interconnected—compactness, pointwise convergence at 0, and integral positive definiteness each independently break the proof chain—but the underlying mathematical claim (existence of an extremal function for the Delsarte problem on σ-compact LCA groups) is a natural result that is likely true and could plausibly be established with a substantially different or augmented argument. The proof as presented is fundamentally incomplete at multiple steps, but the conclusion is not shown to be false. Under the rubric's strict standard ('the paper's central conclusions CANNOT be supported by the data as presented'), this is a borderline case. I classify the compound failure of the existence proof as MAJOR-REVISION rather than RETRACTION-WORTHY because: (a) each individual gap is potentially fixable, (b) the claim itself is not implausible, and (c) the rubric reserves RETRACTION-WORTHY for cases where conclusions are definitively invalidated, not merely unproven. However, the accumulation of three independent, load-bearing gaps in a single proof pushes this to the high end of MAJOR-REVISION severity. Additional issues (nonstandard support definition, empty-class convention, notation errors) are independently flagged at appropriate levels.",
+  "findings": [
+    {
+      "finding": "Theorem 8 claims the admissible class is contained in a 'closed, bounded, and hence weakly sequentially compact subset of L²(G)', but L²-boundedness of the admissible class is never established. Without this, the extraction of a weakly convergent subsequence—the entry point to the entire existence proof—is unjustified.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "Both reviewers flagged this. Reviewer A initially called it RETRACTION-WORTHY then downgraded; Reviewer B upgraded it. The gap is real and load-bearing, but functions in the admissible class satisfy |f(x)|≤f(0)=1 and are supported in a set of finite measure, so an L²-bound likely exists and the gap is fixable. Because the fix appears straightforward (||f||₂² ≤ λ_G(Ω)), this is a serious omission but not a fatal one.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The proof of Theorem 8 invokes Theorem 6 with the premise lim f_n(0)=f(0), but neither weak nor strong L² convergence implies pointwise convergence at a fixed point. This premise is essential for concluding local uniform convergence and for identifying f(0)=1.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Reviewer A flagged this explicitly; Reviewer B acknowledged it on reflection. The gap is genuine: L² convergence modes do not yield pointwise values. However, for continuous positive definite functions, convergence at 0 can potentially be recovered from the integral (since f(0)=∫f̂ dμ for the spectral measure) or from the strong L² limit combined with continuity of the limit. The gap is serious but likely repairable with additional argument.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The proof does not explicitly justify that the weak L² limit f is integrally positive definite, which is required before invoking the theorem (Theorem 1.7.3 of [17]) that yields a continuous positive definite representative.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Reviewer B flagged this initially as MAJOR-REVISION and upgraded to RETRACTION-WORTHY; Reviewer A added it in reflection. The step can be justified (weak L² convergence preserves the quadratic form condition defining integral positive definiteness when tested against continuous compactly supported functions), but it requires a non-trivial argument that the paper omits entirely.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Support is defined as {g : f(g)≠0} rather than the closure of that set (the standard topological definition). The paper then reasons about support as if it were closed, creating inconsistencies in arguments about support preservation under limits.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "Both reviewers flagged this. For continuous functions on Hausdorff spaces, using the open set {f≠0} vs. its closure matters for boundary behavior. The admissibility condition supp(f₊)⊂Ω with Ω closed works differently under each definition. Repairable by adopting the standard definition throughout, but currently creates ambiguity in multiple arguments.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The argument that supp(f₊)⊂Ω is preserved in the limit (from pointwise a.e. convergence plus continuity) is inadequately justified and relies on the interaction between continuity and the support definition in a way that is not spelled out.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "Reviewer A flagged this explicitly. The argument is fixable (if f is continuous and f(x)>0 at some x∉Ω with Ω closed, then f>0 on an open neighborhood, contradicting a.e. convergence from functions vanishing there), but the paper provides no such reasoning.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The proof of Theorem 8's scaling/extremality argument is incomplete: it does not explicitly establish that f(0)≤1 (from positive definiteness), nor does it clearly show ∫f ≤ D_G(Ω) to conclude equality and hence extremality.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.7,
+      "justification": "Both reviewers noted aspects of this. The reasoning is logically sound (positive definiteness gives f(0)≥|f(x)| for all x, and D_G(Ω) is defined as a supremum so ∫f ≤ D_G(Ω) once f∈𝒢_G(Ω)), but the exposition omits key steps.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The empty-class branch of Theorem 3 states the supremum is 0, but sup(∅) = -∞ under standard conventions. The paper needs an explicit convention or restriction.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.65,
+      "justification": "Reviewer A flagged this. It's a formal correctness issue that affects one branch of the theorem. Easily fixed by convention but currently incorrect.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "After applying Mazur's lemma to obtain strong L² convergence via convex combinations h_n, the paper does not verify that h_n preserves all admissibility properties (positive definiteness, f(0)=1, support constraint).",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers agreed this is MINOR. Convex combinations of positive definite functions are positive definite; with coefficients summing to 1, h_n(0)=1 is preserved; support of positive part is preserved. The verification is straightforward but omitted.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The passage from strong L² convergence to pointwise a.e. convergence 'via a further subsequence' is glossed over, and the relationship between the weakly convergent subsequence and the a.e. convergent subsequence is not clarified.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Reviewer B raised this in reflection. It's a standard step (strong L² convergence implies a subsequence converges a.e.) but should be stated clearly given the proof's other gaps.",
+      "source": "prover_b",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Notation and integration errors in central proofs, e.g., writing dλ_G(Ω) instead of dλ_G(g).",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers noted these. Clearly typographical but occurring in the main argument.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Lemma 5's equivalence between weak convergence and pointwise convergence of functionals is stated without sufficient care regarding the reflection map and Haar measure invariance.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Reviewer A flagged this. Valid but terse; does not affect conclusions.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The early claim that L¹-integrability follows from positive definiteness together with finite Haar measure of Ω is asserted without proof.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Reviewer A flagged this. The claim is true (|f(x)|≤f(0)=1 and support in Ω of finite measure gives ||f||₁ ≤ λ_G(Ω)) but should be stated explicitly.",
+      "source": "prover_a",
+      "survived_reflection": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 7,
+    "MINOR": 5
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.98,
+    "reasoning": "The manuscript’s main existence proof contains a fundamental gap at the compactness step in Theorem 8. The authors assert weak sequential compactness in L^2(G) from closedness and boundedness of the admissible class, but this is false unless L^2(G) is first known to be reflexive on the underlying measure space and the set is actually bounded in L^2. While reflexivity of L^2 does hold, the required L^2-boundedness of the admissible class is not established in the text. More seriously, the proof later invokes Theorem 6 using the unproved premise lim f_n(0)=f(0); strong/weak L^2 convergence does not imply convergence at a point. Since that premise is essential for concluding local uniform convergence and for identifying f(0)=1, the central theorem is not established as written. There are also additional substantive issues: support is defined incorrectly as {f≠0} rather than the closure of that set; the proof that support of the positive part is preserved in the limit relies on pointwise-a.e. convergence plus continuity in a way that needs more careful justification; and there are several measure/integration notation mistakes. The core claim may be salvageable with additional arguments, but as presented the main theorem is not methodologically correct.",
+    "findings": [
+      {
+        "finding": "Theorem 8 asserts that \\(\\mathcal G_G(\\Omega)\\) is contained in a 'closed, bounded, and hence weakly sequentially compact subset of \\(L^2(G)\\)', but no \\(L^2\\)-boundedness of \\(\\mathcal G_G(\\Omega)\\) is proved.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This is the entry point to the entire existence proof. Closedness and boundedness do not imply weak sequential compactness unless one has the right Banach-space setting, and here the key boundedness claim is missing. Without a justified weakly convergent subsequence, the construction of an extremal limit function collapses. Since Theorems 8 and 9 depend on this step, the paper’s central conclusion is unsupported as written."
+      },
+      {
+        "finding": "The final step of Theorem 8 applies Theorem 6 assuming \\(\\lim_{n\\to\\infty} f_n(0)=f(0)\\), but this convergence at the point 0 is never established. Neither weak nor strong \\(L^2\\) convergence implies pointwise convergence at a fixed point.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "Theorem 6 requires convergence of the values at 0 to conclude uniform convergence on compact sets. The proof never shows this, yet uses the theorem to obtain the advertised approximation property and effectively to identify the limit appropriately. This is a fundamental logical gap in the main theorem."
+      },
+      {
+        "finding": "Theorem 8 proves only \\(\\int_G f\\ge D_G(\\Omega)\\), then uses a scaling contradiction to deduce \\(f(0)=1\\), but the argument presumes \\(f(0)\\le 1\\) for a positive definite function without stating it. More importantly, it never explicitly justifies that \\(\\int_G f\\le D_G(\\Omega)\\) once \\(f\\in\\mathcal G_G(\\Omega)\\), which is needed to conclude actual extremality.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This can likely be repaired, since positive definiteness does imply \\(|f(x)|\\le f(0)\\), hence \\(f(0)\\le1\\) after normalization assumptions. But the current logic is incomplete and obscures whether the limit truly attains the supremum."
+      },
+      {
+        "finding": "Support is defined as \\(\\{g:f(g)\\neq0\\}\\), not the standard closed support (closure of the nonzero set). Yet the manuscript repeatedly assumes closed-support behavior, e.g. 'supp \\(f_+\\subset \\Omega\\)' with \\(\\Omega\\) closed, and uses continuity-based arguments that are naturally about closed support.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is not merely stylistic: with the nonstandard definition, several support statements change meaning, and arguments about preservation of support under limits become dubious. The main theorem might survive after correcting all support-related formulations, but the paper currently mixes incompatible notions."
+      },
+      {
+        "finding": "The claim 'continuity of \\(f\\) and the fact that \\(f\\) is a pointwise almost everywhere limit of the functions \\(f_n\\), each satisfying supp\\((f_n)_+\\subset\\Omega\\), implies that supp \\(f_+\\subset\\Omega\\)' is inadequately justified.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Pointwise a.e. convergence alone does not directly control support, especially with the paper’s nonstandard support definition. To prove \\(f_+=0\\) off \\(\\Omega\\), one needs an argument using continuity and the openness of \\(G\\setminus\\Omega\\): if \\(f(x)>0\\) somewhere outside closed \\(\\Omega\\), continuity gives an open neighborhood where \\(f>0\\), contradicting a.e. convergence from functions vanishing there. As written, this crucial admissibility step is too loose."
+      },
+      {
+        "finding": "Lemma 5 identifies weak convergence of \\(\\varphi_n\\) to \\(\\varphi\\) with pointwise convergence of functionals \\(L_n(h)=\\int h(g)\\varphi_n(-g)\\,dg\\). This uses the reflection map \\(h\\mapsto h(-\\cdot)\\) implicitly; the equivalence is valid but not stated carefully and depends on Haar measure invariance.",
+        "severity": "MINOR",
+        "justification": "This is repairable with a short clarification. It does not seem to invalidate the result by itself, but the proof is currently too terse for a technical manuscript."
+      },
+      {
+        "finding": "There are notation/integration errors suggesting insufficient verification of the main proof, e.g. writing \\(\\int_G f(g)\\,d\\lambda_G(\\Omega)\\) instead of \\(d\\lambda_G(g)\\), and similar slips in Theorem 8.",
+        "severity": "MINOR",
+        "justification": "These are likely typographical, but they occur in the central argument and make it harder to assess correctness. They should be corrected in revision."
+      },
+      {
+        "finding": "Theorem 3 handles the empty-class case by saying both suprema are 0 when \\(\\mathcal G_G(\\Omega)\\) and \\(\\mathcal G_H(\\Omega)\\) are empty. But the supremum of the empty set is usually \\(-\\infty\\), not 0, unless the paper explicitly adopts a convention.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This affects formal correctness of Theorem 3 in one branch. It may be fixed by defining the Delsarte constant as 0 when the admissible class is empty or by restricting to neighborhoods of 0 throughout, but the present statement is mathematically inconsistent."
+      },
+      {
+        "finding": "The statement 'the condition \\(f\\in L^1(G)\\) ... follows from \\(f\\in P_1(G)\\) together with \\(\\lambda_G(\\Omega)<\\infty\\)' is asserted without proof early on, though later arguments effectively establish it only after additional work.",
+        "severity": "MINOR",
+        "justification": "This is probably true in the present setting, but the unsupported claim is used to motivate the setup. It should be proved or softened."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.85,
+    "reasoning": "The manuscript contains several methodological errors that range from minor gaps to a major logical flaw. The most significant issue is the unjustified use of weak sequential compactness in L^2(G) for the class G_G(Ω), which is not proven to be bounded or closed in L^2(G). This undermines the core existence proof in Theorem 8. Additional concerns include the ambiguous use of the term 'extremal sequence' and insufficient justification for the passage from weak to strong convergence via Mazur's lemma in the specific context of the function class constraints. However, the paper's overall structure and many of its lemmas are sound; the errors do not necessarily invalidate the central conclusion but require substantial revision to be rigorous.",
+    "findings": [
+      {
+        "finding": "In Theorem 8, the claim that G_G(Ω) is 'contained in a closed, bounded, and hence a weakly sequentially compact subset of L^2(G)' is unsubstantiated. The paper does not establish that functions in G_G(Ω) are uniformly bounded in L^2(G)-norm, nor that they lie in a closed subset of L^2(G) under the weak topology. Weak sequential compactness in L^2(G) requires boundedness in norm, which is not proven from the given conditions (f ∈ P_1(G), supp f₊ ⊂ Ω, λ_G(Ω) < ∞). The functions are only pointwise bounded by 1, but their L^2 norms could be arbitrarily large if they oscillate or have large support within Ω.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This error directly affects the existence proof of an extremal function. If the sequence (f_n) is not guaranteed to have a weakly convergent subsequence in L^2(G), then the entire argument that constructs the limit function f collapses. The paper's central claim of existence of an extremal function becomes unsubstantiated as presented. However, a fix might be possible (e.g., using weak* convergence in L^∞ or tightness arguments), so the damage is not definitive enough to warrant retraction without attempt at revision."
+      },
+      {
+        "finding": "The proof of Theorem 8 uses Mazur's lemma to convert weak convergence to strong convergence, but it does not ensure that the convex combinations h_n preserve the key properties of the original sequence: specifically, that h_n ∈ G_G(Ω). The paper states that 'h_n ∈ conv(∪_{i=n}^{∞} f_i)' but does not verify that convex combinations of functions in G_G(Ω) remain positive definite, satisfy f(0)=1, or have supp f₊ ⊂ Ω. While positive definiteness is preserved under convex combinations and the support condition may be preserved (since convex combinations do not enlarge positive support), the condition f(0)=1 may be broken because convex combinations of functions with f_i(0)=1 will also have value 1 at 0 only if the convex coefficients sum to 1 (which they do). So this part is salvageable, but the argument skips this verification.",
+        "severity": "MINOR",
+        "justification": "This oversight does not invalidate the proof because convex combinations of positive definite functions are positive definite, and with the given coefficient sum=1, the condition f(0)=1 is preserved. The support condition for the positive part is also preserved since if each f_i has (f_i)_+ supported in Ω, then any convex combination's positive part is also supported in Ω (since positivity occurs only where some f_i is positive). Thus the reasoning is incomplete but correctable; it would not change the conclusion."
+      },
+      {
+        "finding": "In the proof of Theorem 8, after obtaining strong convergence in L^2, the paper passes to a pointwise a.e. convergent subsequence and then claims that 'f is bounded in L^∞(G) by 1' because |f_n(g)| ≤ 1. However, pointwise a.e. convergence only guarantees |f(g)| ≤ 1 a.e., not everywhere. Later, when using continuity of f (which is asserted after correction on a null set), the bound is fine, but the phrasing is ambiguous. More critically, the step that 'f being integrally positive definite and G being σ-compact implies that f agrees almost everywhere with a continuous positive definite function' is not fully justified. The reference (Theorem 1.7.3 of [17]) states this for locally almost everywhere equality; on σ-compact groups this is equivalent to a.e., but the paper does not verify that f is integrally positive definite (it only says 'since (f_n) converges weakly in L^2(G) to f, it follows that f is integrally positive definite'). This requires a brief argument: the defining integral inequality for integral positive definiteness passes to the limit using weak convergence and the fact that h is continuous and compactly supported, but this is nontrivial and the paper provides no details.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The gap in proving that the weak limit f is integrally positive definite is a significant missing step. Without it, the subsequent claim that f can be modified to a continuous positive definite function is ungrounded. This could break the entire construction of the limit function f. The issue is fixable with additional reasoning (e.g., using the fact that weak convergence in L^2 implies convergence of the quadratic forms against functions in L^2, and approximating the indicator functions needed for integral positive definiteness by L^2 functions), but as presented it is a serious omission."
+      },
+      {
+        "finding": "In Theorem 8, the argument that f(0)=1 relies on the assumption that ∫ f > 0 and a contradiction if 0 < f(0) < 1. However, it also implicitly assumes that f(0) is defined and continuous (which is established earlier). But the scaling argument 'h = f / f(0)' requires that f(0) be finite and nonzero. The paper shows f is not identically zero, but does not prove f(0) ≠ ∞ or that f(0) > 0 (positive definiteness implies f(0) ≥ 0, and since f is not zero, f(0) > 0). This is correct but could be stated explicitly. More critically, the step 'this also shows that f is extremal' is valid only if it is already established that f ∈ G_G(Ω) and ∫ f = D_G(Ω). The paper shows ∫ f ≥ D_G(Ω) and by definition D_G(Ω) is the supremum, so equality holds. That part is fine.",
+        "severity": "MINOR",
+        "justification": "This is a minor organizational issue. The reasoning is logically sound but would benefit from clearer exposition. It does not affect the correctness of the conclusion."
+      },
+      {
+        "finding": "The paper uses Lemma 1 to extend functions from an open subgroup H to G, but Lemma 1 is stated only for subsets Ω of H. In Theorem 9, Ω is a closed neighborhood of 0 in G. Theorem 3 ensures H contains Ω, so this is fine. However, the requirement in Theorem 3 that Ω be a subset of G of finite Haar measure does not guarantee that the open σ-compact subgroup H constructed contains Ω as a subset, but the construction indeed places Ω inside H. This part is correct.",
+        "severity": "MINOR",
+        "justification": "No error; just a note that the reasoning is correct."
+      },
+      {
+        "finding": "In the proof of Theorem 3, the claim that 'any open set is either empty or has strictly positive measure' is not universally true for Haar measure on LCA groups; open sets can have zero measure in some non-σ-compact groups (e.g., a non-discrete group with a dense subgroup of measure zero). However, the Haar measure is a Borel measure that is outer regular and inner regular; open sets always have positive measure unless they are empty, because Haar measure assigns positive measure to every nonempty open set (by its regularity and translation invariance, any nonempty open set contains a compact neighborhood of a point with positive measure). This is a standard property for Haar measure on a locally compact Hausdorff group: every nonempty open set has positive Haar measure. So the statement is correct.",
+        "severity": "MINOR",
+        "justification": "No error; the claim is correct under standard definitions."
+      }
+    ]
+  },
+  "reflection_a": {
+    "reflection_notes": "On a second pass, I think my original review was substantively right about the two core gaps, but I was somewhat too aggressive in labeling them both RETRACTION-WORTHY. The key distinction in the rubric is whether the central conclusions are definitively unsupportable as presented, versus seriously unsupported but plausibly repairable. Here, the existence proof in Theorem 8 does have a central compactness gap and an additional convergence-at-0 gap, but both look potentially fixable by replacing the compactness argument and adding a correct normalization/continuity argument. So I now think these are better classified as MAJOR-REVISION rather than RETRACTION-WORTHY. \n\nI still think the paper, as written, does not establish its main theorem rigorously. But I no longer think the current record justifies the strongest label under the provided standard, because I cannot say the central claim 'cannot be supported'—only that the proof given does not support it. \n\nI also think one issue was underemphasized in my first pass: the weak-limit-to-integrally-positive-definite step is important and should have been called out explicitly as a major gap if not already subsumed in the compactness discussion. On the other hand, the scaling/extremality issue and the support-definition issue remain major-revision matters rather than fatal ones. The notation slips remain minor.",
+    "severity_i_now_upgrade": [
+      "Add/upgrade to MAJOR-REVISION: the proof does not explicitly justify that the weak L^2 limit is integrally positive definite, which is needed before invoking the theorem yielding a continuous positive definite representative."
+    ],
+    "severity_i_now_downgrade": [
+      "Downgrade finding 'Theorem 8 asserts weak sequential compactness from closedness and boundedness without proving L^2-boundedness' from RETRACTION-WORTHY to MAJOR-REVISION.",
+      "Downgrade finding 'The final step of Theorem 8 applies Theorem 6 assuming lim f_n(0)=f(0) without proof' from RETRACTION-WORTHY to MAJOR-REVISION."
+    ],
+    "findings_i_still_defend": [
+      "MAJOR-REVISION: Theorem 8's compactness step is unjustified because the manuscript does not establish the needed L^2-boundedness of the admissible class, so the existence proof is incomplete.",
+      "MAJOR-REVISION: Theorem 8 invokes Theorem 6 using convergence at 0 that is not obtained from the stated mode of convergence; this leaves the local uniform convergence step unproved.",
+      "MAJOR-REVISION: The proof of extremality/normalization in Theorem 8 is incomplete in exposition, especially around why f(0)<=1 and why the limit actually attains the supremum once admissibility is proved.",
+      "MAJOR-REVISION: The manuscript uses a nonstandard definition of support ({f≠0}) while reasoning as if closed support were meant; this affects several support-related arguments and should be corrected throughout.",
+      "MAJOR-REVISION: The argument that supp(f_+)⊂Ω passes to the limit is too loose and needs a proper continuity/open-set contradiction argument.",
+      "MAJOR-REVISION: The empty-class branch in Theorem 3 is formally incorrect unless the paper explicitly defines the supremum over the empty class to be 0.",
+      "MINOR: Lemma 5's weak-convergence/functional-convergence equivalence needs a clearer statement of the reflection map and Haar-invariance used.",
+      "MINOR: The manuscript contains notation/integration slips in central proofs that should be corrected.",
+      "MINOR: The early assertion that L^1 integrability follows automatically from positive definiteness plus finite measure assumptions is unsupported as stated and should be justified or softened."
+    ],
+    "new_errors_noticed": [
+      "Fresh emphasis rather than wholly new: after passing to convex combinations via Mazur's lemma, the paper should explicitly verify preservation of all admissibility properties (positive definiteness, normalization at 0, and positive-support constraint). This is likely repairable and probably MINOR to low-end MAJOR depending on how much is already implicit.",
+      "Related structural gap: if the authors intend to deduce pointwise information at 0 from continuity of a representative of the weak limit, they need a separate argument linking that representative to the approximating sequence at 0; weak/strong L^2 convergence alone is insufficient. This is essentially part of the Theorem 6 issue but worth spelling out more explicitly."
+    ]
+  },
+  "reflection_b": {
+    "reflection_notes": "Upon re-examination, I recognize that my initial review underestimated the severity of two key findings. The second reviewer correctly identifies that the proof of Theorem 8 not only fails to establish L^2-boundedness (which I flagged as MAJOR-REVISION) but also crucially relies on the unproven claim that lim f_n(0) = f(0) via weak or strong L^2 convergence. This is a fundamental logical gap because Theorem 6 depends on pointwise convergence at 0 to trigger the conclusion of local uniform convergence and to identify f(0)=1. Without this step, the entire construction of the extremal function collapses. I also missed the severity of the support definition issue; using {f≠0} instead of the closure creates ambiguity that undermines several support-preservation arguments. These are not merely 'minor' oversights but structural errors that, if confirmed, would require retraction of the paper's central claims unless completely rewritten. I therefore upgrade two of my original MAJOR-REVISION findings to RETRACTION-WORTHY. Conversely, I still defend my original MINOR findings as correctly rated.",
+    "severity_i_now_upgrade": [
+      "finding 1 (L^2-boundedness/weak compactness): upgrade from MAJOR-REVISION to RETRACTION-WORTHY because the second reviewer correctly notes that this gap is compounded by a second, independent fatal flaw (failure to prove f_n(0)→f(0)), making the existence proof irreparable without a complete overhaul.",
+      "finding 3 (integral positive definiteness of weak limit): upgrade from MAJOR-REVISION to RETRACTION-WORTHY because without proving that the weak limit f is integrally positive definite, the subsequent step invoking Theorem 1.7.3 of [17] to obtain continuity is ungrounded, and together with the unproven pointwise convergence at 0, this makes the central theorem unsupported."
+    ],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      "finding 2 (Mazur's lemma verification): still MINOR – the omitted verification is correctable and does not threaten the conclusion.",
+      "finding 4 (f(0) scaling argument): still MINOR – organizational issue only.",
+      "finding 5 (Lemma 1 extension): still MINOR – correct as noted.",
+      "finding 6 (open set positive measure): still MINOR – correct as noted."
+    ],
+    "new_errors_noticed": [
+      "Both I and the second reviewer identified the support definition problem, but I did not initially recognize that the nonstandard definition ({f≠0} rather than its closure) interacts with the continuity argument in a way that may be impossible to fix without redefining the class G_G(Ω). This should be raised as a separate MAJOR-REVISION issue.",
+      "The proof of Theorem 8 uses both weak L^2 convergence and pointwise a.e. convergence (from the subsequence after Mazur's lemma) without clarifying the relationship between the two – specifically, the subsequence that converges a.e. might not be the same as the weakly convergent subsequence, and Mazur's lemma produces strong convergence in L^2, not pointwise a.e. The step 'passing to a further subsequence if necessary' is glossed over but requires justification because strong L^2 convergence only guarantees a subsequence converging a.e., not necessarily the one that was originally used to define the limit f. This is a missing technical step that, while probably fixable, is currently absent."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "Both reviewers independently identified the same core gaps in Theorem 8's existence proof: (1) L²-boundedness is never established, so weak sequential compactness is unjustified; (2) pointwise convergence at 0 (needed for Theorem 6) is never derived from the modes of convergence actually obtained; (3) integral positive definiteness of the weak limit is not proven. Reviewer A initially labeled (1) and (2) as RETRACTION-WORTHY but downgraded to MAJOR-REVISION on reflection, reasoning that the central claim is plausibly salvageable even though the proof as written fails. Reviewer B moved in the opposite direction, upgrading (1) and (3) to RETRACTION-WORTHY. The key arbiter question is: do these gaps mean the paper's central conclusion CANNOT be supported, or that the proof as written does not support it but could be repaired? The gaps are serious and interconnected—compactness, pointwise convergence at 0, and integral positive definiteness each independently break the proof chain—but the underlying mathematical claim (existence of an extremal function for the Delsarte problem on σ-compact LCA groups) is a natural result that is likely true and could plausibly be established with a substantially different or augmented argument. The proof as presented is fundamentally incomplete at multiple steps, but the conclusion is not shown to be false. Under the rubric's strict standard ('the paper's central conclusions CANNOT be supported by the data as presented'), this is a borderline case. I classify the compound failure of the existence proof as MAJOR-REVISION rather than RETRACTION-WORTHY because: (a) each individual gap is potentially fixable, (b) the claim itself is not implausible, and (c) the rubric reserves RETRACTION-WORTHY for cases where conclusions are definitively invalidated, not merely unproven. However, the accumulation of three independent, load-bearing gaps in a single proof pushes this to the high end of MAJOR-REVISION severity. Additional issues (nonstandard support definition, empty-class convention, notation errors) are independently flagged at appropriate levels.",
+    "findings": [
+      {
+        "finding": "Theorem 8 claims the admissible class is contained in a 'closed, bounded, and hence weakly sequentially compact subset of L²(G)', but L²-boundedness of the admissible class is never established. Without this, the extraction of a weakly convergent subsequence—the entry point to the entire existence proof—is unjustified.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.82,
+        "justification": "Both reviewers flagged this. Reviewer A initially called it RETRACTION-WORTHY then downgraded; Reviewer B upgraded it. The gap is real and load-bearing, but functions in the admissible class satisfy |f(x)|≤f(0)=1 and are supported in a set of finite measure, so an L²-bound likely exists and the gap is fixable. Because the fix appears straightforward (||f||₂² ≤ λ_G(Ω)), this is a serious omission but not a fatal one.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The proof of Theorem 8 invokes Theorem 6 with the premise lim f_n(0)=f(0), but neither weak nor strong L² convergence implies pointwise convergence at a fixed point. This premise is essential for concluding local uniform convergence and for identifying f(0)=1.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Reviewer A flagged this explicitly; Reviewer B acknowledged it on reflection. The gap is genuine: L² convergence modes do not yield pointwise values. However, for continuous positive definite functions, convergence at 0 can potentially be recovered from the integral (since f(0)=∫f̂ dμ for the spectral measure) or from the strong L² limit combined with continuity of the limit. The gap is serious but likely repairable with additional argument.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The proof does not explicitly justify that the weak L² limit f is integrally positive definite, which is required before invoking the theorem (Theorem 1.7.3 of [17]) that yields a continuous positive definite representative.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Reviewer B flagged this initially as MAJOR-REVISION and upgraded to RETRACTION-WORTHY; Reviewer A added it in reflection. The step can be justified (weak L² convergence preserves the quadratic form condition defining integral positive definiteness when tested against continuous compactly supported functions), but it requires a non-trivial argument that the paper omits entirely.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Support is defined as {g : f(g)≠0} rather than the closure of that set (the standard topological definition). The paper then reasons about support as if it were closed, creating inconsistencies in arguments about support preservation under limits.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.78,
+        "justification": "Both reviewers flagged this. For continuous functions on Hausdorff spaces, using the open set {f≠0} vs. its closure matters for boundary behavior. The admissibility condition supp(f₊)⊂Ω with Ω closed works differently under each definition. Repairable by adopting the standard definition throughout, but currently creates ambiguity in multiple arguments.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The argument that supp(f₊)⊂Ω is preserved in the limit (from pointwise a.e. convergence plus continuity) is inadequately justified and relies on the interaction between continuity and the support definition in a way that is not spelled out.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "Reviewer A flagged this explicitly. The argument is fixable (if f is continuous and f(x)>0 at some x∉Ω with Ω closed, then f>0 on an open neighborhood, contradicting a.e. convergence from functions vanishing there), but the paper provides no such reasoning.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The proof of Theorem 8's scaling/extremality argument is incomplete: it does not explicitly establish that f(0)≤1 (from positive definiteness), nor does it clearly show ∫f ≤ D_G(Ω) to conclude equality and hence extremality.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.7,
+        "justification": "Both reviewers noted aspects of this. The reasoning is logically sound (positive definiteness gives f(0)≥|f(x)| for all x, and D_G(Ω) is defined as a supremum so ∫f ≤ D_G(Ω) once f∈𝒢_G(Ω)), but the exposition omits key steps.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The empty-class branch of Theorem 3 states the supremum is 0, but sup(∅) = -∞ under standard conventions. The paper needs an explicit convention or restriction.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.65,
+        "justification": "Reviewer A flagged this. It's a formal correctness issue that affects one branch of the theorem. Easily fixed by convention but currently incorrect.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "After applying Mazur's lemma to obtain strong L² convergence via convex combinations h_n, the paper does not verify that h_n preserves all admissibility properties (positive definiteness, f(0)=1, support constraint).",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers agreed this is MINOR. Convex combinations of positive definite functions are positive definite; with coefficients summing to 1, h_n(0)=1 is preserved; support of positive part is preserved. The verification is straightforward but omitted.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The passage from strong L² convergence to pointwise a.e. convergence 'via a further subsequence' is glossed over, and the relationship between the weakly convergent subsequence and the a.e. convergent subsequence is not clarified.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "Reviewer B raised this in reflection. It's a standard step (strong L² convergence implies a subsequence converges a.e.) but should be stated clearly given the proof's other gaps.",
+        "source": "prover_b",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Notation and integration errors in central proofs, e.g., writing dλ_G(Ω) instead of dλ_G(g).",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers noted these. Clearly typographical but occurring in the main argument.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Lemma 5's equivalence between weak convergence and pointwise convergence of functionals is stated without sufficient care regarding the reflection map and Haar measure invariance.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Reviewer A flagged this. Valid but terse; does not affect conclusions.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The early claim that L¹-integrability follows from positive definiteness together with finite Haar measure of Ω is asserted without proof.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "Reviewer A flagged this. The claim is true (|f(x)|≤f(0)=1 and support in Ω of finite measure gives ||f||₁ ≤ λ_G(Ω)) but should be stated explicitly.",
+        "source": "prover_a",
+        "survived_reflection": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 27373,
+    "duration_s": 134.17,
+    "n_api_calls": 15,
+    "cost_usd": 1.5092,
+    "total_input_tokens": 90947,
+    "total_output_tokens": 29456,
+    "calls": [
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 10610,
+        "output_tokens": 1176,
+        "cost_usd": 0.0041583,
+        "duration_s": 16.51,
+        "label": "2407.02110v2/b3plus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 9452,
+        "output_tokens": 1620,
+        "cost_usd": 0.03983,
+        "duration_s": 26.62,
+        "label": "2407.04410v3/b3plus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4060,
+        "output_tokens": 1396,
+        "cost_usd": 0.02411,
+        "duration_s": 26.78,
+        "label": "2407.02110v2/b3plus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3256,
+        "output_tokens": 3652,
+        "cost_usd": 0.04466,
+        "duration_s": 61.59,
+        "label": "2406.15649v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4054,
+        "output_tokens": 1467,
+        "cost_usd": 0.0027082800000000004,
+        "duration_s": 19.74,
+        "label": "2407.02110v2/b3plus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3686,
+        "output_tokens": 2782,
+        "cost_usd": 0.037035,
+        "duration_s": 49.95,
+        "label": "2407.02110v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 8607,
+        "output_tokens": 1841,
+        "cost_usd": 0.0043489900000000005,
+        "duration_s": 24.33,
+        "label": "2407.04410v3/b3plus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3656,
+        "output_tokens": 1006,
+        "cost_usd": 0.0020937200000000003,
+        "duration_s": 14.61,
+        "label": "2407.02110v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3317,
+        "output_tokens": 1612,
+        "cost_usd": 0.00266879,
+        "duration_s": 22.54,
+        "label": "2406.15649v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3949,
+        "output_tokens": 917,
+        "cost_usd": 0.0190425,
+        "duration_s": 16.8,
+        "label": "2407.04410v3/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3910,
+        "output_tokens": 777,
+        "cost_usd": 0.0019104,
+        "duration_s": 11.11,
+        "label": "2407.04410v3/b3plus/reflection_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7910,
+        "output_tokens": 3152,
+        "cost_usd": 0.35505,
+        "duration_s": 66.31,
+        "label": "2407.02110v2/b3plus/arbiter"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 9408,
+        "output_tokens": 2786,
+        "cost_usd": 0.35007,
+        "duration_s": 52.45,
+        "label": "2406.15649v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 8497,
+        "output_tokens": 2595,
+        "cost_usd": 0.32208,
+        "duration_s": 56.37,
+        "label": "2407.02110v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 6575,
+        "output_tokens": 2677,
+        "cost_usd": 0.2994,
+        "duration_s": 55.3,
+        "label": "2407.04410v3/b3plus/arbiter"
+      }
+    ]
+  }
+}

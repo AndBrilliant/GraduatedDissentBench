@@ -1,0 +1,479 @@
+{
+  "condition": "B3PLUS",
+  "paper_id": "2409.01021v2",
+  "verdict": "flagged",
+  "confidence": 0.85,
+  "reasoning": "Both reviewers independently flagged the paper and converged on a set of substantive methodological concerns after reflection. No single finding rises to retraction-worthy level—there is no proven data fabrication, no impossible statistical result, and no definitively broken core outcome—but the accumulation of major-revision issues is significant. The most serious concerns center on: (1) the mathematical specification of the core contribution (tensor algebra inconsistencies in the aggregation network), (2) unclear differentiability of the correspondence-based condensation module despite end-to-end training claims, (3) the use of ground-truth masks in what is framed as self-supervised correspondence learning, (4) potential dataset overlap between COCO-derived training and evaluation sets, and (5) lack of standardized evaluation protocols when comparing to prior work. After reflection, both reviewers adjusted some severities but maintained the overall flagged verdict. The paper's central claims—that deep association learning with PAG, CAC, and OCC achieves state-of-the-art CoSOD performance—are not definitively invalidated but cannot be confidently verified given the identified issues.",
+  "findings": [
+    {
+      "finding": "The aggregation-network tensor algebra is internally inconsistent. Equations (6)-(8) describe operations on slices of a 7D hyperassociation tensor with dimensions that do not align with standard 2D convolutions as described. The role of the image-index dimension within convolution operations is undefined, and the mapping from the hyperassociation tensor to the final association feature is not mathematically reproducible from the text.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "This targets the paper's core methodological contribution. If the tensor operations as written cannot be implemented, independent reproduction is impossible. However, it is possible that the implementation exists and works correctly while the paper's notation is simply poorly specified. This warrants major revision for clarification and correction rather than retraction, since benchmark results are not automatically invalidated by imprecise notation if the code is functional.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The correspondence-induced condensation (CAC) module relies on apparently non-differentiable operations (argmax for initial match selection, discrete index gathering in Eq. 15), yet the paper claims the correspondence estimator is trained end-to-end with the OCC loss. No explanation is provided for how gradients propagate through these discrete operations.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "If the gradient pathway is truly broken, the OCC loss cannot optimize the correspondence estimator as claimed, undermining the ablation results for CAC and OCC. However, it is plausible that the implementation uses a differentiable surrogate (soft argmax, bilinear sampling, straight-through estimator) that is simply not documented. This is a major specification gap requiring revision, not a proven fatal flaw.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The OCC loss uses ground-truth segmentation masks (G_i^s) to restrict correspondence learning to co-salient regions, yet the paper frames this as unsupervised/self-supervised correspondence supervision. This is a hybrid supervision strategy that is not acknowledged or justified.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers independently identified this issue and maintained it through reflection. Using ground-truth masks in the auxiliary loss means the correspondence learning is not truly self-supervised, which overstates the contribution and makes comparisons to genuinely unsupervised correspondence methods misleading. This requires explicit acknowledgment and justification, but does not invalidate the main CoSOD results since the primary segmentation task is supervised anyway.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Potential data leakage: COCO-SEG (derived from COCO) is used for training while evaluation benchmarks (CoSal2015, CoSOD3k) also contain COCO-derived images. The manuscript does not document or verify disjointness of training and evaluation splits.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.7,
+      "justification": "If overlap exists, benchmark results would be inflated. However, this is not confirmed from the manuscript text alone—it is a plausible risk that requires clarification. Many papers in this subfield use similar dataset combinations, which partially mitigates the concern but does not eliminate it. This warrants a major revision request for explicit split documentation rather than retraction, since leakage is not proven.",
+      "source": "prover_b",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Comparative evaluation fairness is insufficiently controlled. The authors use officially released saliency maps from prior methods while training their own model under multiple dataset combinations. There is no standardized same-backbone/same-training/same-inference comparison, and released maps may reflect different preprocessing, model selection, or postprocessing.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "This is a common but real concern that weakens claims of state-of-the-art performance. Without controlled re-evaluation under identical protocols, performance deltas may partly reflect evaluation protocol differences rather than genuine model superiority. Both reviewers raised aspects of this concern and maintained it through reflection.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "No quantitative evaluation of correspondence quality is provided. The CAC module's correspondence estimation is validated only through downstream CoSOD metrics and visual examples, with no standard correspondence metrics (e.g., PCK, matching accuracy) or comparison to other correspondence methods.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "Without direct correspondence evaluation, the reader cannot determine whether CAC actually learns meaningful correspondences or whether downstream gains come from other factors. This weakens the core contribution claim for CAC. Both reviewers identified this gap.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Missing variance measures, confidence intervals, and repeated-run statistics across all experiments. The number of independent runs is not specified.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers initially rated this as major but Reviewer B downgraded upon reflection, recognizing this is pervasive in the deep learning literature and does not by itself invalidate results. Reviewer A consistently rated it minor. While important for robustness, the absence of error bars is a common reporting gap that would not change qualitative conclusions unless margins are extremely tight.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Incomplete computational claims: MACs are reported only for the aggregation network subcomponent (77.19G vs 91.38G), not for the full end-to-end model. Actual runtime, memory usage, and hardware measurement details are absent despite the method introducing high-dimensional tensors and additional modules.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.75,
+      "justification": "Reviewer B upgraded this upon reflection, but the overall impact remains limited to interpretability of efficiency claims rather than validity of accuracy results. The selective MAC reporting could be misleading but does not invalidate the core contributions. Rated minor because it is primarily a reporting gap, though it borders on major given that computational efficiency is a stated contribution.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Memory feasibility is not documented for a method that processes 6D hyperassociation tensors across N=6 images per group. No memory profiling, gradient checkpointing, or mixed-precision details are provided.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.7,
+      "justification": "This affects reproducibility but is not proven to be infeasible. The claimed hardware (Tesla A40 with 48GB) may suffice depending on feature resolutions, which are not fully specified. This is a documentation gap rather than a proven contradiction.",
+      "source": "prover_b",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Handling of self-pairs (i=j) in the N×N image relation terms is ambiguous. Self-correspondence and self-association are trivially satisfied and could inflate auxiliary loss statistics or association features if not explicitly excluded.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.65,
+      "justification": "Reviewer A originally rated this major but downgraded upon reflection, recognizing that inclusion of self-pairs is a design choice that may not materially alter conclusions. The impact is speculative from the text alone.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Multiple notation inconsistencies (F_s^A defined twice in conflicting contexts, ambiguous tensor shapes, Eq. 9 placement) impede understanding and reproducibility.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "These are real presentation issues that compound the tensor algebra concerns but are fixable through careful revision. They do not independently change conclusions.",
+      "source": "prover_a",
+      "survived_reflection": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 6,
+    "MINOR": 5
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.88,
+    "reasoning": "The manuscript presents an interesting architecture, but there are several methodological and reporting problems that materially affect whether the claims can be verified. The most serious issues are internal inconsistencies in the tensor shapes/aggregation equations, unclear or likely non-differentiable indexing-based condensation despite end-to-end training claims, and a fairness/reproducibility problem in the comparative evaluation because the authors compare to official saliency maps from prior work while training their own method under multiple dataset combinations without a fully standardized protocol. These issues do not necessarily prove the central empirical gains are false, but they are substantial enough that the paper requires major revision before its conclusions can be trusted. I do not see a definitive retraction-worthy mathematical impossibility in the main benchmark claims from the text alone, but several technical details are insufficiently specified or inconsistent in ways that could change conclusions if implemented differently.",
+    "findings": [
+      {
+        "finding": "The aggregation-network tensor algebra is internally inconsistent. The paper states that repeated aggregation eliminates the target spatial dimensions and yields F_s^{A'} in R^{N x H_s x W_s x N x C}, but Eqs. (6)-(8) operate on slices with dimensions that do not align with standard 2D convolutions, and Eq. (8) indexes A_s^3(i,:,: ,j,h_j,w_j,:) after claiming a convolution over A_s^2(:, :, :, j, h_j, w_j, :) in R^{N x H_s x W_s x C'_s}; the role of the image index dimension in that convolution is not well defined. As written, the mapping from the 7D hyperassociation tensor to the final association feature is not mathematically reproducible.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, this is a core-method specification error. The main contribution is the deep aggregation on hyperassociations; if the tensor operations are wrong or underspecified, independent reproduction is impossible and the claimed mechanism may differ from what is actually implemented. This would require revision and could alter conclusions, but the benchmark results are not automatically invalidated if the implementation exists and works."
+      },
+      {
+        "finding": "The correspondence-induced condensation module appears to rely on non-differentiable operations (argmax in initial match selection and discrete index selection in Eq. 15), yet the paper claims the correspondence estimator is trained with OCC loss end-to-end. There is no explanation of how gradients flow through argmax, coordinate refinement, or indexing/gather operations on discrete coordinates, nor whether stop-gradient, straight-through estimation, soft sampling, or differentiable warping is used.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, this undermines the training validity of CAC/OCC. Without a differentiable pathway, the claimed self-supervised refinement of correspondences may not actually optimize the correspondence estimator as described. This could materially change the reported ablation gains for CAC and OCC, but it does not necessarily invalidate all benchmark results if a workable surrogate implementation was used."
+      },
+      {
+        "finding": "The OCC loss uses ground-truth masks G_i^s to restrict correspondence learning to co-salient regions. This injects segmentation supervision directly into the auxiliary correspondence task during training. The paper frames OCC as unsupervised/self-supervised correspondence supervision, but it is in fact object-mask-guided. This should be made explicit, and comparisons to fully unsupervised correspondence losses are not apples-to-apples.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the claim about unsupervised correspondence learning is overstated. The auxiliary task benefits from ground-truth object masks, which can substantially improve correspondence quality and may contribute to performance gains. This would require revision of claims and potentially additional controls, though it does not by itself invalidate the main CoSOD segmentation results because segmentation training is supervised anyway."
+      },
+      {
+        "finding": "Comparative evaluation fairness is insufficiently controlled. The authors state they 'directly utilize their officially released saliency maps' for prior methods, while training their own model under several dataset combinations 'to align with other compared methods.' This is not a standardized same-backbone/same-training/same-inference comparison, and released maps may correspond to different preprocessing, model selection, postprocessing, or training sets. The paper does not report whether all methods are re-evaluated under identical protocols.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the SOTA comparison may exaggerate gains or make them hard to interpret. This would require revision and ideally controlled retraining/evaluation or much clearer protocol documentation. It does not necessarily mean the method is ineffective, but it weakens claims of superiority."
+      },
+      {
+        "finding": "The manuscript does not report variance, confidence intervals, or repeated-run stability for the claimed improvements, despite many gains being a few percentage points and the method involving multiple complex modules and training settings.",
+        "severity": "MINOR",
+        "justification": "This is a common but real reporting weakness. It limits confidence in the robustness of improvements but would not normally change the qualitative conclusions on its own."
+      },
+      {
+        "finding": "The handling of self-pairs in the N x N image relation terms is unclear. Equations and OCC averaging sum over i=1..N and j=1..N, apparently including i=j terms. Self-correspondence/self-association can trivially satisfy matching and cycle consistency, potentially inflating the auxiliary loss or association statistics unless explicitly excluded.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, this could materially affect both the association features and the OCC loss, especially because self-matches are much easier than cross-image semantic matches. Excluding or including them can change conclusions in ablations and overall performance."
+      },
+      {
+        "finding": "The computational claims are incomplete. The paper reports MAC reductions for aggregation networks only (91.38G to 77.19G) rather than end-to-end model complexity, runtime, and memory, even though the method introduces 6D hyperassociations and additional correspondence estimation machinery. This can misrepresent practical efficiency.",
+        "severity": "MINOR",
+        "justification": "This is primarily a reporting/interpretation issue. It would not invalidate accuracy conclusions, but it weakens claims about reduced computational burden and practicality."
+      },
+      {
+        "finding": "There are multiple notation and presentation inconsistencies that affect interpretability: F_s^A is defined twice in conflicting contexts, Eq. (9) appears inserted inside the feature-enhancement subsection after a redundant shape statement, and some symbols/shapes are malformed. These are not merely typographical because they obscure what tensors actually exist at each step.",
+        "severity": "MINOR",
+        "justification": "These issues impede reproducibility and understanding but are fixable through careful revision. Alone they would not change conclusions."
+      },
+      {
+        "finding": "The paper claims that CAC selects 'informative' pixels and removes 'noisy' ones, but the evidence provided is limited to final CoSOD metrics and MAC counts. There is no direct validation of correspondence accuracy, no oracle/upper-bound analysis, and no sensitivity analysis for K beyond stating K=9.",
+        "severity": "MINOR",
+        "justification": "This limits mechanistic support for the proposed explanation of why CAC works. The empirical segmentation improvements may still stand, so this is not central-invalidating."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.72,
+    "reasoning": "The manuscript presents a novel deep association learning framework for co-salient object detection. The methodology is largely sound and well-structured, with detailed explanations of the proposed PAG, CAC, and OCC modules. However, there are several critical methodological issues that undermine the validity and reproducibility of the results, primarily related to missing standard deviations in ablation studies, potential data leakage, and a lack of statistical testing. These issues do not definitively invalidate the central conclusions but require major revision to ensure the claims are robustly supported.",
+    "findings": [
+      {
+        "finding": "Ablation studies (Table 1) report only point estimates (e.g., S_m, E_ξ, F_β, M) without any measures of variance (standard deviation, confidence intervals) or statistical significance tests. The comparison between models (e.g., SAG vs. PAG, SAC vs. CAC) cannot be assessed for reliability; observed differences may be due to random chance, especially if results are from a single run or different random seeds.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Without error bars or significance testing, the claimed improvements (e.g., 'PAG shows significant performance boosts') are not statistically substantiated. It is possible that the differences are not real or are within the noise of the model. If confirmed that the reported numbers are from a single run or without statistical backing, the paper's central claims about module effectiveness would need revision to acknowledge uncertainty."
+      },
+      {
+        "finding": "The manuscript does not specify the number of independent experimental runs (seeds) for any experiment, including ablations and main comparisons (Table 2). This is a standard requirement for deep learning experiments to ensure reproducibility and assess variability.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If experiments were run only once, the results are not reproducible and the conclusions may be artifacts of a specific initialization or training condition. This undermines the reliability of all quantitative comparisons. Revision required to include multi-run statistics."
+      },
+      {
+        "finding": "Potential data leakage: The model fine-tunes a VGG-16 backbone pre-trained on ImageNet and uses COCO-SEG (200k images from 78 groups) for training. COCO-SEG is derived from the same COCO dataset as the evaluation datasets (CoSal2015, CoSOD3k) which also contain COCO images. The manuscript does not discuss or demonstrate that the training and evaluation splits are disjoint. If any images from the same COCO groups or even the same categories appear in both training and test sets, this constitutes data leakage and invalidates the benchmark results.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed that there is overlap (e.g., same images or near-duplicates) between training (COCO-SEG) and test sets (CoSal2015, CoSOD3k, CoCA), the reported SOTA results are inflated and cannot be trusted. This would require retraction of those specific comparisons or re-evaluation on cleaned splits."
+      },
+      {
+        "finding": "The validation of the semantic correspondence estimation (CAC) uses only an ablation (Table 1) and visual examples (Figure 4). There is no quantitative evaluation of correspondence quality (e.g., PCK, matching accuracy, or comparison to other correspondence methods). The claim that 'our semantic correspondence estimations are meaningful' is not objectively demonstrated.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Without quantitative metrics for the pretext task (correspondence), the reader cannot assess whether the learned correspondences are actually improving CoSOD or if the gain comes from other components. A failure of correspondence learning could mean the condensation is no better than random cropping. This weakens the core contribution of the CAC module."
+      },
+      {
+        "finding": "The manuscript introduces an Object-aware Cycle Consistency (OCC) loss but provides very few ablation details about its impact. Table 1 shows that OCC improves over no-OCC (lines 5 vs 7) but the ablation is sparse. More importantly, the loss function uses ground truth masks (G_i^s) for masking during self-supervision, which is a form of using the ground truth during training but is not treated as a supervised loss. This is an unorthodox hybrid supervision strategy that should be justified: how does masking with ground truth differ from simply training with a supervised correspondence loss? The potential for overfitting is not discussed.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Using ground truth masks to mask the SSIM loss means the model sees the true co-salient regions during self-supervised learning, which may leak information if not carefully handled. This could lead to artificially good performance on the test set if the model memorizes mask shapes. The authors should clarify whether this constitutes a form of supervised signal and whether it induces data leakage."
+      },
+      {
+        "finding": "The reported multiply-accumulate operations (MACs) for aggregation networks (77.19G with CAC vs 91.38G full-pixel) are given without specifying the hardware or software measurement tool. Further, the paper does not report actual runtime (seconds per sample) or memory usage, which are more practical metrics. The claim of 'computational burden reduction' is only partially supported.",
+        "severity": "MINOR",
+        "justification": "This is a minor reporting gap. The MACs reduction is plausible but the practical impact is unclear. The conclusions would not change if runtime were also reported, so it does not warrant revision."
+      },
+      {
+        "finding": "The training procedure uses a batchsize of N=6 images per group, but the forward pass processes all 6 together. The aggregation networks in PAG process a 6D hyperassociation tensor (N × H × W × N × H × W × L_s). This is extremely memory-intensive. The authors do not provide memory usage figures or discuss how the model fits on a single GPU (Tesla A40 with 48GB). This omission makes it difficult for other researchers to reproduce the results.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the memory requirements exceed the claimed hardware or if the model uses gradient checkpointing or mixed precision without reporting it, the reproducibility is compromised. Readers cannot verify if the method is practical without memory analysis."
+      },
+      {
+        "finding": "The manuscript claims 'this is the first work to use semantic correspondence in the CoSOD task' but does not provide a thorough literature review to support this. Several recent works (e.g., in few-shot segmentation and co-segmentation) have leveraged similar concepts of pixel-wise correspondence. The claim is not substantiated and may be overstated.",
+        "severity": "MINOR",
+        "justification": "This is a novelty/claim issue, not a methodological correctness issue. The conclusions of the paper are not invalidated by a minor overstatement in the introduction. However, the authors should temper such claims in revision."
+      }
+    ]
+  },
+  "reflection_a": {
+    "reflection_notes": "On a second pass, I still think the manuscript is best characterized as needing major revision rather than containing a clearly retraction-worthy flaw from the text alone. My original review emphasized core-method specification issues, and I still view those as the strongest concerns because they directly affect reproducibility and potentially the validity of the claimed mechanism. However, I think I slightly over-rated one issue (self-pairs) because inclusion of i=j terms is indeed important and should be clarified, but from the current text alone it is not certain that this would materially alter the main conclusions; it may be a design choice rather than a hidden flaw. I also think I under-emphasized one fresh concern adjacent to the other reviewer's point: possible train/test overlap stemming from mixed training datasets and benchmark construction should at least be raised as a major clarification request if the datasets are COCO-derived, though I cannot assert leakage from the manuscript excerpt alone. I do not think the lack of variance/statistical testing should be elevated to major by itself in this literature; it remains a minor reporting weakness unless the paper's claims rest on very marginal gains everywhere. Overall, my central stance remains that the paper's technical description of PAG/CAC/OCC is insufficiently specified or internally inconsistent in ways that could change implementation and outcomes, which is exactly a major-revision problem.",
+    "severity_i_now_upgrade": [
+      "Potential dataset-overlap/data-leakage risk across COCO-derived training and evaluation sets should be added as a MAJOR-REVISION clarification item if the manuscript does not explicitly document disjointness. I cannot claim confirmed leakage, but failure to address overlap would materially affect trust in benchmark comparisons."
+    ],
+    "severity_i_now_downgrade": [
+      "Finding on self-pairs in the N x N relation terms: downgrade from MAJOR-REVISION to MINOR. It is a legitimate ambiguity and may affect auxiliary-loss behavior, but inclusion of self-pairs is not inherently invalid and the impact on headline conclusions is too speculative from the text alone."
+    ],
+    "findings_i_still_defend": [
+      "Aggregation-network tensor algebra inconsistency: still MAJOR-REVISION. This remains my strongest concern because it targets the core contribution and mathematical reproducibility of the method.",
+      "Non-differentiable/unclear gradient flow in the condensation-correspondence module despite end-to-end training claims: still MAJOR-REVISION. If the actual implementation uses a differentiable surrogate, the paper must say so; otherwise the training claim is not verifiable.",
+      "OCC loss framed as unsupervised/self-supervised despite using ground-truth masks: still MAJOR-REVISION. This is a substantive claim/positioning issue that could change how readers interpret the contribution and fairness of comparisons.",
+      "Comparative evaluation fairness not standardized across methods: still MAJOR-REVISION. Using official released maps for baselines while training the proposed method under several dataset combinations weakens superiority claims unless protocol differences are carefully controlled.",
+      "Missing variance / confidence intervals / repeated-run stability: still MINOR. Important for robustness, but not enough by itself to overturn the results.",
+      "Incomplete computational claims (aggregation MACs only, lacking end-to-end runtime/memory): still MINOR.",
+      "Notation/presentation inconsistencies that obscure tensor identities and shapes: still MINOR.",
+      "Limited direct validation that CAC truly selects informative correspondences/noise removal beyond final task metrics: still MINOR."
+    ],
+    "new_errors_noticed": [
+      "Potential dataset overlap / leakage needs explicit audit: if COCO-SEG training data and evaluation benchmarks share COCO images or near-duplicates, benchmark claims would be compromised. This is not confirmed from the current manuscript text, so I would add it as a MAJOR-REVISION request for explicit split documentation rather than as a proven flaw.",
+      "Resource reproducibility could be sharpened as a concern: given the high-order association tensors and pairwise/group processing, the manuscript should state memory-saving techniques (mixed precision, checkpointing, patching, exact feature resolutions). I would still keep this as MINOR unless there is a clear hardware impossibility.",
+      "A fresh nuance on the fairness issue: beyond using official maps, the paper should clarify whether thresholding/post-processing and metric computation were re-run identically for all methods. If not, benchmark deltas may partly reflect evaluation protocol drift rather than model quality. This remains part of the MAJOR-REVISION evaluation-fairness concern rather than a separate standalone major error."
+    ]
+  },
+  "reflection_b": {
+    "reflection_notes": "Upon re-examining my original review in light of the second reviewer's findings, I notice several instances where my severity ratings may be misaligned. The second reviewer identified specific, concrete issues (tensor shape inconsistencies, non-differentiable operations in CAC, self-pair inclusion) that are more fundamental to the method's validity than my more general concerns about missing variance and data leakage. While my original findings were valid, some were perhaps rated too harshly (e.g., missing standard deviations is pervasive in the field and rarely leads to retraction), while others I may have underrated relative to their core impact on method correctness. I have carefully compared each finding against the 'RETRACTION-WORTHY', 'MAJOR-REVISION', and 'MINOR' definitions.",
+    "severity_i_now_upgrade": [
+      "finding 7 (memory/GPU concern) - Originally MINOR, but the second reviewer's finding 1 reveals that the tensor operations may be mathematically undefined, which is a deeper issue than just missing memory reports. However, my finding 7 is about memory reporting, not tensor algebra; I will keep it MAJOR because lack of memory info hinders reproducibility for a method that claims efficiency. Actually, I note the second reviewer's finding 1 is distinct and more severe. My finding 7 remains correctly rated as MAJOR-REVISION because without memory details, others cannot verify the practical feasibility, which is part of the central claim.",
+      "finding 6 (MAC reporting) - I originally rated this MINOR, but combined with the second reviewer's findings about incomplete complexity measures (finding 7), the omission of end-to-end runtime/memory could be misleading if the claimed reduction is only on a subcomponent. I upgrade to MAJOR-REVISION because it affects the core claim of computational efficiency, which is a stated contribution."
+    ],
+    "severity_i_now_downgrade": [
+      "finding 1 (missing error bars in ablation) - Originally MAJOR-REVISION, but this is a pervasive issue in deep learning papers. While important, it does not directly affect the fundamental validity of the method. I downgrade to MINOR because the absence of standard deviations, while regrettable, would not single-handedly change the paper's conclusions; it weakens robustness but does not undermine reproducibility to the same degree as tensor inconsistencies. The second reviewer also rated this as MINOR, which aligns with community norms.",
+      "finding 2 (missing number of runs) - Originally MAJOR-REVISION, but similar to finding 1, this is a standard reporting gap common in the field. I downgrade to MINOR because a single run does not invalidate results; it just limits certainty. The second reviewer appropriately rated this as MINOR.",
+      "finding 8 (first claim about semantic correspondence) - Originally MINOR, but I now think this is even less severe — it's a novelty framing issue, not a methodological error. I keep MINOR but note it's borderline cosmetic."
+    ],
+    "findings_i_still_defend": [
+      "finding 3 (data leakage) - MAJOR-REVISION: This is a serious concern. If training and test sets overlap, benchmark results are inflated. The second reviewer's findings do not address this directly, but their concern about evaluation fairness (finding 4) partially overlaps. I maintain MAJOR-REVISION because data leakage would invalidate SOTA claims.",
+      "finding 4 (lack of quantitative evaluation for CAC correspondence) - MAJOR-REVISION: The second reviewer's finding 9 similarly notes lack of direct correspondence validation. I stand by MAJOR-REVISION because without this, the core contribution of CAC is unsubstantiated.",
+      "finding 5 (OCC using ground truth masks) - MAJOR-REVISION: The second reviewer's finding 3 also identifies this as a hybrid supervision issue. I maintain MAJOR-REVISION because it changes the nature of the claimed self-supervision."
+    ],
+    "new_errors_noticed": [
+      "I did not include any finding about the mathematical inconsistency in tensor shapes (second reviewer's finding 1). This is a critical methodological error that could imply the method as described is not reproducible. I should add this as a new MAJOR-REVISION finding.",
+      "The second reviewer's finding 2 (non-differentiable argmax in CAC) is a serious concern for end-to-end training claims. I overlooked this. I should add it as a new MAJOR-REVISION finding.",
+      "The second reviewer's finding 6 (self-pairs i=j in associations) is a specific, technical error that could affect both training and inference. I missed this entirely. I should add it as a new MAJOR-REVISION finding.",
+      "The second reviewer's finding 4 (evaluation fairness) is related to my finding 3 but broader. I did not fully appreciate the protocol standardization issue. I will note this as a supporting concern for my existing finding 3."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.85,
+    "reasoning": "Both reviewers independently flagged the paper and converged on a set of substantive methodological concerns after reflection. No single finding rises to retraction-worthy level—there is no proven data fabrication, no impossible statistical result, and no definitively broken core outcome—but the accumulation of major-revision issues is significant. The most serious concerns center on: (1) the mathematical specification of the core contribution (tensor algebra inconsistencies in the aggregation network), (2) unclear differentiability of the correspondence-based condensation module despite end-to-end training claims, (3) the use of ground-truth masks in what is framed as self-supervised correspondence learning, (4) potential dataset overlap between COCO-derived training and evaluation sets, and (5) lack of standardized evaluation protocols when comparing to prior work. After reflection, both reviewers adjusted some severities but maintained the overall flagged verdict. The paper's central claims—that deep association learning with PAG, CAC, and OCC achieves state-of-the-art CoSOD performance—are not definitively invalidated but cannot be confidently verified given the identified issues.",
+    "findings": [
+      {
+        "finding": "The aggregation-network tensor algebra is internally inconsistent. Equations (6)-(8) describe operations on slices of a 7D hyperassociation tensor with dimensions that do not align with standard 2D convolutions as described. The role of the image-index dimension within convolution operations is undefined, and the mapping from the hyperassociation tensor to the final association feature is not mathematically reproducible from the text.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "This targets the paper's core methodological contribution. If the tensor operations as written cannot be implemented, independent reproduction is impossible. However, it is possible that the implementation exists and works correctly while the paper's notation is simply poorly specified. This warrants major revision for clarification and correction rather than retraction, since benchmark results are not automatically invalidated by imprecise notation if the code is functional.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The correspondence-induced condensation (CAC) module relies on apparently non-differentiable operations (argmax for initial match selection, discrete index gathering in Eq. 15), yet the paper claims the correspondence estimator is trained end-to-end with the OCC loss. No explanation is provided for how gradients propagate through these discrete operations.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.82,
+        "justification": "If the gradient pathway is truly broken, the OCC loss cannot optimize the correspondence estimator as claimed, undermining the ablation results for CAC and OCC. However, it is plausible that the implementation uses a differentiable surrogate (soft argmax, bilinear sampling, straight-through estimator) that is simply not documented. This is a major specification gap requiring revision, not a proven fatal flaw.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The OCC loss uses ground-truth segmentation masks (G_i^s) to restrict correspondence learning to co-salient regions, yet the paper frames this as unsupervised/self-supervised correspondence supervision. This is a hybrid supervision strategy that is not acknowledged or justified.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.88,
+        "justification": "Both reviewers independently identified this issue and maintained it through reflection. Using ground-truth masks in the auxiliary loss means the correspondence learning is not truly self-supervised, which overstates the contribution and makes comparisons to genuinely unsupervised correspondence methods misleading. This requires explicit acknowledgment and justification, but does not invalidate the main CoSOD results since the primary segmentation task is supervised anyway.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Potential data leakage: COCO-SEG (derived from COCO) is used for training while evaluation benchmarks (CoSal2015, CoSOD3k) also contain COCO-derived images. The manuscript does not document or verify disjointness of training and evaluation splits.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.7,
+        "justification": "If overlap exists, benchmark results would be inflated. However, this is not confirmed from the manuscript text alone—it is a plausible risk that requires clarification. Many papers in this subfield use similar dataset combinations, which partially mitigates the concern but does not eliminate it. This warrants a major revision request for explicit split documentation rather than retraction, since leakage is not proven.",
+        "source": "prover_b",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Comparative evaluation fairness is insufficiently controlled. The authors use officially released saliency maps from prior methods while training their own model under multiple dataset combinations. There is no standardized same-backbone/same-training/same-inference comparison, and released maps may reflect different preprocessing, model selection, or postprocessing.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "This is a common but real concern that weakens claims of state-of-the-art performance. Without controlled re-evaluation under identical protocols, performance deltas may partly reflect evaluation protocol differences rather than genuine model superiority. Both reviewers raised aspects of this concern and maintained it through reflection.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "No quantitative evaluation of correspondence quality is provided. The CAC module's correspondence estimation is validated only through downstream CoSOD metrics and visual examples, with no standard correspondence metrics (e.g., PCK, matching accuracy) or comparison to other correspondence methods.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "Without direct correspondence evaluation, the reader cannot determine whether CAC actually learns meaningful correspondences or whether downstream gains come from other factors. This weakens the core contribution claim for CAC. Both reviewers identified this gap.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Missing variance measures, confidence intervals, and repeated-run statistics across all experiments. The number of independent runs is not specified.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers initially rated this as major but Reviewer B downgraded upon reflection, recognizing this is pervasive in the deep learning literature and does not by itself invalidate results. Reviewer A consistently rated it minor. While important for robustness, the absence of error bars is a common reporting gap that would not change qualitative conclusions unless margins are extremely tight.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Incomplete computational claims: MACs are reported only for the aggregation network subcomponent (77.19G vs 91.38G), not for the full end-to-end model. Actual runtime, memory usage, and hardware measurement details are absent despite the method introducing high-dimensional tensors and additional modules.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.75,
+        "justification": "Reviewer B upgraded this upon reflection, but the overall impact remains limited to interpretability of efficiency claims rather than validity of accuracy results. The selective MAC reporting could be misleading but does not invalidate the core contributions. Rated minor because it is primarily a reporting gap, though it borders on major given that computational efficiency is a stated contribution.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Memory feasibility is not documented for a method that processes 6D hyperassociation tensors across N=6 images per group. No memory profiling, gradient checkpointing, or mixed-precision details are provided.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.7,
+        "justification": "This affects reproducibility but is not proven to be infeasible. The claimed hardware (Tesla A40 with 48GB) may suffice depending on feature resolutions, which are not fully specified. This is a documentation gap rather than a proven contradiction.",
+        "source": "prover_b",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Handling of self-pairs (i=j) in the N×N image relation terms is ambiguous. Self-correspondence and self-association are trivially satisfied and could inflate auxiliary loss statistics or association features if not explicitly excluded.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.65,
+        "justification": "Reviewer A originally rated this major but downgraded upon reflection, recognizing that inclusion of self-pairs is a design choice that may not materially alter conclusions. The impact is speculative from the text alone.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Multiple notation inconsistencies (F_s^A defined twice in conflicting contexts, ambiguous tensor shapes, Eq. 9 placement) impede understanding and reproducibility.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "These are real presentation issues that compound the tensor algebra concerns but are fixable through careful revision. They do not independently change conclusions.",
+        "source": "prover_a",
+        "survived_reflection": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 43206,
+    "duration_s": 134.62,
+    "n_api_calls": 14,
+    "cost_usd": 1.2726,
+    "total_input_tokens": 94428,
+    "total_output_tokens": 24038,
+    "calls": [
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4514,
+        "output_tokens": 1199,
+        "cost_usd": 0.0025376800000000005,
+        "duration_s": 16.16,
+        "label": "2408.16162v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 6324,
+        "output_tokens": 2487,
+        "cost_usd": 0.281385,
+        "duration_s": 49.24,
+        "label": "2408.16162v2/b3plus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 11892,
+        "output_tokens": 1473,
+        "cost_usd": 0.04446,
+        "duration_s": 31.16,
+        "label": "2409.01021v2/b3plus/prover_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7648,
+        "output_tokens": 2050,
+        "cost_usd": 0.26847,
+        "duration_s": 41.76,
+        "label": "2408.04316v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 11892,
+        "output_tokens": 1338,
+        "cost_usd": 0.04311,
+        "duration_s": 30.2,
+        "label": "2409.01021v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 11606,
+        "output_tokens": 1528,
+        "cost_usd": 0.00481442,
+        "duration_s": 22.19,
+        "label": "2409.01021v2/b3plus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 11606,
+        "output_tokens": 1077,
+        "cost_usd": 0.0043183200000000005,
+        "duration_s": 14.82,
+        "label": "2409.01021v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2843,
+        "output_tokens": 2613,
+        "cost_usd": 0.0332375,
+        "duration_s": 50.17,
+        "label": "2408.16162v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3451,
+        "output_tokens": 893,
+        "cost_usd": 0.0175575,
+        "duration_s": 17.38,
+        "label": "2409.01021v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2792,
+        "output_tokens": 1044,
+        "cost_usd": 0.0019022400000000001,
+        "duration_s": 14.66,
+        "label": "2408.16162v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3497,
+        "output_tokens": 1077,
+        "cost_usd": 0.0021288900000000005,
+        "duration_s": 13.52,
+        "label": "2409.01021v2/b3plus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2892,
+        "output_tokens": 2847,
+        "cost_usd": 0.0357,
+        "duration_s": 56.17,
+        "label": "2409.01021v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7361,
+        "output_tokens": 2106,
+        "cost_usd": 0.268365,
+        "duration_s": 41.09,
+        "label": "2408.16162v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 6110,
+        "output_tokens": 2306,
+        "cost_usd": 0.2646,
+        "duration_s": 50.36,
+        "label": "2409.01021v2/b3plus/arbiter"
+      }
+    ]
+  }
+}

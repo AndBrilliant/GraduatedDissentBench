@@ -1,0 +1,539 @@
+{
+  "condition": "B3PLUSPLUS",
+  "paper_id": "2402.01549v2",
+  "verdict": "flagged",
+  "confidence": 0.96,
+  "reasoning": "Both reviewers independently identified multiple critical errors in the manuscript, and after reflection, each reviewer affirmed their original assessments and acknowledged the validity of the other's key findings. The manuscript suffers from at least two errors that are genuinely retraction-worthy: (1) the invalid converse in Lemma 4/Theorem 4, which is the backbone of the claimed quantum rate formula, and (2) the false claim in Proposition 1 that the strong product equals the OR product, which corrupts the graph-product framework underlying all major results. Additionally, Theorem 3's claim that ϑ(G^(m)) = ϑ(G)^m, while potentially salvageable via a correct sandwich argument if the product definitions were consistent, is currently unsubstantiated because the proof environment is built on contradictory foundations. The combination of these errors means the paper's central conclusions — the exact quantum rate formula and the quantum/classical separation — cannot be supported by the mathematics as presented. These are not matters of exposition or minor gaps; they are structural failures at the exact points where the paper's headline contributions require validity.",
+  "findings": [
+    {
+      "finding": "Lemma 4/Theorem 4: The converse direction — from an arbitrary zero-error quantum protocol with mixed states to an orthogonal representation of the complement graph — is invalid. The proof selects an arbitrary eigenvector from each mixed state and claims the resulting vectors form an orthogonal representation. This fails because: (a) zero-error function computation only requires distinguishability conditioned on Bob's side information y and differing outputs, not global pairwise orthogonality of code states; (b) orthogonality of supports for adjacent pairs does not imply that arbitrary eigenvector selections yield orthogonal vectors; (c) no equivalence between the operational zero-error criterion and orthogonal rank is established for the mixed-state model. This invalidates the claimed formula R_quantum = inf_m (1/m) log ξ(G^(m)).",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.95,
+      "justification": "This lemma is the indispensable bridge between operational quantum protocols and the graph parameter (orthogonal rank) that powers the paper's main quantum/classical separation. Without a valid converse, the exact quantum rate formula is unsupported, and all downstream separation claims collapse. The error is structural and not a matter of missing detail that could be easily patched.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Proposition 1 asserts G ⊠ H = G̅ ∨ H̅ (or equivalently that the strong product equals the OR product). This is false under the manuscript's own definitions. In the OR product, adjacency in one coordinate suffices regardless of the other; in the strong product, the non-adjacent coordinate must satisfy equality or adjacency. These are distinct graph products with different edge sets in general.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.9,
+      "justification": "This is not a typo but a fundamental graph-theoretic misidentification. The paper's framework distinguishes between G^(m), G^{⊠m}, and G^{∨m} and uses containment relations among them to derive bounds and equalities. If the paper simultaneously claims two of these benchmark products are identical when they are not, the entire product-based proof architecture becomes internally inconsistent. All subsequent inclusion-based arguments, parameter bounds, and rate calculations that depend on distinguishing these products are compromised.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Theorem 3 asserts ϑ(G^(m)) = ϑ(G)^m for the m-instance confusion graph G^(m). The intended proof uses the sandwich G^{⊠m} ⊆ G^(m) ⊆ G^{∨m} together with monotonicity of ϑ and Lemma 2 (which gives ϑ(G^{⊠m}) = ϑ(G^{∨m}) = ϑ(G)^m). In principle this sandwich argument could force equality, but as written, the proof environment is unstable because Proposition 1 falsely equates the strong and OR products, and the product definitions used throughout are inconsistent.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "The sandwich argument for Lovász number equality is plausible in principle: if the containment chain and Lemma 2 are correctly stated, monotonicity would force ϑ(G^(m)) = ϑ(G)^m. However, since the proof depends on product definitions that are demonstrably inconsistent elsewhere in the paper, and the manuscript provides no explicit proof of this theorem beyond asserting the chain, it cannot be accepted as established. This is a serious gap that could change conclusions but is potentially repairable, making it MAJOR-REVISION rather than RETRACTION-WORTHY.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Contradictory complement/product identities involving C5, including claims like C5^{∨m} = C̄5^{⊠m} = C5^{⊠m}. Self-complementarity of C5 does not imply self-complementarity of its strong or OR powers, nor that complementing factors equals complementing the product graph.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "These identities are used in the paper's main worked example to derive specific bounds on orthogonal rank and to demonstrate the quantum/classical separation. If the identities are wrong, the example's quantitative claims may be invalid. However, in principle the example could be rebuilt with correct identities, so this is a serious but potentially reparable error.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Notation/logic inconsistency in Lemma 4 regarding whether the orthogonal rank parameter is ξ(G^(m)) or ξ(G̅^(m)). Under Definition 4, orthogonal representations make nonadjacent vertices orthogonal, so using the graph versus its complement changes the meaning entirely.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "Orthogonal rank is highly sensitive to complementation. This ambiguity could flip the direction of key inequalities and change computed values. In context — where the main theorem (Lemma 4/Theorem 4) is already invalid for independent reasons — this compounds the problem. However, on its own, it is a fixable notational issue if a consistent convention were adopted throughout, so MAJOR-REVISION is appropriate.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The submultiplicativity argument in Theorem 4's proof (ξ(G^(m+n)) ≤ ξ(G^(m))·ξ(G^(n))) is circular: it relies on the operational characterization from Lemma 4, which is itself invalid.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "The asymptotic limit formula could potentially be established via a correct operational parameter and Fekete's lemma, but the current proof is logically dependent on the broken Lemma 4 characterization. This affects the existence of the asymptotic quantum rate as defined in the paper.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The claim that a quantum protocol is zero-error if and only if for all (x,x') ∈ G^(m), ρ_x ⊥ ρ_{x'} is stated without adequate justification. Zero-error function computation requires distinguishability only among states that must be discriminated under each fixed y with differing outputs, not a global pairwise orthogonality condition.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "This misstates the operational criterion and feeds into the graph-parameter reduction. A more precise formulation involving noncommutative graph theory or careful conditioning on side information might rescue a version of this claim, but as written it is unjustified and could lead to incorrect conclusions about the relationship between protocols and graph parameters.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The C5 example section has corrupted text, equations out of order, and references to claims and equation numbers that do not form a coherent argument chain. The main example supporting the headline quantum/classical separation cannot be independently verified.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "Even if the underlying mathematics were correct, the primary worked example is unverifiable as presented. This is a serious reproducibility issue that goes beyond typical presentation problems because it concerns the paper's main illustrative contribution.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Potential systematic inversion of inclusion directions in monotonicity arguments combining orthogonal rank, chromatic number, and Lovász number with complement operations and product containments.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.7,
+      "justification": "This is a cautionary observation that signals high risk of further hidden errors given the already-confirmed problems with product definitions and complement conventions, but it does not independently refute any specific theorem.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Numerous reporting and presentation defects: malformed references, inconsistent notation (e.g., G^{∨n} vs G^{∨m}), duplicated numbering, and apparently misplaced sections/proofs.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "These do not independently invalidate conclusions but materially impede independent verification and reflect overall lack of rigor in preparation.",
+      "source": "both",
+      "survived_reflection": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 2,
+    "MAJOR-REVISION": 6,
+    "MINOR": 2
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.97,
+    "reasoning": "The manuscript contains at least one central methodological/mathematical error in its characterization of the quantum rate, plus several serious internal inconsistencies in graph-product definitions and notation. The most important issue is that the converse direction of Lemma 4/Theorem 4 is invalid as written: from a zero-error quantum protocol with mixed states one cannot in general select one eigenvector per state and obtain an orthogonal representation of the complement graph. This undermines the claimed exact formula R_quantum = inf_m (1/m) log xi(G^(m)), which is foundational for the paper's main quantum/classical separation claims. In addition, the paper states Proposition 1 as G ⊠ H = G ∨ H, which is false under the standard definitions they themselves give, and numerous later arguments rely on ambiguous or contradictory use of complements and product identities. These are not mere exposition issues; they materially affect the validity of the main conclusions.",
+    "findings": [
+      {
+        "finding": "Lemma 4/Theorem 4 gives an incorrect converse from arbitrary zero-error quantum protocols to orthogonal representations of the complement graph. The proof claims that if two mixed states ρ_x and ρ_x' are perfectly distinguishable, one may pick an arbitrary eigenvector from each and obtain orthogonal vectors, hence an orthogonal representation. But zero-error function computation only requires states corresponding to confusable inputs under a fixed y/output partition to be distinguishable in the relevant measurement context; it does not imply the global pairwise orthogonality structure needed for an orthogonal representation. Even if pairwise orthogonality of supports were established for certain pairs, selecting one eigenvector arbitrarily from each mixed state is not generally sufficient to encode the protocol as a rank-1 orthogonal representation without additional argument.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This lemma is the backbone of the claimed exact quantum rate formula R_quantum = inf_m log xi(G^(m))/m. The later separation result for g depends on identifying the operational quantum rate with orthogonal rank. If this converse fails, the central quantitative claims about optimal quantum rate and the comparison to the classical rate are unsupported."
+      },
+      {
+        "finding": "Proposition 1 states G ⊠ H = G ∨ H. Under the manuscript's own definitions of strong product and OR product, this is false in general. Strong product adjacency requires coordinatewise equality-or-adjacency with at least one adjacency, whereas OR product adjacency requires at least one coordinate adjacent, regardless of the other coordinate relation. For example, if (u1,u2) is nonedge in G and (v1,v2) is an edge in H with u1 ≠ u2, then ((u1,v1),(u2,v2)) is adjacent in G ∨ H but not in G ⊠ H.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This is a fundamental graph-theoretic error, not a typo. The manuscript's structural claims rely on distinguishing G^(m) between strong and OR products. If the paper also asserts these products are equal, the framework becomes internally inconsistent and several subsequent inequalities/proofs are unreliable."
+      },
+      {
+        "finding": "The paper repeatedly uses contradictory identities involving complements and products, e.g. 'C5^{∨ m} = overline{C5^{⊠ m}} = C5^{⊠ m}, and in particular C5^{∨2} = C5^{⊠2}'. Self-complementarity of C5 does not imply self-complementarity of its strong or OR powers, nor does it imply C5 ∨ C5 = C5 ⊠ C5. These claims conflate complementing factors with complementing the product graph.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If these identities are used in upper/lower bounds on orthogonal rank or Lovász number, the derived rate comparisons may be wrong. This concern could potentially be repaired by replacing the incorrect identities with correct product/complement relations and reworking the proof, but as written the argument is unsound."
+      },
+      {
+        "finding": "Theorem 3 asserts exact equality ϑ(G^(m)) = ϑ(G)^m for every f-confusion graph G^(m), derived from G^{⊠ m} ⊆ G^(m) ⊆ G^{∨ m} and monotonicity plus Lemma 2. While the sandwich indeed suggests equality at the level of Lovász number if all graphs/products are correctly defined, the manuscript's product definitions and Proposition 1 are inconsistent, so the theorem's proof context is unstable. Moreover, the theorem is later used as if it directly informs operational quantum rate, which only follows if Lemma 4/Theorem 4 are correct.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The theorem may be salvageable, but in the current paper it sits on top of inconsistent graph-product machinery and feeds into the unsupported quantum-rate characterization. It therefore affects substantive conclusions."
+      },
+      {
+        "finding": "There is a notation/logic inconsistency in Lemma 4: it states the optimal quantum rate is (log2 xi(G^(m)))/m 'where Ḡ^(m) denotes the complement of the f-confusion graph G^(m)'. The proof then uses an orthogonal representation of Ḡ^(m), but by Definition 4 orthogonal representations make nonadjacent vertices orthogonal, so using xi(G^(m)) versus xi(Ḡ^(m)) changes the meaning. The text oscillates between these conventions.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Because orthogonal rank is highly sensitive to complementation, this ambiguity directly impacts the claimed rate formula and any computed values. At minimum all results involving xi must be rechecked under a single consistent convention."
+      },
+      {
+        "finding": "The proof of Theorem 4 invokes submultiplicativity as 'xi(G^(m+n)) ≤ xi(G^(m)) xi(G^(n)), since a protocol for the (m+n)-instance case can be obtained by putting together the m-instance and n-instance protocols.' The direction of implication is backwards: combining an m-instance and n-instance protocol constructs a protocol for m+n instances and gives an upper bound on the needed dimension for G^(m+n), but only if the operational characterization in terms of xi is already valid and the graph decomposition across blocklengths is properly justified. As written, this is circular because Theorem 4 depends on Lemma 4, which is itself problematic.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This affects existence of the asymptotic limit and the exact formula for quantum rate. The asymptotic statement might be repairable, but the current proof is not methodologically sound."
+      },
+      {
+        "finding": "The manuscript's section on the example with C5 is textually corrupted enough to obscure the logical derivation of key claims such as xi(C5^{∨m}) bounds and the proof of the quantum advantage. Important displayed equations are presented out of order and several references to 'Claim 1/3', '(2)/(3)/(6)' appear without a coherent argument chain.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Even if the underlying mathematics were correct, the main example supporting the headline contribution cannot be independently verified from the manuscript as provided. This requires substantial reconstruction before publication."
+      },
+      {
+        "finding": "The statement 'It can be shown ... this protocol is zero-error if and only if for (x,x') ∈ G^(m) then ρ_x ⟂ ρ_x'' is too strong without a careful proof. In zero-error function computation, Bob only needs to recover f(x,y), not x itself, and the measurement may depend on y. The necessary condition is typically orthogonality between states that must be distinguished under some fixed side-information value and differing outputs, but the manuscript does not adequately justify the exact equivalence with graph adjacency for arbitrary mixed-state protocols.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This claim underpins the transition from operational protocols to graph parameters. If misstated, the whole quantum formalism may need revision, though it may be salvageable with a more precise noncommutative-graph formulation."
+      },
+      {
+        "finding": "Several proofs and claims use graph inclusion directions in a way that is easy to invert incorrectly, e.g. Proposition 6 monotonicity of orthogonal rank is correct only with the paper's convention, but later arguments appear to combine this with complement identities and product containments inconsistently. Given the already false Proposition 1, all inclusion-based bounds involving xi, chi, and ϑ need systematic verification.",
+        "severity": "MINOR",
+        "justification": "On its own this is a caution rather than a fatal flaw, but in context it signals a high risk of further hidden errors in the derivations."
+      },
+      {
+        "finding": "There are numerous reporting and presentation defects: malformed references, inconsistent notation (e.g. G^{∨n} vs G^{∨m}), duplicated numbering, and sections/proofs apparently pasted in the wrong location. These issues impede reproducibility and independent checking.",
+        "severity": "MINOR",
+        "justification": "These do not by themselves invalidate conclusions, but they materially reduce confidence and would need correction in any revision."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "The manuscript contains a critical mathematical error in the proof of Theorem 3, specifically the claim that α(G) ≤ ϑ(G) is used as is, but more importantly the chain of equalities and inequalities for ϑ(G^{(m)}) relies on unproven assumptions about G^{(m)} being sandwiched between G⊠m and G∨m, and then claiming ϑ(G⊠m) = ϑ(G∨m) = ϑ(G)^m and that this equals ϑ(G^{(m)}). While Lemma 2 gives ϑ(G⊠H) = ϑ(G∨H) = ϑ(G)ϑ(H) for any G and H, the manuscript states Theorem 3 as: α(G⊠m) ≤ ϑ(G⊠m) = ϑ(G)^m = ϑ(G^{(m)}) = ϑ(G∨m) ≤ ξ(G∨m). The equality ϑ(G^{(m)}) = ϑ(G)^m is asserted without proof and is not generally true because G^{(m)} is not necessarily equal to either the strong or OR product in general—it is only sandwiched. The authors only show conditions for equality to one extreme or the other (Theorem 1), but the general G^{(m)} could be some intermediate graph. Therefore, there is no justification that ϑ(G^{(m)}) equals ϑ(G)^m for arbitrary functions and pmfs. This directly impacts the central conclusions about quantum and classical rate comparisons, which depend on these equalities. This error is retraction-worthy because the claimed equivalence of the Lovász number of the m-instance confusion graph to the m-th power of the single-instance Lovász number is unsubstantiated and likely false in general, thus the paper's main theoretical results (Theorem 3 and subsequent rate calculations) are unsupported.",
+    "findings": [
+      {
+        "finding": "Theorem 3 asserts ϑ(G^{(m)}) = ϑ(G)^m without proof and without justification that G^{(m)} equals the strong product or OR product in general.",
+        "severity": "RETRACTION-WORTHY"
+      }
+    ],
+    "truncated": true
+  },
+  "reflection_a": {
+    "defense_for_self": "The strongest defense of my original severity ratings is that the manuscript does not merely contain isolated mistakes; it fails at the exact points where its headline theorems need validity. The RETRACTION-WORTHY findings are not overstatements because they target errors that break the operational-to-graph-parameter bridge and the graph-product framework on which the main results are built.\n\n1) Why the Lemma 4/Theorem 4 error is genuinely RETRACTION-WORTHY, not merely a fixable gap.\nThe paper’s principal quantum claim is an exact operational characterization of zero-error quantum rate in terms of orthogonal rank (or its asymptotic regularization). That characterization is not a peripheral lemma: it is the engine that converts communication protocols into graph quantities and then powers the paper’s claimed quantum/classical separation. If the converse direction fails, then the quantity the paper computes is not shown to equal the operational quantum cost. In that circumstance, the main theorem is not partially weakened; it is unsupported.\n\nThe defect is structural, not cosmetic. The proof tries to move from an arbitrary zero-error quantum protocol with mixed states to an orthogonal representation by selecting an eigenvector from each density operator. That step is invalid for at least three independent reasons:\n\n(a) Zero-error function computation does not require a single global pairwise orthogonality relation over all adjacent vertices of the manuscript’s graph in the naive way the proof assumes. Distinguishability is conditioned on Bob’s side information y and only among inputs that induce different outputs for that y. The manuscript treats this as if it automatically yielded a global orthogonality pattern among code states indexed only by x. That is already a nontrivial reduction which is not justified.\n\n(b) Even if one somehow established that certain mixed states have orthogonal supports for all graph-adjacent pairs, it still would not follow that choosing an arbitrary eigenvector from each support yields an orthogonal representation. Orthogonality of subspaces for relevant pairs would allow choosing vectors from supports carefully, but not arbitrarily unless every relevant support relation is globally compatible. The manuscript’s proof explicitly overclaims this step.\n\n(c) More fundamentally, exact characterization of one-way zero-error quantum communication with mixed states is usually formulated via support relations / projectors / noncommutative graph methods, not by naive rank-1 reduction without argument. The paper needs a theorem proving equivalence to orthogonal rank under its exact model. It does not have one.\n\nBecause this is the central converse, the claimed formula R_quantum = inf_m (1/m) log xi(G^(m)) simply does not follow. Once that formula is unsupported, every later claim that depends on computing or bounding xi as the actual communication rate is no longer established. That is exactly the definition of RETRACTION-WORTHY under the provided rubric: the central conclusions cannot be supported by the mathematics as presented.\n\nThis is not over-stated relative to the other reviewer’s emphasis on Theorem 3. If anything, my assessment is more fundamental. Even if Theorem 3 about Lovász number were repaired completely, the paper would still not have proved its main operational quantum theorem. A paper whose flagship quantum-rate identity rests on an invalid converse has failed at the core level.\n\n2) Why Proposition 1 is RETRACTION-WORTHY.\nThe statement G ⊠ H = G ∨ H is false under the manuscript’s own definitions. This is not a subtle edge-case issue; it is a basic graph-theoretic misidentification of two distinct products. The difference is elementary and material:\n- In the OR product, one adjacent coordinate suffices regardless of what happens in the other coordinate.\n- In the strong product, the non-adjacent coordinate must be equal or adjacent; an arbitrary nonedge there blocks adjacency.\nTherefore these products are generally not equal. A single explicit counterexample suffices.\n\nWhy is this retraction-level rather than revision-level? Because the paper’s whole framework distinguishes several graph constructions: the m-instance confusion graph G^(m), the strong power, and the OR power. The manuscript uses inclusion relations among them to derive capacity/rate bounds and exact equalities for graph parameters. If it also states as a proposition that two of these benchmark products are equal when they are not, then the logical skeleton of all subsequent product-based arguments becomes untrustworthy. This is not just one incorrect lemma in an appendix; it is a foundational statement about the objects being manipulated throughout the paper.\n\nMoreover, the false proposition interacts with the complement confusions later in the manuscript. Once the authors are already conflating strong and OR products, claims like C5^{∨m} = overline{C5^{⊠m}} = C5^{⊠m} become especially suspect. Thus Proposition 1 is not an isolated typo that can be locally patched. It is evidence that the product calculus underpinning the paper is mathematically unstable. Under the key test, if confirmed, this would require retraction because the central theorems rely on exactly these product distinctions.\n\n3) Defense against the other reviewer’s alternative framing.\nThe other reviewer highlights Theorem 3 and says the equality ϑ(G^(m)) = ϑ(G)^m is unproved because G^(m) is only sandwiched between strong and OR powers. I agree that the paper, as written, is unstable there because of inconsistent product definitions. But that alternative framing does not undercut my severities; it actually reinforces the conclusion that the manuscript is broken at multiple central points.\n\nIn fact, if the product containments and Lemma 2 were all correctly stated, the sandwich argument for Lovász number equality could plausibly be salvageable: from G^{⊠ m} ⊆ G^(m) ⊆ G^{∨ m} and monotonicity of ϑ, together with ϑ(G^{⊠ m}) = ϑ(G)^m = ϑ(G^{∨ m}), one can indeed force equality of ϑ(G^(m)). So I did not rate that specific theorem RETRACTION-WORTHY because in principle it may be repairable once the graph machinery is cleaned up. The other reviewer’s point is useful as an additional symptom, but it is not stronger than my central objections.\n\nMy most serious assessments target two failures the other reviewer understates:\n- the invalid operational converse for the quantum theorem, and\n- the false identification of graph products.\nThese are more fundamental than a possibly repairable omission in a Lovász-number argument. Even if one granted the best possible reconstruction of Theorem 3, the paper would still lack a valid proof of the main quantum-rate formula. Therefore my RETRACTION-WORTHY ratings remain the strongest and most defensible characterization.\n\n4) Why the MAJOR-REVISION findings are not inflated.\nI intentionally did not overclassify every flaw as retraction-level. Several issues are serious but potentially salvageable if the authors rebuilt the relevant arguments.\n\n- Incorrect complement/product identities involving C5: MAJOR-REVISION is appropriate because those claims can contaminate the example and bounds, but in principle one could redo the example with correct identities. As written, however, the example is unsound.\n\n- Theorem 3 / Lovász-number argument: I rated this MAJOR-REVISION, not RETRACTION-WORTHY, because there is a plausible route to salvage once products and notation are made consistent. The issue is substantial because the current proof context is compromised, but not necessarily fundamentally irreparable.\n\n- The xi(G^(m)) versus xi(overline{G^(m)}) convention drift: MAJOR-REVISION is right because this ambiguity can change theorem statements dramatically, yet it is still the kind of issue that could be repaired globally with disciplined notation and proof revision—assuming the underlying theorem were true, which for Lemma 4/Theorem 4 it is not.\n\n- Submultiplicativity / asymptotic limit argument in Theorem 4: MAJOR-REVISION because the proof is circular or at least logically dependent on the broken characterization. The asymptotic statement might be repairable via a correct operational parameter and Fekete-style argument, but the current proof is invalid.\n\n- Claim that zero-error iff adjacent pairs correspond to orthogonal states: MAJOR-REVISION because the exact condition requires careful formulation relative to Bob’s side information and output partition. This is close to the retraction-level issue in Lemma 4, but I kept it slightly lower because, by itself, it might be restated correctly. The fatal step is the paper’s actual use of that claim to derive orthogonal rank.\n\n5) Why the package of errors compels standing firm.\nThis manuscript does not merely need proofreading or a few corrected lemmas. It would need:\n- a new proof, or a substantially different theorem, for the operational quantum-rate characterization;\n- a complete correction of graph-product definitions and all dependent identities;\n- rechecking all monotonicity arguments under the right complement convention;\n- reconstruction of the main C5 example and all claimed separations.\nThat is the profile of a paper whose main conclusions are not established, not a paper needing modest revision.\n\nSo I affirmatively defend the original ratings: the two RETRACTION-WORTHY findings are exactly where the paper becomes fundamentally broken, and the MAJOR-REVISION findings mark substantial but potentially reparable downstream consequences or companion errors.",
+    "severity_i_now_upgrade": [
+      "The notation/logic inconsistency in Lemma 4 concerning xi(G^(m)) versus xi(overline{G^(m)}) may deserve RETRACTION-WORTHY in context, because the theorem statement itself may be about the wrong graph parameter under the paper’s own definition of orthogonal representation. If the central rate formula is stated with the wrong complementation, then even a repaired proof of some nearby statement would not rescue the published claim."
+    ],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      "RETRACTION-WORTHY — Lemma 4/Theorem 4 converse from zero-error quantum protocols with mixed states to orthogonal representations of the complement graph. Reason: this is the indispensable bridge from operational protocols to orthogonal rank; the proof’s eigenvector-selection argument is mathematically invalid, so the main quantum-rate formula and all separation claims built on it are unsupported.",
+      "RETRACTION-WORTHY — Proposition 1 claim that G ⊠ H = G ∨ H. Reason: this is flatly false under standard definitions and under the paper’s own definitions; it corrupts the product framework used throughout the paper, making downstream structural arguments unreliable at a foundational level.",
+      "MAJOR-REVISION — Incorrect complement/product identities such as C5^{∨ m} = overline{C5^{⊠ m}} = C5^{⊠ m}. Reason: these are substantively wrong and can invalidate the worked example and derived bounds, but in principle the example could be rebuilt with correct identities.",
+      "MAJOR-REVISION — Theorem 3 equality ϑ(G^(m)) = ϑ(G)^m in an inconsistent proof environment. Reason: because the product definitions are unstable, the theorem is not currently trustworthy, though a corrected sandwich argument may exist.",
+      "MAJOR-REVISION — Convention drift between xi(G^(m)) and xi(overline{G^(m)}). Reason: orthogonal rank is complement-sensitive, so this ambiguity directly threatens theorem statements and computations; all such results need re-verification.",
+      "MAJOR-REVISION — Submultiplicativity/asymptotic formula in Theorem 4 argued circularly. Reason: the asymptotic conclusion relies on the broken operational characterization and is not independently established as written.",
+      "MAJOR-REVISION — Overstrong claim that zero-error is equivalent to orthogonality on graph-adjacent state pairs without careful conditioning on Bob’s side information/output partition. Reason: this misstates the operational criterion and infects the graph-parameter reduction, though a more precise formulation might be possible.",
+      "MINOR — Inclusion-direction and monotonicity handling is error-prone and likely inconsistent in later proofs. Reason: by itself this is a cautionary issue, but in context it signals broader unreliability rather than independently refuting the main theorem.",
+      "MINOR — Reporting/presentation defects, malformed references, inconsistent notation, and disordered sections. Reason: these impede verification but are not themselves the source of invalidity."
+    ],
+    "new_errors_noticed": [
+      "The manuscript appears to conflate at least three different notions: distinguishability of states for each fixed y, graph adjacency defined by existence of a y causing differing outputs, and global orthogonality of code states independent of y. That existential-vs-universal mismatch is a separate logical error from the eigenvector-selection mistake and further undermines the protocol-to-graph reduction.",
+      "If Definition 4 of orthogonal representation is the standard one requiring nonadjacent vertices to map to orthogonal vectors, then several later uses may silently require an orthogonal representation of the complement while writing xi(G) instead of xi(overline{G}); this is not just notation drift but potential theorem reversal.",
+      "The manuscript may also be implicitly assuming multiplicativity/submultiplicativity properties of orthogonal rank under the wrong graph product because of the strong/OR conflation. Any claimed xi bounds across blocklength likely need full rederivation with the correct product operation.",
+      "The example section’s use of self-complementarity of C5 seems to ignore that self-complementarity of a factor does not pass in the naive way to strong or OR graph powers. This is a distinct graph-theoretic error beyond the specific displayed identities I initially flagged."
+    ]
+  },
+  "reflection_b": {
+    "defense_for_self": "My severity ratings are justified because the errors I identified are not merely technical gaps but structural flaws that, if confirmed, make the paper's central claims unsupportable. The claim in my first finding — that Theorem 3 asserts ϑ(G^(m)) = ϑ(G)^m without proof, relying on an unproven equality for an intermediate graph that is not generally equal to the strong or OR product — is retraction-worthy because the entire rate comparison between quantum and classical zero-error communication hinges on this equality. If it is false for arbitrary f and pmfs, then the paper's main quantitative results (Theorem 3 and subsequent rate calculations) collapse. This is not a minor oversight; it is an unjustified leap in the logical chain. The other reviewer's alternative framings do not challenge the correctness of this core observation; they merely redirect attention to other issues. My assessment stands because the mathematical gap is clear: the paper provides no proof that the Lovász number of the m-instance confusion graph equals the m-th power of the single-instance Lovász number, and the sandwich argument alone does not suffice without additional assumptions about G^(m)'s structure. This error is of the same kind as claiming a limit exists without proving convergence — it invalidates the theorem's foundation.",
+    "severity_i_now_upgrade": [],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      "Finding 1: Theorem 3 asserts ϑ(G^(m)) = ϑ(G)^m without proof. Severity: RETRACTION-WORTHY. Reason: This is not a minor gap; it is a missing proof for a claim that is central to the paper's main results. Without it, the claimed equivalence of quantum and classical rate comparisons is unsupported.",
+      "Finding 2: Lemma 4/Theorem 4 gives an incorrect converse from quantum protocols to orthogonal representations. Severity: RETRACTION-WORTHY. Reason: The proof's attempt to extract orthogonal vectors from mixed states by picking arbitrary eigenvectors is insufficient for constructing an orthogonal representation of the complement graph. This undermines the claimed exact quantum rate formula, which is foundational for the paper's quantum/classical separation results.",
+      "Finding 3: Proposition 1 states G ⊠ H = G ∨ H, which is false under the paper's own definitions. Severity: RETRACTION-WORTHY. Reason: This is a basic graph-theoretic error that creates internal inconsistency in the framework used for all subsequent product-based arguments. If the products are not equal, the sandwich argument and the claimed equalities collapse.",
+      "Finding 4: Contradictory identities involving complements and products (e.g., C5^(∨m) = C5^(⊠m)). Severity: MAJOR-REVISION. Reason: These errors affect bounds on orthogonal rank or Lovász number, but could potentially be corrected if the underlying definitions are clarified; however, given the compounding errors, I stand by MAJOR as it could still change conclusions.",
+      "Finding 5: Theorem 3's proof context is unstable due to inconsistent product definitions. Severity: MAJOR-REVISION. Reason: The theorem may be correct in isolation, but it feeds into the unsupported quantum-rate characterization; thus its severity reflects the systemic risk.",
+      "Finding 6: Notation/logic inconsistency in Lemma 4 regarding xi(G^(m)) vs xi(Ḡ^(m)). Severity: MAJOR-REVISION. Reason: Orthogonal rank is highly sensitive to complementation; this ambiguity could flip conclusions, but the paper might be salvageable with consistent conventions.",
+      "Finding 7: Submultiplicativity proof in Theorem 4 is circular. Severity: MAJOR-REVISION. Reason: The asymptotic existence relies on a flawed lemma; repairing it requires rewriting the proof entirely.",
+      "Finding 8: Corrupted text and missing logical chain in the C5 example. Severity: MAJOR-REVISION. Reason: The main example cannot be verified; this is a serious reproducibility issue.",
+      "Finding 9: Claim that zero-error protocol requires orthogonality if and only if (x,x') ∈ G^(m) is too strong. Severity: MAJOR-REVISION. Reason: The equivalence is nontrivial and not justified; however, it might be correct under specific conditions, so a revision is warranted.",
+      "Finding 10: Potential inversion of inclusion directions in product/orthogonal-rank arguments. Severity: MINOR. Reason: Cautionary; unlikely to change conclusions on its own but signals high risk of hidden errors.",
+      "Finding 11: Reporting/presentation defects. Severity: MINOR. Reason: Impede reproducibility but do not invalidate conclusions."
+    ],
+    "new_errors_noticed": [
+      "I missed that the other reviewer's finding about Lemma 4/Theorem 4 (the converse direction) is actually more severe than I initially appreciated. They correctly point out that selecting arbitrary eigenvectors from mixed states to form an orthogonal representation is insufficient — the proof does not address the need for orthogonality of the supports of the mixed states themselves, not just arbitrary eigenvectors. This deepens my original concern about Lemma 4 being retraction-worthy, and I should have highlighted this specific logical gap in my own review. Additionally, I notice that the other reviewer's criticism of Proposition 1 is stronger than I originally recorded: they correctly note that the claimed equality between strong and OR products is not just a typo but a fundamental graph-theoretic falsehood that propagates through the entire framework. I understated the severity of this error in my initial review by not explicitly linking it to the paper's central sandwich argument."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.96,
+    "reasoning": "Both reviewers independently identified multiple critical errors in the manuscript, and after reflection, each reviewer affirmed their original assessments and acknowledged the validity of the other's key findings. The manuscript suffers from at least two errors that are genuinely retraction-worthy: (1) the invalid converse in Lemma 4/Theorem 4, which is the backbone of the claimed quantum rate formula, and (2) the false claim in Proposition 1 that the strong product equals the OR product, which corrupts the graph-product framework underlying all major results. Additionally, Theorem 3's claim that ϑ(G^(m)) = ϑ(G)^m, while potentially salvageable via a correct sandwich argument if the product definitions were consistent, is currently unsubstantiated because the proof environment is built on contradictory foundations. The combination of these errors means the paper's central conclusions — the exact quantum rate formula and the quantum/classical separation — cannot be supported by the mathematics as presented. These are not matters of exposition or minor gaps; they are structural failures at the exact points where the paper's headline contributions require validity.",
+    "findings": [
+      {
+        "finding": "Lemma 4/Theorem 4: The converse direction — from an arbitrary zero-error quantum protocol with mixed states to an orthogonal representation of the complement graph — is invalid. The proof selects an arbitrary eigenvector from each mixed state and claims the resulting vectors form an orthogonal representation. This fails because: (a) zero-error function computation only requires distinguishability conditioned on Bob's side information y and differing outputs, not global pairwise orthogonality of code states; (b) orthogonality of supports for adjacent pairs does not imply that arbitrary eigenvector selections yield orthogonal vectors; (c) no equivalence between the operational zero-error criterion and orthogonal rank is established for the mixed-state model. This invalidates the claimed formula R_quantum = inf_m (1/m) log ξ(G^(m)).",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.95,
+        "justification": "This lemma is the indispensable bridge between operational quantum protocols and the graph parameter (orthogonal rank) that powers the paper's main quantum/classical separation. Without a valid converse, the exact quantum rate formula is unsupported, and all downstream separation claims collapse. The error is structural and not a matter of missing detail that could be easily patched.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Proposition 1 asserts G ⊠ H = G̅ ∨ H̅ (or equivalently that the strong product equals the OR product). This is false under the manuscript's own definitions. In the OR product, adjacency in one coordinate suffices regardless of the other; in the strong product, the non-adjacent coordinate must satisfy equality or adjacency. These are distinct graph products with different edge sets in general.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.9,
+        "justification": "This is not a typo but a fundamental graph-theoretic misidentification. The paper's framework distinguishes between G^(m), G^{⊠m}, and G^{∨m} and uses containment relations among them to derive bounds and equalities. If the paper simultaneously claims two of these benchmark products are identical when they are not, the entire product-based proof architecture becomes internally inconsistent. All subsequent inclusion-based arguments, parameter bounds, and rate calculations that depend on distinguishing these products are compromised.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Theorem 3 asserts ϑ(G^(m)) = ϑ(G)^m for the m-instance confusion graph G^(m). The intended proof uses the sandwich G^{⊠m} ⊆ G^(m) ⊆ G^{∨m} together with monotonicity of ϑ and Lemma 2 (which gives ϑ(G^{⊠m}) = ϑ(G^{∨m}) = ϑ(G)^m). In principle this sandwich argument could force equality, but as written, the proof environment is unstable because Proposition 1 falsely equates the strong and OR products, and the product definitions used throughout are inconsistent.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "The sandwich argument for Lovász number equality is plausible in principle: if the containment chain and Lemma 2 are correctly stated, monotonicity would force ϑ(G^(m)) = ϑ(G)^m. However, since the proof depends on product definitions that are demonstrably inconsistent elsewhere in the paper, and the manuscript provides no explicit proof of this theorem beyond asserting the chain, it cannot be accepted as established. This is a serious gap that could change conclusions but is potentially repairable, making it MAJOR-REVISION rather than RETRACTION-WORTHY.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Contradictory complement/product identities involving C5, including claims like C5^{∨m} = C̄5^{⊠m} = C5^{⊠m}. Self-complementarity of C5 does not imply self-complementarity of its strong or OR powers, nor that complementing factors equals complementing the product graph.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "These identities are used in the paper's main worked example to derive specific bounds on orthogonal rank and to demonstrate the quantum/classical separation. If the identities are wrong, the example's quantitative claims may be invalid. However, in principle the example could be rebuilt with correct identities, so this is a serious but potentially reparable error.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Notation/logic inconsistency in Lemma 4 regarding whether the orthogonal rank parameter is ξ(G^(m)) or ξ(G̅^(m)). Under Definition 4, orthogonal representations make nonadjacent vertices orthogonal, so using the graph versus its complement changes the meaning entirely.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.82,
+        "justification": "Orthogonal rank is highly sensitive to complementation. This ambiguity could flip the direction of key inequalities and change computed values. In context — where the main theorem (Lemma 4/Theorem 4) is already invalid for independent reasons — this compounds the problem. However, on its own, it is a fixable notational issue if a consistent convention were adopted throughout, so MAJOR-REVISION is appropriate.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The submultiplicativity argument in Theorem 4's proof (ξ(G^(m+n)) ≤ ξ(G^(m))·ξ(G^(n))) is circular: it relies on the operational characterization from Lemma 4, which is itself invalid.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "The asymptotic limit formula could potentially be established via a correct operational parameter and Fekete's lemma, but the current proof is logically dependent on the broken Lemma 4 characterization. This affects the existence of the asymptotic quantum rate as defined in the paper.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The claim that a quantum protocol is zero-error if and only if for all (x,x') ∈ G^(m), ρ_x ⊥ ρ_{x'} is stated without adequate justification. Zero-error function computation requires distinguishability only among states that must be discriminated under each fixed y with differing outputs, not a global pairwise orthogonality condition.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.78,
+        "justification": "This misstates the operational criterion and feeds into the graph-parameter reduction. A more precise formulation involving noncommutative graph theory or careful conditioning on side information might rescue a version of this claim, but as written it is unjustified and could lead to incorrect conclusions about the relationship between protocols and graph parameters.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The C5 example section has corrupted text, equations out of order, and references to claims and equation numbers that do not form a coherent argument chain. The main example supporting the headline quantum/classical separation cannot be independently verified.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "Even if the underlying mathematics were correct, the primary worked example is unverifiable as presented. This is a serious reproducibility issue that goes beyond typical presentation problems because it concerns the paper's main illustrative contribution.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Potential systematic inversion of inclusion directions in monotonicity arguments combining orthogonal rank, chromatic number, and Lovász number with complement operations and product containments.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.7,
+        "justification": "This is a cautionary observation that signals high risk of further hidden errors given the already-confirmed problems with product definitions and complement conventions, but it does not independently refute any specific theorem.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Numerous reporting and presentation defects: malformed references, inconsistent notation (e.g., G^{∨n} vs G^{∨m}), duplicated numbering, and apparently misplaced sections/proofs.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "These do not independently invalidate conclusions but materially impede independent verification and reflect overall lack of rigor in preparation.",
+        "source": "both",
+        "survived_reflection": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 41350,
+    "duration_s": 274.8,
+    "n_api_calls": 26,
+    "cost_usd": 3.0318,
+    "total_input_tokens": 189777,
+    "total_output_tokens": 62044,
+    "calls": [
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7323,
+        "output_tokens": 2796,
+        "cost_usd": 0.319545,
+        "duration_s": 58.51,
+        "label": "2401.16191v2/b3plus/arbiter"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3927,
+        "output_tokens": 1882,
+        "cost_usd": 0.00313049,
+        "duration_s": 24.64,
+        "label": "2401.16191v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 6628,
+        "output_tokens": 2281,
+        "cost_usd": 0.270495,
+        "duration_s": 49.25,
+        "label": "2402.01549v2/b3plus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 9118,
+        "output_tokens": 2223,
+        "cost_usd": 0.045025,
+        "duration_s": 43.86,
+        "label": "2402.10307v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 9118,
+        "output_tokens": 3125,
+        "cost_usd": 0.054045,
+        "duration_s": 61.7,
+        "label": "2402.10307v2/b3plus/prover_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 10263,
+        "output_tokens": 3535,
+        "cost_usd": 0.41907,
+        "duration_s": 67.43,
+        "label": "2401.16191v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 8967,
+        "output_tokens": 1459,
+        "cost_usd": 0.00402599,
+        "duration_s": 22.13,
+        "label": "2402.10307v2/b3plus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 8967,
+        "output_tokens": 2394,
+        "cost_usd": 0.00505449,
+        "duration_s": 33.72,
+        "label": "2402.10307v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 14870,
+        "output_tokens": 2024,
+        "cost_usd": 0.057415,
+        "duration_s": 119.63,
+        "label": "2402.01549v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4919,
+        "output_tokens": 2477,
+        "cost_usd": 0.0370675,
+        "duration_s": 35.26,
+        "label": "2402.10307v2/b3plus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 6130,
+        "output_tokens": 2468,
+        "cost_usd": 0.040005,
+        "duration_s": 48.27,
+        "label": "2402.10318v2/b3plus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 5000,
+        "output_tokens": 1121,
+        "cost_usd": 0.0025831000000000005,
+        "duration_s": 13.71,
+        "label": "2402.10307v2/b3plus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 6027,
+        "output_tokens": 1483,
+        "cost_usd": 0.00325859,
+        "duration_s": 21.47,
+        "label": "2402.10318v2/b3plus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 13883,
+        "output_tokens": 2677,
+        "cost_usd": 0.00669311,
+        "duration_s": 32.12,
+        "label": "2402.01549v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4958,
+        "output_tokens": 3671,
+        "cost_usd": 0.049105,
+        "duration_s": 65.73,
+        "label": "2402.10307v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4300,
+        "output_tokens": 1937,
+        "cost_usd": 0.03012,
+        "duration_s": 29.05,
+        "label": "2402.10318v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 5028,
+        "output_tokens": 1829,
+        "cost_usd": 0.00336946,
+        "duration_s": 22.42,
+        "label": "2402.10307v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4347,
+        "output_tokens": 942,
+        "cost_usd": 0.0022098900000000004,
+        "duration_s": 13.61,
+        "label": "2402.10318v2/b3plus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2908,
+        "output_tokens": 2851,
+        "cost_usd": 0.03578,
+        "duration_s": 55.17,
+        "label": "2402.01549v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 9779,
+        "output_tokens": 4038,
+        "cost_usd": 0.449535,
+        "duration_s": 73.97,
+        "label": "2402.10307v2/b3plus/arbiter"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2881,
+        "output_tokens": 1215,
+        "cost_usd": 0.00211437,
+        "duration_s": 16.44,
+        "label": "2402.01549v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 6130,
+        "output_tokens": 2037,
+        "cost_usd": 0.035695,
+        "duration_s": 36.76,
+        "label": "2402.10318v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 8256,
+        "output_tokens": 3243,
+        "cost_usd": 0.367065,
+        "duration_s": 60.24,
+        "label": "2402.10318v2/b3plus/arbiter"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 11890,
+        "output_tokens": 3933,
+        "cost_usd": 0.473325,
+        "duration_s": 83.01,
+        "label": "2402.10307v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 6027,
+        "output_tokens": 1864,
+        "cost_usd": 0.0036776900000000004,
+        "duration_s": 24.04,
+        "label": "2402.10318v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 8133,
+        "output_tokens": 2539,
+        "cost_usd": 0.31242,
+        "duration_s": 51.44,
+        "label": "2402.01549v2/b3plusplus/arbiter"
+      }
+    ]
+  }
+}

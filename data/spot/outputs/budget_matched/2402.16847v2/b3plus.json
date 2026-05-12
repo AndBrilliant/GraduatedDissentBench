@@ -1,0 +1,399 @@
+{
+  "condition": "B3PLUS",
+  "paper_id": "2402.16847v2",
+  "verdict": "flagged",
+  "confidence": 0.95,
+  "reasoning": "Both reviewers converge on the same fundamental concern: the paper's main theorem (Õ(n + d_max) time for 1‖∑p_jU_j) rests on Lemma 3.2's insertion count, but counting newly feasible sums does not establish that the dynamic-string OR/union operations have the claimed total cost. The Fischer–Wennmann data structure's complexity guarantees are tied to strings of length P and to a specific sequence of operations; the paper never proves that truncating to length d_max and performing repeated split/shift/OR operations preserves those guarantees. This is the single most critical gap and it is present in both the single-machine and multi-machine results. The multi-machine extension compounds the problem by asserting a multidimensional generalization of the data structure that Fischer–Wennmann never provided, with no algorithmic or complexity proof. After reflection, both reviewers maintain these as the core issues. Reviewer A softened slightly on whether the single-machine gap is definitively fatal versus potentially repairable, while Reviewer B hardened. The balanced assessment is that the single-machine result has a serious unproven step that likely cannot be patched without substantial new work (RETRACTION-WORTHY), and the multi-machine result is even less supported (RETRACTION-WORTHY). Secondary issues—missing formal DP recurrence, unsupported schedule recovery, notation problems—are real but subordinate.",
+  "findings": [
+    {
+      "finding": "The paper's central runtime proof does not establish that the total cost of dynamic-string OR/union operations over n iterations is Õ(n + d_max). Lemma 3.2 bounds the number of newly feasible sums (at most d_max + 1 total insertions), but this does not control the actual work performed by the dynamic-string data structure during repeated split, shift, concat, and bitwise-OR operations on strings of length up to d_max + 1. Fischer–Wennmann's amortized complexity analysis is tied to their specific operation sequence on length-P strings; the paper asserts but does not prove that replacing P with d_max and introducing per-iteration trimming/splitting preserves the Õ(log s)-per-operation guarantees and overall Õ(n + d_max) total cost.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.9,
+      "justification": "This is the paper's main contribution. The gap is not a minor omission—it requires proving that a fundamentally restructured sequence of data-structure operations (with splits at d_j - p_j each round, truncation, and OR on potentially fragmented representations) retains the amortized bounds from a different algorithm. No such proof is given, and it is not obvious that one exists. Without it, the main theorem is unsupported. Both reviewers independently identified this as the central flaw and maintained it through reflection.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The multi-machine extension to Pm‖∑p_jU_j with claimed Õ(n + d_max^m) time is asserted without a valid algorithmic description, data-structure specification, or runtime proof. The paper references an 'adapted multi-dimensional dynamic string data structure' that Fischer and Wennmann never provided. The DP state transitions for m machines are not merely coordinatewise analogues of the single-machine case, and the insertion-count argument (Lemma 4.1) inherits all the gaps of Lemma 3.2 while adding the unsolved problem of multidimensional representation.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.93,
+      "justification": "The multi-machine result is the paper's second main claim and is even less supported than the single-machine result. There is no multidimensional dynamic-string data structure in the cited work, no proof of correctness for the multidimensional DP transitions, and no complexity analysis. This is not a gap that can be fixed by adding a paragraph—it would require inventing and analyzing a new data structure. Both reviewers flagged this independently and maintained the rating.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The core DP recurrence is not formally stated in the manuscript, and the equivalence between the standard update (S_j = S_{j-1} ∪ {s + p_j : s ∈ S_{j-1}, s + p_j ≤ d_j}) and the proposed split/shift/OR procedure is not proved. Boundary cases (p_j > d_j, equal deadlines, off-by-one in interval endpoints) are not addressed.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "This is a significant proof gap that could hide correctness errors, but it is plausibly repairable. The approach (truncate, shift left portion, OR) is intuitively reasonable for this DP, and it is not clear that there is an actual error—just that the proof is missing. Reviewer A rated this MAJOR-REVISION consistently; Reviewer B came to agree upon reflection.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The claim that an optimal schedule can be recovered within the same time bounds is unsupported. No backpointer mechanism or reconstruction algorithm is described, and it is unclear whether the compressed dynamic-string representation preserves sufficient information for schedule recovery.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "If schedule recovery is part of the paper's contribution, it requires proof. However, this is a secondary claim relative to the value-computation algorithm. It may be fixable with standard techniques (storing backpointers during DP), but as written it is an unsubstantiated assertion. Both reviewers flagged this; Reviewer B upgraded it from MINOR to MAJOR-REVISION on reflection.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The adaptation of Fischer–Wennmann's dynamic-string data structure to handle OR on strings of length d_max (rather than P) is assumed without justification. The original structure's efficiency relies on total represented length and operation count being related to P; the paper does not re-establish these invariants for the modified setting with per-iteration trimming.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "This is closely related to the first (RETRACTION-WORTHY) finding but focuses specifically on the data-structure adaptation rather than the overall runtime proof. It is arguably subsumed by Finding 1, but both reviewers identified it as a distinct concern. As a standalone finding, it represents a serious omission that could potentially be addressed with a careful proof, hence MAJOR-REVISION rather than a separate retraction-level issue.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Notation and indexing inconsistencies: sets are introduced as S_0,...,S_n but lemma sums use different index variables; representation is described for S ⊆ [n] although DP sets are subsets of [0..u-1]; split positions may have off-by-one issues.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "These are presentational issues that hinder verification but do not by themselves invalidate the results. Both reviewers noted them as MINOR.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The initialization procedure (constructing 0^u by repeated self-concatenation) has an inconsistent complexity discussion relative to claimed operation costs.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "A technical reporting issue that does not affect the main argument's validity. Identified by Reviewer A and maintained as MINOR.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "References [6,7] for the dynamic string data structure are cited but not listed in the bibliography.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "A reporting gap that does not affect methodological correctness. Identified by Reviewer B.",
+      "source": "prover_b",
+      "survived_reflection": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 2,
+    "MAJOR-REVISION": 3,
+    "MINOR": 3
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.98,
+    "reasoning": "The manuscript’s core claim—an \\u007eO(n+d_max)-time refinement of Fischer–Wennmann—appears methodologically unsound as presented. The central issue is that the proposed implementation relies on truncating the DP state space to length d_max+1 and on a monotonicity/insertion-count argument, but it does not correctly account for the cost of the required bitwise OR/union operations in the dynamic-string framework. The key amortization lemma only bounds newly inserted 1-positions, not the total work of repeated unions over strings of length d_max+1. In Fischer–Wennmann, the running-time proof is tied to their specific dynamic-string machinery for handling updates/deletions over length-P strings; here the paper asserts that the same OR can be implemented while replacing the complexity parameter by d_max, without proving that the number of touched segments/nodes or created string objects is similarly bounded. In addition, the multi-machine extension is asserted far too quickly: the state transition for Pm||\\u2211p_jU_j is not simply a pointwise adaptation of the single-machine trimming, and the claim that the same insertion bound yields \\u007eO(n+d_max^m) lacks a valid data-structural/runtime proof. There are also substantial presentation gaps (missing formal DP equations, ambiguous indexing, unsupported schedule-recovery claim), but the main problem is that the primary theorem is not established by the provided analysis.",
+    "findings": [
+      {
+        "finding": "The running-time proof does not justify the cost of repeatedly computing S_j = \\u007eS_j \\u222a S_{j-1} via bitwise OR in the dynamic-string data structure. Lemma 3.2 bounds only the number of newly appearing feasible sums, not the actual complexity of the OR operations or the number/size of internal string fragments created across n iterations.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This is the central methodological gap. The claimed \\u007eO(n+d_max) algorithm depends on replacing the Fischer–Wennmann length-P analysis by a length-d_max one. But merely showing that each sum enters \\u007eS_j \\ S_{j-1} at most once does not imply that the dynamic-string OR/merge operations over evolving strings of length d_max+1 have total near-linear cost. If this amortization is invalid, the main theorem is unsupported."
+      },
+      {
+        "finding": "The manuscript assumes, without proof, that Fischer and Wennmann’s dynamic-string implementation of OR over indicator strings carries over unchanged when the state is restructured via repeated splits/trims at d_j-p_j, and that the total number of insertions is the only relevant complexity measure.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Even if the idea is salvageable, the proof currently omits the critical invariant linking the number of updates to the actual data-structure complexity. Dynamic strings typically depend on total represented length, number of objects/nodes, and operations. The manuscript does not prove these remain \\u007eO(n+d_max) under its modified sequence of split/concat/OR operations."
+      },
+      {
+        "finding": "The core DP recurrence is not formally stated in the manuscript excerpt, yet the correctness argument depends on Eq. (3b)/(3c). The paper proposes replacing the usual update by splitting S_{j-1} at d_j-p_j and shifting only L_{j-1}, but gives no complete proof that this yields exactly the same S_j under all boundary cases (e.g., p_j>d_j, equal deadlines, indexing conventions for closed/open intervals).",
+        "severity": "MAJOR-REVISION",
+        "justification": "The algorithm may well be correct, but the manuscript does not supply a full formal derivation. Since the claimed speedup relies on this modified update, a complete equivalence proof is necessary. If boundary handling is wrong, feasibility states may be lost or incorrectly added, changing conclusions."
+      },
+      {
+        "finding": "The initialization/complexity discussion for constructing 0^u by self-concatenation is inconsistent with the stated operation costs. Repeated concat on exponentially growing strings suggests O(log u log s) operations but does not by itself prove the claimed total initialization bound, especially if the data structure charges by total represented length or inserted objects.",
+        "severity": "MINOR",
+        "justification": "This is a technical reporting issue rather than a fatal flaw, but it contributes to the broader lack of rigor in the runtime proof."
+      },
+      {
+        "finding": "The schedule-retrieval claim is unsupported. The manuscript states that recovering an optimal schedule can be done 'in a similar way' because the sets are the same as in Fischer and Wennmann, but provides no backpointer mechanism or proof that the compressed representation preserves the information needed for reconstruction within the claimed time bounds.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the paper claims not only value computation but full schedule recovery, this needs proof. It may be fixable, but as written the result is incomplete."
+      },
+      {
+        "finding": "The multi-machine extension is asserted with a pointwise trimming argument that is not sufficient to establish correctness or runtime. For P_m||\\u2211p_jU_j, state transitions involve assigning each job to one of m machines (or skipping it), so the update is not merely a straightforward coordinatewise analogue of the single-machine case. The manuscript also assumes an 'adapted multi-dimensional dynamic string data structure' without analysis.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This invalidates the paper’s second main claim. The extension to \\u007eO(n+d_max^m) is not proved: neither the DP transition complexity nor the data-structure support for multidimensional OR/shift/split is established. If confirmed, the multi-machine theorem cannot be accepted."
+      },
+      {
+        "finding": "Lemma 4.1’s insertion bound, even if true, is insufficient to imply the claimed multi-machine runtime for the same reason as in the single-machine case: it counts newly appearing states but does not bound the actual cost of multidimensional representation and union operations.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is a serious methodological gap for the extension, though secondary to the more fundamental absence of a valid multidimensional algorithmic proof."
+      },
+      {
+        "finding": "There are notable notation and indexing inconsistencies: the sets are introduced as S_0,...,S_n but the lemma sums over i while using j inside; representation is described for S\\u2286[n] although DP sets are subsets of [0..u-1]; split positions and interval endpoints are potentially off by one.",
+        "severity": "MINOR",
+        "justification": "These are likely fixable editorial/mathematical presentation issues, but they hinder verification and may conceal boundary-case errors."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "The manuscript claims an Õ(n + dmax)-time algorithm for 1‖∑pjUj, but the central proof of the key lemma (Lemma 3.2) contains a logical gap that invalidates the claimed running time. The invariant used to bound insertions is not justified, and the algorithm description omits crucial steps for maintaining the dynamic string data structure across all iterations. These issues are RETRACTION-WORTHY because the paper's main result depends on this lemma. Additional minor reporting and clarity issues are present but secondary.",
+    "findings": [
+      {
+        "finding": "The proof of Lemma 3.2 claims that for any x in [0..dmax], once x ∈ S̃_j \\ S_{j-1}, then x ∈ S_j, …, S_n. This is not justified: the algorithm merges S̃_j with S_{j-1} to form S_j, but the lemma's claim requires that x is never removed in later iterations. The manuscript does not explain how the dynamic string data structure or any data structure prevents later deletions of elements that were added. Without this guarantee, the bound of dmax+1 on total insertions is unsupported.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The central running time claim Õ(n + dmax) directly depends on Lemma 3.2. If the lemma's proof is invalid, the algorithm's efficiency is unsubstantiated, making the main conclusion unsupported."
+      },
+      {
+        "finding": "The manuscript references a 'bit-wise OR' for merging and claims it 'can be implemented in the same way as by Fischer and Wennmann', but Fischer and Wennmann's algorithm operates on strings of length O(P), not O(dmax). The adaptation of the dynamic string data structure to support bitwise OR on strings of length up to dmax while maintaining the Õ(log s) operation cost is not explained, nor is it shown that the 'merge' operation does not increase the total string length beyond O(dmax) or incur additional overhead that breaks the claimed time.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The implementation details are insufficient to verify the algorithm's correctness and running time. This could potentially be fixed with a detailed explanation, but as presented, the algorithm is incomplete."
+      },
+      {
+        "finding": "The manuscript states 'we obtain an Õ(n + dmax)-time algorithm' after Lemma 3.2, but does not account for the time to initialize the dynamic string data structure (Õ(log^2 u)), nor for the time to perform splits and concats for each job. Even if each operation is Õ(log dmax), there are O(n) operations, giving Õ(n + dmax) only if the operations on strings of size dmax are Õ(1) each, which is not justified. The running time analysis is incomplete.",
+        "severity": "MAJOR-REVISION",
+        "justification": "A proper time analysis is required to support the claim. Without it, the claimed bound is not verifiable."
+      },
+      {
+        "finding": "The extension to m machines (Lemma 4.1) repeats the same flawed argument without addressing the multi-dimensional nature of the dynamic string data structure (e.g., how to represent sets of vectors of length m as strings, or how splitting/concatenation works in higher dimensions). The manuscript merely says 'the adapted multi-dimensional dynamic string data structure remains the same as in Fischer and Wennmann', but Fischer and Wennmann do not provide such a multi-dimensional structure.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The multi-machine result is not supported by any algorithmic description or proof. If the single-machine result is invalid, this extension is also invalid. Even if the single-machine result were correct, the multi-machine extension lacks the necessary technical details."
+      },
+      {
+        "finding": "The manuscript references references [6,7] for the dynamic string data structure but does not list them in the bibliography. This is a reporting gap.",
+        "severity": "MINOR",
+        "justification": "Incomplete references, while unprofessional, do not affect the methodological correctness of the arguments themselves."
+      }
+    ]
+  },
+  "reflection_a": {
+    "raw": "{\"reflection_notes\":\"On a second pass, I would keep the overall verdict as flagged, but I would tighten the distinction between what is truly retraction-worthy versus what is 'major revision'. My first review may have been slightly too aggressive in labeling some single-machine proof gaps as RETRACTION-WORTHY when, strictly under the provided rubric, that label should be reserved for errors that definitively prevent the main conclusion from being supported as presented. The strongest such cases remain the unsupported central runtime theorem if the OR/data-structure cost is not bounded, and the multi-machine theorem, which is asserted without a valid algorithmic/data-structural proof. By contrast, some items I labeled MAJOR-REVISION remain correctly placed because they identify substantial omissions or proof gaps that could in principle be repaired without overturning the whole claim. I would also soften my emphasis on the monotonicity/insertion issue as a standalone fatal flaw: for this particular DP, set inclusion S_{j-1} ⊆ S_j is actually plausible from the recurrence, so the deeper problem is not 'later deletions' but that counting newly added states does not by itself bound the cost of the dynamic-string OR/union implementation. I therefore would not add a separate retraction-level finding based purely on non-monotonicity unless the recurrence truly allows deletions. Overall: keep the two principal theorem-level concerns severe; keep the presentation/reconstruction issues as major or minor; clarify that the fatal gap is complexity/data-structure accounting, not merely set monotonicity.\",\"severity_i_now_upgrade\":[],\"severity_i_now_downgrade\":[\"Finding 1: I would consider downgrading from RETRACTION-WORTHY to MAJOR-REVISION if interpreted narrowly as 'Lemma 3.2 only bounds newly inserted positions, not OR cost.' The underlying concern is central and serious, but the exact severity depends on whether the missing complexity argument could be supplied from known Fischer–Wennmann machinery. However, if no such carryover exists, then RETRACTION-WORTHY remains justified. So this is a soft downgrade candidate, not a firm one.\",\"findings_i_still_defend\":[\"Finding 6 (multi-machine extension) as RETRACTION-WORTHY. I still strongly defend this rating: the paper appears to assert a second main theorem without giving a valid multidimensional transition/data-structure/runtime proof. Under the rubric, that means the claimed conclusion is not supported as presented.\",\"Finding 2 (unproved carryover of Fischer–Wennmann dynamic-string implementation) as MAJOR-REVISION. This is still an important methodological omission, but by itself it is a missing proof/invariant rather than a demonstrated impossibility.\",\"Finding 3 (formal DP recurrence/equivalence proof missing) as MAJOR-REVISION. This could alter correctness if boundary cases are mishandled, but on current evidence it is a substantial proof gap rather than a demonstrated fatal error.\",\"Finding 4 (initialization/self-concatenation complexity inconsistency) as MINOR. This remains a technical reporting/detail issue, not the crux of validity.\",\"Finding 5 (schedule recovery unsupported) as MAJOR-REVISION. If schedule recovery is claimed as part of the contribution, it needs proof; still, it is ancillary to the main value-computation theorem.\",\"Finding 7 (multi-machine insertion bound insufficient for runtime) as MAJOR-REVISION. This is serious but somewhat subsumed by Finding 6; still valid as a secondary methodological gap.\",\"Finding 8 (notation/indexing inconsistencies) as MINOR. I still stand by this as a presentational but non-central issue.\"],\"new_errors_noticed\":[\"I would explicitly note possible overlap/redundancy between my Findings 1 and 2: both target the same central deficiency in the runtime proof. In a cleaned-up review I would likely merge them into one theorem-level concern about the absence of a valid data-structural amortized analysis for split/shift/OR over truncated length-(d_max+1) strings.\",\"A fresh nuance: the manuscript may be conflating two different quantities — the number of newly feasible sums and the actual number of dynamic-string nodes/fragments created/touched under repeated split/concat/OR. Even if monotonicity of feasible sets holds, this does not control representational fragmentation. This strengthens the need to focus criticism on representation complexity, not just state-count complexity.\",\"I would also add that if the algorithm uses trimming at d_j-p_j each round, one must prove that all required operations preserve the canonical compressed representation assumed by the dynamic-string structure. Without such an invariant, even correctness of subsequent OR/split operations on compressed objects is underspecified. This is probably MAJOR-REVISION rather than a separate fatal finding unless one can show the operations are impossible.\"]}",
+    "parse_error": true,
+    "truncated": true
+  },
+  "reflection_b": {
+    "reflection_notes": "Upon re-examination, I see that my initial review was thorough but may have been too harsh on some points while not sufficiently highlighting the most critical gap across both reviews. The other reviewer's analysis reinforces that the core problem is not just a missing invariant in Lemma 3.2, but a fundamental failure to prove that the dynamic-string OR operations have the claimed complexity. My 'RETRACTION-WORTHY' rating for the single-machine case still stands, but I should upgrade the severity of the 'implementation details' and 'running time analysis' findings to better reflect that these are not merely missing details but part of the same central unproven claim. Conversely, the 'incomplete references' minor finding remains appropriate. I now see more clearly that the multi-machine extension is even more unsupported than I originally stated—it's not just missing details, it's an assertion without any algorithmic foundation, which deserves stronger emphasis.",
+    "severity_i_now_upgrade": [
+      "finding 2 (implementation details for dynamic string data structure) should be RETRACTION-WORTHY rather than MAJOR-REVISION, because without this explanation the algorithm's central operation is undefined, making the result unverifiable—this is not fixable by minor revision, it requires a new algorithm proof.",
+      "finding 3 (running time analysis incomplete) should be RETRACTION-WORTHY rather than MAJOR-REVISION, because the claimed Õ(n+dmax) time is the paper's main contribution, and the analysis is so incomplete that it cannot be patched without fundamentally reworking the proof.",
+      "finding 5 (schedule retrieval unsupported) should be MAJOR-REVISION rather than MINOR, because if the paper claims full schedule recovery this is a nontrivial omission, though it might be fixable with additional explanation."
+    ],
+    "severity_i_now_downgrade": [
+      "finding 1 (proof of Lemma 3.2) I keep as RETRACTION-WORTHY—this remains the clearest structural flaw."
+    ],
+    "findings_i_still_defend": [
+      "finding 1 (Lemma 3.2 proof gap) - RETRACTION-WORTHY",
+      "finding 4 (multi-machine extension) - RETRACTION-WORTHY (already correctly rated)",
+      "finding 5 (missing references) - MINOR (already correctly rated)",
+      "The other reviewer's additional findings about DP recurrence not formally stated and notation inconsistencies are valid MINOR-MAJOR points I did not mention—I will adopt the DP formality concern as a MAJOR-REVISION addition."
+    ],
+    "new_errors_noticed": [
+      "The paper's failure to state the DP recurrence formally means the correctness of the truncated update (split/shift) is never proved, which could hide off-by-one errors that invalidate the algorithm entirely—this is a MAJOR-REVISION gap.",
+      "The assumption that Fischer-Wennmann's dynamic string structure can handle OR on strings of length dmax without re-proving its complexity bounds is a category error: that structure's efficiency relies on the total number of operations being related to P (total processing time), not just dmax. The paper never establishes that the 'merge' operation does not cause cascading structural changes in the data structure that would break the Õ(log s) per-operation guarantee."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "Both reviewers converge on the same fundamental concern: the paper's main theorem (Õ(n + d_max) time for 1‖∑p_jU_j) rests on Lemma 3.2's insertion count, but counting newly feasible sums does not establish that the dynamic-string OR/union operations have the claimed total cost. The Fischer–Wennmann data structure's complexity guarantees are tied to strings of length P and to a specific sequence of operations; the paper never proves that truncating to length d_max and performing repeated split/shift/OR operations preserves those guarantees. This is the single most critical gap and it is present in both the single-machine and multi-machine results. The multi-machine extension compounds the problem by asserting a multidimensional generalization of the data structure that Fischer–Wennmann never provided, with no algorithmic or complexity proof. After reflection, both reviewers maintain these as the core issues. Reviewer A softened slightly on whether the single-machine gap is definitively fatal versus potentially repairable, while Reviewer B hardened. The balanced assessment is that the single-machine result has a serious unproven step that likely cannot be patched without substantial new work (RETRACTION-WORTHY), and the multi-machine result is even less supported (RETRACTION-WORTHY). Secondary issues—missing formal DP recurrence, unsupported schedule recovery, notation problems—are real but subordinate.",
+    "findings": [
+      {
+        "finding": "The paper's central runtime proof does not establish that the total cost of dynamic-string OR/union operations over n iterations is Õ(n + d_max). Lemma 3.2 bounds the number of newly feasible sums (at most d_max + 1 total insertions), but this does not control the actual work performed by the dynamic-string data structure during repeated split, shift, concat, and bitwise-OR operations on strings of length up to d_max + 1. Fischer–Wennmann's amortized complexity analysis is tied to their specific operation sequence on length-P strings; the paper asserts but does not prove that replacing P with d_max and introducing per-iteration trimming/splitting preserves the Õ(log s)-per-operation guarantees and overall Õ(n + d_max) total cost.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.9,
+        "justification": "This is the paper's main contribution. The gap is not a minor omission—it requires proving that a fundamentally restructured sequence of data-structure operations (with splits at d_j - p_j each round, truncation, and OR on potentially fragmented representations) retains the amortized bounds from a different algorithm. No such proof is given, and it is not obvious that one exists. Without it, the main theorem is unsupported. Both reviewers independently identified this as the central flaw and maintained it through reflection.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The multi-machine extension to Pm‖∑p_jU_j with claimed Õ(n + d_max^m) time is asserted without a valid algorithmic description, data-structure specification, or runtime proof. The paper references an 'adapted multi-dimensional dynamic string data structure' that Fischer and Wennmann never provided. The DP state transitions for m machines are not merely coordinatewise analogues of the single-machine case, and the insertion-count argument (Lemma 4.1) inherits all the gaps of Lemma 3.2 while adding the unsolved problem of multidimensional representation.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.93,
+        "justification": "The multi-machine result is the paper's second main claim and is even less supported than the single-machine result. There is no multidimensional dynamic-string data structure in the cited work, no proof of correctness for the multidimensional DP transitions, and no complexity analysis. This is not a gap that can be fixed by adding a paragraph—it would require inventing and analyzing a new data structure. Both reviewers flagged this independently and maintained the rating.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The core DP recurrence is not formally stated in the manuscript, and the equivalence between the standard update (S_j = S_{j-1} ∪ {s + p_j : s ∈ S_{j-1}, s + p_j ≤ d_j}) and the proposed split/shift/OR procedure is not proved. Boundary cases (p_j > d_j, equal deadlines, off-by-one in interval endpoints) are not addressed.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "This is a significant proof gap that could hide correctness errors, but it is plausibly repairable. The approach (truncate, shift left portion, OR) is intuitively reasonable for this DP, and it is not clear that there is an actual error—just that the proof is missing. Reviewer A rated this MAJOR-REVISION consistently; Reviewer B came to agree upon reflection.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The claim that an optimal schedule can be recovered within the same time bounds is unsupported. No backpointer mechanism or reconstruction algorithm is described, and it is unclear whether the compressed dynamic-string representation preserves sufficient information for schedule recovery.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "If schedule recovery is part of the paper's contribution, it requires proof. However, this is a secondary claim relative to the value-computation algorithm. It may be fixable with standard techniques (storing backpointers during DP), but as written it is an unsubstantiated assertion. Both reviewers flagged this; Reviewer B upgraded it from MINOR to MAJOR-REVISION on reflection.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The adaptation of Fischer–Wennmann's dynamic-string data structure to handle OR on strings of length d_max (rather than P) is assumed without justification. The original structure's efficiency relies on total represented length and operation count being related to P; the paper does not re-establish these invariants for the modified setting with per-iteration trimming.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.82,
+        "justification": "This is closely related to the first (RETRACTION-WORTHY) finding but focuses specifically on the data-structure adaptation rather than the overall runtime proof. It is arguably subsumed by Finding 1, but both reviewers identified it as a distinct concern. As a standalone finding, it represents a serious omission that could potentially be addressed with a careful proof, hence MAJOR-REVISION rather than a separate retraction-level issue.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Notation and indexing inconsistencies: sets are introduced as S_0,...,S_n but lemma sums use different index variables; representation is described for S ⊆ [n] although DP sets are subsets of [0..u-1]; split positions may have off-by-one issues.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "These are presentational issues that hinder verification but do not by themselves invalidate the results. Both reviewers noted them as MINOR.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The initialization procedure (constructing 0^u by repeated self-concatenation) has an inconsistent complexity discussion relative to claimed operation costs.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "A technical reporting issue that does not affect the main argument's validity. Identified by Reviewer A and maintained as MINOR.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "References [6,7] for the dynamic string data structure are cited but not listed in the bibliography.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "A reporting gap that does not affect methodological correctness. Identified by Reviewer B.",
+        "source": "prover_b",
+        "survived_reflection": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 13002,
+    "duration_s": 110.98,
+    "n_api_calls": 15,
+    "cost_usd": 0.7674,
+    "total_input_tokens": 88997,
+    "total_output_tokens": 24814,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 11358,
+        "output_tokens": 1881,
+        "cost_usd": 0.047205,
+        "duration_s": 30.83,
+        "label": "2402.14546v2/b3plus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 11358,
+        "output_tokens": 1897,
+        "cost_usd": 0.047365,
+        "duration_s": 33.33,
+        "label": "2402.14546v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 10046,
+        "output_tokens": 1624,
+        "cost_usd": 0.00449882,
+        "duration_s": 21.58,
+        "label": "2402.14546v2/b3plus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4173,
+        "output_tokens": 1392,
+        "cost_usd": 0.0243525,
+        "duration_s": 27.61,
+        "label": "2402.16847v2/b3plus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3998,
+        "output_tokens": 932,
+        "cost_usd": 0.00210466,
+        "duration_s": 12.28,
+        "label": "2402.16847v2/b3plus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4246,
+        "output_tokens": 2904,
+        "cost_usd": 0.039655,
+        "duration_s": 49.18,
+        "label": "2402.10318v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 10046,
+        "output_tokens": 1581,
+        "cost_usd": 0.0044515200000000005,
+        "duration_s": 21.65,
+        "label": "2402.14546v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4010,
+        "output_tokens": 1131,
+        "cost_usd": 0.021335,
+        "duration_s": 22.84,
+        "label": "2402.14546v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3949,
+        "output_tokens": 920,
+        "cost_usd": 0.00207823,
+        "duration_s": 10.65,
+        "label": "2402.14546v2/b3plus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2772,
+        "output_tokens": 983,
+        "cost_usd": 0.01676,
+        "duration_s": 19.44,
+        "label": "2402.16847v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4310,
+        "output_tokens": 1408,
+        "cost_usd": 0.0027125,
+        "duration_s": 17.64,
+        "label": "2402.10318v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2805,
+        "output_tokens": 728,
+        "cost_usd": 0.0015581500000000001,
+        "duration_s": 9.71,
+        "label": "2402.16847v2/b3plus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3884,
+        "output_tokens": 2992,
+        "cost_usd": 0.03963,
+        "duration_s": 50.08,
+        "label": "2402.14546v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 6939,
+        "output_tokens": 2361,
+        "cost_usd": 0.28116,
+        "duration_s": 45.73,
+        "label": "2402.14546v2/b3plus/arbiter"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 5103,
+        "output_tokens": 2080,
+        "cost_usd": 0.232545,
+        "duration_s": 41.94,
+        "label": "2402.16847v2/b3plus/arbiter"
+      }
+    ]
+  }
+}

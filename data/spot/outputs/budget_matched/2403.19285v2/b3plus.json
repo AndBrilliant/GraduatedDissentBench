@@ -1,0 +1,608 @@
+{
+  "condition": "B3PLUS",
+  "paper_id": "2403.19285v2",
+  "verdict": "flagged",
+  "confidence": 0.88,
+  "reasoning": "Both reviewers converge on several methodological concerns that, while not individually retraction-worthy, collectively undermine the strength of the paper's central claims. The most robust concerns after reflection are: (1) the unequal CTQScorer comparison presented with strong superiority language, (2) underspecified ensemble duplicate handling affecting fairness of comparisons, (3) uncontrolled context-length overflow at 16 shots contaminating scaling analyses, and (4) insufficient isolation of the syntactic signal from confounds. After both reviewers' second passes, there is strong agreement on at least three MAJOR-REVISION level issues. No single issue rises to retraction-worthy, but the paper requires substantive revision to support its claims.",
+  "findings": [
+    {
+      "finding": "The comparison with CTQScorer is acknowledged as unequal (different example databases, different FLORES versions), yet the paper claims its methods 'secure all the highest scores' in that comparison table.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.93,
+      "justification": "Both reviewers flagged this. Strong superiority claims drawn from an unequal comparison are methodologically unsound. This affects a named baseline comparison and a headline claim. However, the paper's core experiments against Random/BM25 use consistent setups, so this does not invalidate the entire study.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The ensemble retrieval procedure does not specify what happens when BM25 and Polynomial select overlapping examples, potentially reducing effective demonstration count and creating unfair comparisons at fixed k.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers converged on this after reflection (Reviewer B upgraded it). Duplicate demonstrations could materially reduce the information content of the prompt and create an uncontrolled variable in method comparisons, especially at small k values.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "At 16 in-context examples, prompts sometimes exceed the model's maximum context length, but no controlled truncation policy is described. Results at this condition are still included in comparisons and trend analyses.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.87,
+      "justification": "Both reviewers converged on this after reflection (Reviewer B upgraded it). Uncontrolled truncation means different methods may have different effective prompt contents, making comparisons unreliable at higher shot counts. Any scaling conclusions across k values are potentially confounded.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "No deduplication or train-test overlap check between the WikiMatrix retrieval pool and the FLORES+ devtest evaluation set is documented.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "Reviewer A raised this and Reviewer B upgraded it on reflection. In retrieval-based prompting from a large mined corpus, overlap or near-duplicate contamination could inflate performance. However, there is no evidence that such overlap actually exists, so this is a risk rather than a demonstrated flaw.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The central claim that 'syntax information' specifically helps MT prompting is not isolated from confounds such as retrieval diversity, example length, or superficial artifacts of parser-derived features. No targeted ablation separates the syntactic signal.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.72,
+      "justification": "Reviewer A raised this and Reviewer B agreed it deserves MAJOR-REVISION status. The empirical result (the heuristic works) may hold, but the mechanistic/causal interpretation that syntax is the operative factor is inadequately supported. Reviewer A softened this on reflection but Reviewer B maintained it.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "No statistical significance testing or confidence intervals are reported for the main COMET score comparisons, despite claims of winning on 11/12 translation directions.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Both reviewers ultimately settled on MINOR. This is a genuine weakness that tempers claim strength, but it is common practice in MT evaluation and does not by itself invalidate the results. Deterministic retrieval and greedy decoding reduce one source of variance.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The R-BM25 baseline underperforms even Random in the authors' setting, raising questions about baseline implementation fidelity.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.75,
+      "justification": "Reviewer B initially rated this MAJOR but downgraded on reflection since the authors acknowledge the discrepancy and the main claims do not rest on R-BM25. Reviewer A did not specifically flag this. The main comparisons against BM25 and Random remain valid.",
+      "source": "prover_b",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The study uses automatic dependency parses from spaCy across six typologically diverse languages without any parsing quality assessment or domain suitability analysis.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.7,
+      "justification": "Reviewer A downgraded this on reflection, noting that reliance on off-the-shelf parsers is standard NLP practice. Reviewer B maintained it at MAJOR. The concern is real for mechanism claims but does not threaten the empirical comparison itself. Splitting the difference, this is better classified as MINOR given widespread acceptance of this practice.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Only one LLM (XGLM 7.5B) is used, limiting generalizability of conclusions.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers agree this is a standard limitation. The conclusions are valid for the tested model; generalization claims should be tempered.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The paper claims experiments are 'completely reproducible' but key implementation details are missing (prompt template, truncation policy, BM25 settings, etc.).",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers agree this is a reporting gap. It makes verification harder but does not imply the results are wrong.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Reliance on a single COMET model version (wmt20-comet-da) as the primary metric, with BLEU in appendix only and no human evaluation.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers agree this is a routine limitation in MT evaluation. Using COMET as the primary metric is well-accepted.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Variance estimation is asymmetrical: only the Random baseline has 3-seed averaging, while all retrieval methods are deterministic single runs.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Both reviewers noted this. Given deterministic retrieval and greedy decoding, this is reasonable but should be explicitly justified rather than left implicit.",
+      "source": "both",
+      "survived_reflection": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 5,
+    "MINOR": 7
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.92,
+    "reasoning": "The manuscript presents an interesting retrieval idea, but the methodological reporting is insufficient to support the strength of its claims. The central empirical claim—highest COMET on 11/12 directions and consistent superiority of the ensemble—rests on point estimates without statistical significance testing, uncertainty quantification, or enough implementation detail to verify that comparisons are fair. There are also comparability problems in the CTQScorer comparison, unresolved issues around context-length overflow at 16 shots, and unclear handling of duplicate retrievals in the ensemble. These issues do not necessarily prove the conclusions are false, but they are substantial enough that the claimed superiority is not securely established from the data as presented.",
+    "findings": [
+      {
+        "finding": "No statistical significance testing or uncertainty estimates are reported for the main comparison, despite claims of winning on 11/12 translation directions and outperforming baselines by around 1 COMET point on average.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The paper's central conclusion is comparative superiority. Without significance tests, confidence intervals, or paired bootstrap-style analyses over sentence-level outputs, it is impossible to know whether many reported score differences are distinguishable from evaluation noise. If confirmed, this would require revision because the strength of the claimed advantage could materially change, though it does not by itself prove the method is ineffective."
+      },
+      {
+        "finding": "The manuscript reports averages over 3 random seeds only for the Random baseline, while the proposed method and other retrieval methods appear to be evaluated deterministically with a single run; however, no uncertainty from model inference framework, preprocessing, or metric variation is quantified.",
+        "severity": "MINOR",
+        "justification": "Because decoding is disabled and retrieval is deterministic, lack of multiple seeds is not necessarily wrong. Still, some uncertainty quantification should accompany comparative claims. This is mainly a reporting weakness and would not by itself overturn conclusions."
+      },
+      {
+        "finding": "The comparison with CTQScorer is explicitly acknowledged to be unequal because the prior work used different example databases and a different test set version, yet the manuscript still states that its methods 'secure all the highest scores' in that table.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If methods are compared under different corpora/test conditions, conclusions about superiority over CTQScorer are not methodologically valid. This affects a named baseline comparison and could alter one of the paper's headline claims, though it does not invalidate all experiments."
+      },
+      {
+        "finding": "The ensemble retrieval procedure is underspecified with respect to overlap handling: the method takes half the examples from BM25 and half from Polynomial, but the paper does not state what happens if the same example is selected by both strategies.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Duplicate demonstrations could reduce the effective number of examples and create unfair or inconsistent comparisons against baselines with k unique examples. This could materially affect results, especially at small k, and needs clarification or correction."
+      },
+      {
+        "finding": "The example database is WikiMatrix, a noisy mined parallel corpus, but the paper does not document any deduplication or train-test overlap check against FLORES+ devtest.",
+        "severity": "MAJOR-REVISION",
+        "justification": "In retrieval-based prompting, overlap or near-duplicate contamination between the retrieval pool and evaluation set can inflate performance substantially. Because the method retrieves nearest examples from a massive corpus, overlap control is methodologically important. If overlap exists, conclusions about true generalization could change."
+      },
+      {
+        "finding": "The study uses automatic dependency parses from spaCy across six languages, including morphologically and syntactically diverse languages, but provides no parsing quality assessment nor discussion of parser mismatch/domain suitability for WikiMatrix and FLORES+.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The proposed contribution depends directly on parse quality. If parsing is poor or inconsistent across languages, the syntax-similarity signal may be unreliable, and language-wise conclusions may change. This does not automatically invalidate the work, but it is a substantial methodological dependency that is not evaluated."
+      },
+      {
+        "finding": "At 16 in-context examples, the authors note that prompts sometimes exceed the model's maximum context length, which may hurt precision, yet these results are still included in the comparison figure without a controlled truncation policy being described.",
+        "severity": "MAJOR-REVISION",
+        "justification": "When some methods or examples are truncated differently, comparisons across selection strategies can become unfair because the effective prompt contents are no longer controlled. This could change conclusions about scaling with number of demonstrations."
+      },
+      {
+        "finding": "The paper claims the experiments are 'completely reproducible,' but key implementation details needed for reproduction are missing from the excerpted methods: generation parameters beyond sampling disabled, exact prompt template wording, context truncation behavior, BM25 tokenization/index settings, and whether retrieval is performed over full or filtered corpora per direction.",
+        "severity": "MINOR",
+        "justification": "This is a reproducibility/reporting deficiency. It makes independent verification harder, but does not by itself imply the results are wrong."
+      },
+      {
+        "finding": "The central claim that syntax specifically helps is not isolated from other factors by ablation beyond one ensemble with BM25; there is no control for retrieval diversity, example length, or parser-derived superficial artifacts that could drive gains instead of syntactic similarity per se.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The paper interprets gains as evidence that 'injecting syntax information' helps. Without stronger controls, that causal interpretation is not fully supported. The method may still work empirically, but the mechanism claim could change if tested properly."
+      },
+      {
+        "finding": "The manuscript relies primarily on COMET from a single model version (wmt20-comet-da) for the main conclusion, with BLEU relegated to appendix and no human evaluation.",
+        "severity": "MINOR",
+        "justification": "Using COMET as the main MT metric is standard and not incorrect. Still, broader validation would strengthen the result. This is a routine limitation and unlikely to reverse conclusions alone."
+      },
+      {
+        "finding": "The statement that Polynomial 'outperform[s] BM25 by 3.53 points' on DE-EN is presented without any indication whether this is an isolated language-direction anomaly or robust across prompt order, example count, or token budget.",
+        "severity": "MINOR",
+        "justification": "This is an overinterpretation concern rather than a formal error. It should be tempered or supported with robustness checks, but it does not fundamentally break the study."
+      },
+      {
+        "finding": "The manuscript does not explain whether source-side retrieval was restricted to the same translation direction or if the same English sentence could appear in both EN→X and X→EN experiments in ways that alter retrieval pool composition and fairness across directions.",
+        "severity": "MINOR",
+        "justification": "This is a methodological clarity issue. It may affect comparability across directions, but likely would not invalidate the core result if clarified."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "not_flagged",
+    "confidence": 0.85,
+    "reasoning": "The manuscript describes a well-structured empirical study on syntax-based in-context example selection for machine translation. The methodology is largely sound, the experimental setup is clear, and the claims are appropriately scoped. There are some minor reporting gaps and a potential but non-fatal concern about the baseline comparison, but no errors that fundamentally invalidate the central conclusions.",
+    "findings": [
+      {
+        "finding": "The manuscript does not report any statistical significance tests or confidence intervals for the COMET score comparisons.",
+        "severity": "MINOR",
+        "justification": "The absence of significance testing is common in MT evaluation papers. The reported margin (e.g., ~1 point COMET improvement) is plausible but would be strengthened by significance tests. This does not invalidate the core findings."
+      },
+      {
+        "finding": "The ensemble strategy concatenates BM25 and Polynomial selected examples without controlling for potential order effects within the prompt. Different orderings might affect LLM performance.",
+        "severity": "MINOR",
+        "justification": "The authors do explore two orderings (BM25 first vs Polynomial first) and report results, which partially addresses this. A more systematic investigation could be done, but the existing analysis does not undermine the conclusions."
+      },
+      {
+        "finding": "The comparison with CTQScorer (Table 2) is acknowledged as 'unequal' by the authors due to different databases (Europarl/ParaCrawl vs WikiMatrix) and different FLORES versions. This makes the comparison potentially misleading.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The authors note the inequality but still present the comparison. The differing data sources could account for performance differences. However, the paper's main claim does not rest on this comparison alone, and the core experiments use consistent baselines (Random, BM25, R-BM25). This weakens but does not invalidate the broader conclusions."
+      },
+      {
+        "finding": "The R-BM25 baseline underperforms even Random in the authors' setting, which is attributed to 'differences in example database, data preprocessing and the design of prompt templates.' This suggests the baseline implementation may not be properly calibrated, potentially affecting the fairness of comparisons.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If R-BM25 is not faithfully reproducing the original method, then the comparison against it is questionable. However, the authors still compare against BM25 and Random, which show the expected patterns, so this does not collapse the main claims."
+      },
+      {
+        "finding": "The paper uses only one LLM (XGLM 7.5B). This limits generalizability across model sizes and families.",
+        "severity": "MINOR",
+        "justification": "Single-model evaluation is common in resource-constrained settings. The authors acknowledge this as a limitation. The conclusion that syntax helps for this specific model is valid."
+      },
+      {
+        "finding": "The Polynomial Distance formula (Equation 9) uses a min-sum normalized bidirectional Manhattan distance. It is not proven that this distance metric satisfies the triangle inequality or is a proper metric, but it is used as a heuristic similarity measure.",
+        "severity": "MINOR",
+        "justification": "The authors adopt an existing metric from prior work. Using a heuristic distance for selecting examples is methodologically acceptable; the results speak to its empirical utility."
+      }
+    ]
+  },
+  "reflection_a": {
+    "reflection_notes": "On second pass, I think my original review was directionally fair but somewhat too aggressive on a few items. The strongest concerns remain those that directly affect fairness/comparability of the reported gains: the unequal CTQScorer comparison, the underspecified handling of duplicate retrievals in the ensemble, and the uncontrolled context-overflow/truncation issue at 16 shots. I still think lack of significance testing weakens the strength of the '11/12 directions' superiority claim, but calling it MAJOR may have been too strong given MT practice and the fact that the claim is based on deterministic evaluation with standard automatic metrics. Likewise, parser-quality concerns and contamination concerns are real methodological dependencies, but without evidence of failure/overlap they are better framed as important robustness omissions rather than major flaws. Reproducibility/detail complaints remain minor. I do not see any issue that rises to retraction-worthy on the available record.",
+    "severity_i_now_upgrade": [],
+    "severity_i_now_downgrade": [
+      {
+        "finding": "No statistical significance testing or uncertainty estimates are reported for the main comparison, despite claims of winning on 11/12 translation directions and outperforming baselines by around 1 COMET point on average.",
+        "from": "MAJOR-REVISION",
+        "to": "MINOR",
+        "why": "This is an important weakness, especially given strong comparative language, but in MT papers it is common and does not by itself make the conclusions unreliable. It should temper the claim strength rather than trigger major revision on its own."
+      },
+      {
+        "finding": "The example database is WikiMatrix, a noisy mined parallel corpus, but the paper does not document any deduplication or train-test overlap check against FLORES+ devtest.",
+        "from": "MAJOR-REVISION",
+        "to": "MINOR",
+        "why": "Potential contamination is a legitimate concern in retrieval-based setups, but absent any evidence of actual overlap, this is better treated as a robustness/reporting omission than a demonstrated major methodological defect."
+      },
+      {
+        "finding": "The study uses automatic dependency parses from spaCy across six languages, including morphologically and syntactically diverse languages, but provides no parsing quality assessment nor discussion of parser mismatch/domain suitability for WikiMatrix and FLORES+.",
+        "from": "MAJOR-REVISION",
+        "to": "MINOR",
+        "why": "The method depends on parser quality, but many NLP papers reasonably rely on off-the-shelf parsers without intrinsic evaluation. This limits interpretability and mechanism claims more than it threatens the empirical comparison itself."
+      },
+      {
+        "finding": "The central claim that syntax specifically helps is not isolated from other factors by ablation beyond one ensemble with BM25; there is no control for retrieval diversity, example length, or parser-derived superficial artifacts that could drive gains instead of syntactic similarity per se.",
+        "from": "MAJOR-REVISION",
+        "to": "MINOR",
+        "why": "I still think the causal/mechanistic interpretation should be softened, but this is mainly an ablation/interpretation gap. It does not invalidate the empirical observation that the proposed retrieval heuristic performed well in this setup."
+      }
+    ],
+    "findings_i_still_defend": [
+      {
+        "finding": "The comparison with CTQScorer is explicitly acknowledged to be unequal because the prior work used different example databases and a different test set version, yet the manuscript still states that its methods 'secure all the highest scores' in that table.",
+        "severity": "MAJOR-REVISION",
+        "why": "This is a straightforward comparability problem. The paper can discuss the numbers descriptively, but not make strong superiority claims from an unequal setup."
+      },
+      {
+        "finding": "The ensemble retrieval procedure is underspecified with respect to overlap handling: the method takes half the examples from BM25 and half from Polynomial, but the paper does not state what happens if the same example is selected by both strategies.",
+        "severity": "MAJOR-REVISION",
+        "why": "This directly affects what the model actually sees and whether comparisons at fixed k are fair. If duplicates were allowed, the effective number of unique demonstrations could differ materially."
+      },
+      {
+        "finding": "At 16 in-context examples, the authors note that prompts sometimes exceed the model's maximum context length, which may hurt precision, yet these results are still included in the comparison figure without a controlled truncation policy being described.",
+        "severity": "MAJOR-REVISION",
+        "why": "Once overflow/truncation enters, prompt contents may differ across methods in uncontrolled ways. That can change conclusions about scaling and relative performance at higher shot counts."
+      },
+      {
+        "finding": "The manuscript reports averages over 3 random seeds only for the Random baseline, while the proposed method and other retrieval methods appear to be evaluated deterministically with a single run; however, no uncertainty from model inference framework, preprocessing, or metric variation is quantified.",
+        "severity": "MINOR",
+        "why": "This remains a modest reporting issue, not a deep flaw."
+      },
+      {
+        "finding": "The paper claims the experiments are 'completely reproducible,' but key implementation details needed for reproduction are missing from the excerpted methods: generation parameters beyond sampling disabled, exact prompt template wording, context truncation behavior, BM25 tokenization/index settings, and whether retrieval is performed over full or filtered corpora per direction.",
+        "severity": "MINOR",
+        "why": "Still a standard reproducibility complaint rather than something that would likely change the results."
+      },
+      {
+        "finding": "The manuscript relies primarily on COMET from a single model version (wmt20-comet-da) for the main conclusion, with BLEU relegated to appendix and no human evaluation.",
+        "severity": "MINOR",
+        "why": "A limitation, but an ordinary one for MT evaluation."
+      },
+      {
+        "finding": "The statement that Polynomial 'outperform[s] BM25 by 3.53 points' on DE-EN is presented without any indication whether this is an isolated language-direction anomaly or robust across prompt order, example count, or token budget.",
+        "severity": "MINOR",
+        "why": "This is still mainly an overclaim/robustness issue."
+      },
+      {
+        "finding": "The manuscript does not explain whether source-side retrieval was restricted to the same translation direction or if the same English sentence could appear in both EN→X and X→EN experiments in ways that alter retrieval pool composition and fairness across directions.",
+        "severity": "MINOR",
+        "why": "Still worth clarifying, but unlikely to overturn the headline result."
+      }
+    ],
+    "new_errors_noticed": [
+      {
+        "finding": "The paper's strongest textual claim appears to conflate two levels of support: empirical superiority of one retrieval heuristic in this benchmark versus evidence that 'syntax information' as a mechanism improves MT prompting. The latter is only partially tested.",
+        "severity": "MINOR",
+        "why": "This is related to my earlier ablation concern but worth stating separately as a claim-scoping issue: the empirical result may hold while the mechanistic interpretation should be narrower."
+      },
+      {
+        "finding": "If the 16-shot condition suffers context overflow, then any aggregate statements across shot counts (e.g., trends that more examples can hurt/help) may be confounded unless analyses are separated into non-overflowing versus overflowing settings.",
+        "severity": "MAJOR-REVISION",
+        "why": "This sharpens the earlier overflow concern: the issue is not just one figure point, but potentially any conclusion about scaling with k."
+      }
+    ]
+  },
+  "reflection_b": {
+    "reflection_notes": "After re-reading both reviews, I recognize that my initial assessment may have been too lenient on several points. The other reviewer's deeper scrutiny highlights methodological gaps that, while not fatal individually, collectively weaken the strength of the paper's central claims more than I initially judged. Specifically: (1) the lack of overlap/duplicate control in ensemble retrieval and (2) the absent train-test overlap check are underappreciated issues that could materially affect results. My initial 'MINOR' for some items may reflect a bias toward accepting common practices in the MT field, but the other reviewer's points about reproducibility and causal interpretation are well-taken. However, I still believe the paper's core contribution is salvageable with revisions, not retraction-worthy.",
+    "severity_i_now_upgrade": [
+      "Finding about no deduplication or train-test overlap check (was MINOR, should be MAJOR-REVISION) – this is a genuine contamination risk that could inflate performance for retrieval-based methods",
+      "Finding about ensemble duplicate handling (was MINOR, should be MAJOR-REVISION) – unclear overlap handling could give unfair advantage to ensemble over individual strategies",
+      "Finding about context-length overflow at 16 shots (was MINOR, should be MAJOR-REVISION) – uncontrolled truncation makes comparisons unreliable at higher k values"
+    ],
+    "severity_i_now_downgrade": [
+      "Finding about R-BM25 underperforming Random (was MAJOR-REVISION, should be MINOR) – the authors acknowledge this discrepancy and the main claim does not depend on R-BM25 performance; it's a secondary baseline"
+    ],
+    "findings_i_still_defend": [
+      {
+        "finding": "No statistical significance testing",
+        "severity": "MINOR"
+      },
+      {
+        "finding": "Ensemble order effects partially addressed",
+        "severity": "MINOR"
+      },
+      {
+        "finding": "CTQScorer comparison acknowledged as unequal",
+        "severity": "MAJOR-REVISION"
+      },
+      {
+        "finding": "Single model used",
+        "severity": "MINOR"
+      },
+      {
+        "finding": "Polynomial distance as heuristic metric",
+        "severity": "MINOR"
+      },
+      {
+        "finding": "No parse quality assessment",
+        "severity": "MAJOR-REVISION"
+      },
+      {
+        "finding": "Missing implementation details for reproducibility",
+        "severity": "MINOR"
+      },
+      {
+        "finding": "No isolation of syntactic signal from confounds",
+        "severity": "MAJOR-REVISION"
+      },
+      {
+        "finding": "Reliance on COMET alone",
+        "severity": "MINOR"
+      },
+      {
+        "finding": "Overinterpretation of single direction gain",
+        "severity": "MINOR"
+      },
+      {
+        "finding": "Unclear cross-direction retrieval pool composition",
+        "severity": "MINOR"
+      }
+    ],
+    "new_errors_noticed": [
+      "The paper does not specify how many random seeds were used for retrieval-based methods versus just the Random baseline – if only the baseline has variance estimation, the comparison is asymmetrical",
+      "No discussion of whether the 3 seeds for Random baseline capture variance in which examples are selected (if selection is based on different random orderings) or only decode variance",
+      "The claim of 'completely reproducible' is contradicted by multiple unspecified design choices (prompt truncation policy, BM25 tokenizer, whether stop words were removed)"
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.88,
+    "reasoning": "Both reviewers converge on several methodological concerns that, while not individually retraction-worthy, collectively undermine the strength of the paper's central claims. The most robust concerns after reflection are: (1) the unequal CTQScorer comparison presented with strong superiority language, (2) underspecified ensemble duplicate handling affecting fairness of comparisons, (3) uncontrolled context-length overflow at 16 shots contaminating scaling analyses, and (4) insufficient isolation of the syntactic signal from confounds. After both reviewers' second passes, there is strong agreement on at least three MAJOR-REVISION level issues. No single issue rises to retraction-worthy, but the paper requires substantive revision to support its claims.",
+    "findings": [
+      {
+        "finding": "The comparison with CTQScorer is acknowledged as unequal (different example databases, different FLORES versions), yet the paper claims its methods 'secure all the highest scores' in that comparison table.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.93,
+        "justification": "Both reviewers flagged this. Strong superiority claims drawn from an unequal comparison are methodologically unsound. This affects a named baseline comparison and a headline claim. However, the paper's core experiments against Random/BM25 use consistent setups, so this does not invalidate the entire study.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The ensemble retrieval procedure does not specify what happens when BM25 and Polynomial select overlapping examples, potentially reducing effective demonstration count and creating unfair comparisons at fixed k.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.88,
+        "justification": "Both reviewers converged on this after reflection (Reviewer B upgraded it). Duplicate demonstrations could materially reduce the information content of the prompt and create an uncontrolled variable in method comparisons, especially at small k values.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "At 16 in-context examples, prompts sometimes exceed the model's maximum context length, but no controlled truncation policy is described. Results at this condition are still included in comparisons and trend analyses.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.87,
+        "justification": "Both reviewers converged on this after reflection (Reviewer B upgraded it). Uncontrolled truncation means different methods may have different effective prompt contents, making comparisons unreliable at higher shot counts. Any scaling conclusions across k values are potentially confounded.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "No deduplication or train-test overlap check between the WikiMatrix retrieval pool and the FLORES+ devtest evaluation set is documented.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "Reviewer A raised this and Reviewer B upgraded it on reflection. In retrieval-based prompting from a large mined corpus, overlap or near-duplicate contamination could inflate performance. However, there is no evidence that such overlap actually exists, so this is a risk rather than a demonstrated flaw.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The central claim that 'syntax information' specifically helps MT prompting is not isolated from confounds such as retrieval diversity, example length, or superficial artifacts of parser-derived features. No targeted ablation separates the syntactic signal.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.72,
+        "justification": "Reviewer A raised this and Reviewer B agreed it deserves MAJOR-REVISION status. The empirical result (the heuristic works) may hold, but the mechanistic/causal interpretation that syntax is the operative factor is inadequately supported. Reviewer A softened this on reflection but Reviewer B maintained it.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "No statistical significance testing or confidence intervals are reported for the main COMET score comparisons, despite claims of winning on 11/12 translation directions.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "Both reviewers ultimately settled on MINOR. This is a genuine weakness that tempers claim strength, but it is common practice in MT evaluation and does not by itself invalidate the results. Deterministic retrieval and greedy decoding reduce one source of variance.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The R-BM25 baseline underperforms even Random in the authors' setting, raising questions about baseline implementation fidelity.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.75,
+        "justification": "Reviewer B initially rated this MAJOR but downgraded on reflection since the authors acknowledge the discrepancy and the main claims do not rest on R-BM25. Reviewer A did not specifically flag this. The main comparisons against BM25 and Random remain valid.",
+        "source": "prover_b",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The study uses automatic dependency parses from spaCy across six typologically diverse languages without any parsing quality assessment or domain suitability analysis.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.7,
+        "justification": "Reviewer A downgraded this on reflection, noting that reliance on off-the-shelf parsers is standard NLP practice. Reviewer B maintained it at MAJOR. The concern is real for mechanism claims but does not threaten the empirical comparison itself. Splitting the difference, this is better classified as MINOR given widespread acceptance of this practice.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Only one LLM (XGLM 7.5B) is used, limiting generalizability of conclusions.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers agree this is a standard limitation. The conclusions are valid for the tested model; generalization claims should be tempered.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The paper claims experiments are 'completely reproducible' but key implementation details are missing (prompt template, truncation policy, BM25 settings, etc.).",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers agree this is a reporting gap. It makes verification harder but does not imply the results are wrong.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Reliance on a single COMET model version (wmt20-comet-da) as the primary metric, with BLEU in appendix only and no human evaluation.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.88,
+        "justification": "Both reviewers agree this is a routine limitation in MT evaluation. Using COMET as the primary metric is well-accepted.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Variance estimation is asymmetrical: only the Random baseline has 3-seed averaging, while all retrieval methods are deterministic single runs.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "Both reviewers noted this. Given deterministic retrieval and greedy decoding, this is reasonable but should be explicitly justified rather than left implicit.",
+        "source": "both",
+        "survived_reflection": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 21885,
+    "duration_s": 109.59,
+    "n_api_calls": 15,
+    "cost_usd": 1.0886,
+    "total_input_tokens": 85443,
+    "total_output_tokens": 25375,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3891,
+        "output_tokens": 2204,
+        "cost_usd": 0.0317675,
+        "duration_s": 45.28,
+        "label": "2403.06831v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 11192,
+        "output_tokens": 1239,
+        "cost_usd": 0.00438474,
+        "duration_s": 16.85,
+        "label": "2403.18567v2/b3plus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 11192,
+        "output_tokens": 1577,
+        "cost_usd": 0.00475654,
+        "duration_s": 23.89,
+        "label": "2403.18567v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3952,
+        "output_tokens": 1064,
+        "cost_usd": 0.0022374400000000003,
+        "duration_s": 15.31,
+        "label": "2403.06831v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 5518,
+        "output_tokens": 1536,
+        "cost_usd": 0.029155,
+        "duration_s": 29.58,
+        "label": "2403.19285v2/b3plus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3895,
+        "output_tokens": 1463,
+        "cost_usd": 0.0243675,
+        "duration_s": 21.95,
+        "label": "2403.18567v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 5487,
+        "output_tokens": 750,
+        "cost_usd": 0.0023064900000000004,
+        "duration_s": 9.62,
+        "label": "2403.19285v2/b3plus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3827,
+        "output_tokens": 1130,
+        "cost_usd": 0.00227629,
+        "duration_s": 15.61,
+        "label": "2403.18567v2/b3plus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2621,
+        "output_tokens": 1433,
+        "cost_usd": 0.0208825,
+        "duration_s": 24.23,
+        "label": "2403.19285v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2671,
+        "output_tokens": 730,
+        "cost_usd": 0.00152417,
+        "duration_s": 10.08,
+        "label": "2403.19285v2/b3plus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4346,
+        "output_tokens": 3359,
+        "cost_usd": 0.044455,
+        "duration_s": 61.49,
+        "label": "2403.18567v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 8179,
+        "output_tokens": 2888,
+        "cost_usd": 0.339285,
+        "duration_s": 60.01,
+        "label": "2403.06831v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7451,
+        "output_tokens": 2843,
+        "cost_usd": 0.32499,
+        "duration_s": 55.49,
+        "label": "2403.18567v2/b3plus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 5518,
+        "output_tokens": 1231,
+        "cost_usd": 0.026105,
+        "duration_s": 23.6,
+        "label": "2403.19285v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 5703,
+        "output_tokens": 1928,
+        "cost_usd": 0.230145,
+        "duration_s": 36.07,
+        "label": "2403.19285v2/b3plus/arbiter"
+      }
+    ]
+  }
+}

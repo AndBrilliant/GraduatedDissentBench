@@ -115,6 +115,88 @@ Respond in JSON:
       "survived_steelman": true|false}}
   ]}}"""
 
+# ── B3+ (neutral reflection) and B3++ (anti-steelman) ────────────────
+# Budget-matched controls for the steelman exchange. Same compute as GD,
+# same prover and arbiter wiring, only the reflection prompt differs.
+
+REFLECTION_PROMPT = """You previously reviewed a manuscript.
+
+YOUR REVIEW:
+{own_review}
+
+A DIFFERENT REVIEWER reached different conclusions:
+{other_review}
+
+TASK: Re-examine your findings and reconsider whether your severity ratings
+are appropriate. Are any findings over-rated or under-rated? This is not
+adversarial — just an honest second look at your own assessment. You may
+keep your ratings, change them, or add new findings, as you judge fit.
+
+""" + SEVERITY_RUBRIC + """
+Respond in JSON:
+{{"reflection_notes": "your second-pass thinking",
+  "severity_i_now_upgrade": ["findings I think are MORE severe"],
+  "severity_i_now_downgrade": ["findings I think are LESS severe"],
+  "findings_i_still_defend": ["findings + severity I stand by"],
+  "new_errors_noticed": ["errors from fresh perspective"]}}"""
+
+ANTI_STEELMAN_PROMPT = """You previously reviewed a manuscript.
+
+YOUR REVIEW:
+{own_review}
+
+A DIFFERENT REVIEWER reached different conclusions:
+{other_review}
+
+TASK: Build the STRONGEST CASE FOR your severity ratings.
+1. For findings you rated RETRACTION-WORTHY: why are these genuinely
+   retraction-worthy and not over-stated?
+2. Defend your most serious assessments against the other reviewer's
+   alternative framings.
+3. Do not soften — argue affirmatively for your original ratings.
+
+""" + SEVERITY_RUBRIC + """
+Respond in JSON:
+{{"defense_for_self": "strongest case for your severity ratings",
+  "severity_i_now_upgrade": ["findings I now think are EVEN MORE severe"],
+  "severity_i_now_downgrade": ["(prefer empty list; only if truly necessary)"],
+  "findings_i_still_defend": ["findings + severity I stand by, with reasons"],
+  "new_errors_noticed": ["errors I missed initially"]}}"""
+
+# Arbiter for B3+ / B3++ — takes reviews plus the reflection outputs
+# (no judge analysis, since we always reflect). Mirrors ARBITER_PROMPT
+# shape so downstream scoring code does not need to special-case.
+ARBITER_REFLECT_PROMPT = """You are the Arbiter. You have the complete deliberation.
+
+""" + SEVERITY_RUBRIC + """
+REVIEW A:
+{review_a}
+
+REVIEW B:
+{review_b}
+
+REFLECTION EXCHANGE:
+A's reflection: {reflection_a}
+B's reflection: {reflection_b}
+
+TASK: Final severity-ranked assessment.
+- Consider how each reviewer's second-pass changed (or did not change) their assessment.
+- ONLY classify as RETRACTION-WORTHY if fundamentally broken.
+  When in doubt, MAJOR-REVISION.
+
+Respond in JSON:
+{{"verdict": "flagged"|"not_flagged",
+  "confidence": 0.0-1.0,
+  "reasoning": "synthesis",
+  "findings": [
+    {{"finding": "description",
+      "severity": "RETRACTION-WORTHY|MAJOR-REVISION|MINOR",
+      "confidence_in_severity": 0.0-1.0,
+      "justification": "why this level",
+      "source": "both|prover_a|prover_b|emergent",
+      "survived_reflection": true|false}}
+  ]}}"""
+
 # B3 arbiter (no steelman material).
 ARBITER_B3_PROMPT = """You are the Arbiter. Two independent reviewers evaluated this manuscript.
 

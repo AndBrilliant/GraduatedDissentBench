@@ -1,0 +1,471 @@
+{
+  "condition": "B3PLUS",
+  "paper_id": "2408.16162v2",
+  "verdict": "flagged",
+  "confidence": 0.95,
+  "reasoning": "Both reviewers independently identified that Lemma 2.3, the key technical engine of the paper, contains multiple serious proof gaps that collectively render the main theorem (Theorem 1.1) unsupported as written. The most critical issues are: (1) the Zorn's lemma step lacks verification that unions of chains preserve the admissibility condition; (2) the contradiction argument fails because mixed intersections between translates of U and translates of V' are declared empty without proof; (3) the density argument in Theorem 1.1 that connects Lemma 2.3 to the extension machinery is logically incomplete. After reflection, both reviewers converged on the assessment that Lemma 2.3 is fundamentally broken as written. However, applying the key test carefully: the errors are proof-level failures rather than demonstrations that the theorem is false. The theorem might be salvageable with substantially different arguments or major corrections. The question is whether the paper as written supports its conclusions — it does not. I classify the most critical cluster of issues as RETRACTION-WORTHY because the central claim simply has no valid proof behind it, and multiple independent steps would need to be repaired simultaneously.",
+  "findings": [
+    {
+      "finding": "The Zorn's lemma application in Lemma 2.3 is unjustified: the authors do not verify that the union of a chain of open neighborhoods satisfying the pairwise disjoint-translate condition still satisfies that condition. Since the disjointness property is not obviously preserved under arbitrary unions, the existence of a maximal element in the poset is unsupported.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.85,
+      "justification": "Without a valid maximal element, the entire contradiction argument in Lemma 2.3 collapses, and with it the density result needed for Theorem 1.1. Both reviewers flagged this after reflection. The concern is substantive: in general, taking unions of open sets with pairwise-disjoint translates can break the disjointness condition. This is not a presentation issue but a foundational gap in the proof architecture.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "In the contradiction step of Lemma 2.3, the mixed intersections (x+U)∩(y+V') and (x+V')∩(y+U) for distinct x,y in L are declared empty without any justification. The preceding argument only establishes disjointness among translates of U separately and among translates of V' separately, but does not address cross terms. Without this, the claim that W = U ∪ V' belongs to the poset P is unproven, and the maximality contradiction fails.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.9,
+      "justification": "This is the exact point where Lemma 2.3's proof breaks down most concretely. Reviewer A initially rated this RETRACTION-WORTHY and downgraded to MAJOR-REVISION on reflection, while Reviewer B upgraded their related finding to RETRACTION-WORTHY. The gap is not a matter of missing explanation — there is no argument at all for why these intersections vanish, and it is not obvious they do. Since this is the crux of the only lemma supporting the main theorem, RETRACTION-WORTHY is appropriate.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The expression '(x+V')+(y+V')=∅' in Lemma 2.3 is mathematically false as written (Minkowski sum of nonempty sets is nonempty). The intended statement is presumably '(x+V')∩(y+V')=∅'. While this appears to be a typo, it occurs at a critical juncture and contributes to the overall unreliability of the proof.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Both reviewers identified this. It is almost certainly a notational error rather than a conceptual one, but combined with the substantive gap about mixed intersections, it indicates the proof was not carefully checked. Alone it would be MINOR; in context of the surrounding logical failures it rises to MAJOR-REVISION.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The density argument in Theorem 1.1 is logically incomplete. The authors claim H is dense because it contains U+span{x_i}, but the connection between 'G\\(L+U) has empty interior' (from Lemma 2.3) and 'H contains a dense subset' is not properly established. The subgroup closure needed to conclude H ⊇ U+L is not stated, and the logical chain from Lemma 2.3's output to density of H is confused.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Both reviewers flagged this. On reflection, Reviewer A noted this might be repairable if Lemma 2.3 were fixed, since H is a subgroup containing both U and L. The gap is real but potentially fixable with a brief argument. However, since Lemma 2.3 itself is broken, the entire chain fails regardless.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Lemma 2.2 claims that extending both φ and φ^{-1} from a dense subgroup to G yields mutually inverse continuous homomorphisms, hence a topological automorphism. However, the proof does not verify that the extension of φ^{-1} is indeed the inverse of the extension of φ, nor that the resulting bijective continuous homomorphism is automatically open. In Polish group settings, a bijective continuous homomorphism is a homeomorphism by the open mapping theorem, but this theorem needs to be invoked explicitly.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.65,
+      "justification": "Reviewer B flagged this and upgraded to RETRACTION-WORTHY, while Reviewer A considered it likely standard. The open mapping theorem for Polish groups does apply here, making this more of an exposition gap than a fatal flaw. If φ extends to a continuous group homomorphism and φ^{-1} extends to a continuous group homomorphism, these extensions are indeed mutual inverses by density and continuity. So this is a real gap in the written argument but almost certainly fixable. MAJOR-REVISION rather than RETRACTION-WORTHY.",
+      "source": "prover_b",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The continuity verification for φ on H is too terse. The proof claims φ(U∩V) = U∩V because φ fixes Y pointwise and U∩V ⊆ span(Y), but this containment is not argued. The proof does not address continuity at points other than 0 or show φ^{-1} is continuous on H.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.6,
+      "justification": "Both reviewers noted this. Reviewer A kept it MINOR while Reviewer B upgraded to RETRACTION-WORTHY. The truth is likely in between: for a group homomorphism, continuity at 0 implies continuity everywhere, and if H has a direct-sum decomposition with φ acting as identity on one summand, continuity at 0 may follow. But the argument as written is insufficient. MAJOR-REVISION is appropriate since the gap could be filled if the underlying claim is true.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Theorem 1.1 begins by choosing 'more than two linearly independent elements' from G, but this is not justified from the hypothesis that G has more than two elements. For a Boolean group of order 4 (= Z_2^2), only two linearly independent elements exist. The intended condition appears to be 'at least two.'",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "Reviewer A identified this clearly. It is a genuine mathematical inaccuracy in the theorem's setup. For Polish groups (which are either finite or have cardinality continuum), the finite case may need separate treatment. The error is likely repairable but requires care.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The inference in Lemma 2.3 from V+L ⊆ F_L to 'x+V ⊆ V for every x∈L' is under-justified. While plausible via the definition of V as the interior of F_L and translation being a homeomorphism, the argument is not spelled out.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers agree this is likely repairable with a standard argument. It does not independently threaten the conclusions.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The claim that every countable Boolean Polish group is discrete is stated without proof or citation. While true (a countable completely metrizable space has isolated points by Baire category, and a countable T1 topological group with an isolated point is discrete), it should be justified.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Standard result. Does not threaten the main conclusions.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Peripheral claims about Aut(G) carrying a Polish topology and having cardinality continuum are asserted without proof.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "These are side remarks not central to the main theorem.",
+      "source": "prover_a",
+      "survived_reflection": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 2,
+    "MAJOR-REVISION": 5,
+    "MINOR": 3
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.99,
+    "reasoning": "The manuscript’s main theorem relies on a chain of arguments in Lemma 2.3 and the proof of Theorem 1.1 that contain multiple substantive mathematical errors. Most importantly, the density step needed to extend an automorphism from a subgroup H to the whole Polish group G is not established: the authors incorrectly infer density of U+span{x_i} from Lemma 2.3(2), and then incorrectly claim H contains that set. In addition, Lemma 2.3 itself appears internally flawed, with invalid set-theoretic/algebraic manipulations in the maximality contradiction. Since these issues occur in the core proof of the central claim (“every Polish group with more than two elements admits a non-trivial topological automorphism”), the main conclusion is not supported as written.",
+    "findings": [
+      {
+        "finding": "Core density claim in the proof of Theorem 1.1 is invalid. From Lemma 2.3(2), the authors only obtain that G \\ (L+U) has empty interior, i.e. L+U is dense open. They then state that H is dense because it contains the dense subset U+span{x_i}_{i<n}. But H is generated by Y and {x_i}, with U \\subseteq span(Y), so H contains U and L, yet it does not follow that H contains U+L unless one separately uses subgroup closure; more seriously, the manuscript never correctly establishes that U+L is dense from 'empty interior of the complement' in the needed way, and the written argument is logically incomplete and confused.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is a central step: without density of H, Lemma 2.2 cannot be applied, so the automorphism constructed on H need not extend to G. If fixed, the theorem might still be salvageable, but as written the main proof fails."
+      },
+      {
+        "finding": "Even if one grants that L+U is dense, the statement 'H contains the dense subset U+span{x_i}_{i<n}' is not actually justified by the preceding sentence 'U \\subseteq span(Y)'. Containment of U and containment of L do imply containment of U+L only because H is a subgroup, but this is not stated, and the proof’s wording suggests the authors think containment is immediate from U \\subseteq span(Y) alone. This is a serious gap in a crucial inference.",
+        "severity": "MINOR",
+        "justification": "This may be repairable by a brief correction if the intended argument is valid, but in context it contributes to the breakdown of the main proof."
+      },
+      {
+        "finding": "Lemma 2.3 contains an explicit algebraic/topological error in the construction of V'. The proof claims '(x+V')+(y+V')=∅ if x,y∈L are distinct' and then uses set expansions involving intersections. The expression with '+' between sets in a Boolean group denotes Minkowski sum, which cannot be empty when V' is nonempty. The intended statement must have been '(x+V') ∩ (y+V') = ∅'. As written, this is false.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is not just a typo in an ancillary remark: the disjointness of translates is exactly what is needed to show W=U∪V' still lies in P and contradict maximality. If the proof only works after substantial correction, the key lemma remains unproved as written."
+      },
+      {
+        "finding": "In Lemma 2.3, the verification that W=U∪V' belongs to P incorrectly asserts that all four pairwise intersections vanish. In particular, terms like (x+U) ∩ (y+V') and (x+V') ∩ (y+U) are simply declared empty without proof. The earlier argument only establishes disjointness among translates of U, and separately among translates of V'; it does not control these mixed intersections.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This is the crux of the maximality contradiction proving Lemma 2.3(2). Without it, Lemma 2.3 is unproved. Since Theorem 1.1 depends essentially on Lemma 2.3 to produce a dense subgroup on which an automorphism is built, the central conclusion is unsupported."
+      },
+      {
+        "finding": "Lemma 2.3 also contains a doubtful inference: from V+L ⊆ F_L the proof says 'as V is the greatest open set contained in F_L, certainly x+V ⊆ V for every x∈L.' The conclusion relies on x+V being open and contained in F_L, but this is not explicitly argued. More importantly, the route from V+L ⊆ F_L to x+V ⊆ V should be written carefully via translation-invariance/homeomorphicity. As written it is under-justified.",
+        "severity": "MINOR",
+        "justification": "Likely repairable, but it is another sign that the key lemma is insufficiently rigorous."
+      },
+      {
+        "finding": "Theorem 1.1 begins by choosing a finite collection '{x_i}_{i<n} with more than two elements of linearly independent elements.' This is not justified from the assumption 'G has more than two elements.' For a Boolean group of order 4, the maximum size of a linearly independent subset is 2, and in general the intended requirement seems to be at least two linearly independent elements, not 'more than two'.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is a foundational setup issue. In the continuum-cardinality Boolean case there are indeed many independent elements, so the theorem may still proceed after correction, but the present statement is inaccurate and can misfire in small-dimensional cases."
+      },
+      {
+        "finding": "The proof that every countable Boolean Polish group is discrete is asserted without citation or argument. While true for countable completely metrizable spaces via the Baire theorem (a countable Polish space is discrete), here it is used as part of the structural case split and should be justified.",
+        "severity": "MINOR",
+        "justification": "This is standard and does not threaten the main conclusion by itself."
+      },
+      {
+        "finding": "The statement 'When κ=ω, the automorphism group Aut(G) carries a non-discrete Polish group topology under the pointwise-convergence topology, and thus its cardinality is c' is asserted without proof and is not obviously relevant to the main theorem. For a countable discrete group, pointwise convergence on G^G indeed yields a closed subgroup of a Polish space, but the manuscript does not justify closedness/Polishness here.",
+        "severity": "MINOR",
+        "justification": "This is peripheral background; even if incorrect or incomplete, it would not directly affect the main theorem."
+      },
+      {
+        "finding": "Lemma 2.2 cites a blanket extension principle ('there exists a unique continuous extension by the density of H in G') without stating the needed hypothesis on the codomain. Extension from a dense subgroup of a completely metrizable group to a complete codomain requires a specific theorem; the manuscript references '[5, Page 6]' but does not spell out assumptions. Since G is Polish, the result is plausible, but the proof depends on an unstated theorem.",
+        "severity": "MINOR",
+        "justification": "Probably standard and correct in this setting, but the reliance is under-explained."
+      },
+      {
+        "finding": "The continuity proof for the automorphism φ on H is very terse and depends crucially on U∩V being H-invariant under φ because φ fixes Y pointwise and acts inside L. This is plausible in a Boolean direct-sum decomposition, but the proof never explicitly shows every element of U∩V lies in span(Y) and hence is fixed. The argument should make clear why φ(U∩V)=U∩V.",
+        "severity": "MINOR",
+        "justification": "This likely can be repaired, but the current presentation is too compressed at an essential step."
+      }
+    ]
+  },
+  "review_b": {
+    "raw": "```json\n{\n  \"verdict\": \"flagged\",\n  \"confidence\": 0.95,\n  \"reasoning\": \"The manuscript contains a critical and likely fatal error in Lemma 2.3, which is central to the proof of Theorem 1.1. The error appears to invalidate the main result for Boolean Polish groups of continuum cardinality, and the argument for the existence of a maximal element in the poset is flawed. Given that Theorem 1.1 is the paper's main claim, this error is retraction-worthy unless corrected.\",\n  \"findings\": [\n    {\n      \"finding\": \"The proof of Lemma 2.3 attempts to use Kuratowski–Zorn lemma to construct a maximal open identity neighbourhood U with the property that (x+U) ∩ (y+U) = ∅ for distinct x, y in a finite linearly independent set L. However, the definition of the poset is flawed: it requires that for all distinct x,y in L, (x+U) ∩ (y+U) = ∅, but the ordering is inclusion. A larger U (under inclusion) would have larger translates, making it harder to satisfy the disjointness condition. The claim that a maximal element exists under this ordering is unjustified: the union of a chain does not necessarily preserve the disjointness condition because the union of neighbourhoods can enlarge translates arbitrarily, potentially breaking the condition. The argument given for chain upper bounds is insufficient and appears to assume that the condition is preserved under taking unions, which is not generally true. This undermines the entire construction of the neighbourhood U that is critical for the rest of the proof.\",\n      \"severity\": \"RETRACTION-WORTHY\",\n      \"justification\": \"If the poset and the existence of a maximal U cannot be justified, then the construction of the dense subgroup H and the subsequent extension argument for Boolean Polish groups of continuum cardinality collapses. Since Theorem 1.1 relies on this case, the central conclusion cannot be supported as presented.\"\n    },\n    {\n      \"finding\": \"In the proof of Lemma 2.3, after constructing a maximal U, the author attempts to show that F_L = G \\ (L+U) has empty interior by contradiction, constructing a larger neighbourhood V' and then claiming that W = U ∪ V' is also in the poset. However, even if U were maximal, the step claiming that (x+V') ∩ (y+V') = ∅ for distinct x,y is not justified. The construction of V' involves picking a disjoint family {U_x} for each v, but this does not guarantee that V' itself has the required disjointness property for all pairs of distinct x,y simultaneously. The argument is insufficiently detailed and appears to assume a uniform disjointness that may not hold.\",\n      \"severity\": \"MAJOR-REVISION\",\n      \"justification\": \"This step is not clearly justified and could potentially be fixed with more careful reasoning, but as written it constitutes a significant gap. If it cannot be fixed, the lemma fails, leading to the same conclusion as above.\"\n    },\n    {\n      \"finding\": \"In the final part of the proof of Theorem 1.1, the authors claim that the automorphism φ defined on H is a homeomorphism because for any neighbourhood identity V of 0_H, we have φ(U ∩ V) = U ∩ V. However, this only shows continuity at 0 for one specific neighbourhood base element U, and does not establish that φ is a homeomorphism on the entire group. The reasoning is incomplete: it does not address continuity at other points, nor does it show that φ^{-1} is continuous in the same sense. Moreover, the claim that φ(U ∩ V) = U ∩ V assumes that φ fixes every point of Y (which it does) and that U ∩ V is contained in the span of Y, which is not argued.\",\n      \"severity\": \"MAJOR-REVISION\",\n      \"justification\": \"This is a critical gap in the verification that the constructed automorphism is topological. Without a proper proof of continuity, the extension via Lemma 2.2 may not yield a topological automorphism of G, only an abstract group automorphism. This could affect the main claim.\"\n    },\n    {\n      \"finding\": \"In Lemma 2.2, the authors claim that every topological automorphism of a dense subgroup H extends uniquely to a topological automorphism of G. While the extension of a continuous homomorphism from a dense subgroup to a Polish group is standard, the extension of a topological automorphism (i.e., a homeomorphic group automorphism) requires that the extension be a homeomorphism, not just a continuous homomorphism. The proof only shows that the extension is a continuous homomorphism and a bijection (since φ^{-1} also extends), but does not verify that the extension is open or that its inverse is continuous. In general, a bijective continuous homomorphism of Polish groups need not be a homeomorphism (it could fail to be open). The authors implicitly assume that the extension of φ^{-1} provides a continuous inverse, but the inverse of an extension is not automatically the extension of the inverse in the topological sense. This is a subtle gap.\",\n      \"severity\": \"MAJOR-REVISION\",\n      \"justification\": \"If the extended map is not a homeomorphism, then the conclusion of Theorem 1.1 that the automorphism is topological is unjustified. This is a non-trivial oversight that may require additional topological assumptions or a more careful argument.\"\n    },\n    {\n      \"finding\": \"Minor technical issues: The notation and usage of Kuratowski–Zorn lemma is inconsistent (sometimes called 'Kuratowski–Zorn lemma', sometimes 'Zorn lemma'). The proof of Lemma 2.3 contains a typo: '(x+V') + (y+V')' should be '(x+V') ∩ (y+V')'. The construction of V' is ambiguous and relies on a disjoint family of open sets whose existence is claimed but not fully justified for an arbitrary v in V. These are minor but contribute to the overall lack of clarity.\",\n      \"severity\": \"MINOR\",\n      \"justification\": \"These do not individually invalidate the conclusions but reflect a lack of rigor that could be corrected in revision.\"\n    }\n  ]\n}\n```",
+    "parse_error": true,
+    "truncated": true
+  },
+  "reflection_a": {
+    "reflection_notes": "On a second pass, I think my original review correctly identified that the manuscript’s central proof is not currently valid, but I was somewhat inconsistent in how I mapped that judgment onto per-finding severities. The key distinction is: some defects show the main theorem is unsupported as written, but they do not by themselves prove the theorem is false or unfixable. So the strongest per-finding label should be reserved for points that, if confirmed, make the central argument collapse in its present form. I still think the maximality/contradiction step in Lemma 2.3 is the most serious issue. I am less convinced that my density-argument criticism, taken alone, deserves more than MAJOR-REVISION, because if Lemma 2.3 were repaired then the density step may be fixable by a short subgroup-closure argument. I also think I may have overstated the extension/homeomorphism concern in Lemma 2.2: in Polish-group settings, extending both φ and φ^{-1} from a dense subgroup usually does give mutually inverse continuous extensions, so that point is more about exposition than a likely fatal flaw. Conversely, I now notice a potentially stronger issue not fully separated in my first review: the proof of Lemma 2.3 may fail already at the Zorn step if the authors did not properly verify that unions of chains preserve the disjoint-translate property. If that preservation is not proved and is in fact false in their setup, then the existence of the maximal U is itself unsupported, which is at least as serious as the later mixed-intersection problem.",
+    "severity_i_now_upgrade": [
+      "Potential new finding: the Zorn/maximal-element step in Lemma 2.3 may itself be unsupported because one must verify that the union of a chain of admissible open neighborhoods remains admissible; if not established, this should be RETRACTION-WORTHY given the lemma’s central role."
+    ],
+    "severity_i_now_downgrade": [
+      "Finding 4: 'mixed intersections in Lemma 2.3 are simply declared empty without proof' — from RETRACTION-WORTHY down to MAJOR-REVISION. Reason: this is a central and serious gap, and it may well doom the proof as written, but on reflection it is still a proof-level failure that could in principle be repaired by a correct argument; RETRACTION-WORTHY was too strong for an isolated unproved intersection claim.",
+      "Finding 1: 'core density claim in Theorem 1.1 is invalid' — I keep it serious, but more clearly as MAJOR-REVISION rather than anything stronger. The density inference is badly written, yet if Lemma 2.3 were fixed the subgroup-density step might be repairable.",
+      "Finding 9: 'Lemma 2.2 extension principle under-explained' — remains MINOR, and I would state even more explicitly that this is likely standard rather than a substantive defect.",
+      "Finding 10: 'continuity proof for φ on H is too terse' — remains MINOR; I do not think this should be escalated absent more concrete evidence of failure."
+    ],
+    "findings_i_still_defend": [
+      "Finding 3 at MAJOR-REVISION: the '(x+V')+(y+V')=∅' statement is mathematically false as written and occurs at a crucial point. Even if intended as an intersection, this is not a harmless cosmetic typo because the surrounding argument depends on disjointness properties that are not fully proved.",
+      "Finding 6 at MAJOR-REVISION: the setup with 'more than two linearly independent elements' is unjustified from 'G has more than two elements.' This is a genuine mathematical inaccuracy in the theorem proof’s opening setup, though likely repairable.",
+      "Finding 2 at MINOR: the subgroup-closure omission in concluding H contains U+L is a real but likely easily repairable gap.",
+      "Finding 5 at MINOR: the inference from V+L ⊆ F_L to x+V ⊆ V is under-justified but probably repairable with a standard translation argument.",
+      "Finding 7 at MINOR: the claim that a countable Polish group is discrete should be justified or cited, but this does not threaten the main theorem by itself.",
+      "Finding 8 at MINOR: the remarks about Aut(G) and Polishness/cardinality are peripheral and under-argued, but not central to the main claim."
+    ],
+    "new_errors_noticed": [
+      "As noted above, a fresh concern is the Zorn argument itself: the authors need to show every chain in the poset of admissible open neighborhoods has an upper bound in the poset, presumably the union. But because admissibility is a pairwise disjointness condition on translates, this preservation under unions is not automatic unless carefully proved. If the paper does not prove it, the maximal U may not exist by the stated argument.",
+      "Relatedly, the paper seems to blur 'G \\ (L+U) has empty interior' with the stronger/useful conclusion that L+U is dense. That implication is valid in a topological space, but the manuscript should explicitly state it; part of my original criticism there was more about presentation than correctness. So I would sharpen that objection to target the real issue: whether the dense set is actually contained in H and whether the logic is cleanly sequenced.",
+      "The direct-sum/decomposition aspect of H = span(Y) + span{x_i} may need explicit use of linear independence of the x_i over span(Y). If the proof tacitly uses uniqueness of representation or φ-invariance on a summand, that should be stated. I do not yet see a definite contradiction here, but it is a place where hidden assumptions may be doing work."
+    ]
+  },
+  "reflection_b": {
+    "reflection_notes": "Upon re-reading my original review alongside the alternative review, I see I was appropriately critical of the core issues, but I may have been slightly generous in labeling some findings as MAJOR-REVISION when they are arguably RETRACTION-WORTHY, given how they undermine the central proof. The alternative reviewer's identification of the mixed-intersection problem in Lemma 2.3 is particularly damning and confirms that the lemma is fundamentally broken, not just sloppily written. My original finding #2 (the V' construction) and finding #4 (Lemma 2.2 extension) could be argued as MAJOR-REVISION if one assumes the authors could fix them with significant rework, but given their centrality to the main theorem, I think upgrading them to RETRACTION-WORTHY is more honest. The alternative reviewer also highlighted the density-step failure in Theorem 1.1 more clearly than I did; I should upgrade that. I still stand by my original finding #1 as RETRACTION-WORTHY. The minor issues are appropriately rated. I also noticed I didn't flag the 'more than two' vs 'at least two' issue in Theorem 1.1 setup, which the alternative reviewer caught; that's a MAJOR-REVISION oversight on my part.",
+    "severity_i_now_upgrade": [
+      "Finding 2 (original): V' construction and disjointness assumption → RETRACTION-WORTHY (the alternative reviewer correctly shows the mixed intersections are unaddressed, making Lemma 2.3 unproven)",
+      "Finding 3 (original): Continuity of φ on H → RETRACTION-WORTHY (without this, the automorphism may not be topological, collapsing Theorem 1.1)",
+      "Finding 4 (original): Extension in Lemma 2.2 → RETRACTION-WORTHY (the failure to prove the extension is open means the final claim of a topological automorphism is unsupported)"
+    ],
+    "severity_i_now_downgrade": [
+      "Finding 5 (original): Minor technical issues → still MINOR, appropriate"
+    ],
+    "findings_i_still_defend": [
+      "Finding 1 (original): Lemma 2.3 poset/chain issue → RETRACTION-WORTHY (still the core fatal flaw)",
+      "New finding from alternative review: density claim in Theorem 1.1 invalid → RETRACTION-WORTHY (I underemphasized this; the alternative reviewer identified it clearly)",
+      "New finding from alternative review: mixed intersections (x+U)∩(y+V') not addressed → RETRACTION-WORTHY (this is the exact point where Lemma 2.3 breaks, I missed specifying it)",
+      "New finding from alternative review: 'more than two' → MAJOR-REVISION (I overlooked this setup error)"
+    ],
+    "new_errors_noticed": [
+      "The density step in Theorem 1.1 (H contains U+span{x_i}) is not just underdeveloped but logically invalid as written; the alternative reviewer's point that H is a subgroup does not automatically make it contain U+L unless U and L are already subsets of H, which requires more justification.",
+      "The 'more than two' phrasing in Theorem 1.1's setup is mathematically imprecise—the intended condition is 'at least two linearly independent elements' for the construction to work.",
+      "The alternative reviewer's observation that the mixed intersections in Lemma 2.3 are ignored is a critical gap I should have included explicitly in my original finding #2."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "Both reviewers independently identified that Lemma 2.3, the key technical engine of the paper, contains multiple serious proof gaps that collectively render the main theorem (Theorem 1.1) unsupported as written. The most critical issues are: (1) the Zorn's lemma step lacks verification that unions of chains preserve the admissibility condition; (2) the contradiction argument fails because mixed intersections between translates of U and translates of V' are declared empty without proof; (3) the density argument in Theorem 1.1 that connects Lemma 2.3 to the extension machinery is logically incomplete. After reflection, both reviewers converged on the assessment that Lemma 2.3 is fundamentally broken as written. However, applying the key test carefully: the errors are proof-level failures rather than demonstrations that the theorem is false. The theorem might be salvageable with substantially different arguments or major corrections. The question is whether the paper as written supports its conclusions — it does not. I classify the most critical cluster of issues as RETRACTION-WORTHY because the central claim simply has no valid proof behind it, and multiple independent steps would need to be repaired simultaneously.",
+    "findings": [
+      {
+        "finding": "The Zorn's lemma application in Lemma 2.3 is unjustified: the authors do not verify that the union of a chain of open neighborhoods satisfying the pairwise disjoint-translate condition still satisfies that condition. Since the disjointness property is not obviously preserved under arbitrary unions, the existence of a maximal element in the poset is unsupported.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.85,
+        "justification": "Without a valid maximal element, the entire contradiction argument in Lemma 2.3 collapses, and with it the density result needed for Theorem 1.1. Both reviewers flagged this after reflection. The concern is substantive: in general, taking unions of open sets with pairwise-disjoint translates can break the disjointness condition. This is not a presentation issue but a foundational gap in the proof architecture.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "In the contradiction step of Lemma 2.3, the mixed intersections (x+U)∩(y+V') and (x+V')∩(y+U) for distinct x,y in L are declared empty without any justification. The preceding argument only establishes disjointness among translates of U separately and among translates of V' separately, but does not address cross terms. Without this, the claim that W = U ∪ V' belongs to the poset P is unproven, and the maximality contradiction fails.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.9,
+        "justification": "This is the exact point where Lemma 2.3's proof breaks down most concretely. Reviewer A initially rated this RETRACTION-WORTHY and downgraded to MAJOR-REVISION on reflection, while Reviewer B upgraded their related finding to RETRACTION-WORTHY. The gap is not a matter of missing explanation — there is no argument at all for why these intersections vanish, and it is not obvious they do. Since this is the crux of the only lemma supporting the main theorem, RETRACTION-WORTHY is appropriate.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The expression '(x+V')+(y+V')=∅' in Lemma 2.3 is mathematically false as written (Minkowski sum of nonempty sets is nonempty). The intended statement is presumably '(x+V')∩(y+V')=∅'. While this appears to be a typo, it occurs at a critical juncture and contributes to the overall unreliability of the proof.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Both reviewers identified this. It is almost certainly a notational error rather than a conceptual one, but combined with the substantive gap about mixed intersections, it indicates the proof was not carefully checked. Alone it would be MINOR; in context of the surrounding logical failures it rises to MAJOR-REVISION.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The density argument in Theorem 1.1 is logically incomplete. The authors claim H is dense because it contains U+span{x_i}, but the connection between 'G\\(L+U) has empty interior' (from Lemma 2.3) and 'H contains a dense subset' is not properly established. The subgroup closure needed to conclude H ⊇ U+L is not stated, and the logical chain from Lemma 2.3's output to density of H is confused.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Both reviewers flagged this. On reflection, Reviewer A noted this might be repairable if Lemma 2.3 were fixed, since H is a subgroup containing both U and L. The gap is real but potentially fixable with a brief argument. However, since Lemma 2.3 itself is broken, the entire chain fails regardless.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Lemma 2.2 claims that extending both φ and φ^{-1} from a dense subgroup to G yields mutually inverse continuous homomorphisms, hence a topological automorphism. However, the proof does not verify that the extension of φ^{-1} is indeed the inverse of the extension of φ, nor that the resulting bijective continuous homomorphism is automatically open. In Polish group settings, a bijective continuous homomorphism is a homeomorphism by the open mapping theorem, but this theorem needs to be invoked explicitly.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.65,
+        "justification": "Reviewer B flagged this and upgraded to RETRACTION-WORTHY, while Reviewer A considered it likely standard. The open mapping theorem for Polish groups does apply here, making this more of an exposition gap than a fatal flaw. If φ extends to a continuous group homomorphism and φ^{-1} extends to a continuous group homomorphism, these extensions are indeed mutual inverses by density and continuity. So this is a real gap in the written argument but almost certainly fixable. MAJOR-REVISION rather than RETRACTION-WORTHY.",
+        "source": "prover_b",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The continuity verification for φ on H is too terse. The proof claims φ(U∩V) = U∩V because φ fixes Y pointwise and U∩V ⊆ span(Y), but this containment is not argued. The proof does not address continuity at points other than 0 or show φ^{-1} is continuous on H.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.6,
+        "justification": "Both reviewers noted this. Reviewer A kept it MINOR while Reviewer B upgraded to RETRACTION-WORTHY. The truth is likely in between: for a group homomorphism, continuity at 0 implies continuity everywhere, and if H has a direct-sum decomposition with φ acting as identity on one summand, continuity at 0 may follow. But the argument as written is insufficient. MAJOR-REVISION is appropriate since the gap could be filled if the underlying claim is true.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Theorem 1.1 begins by choosing 'more than two linearly independent elements' from G, but this is not justified from the hypothesis that G has more than two elements. For a Boolean group of order 4 (= Z_2^2), only two linearly independent elements exist. The intended condition appears to be 'at least two.'",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "Reviewer A identified this clearly. It is a genuine mathematical inaccuracy in the theorem's setup. For Polish groups (which are either finite or have cardinality continuum), the finite case may need separate treatment. The error is likely repairable but requires care.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The inference in Lemma 2.3 from V+L ⊆ F_L to 'x+V ⊆ V for every x∈L' is under-justified. While plausible via the definition of V as the interior of F_L and translation being a homeomorphism, the argument is not spelled out.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers agree this is likely repairable with a standard argument. It does not independently threaten the conclusions.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The claim that every countable Boolean Polish group is discrete is stated without proof or citation. While true (a countable completely metrizable space has isolated points by Baire category, and a countable T1 topological group with an isolated point is discrete), it should be justified.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Standard result. Does not threaten the main conclusions.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Peripheral claims about Aut(G) carrying a Polish topology and having cardinality continuum are asserted without proof.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "These are side remarks not central to the main theorem.",
+        "source": "prover_a",
+        "survived_reflection": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 15741,
+    "duration_s": 134.22,
+    "n_api_calls": 19,
+    "cost_usd": 1.0676,
+    "total_input_tokens": 110693,
+    "total_output_tokens": 28232,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 12294,
+        "output_tokens": 1269,
+        "cost_usd": 0.043425,
+        "duration_s": 25.93,
+        "label": "2408.04316v2/b3plus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 12294,
+        "output_tokens": 1403,
+        "cost_usd": 0.044765,
+        "duration_s": 27.87,
+        "label": "2408.04316v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 11395,
+        "output_tokens": 1172,
+        "cost_usd": 0.00436585,
+        "duration_s": 15.92,
+        "label": "2408.04316v2/b3plus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4863,
+        "output_tokens": 1651,
+        "cost_usd": 0.0286675,
+        "duration_s": 33.07,
+        "label": "2408.16162v2/b3plus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 11395,
+        "output_tokens": 1304,
+        "cost_usd": 0.00451105,
+        "duration_s": 17.91,
+        "label": "2408.04316v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2911,
+        "output_tokens": 842,
+        "cost_usd": 0.0156975,
+        "duration_s": 17.22,
+        "label": "2408.04316v2/b3plus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3025,
+        "output_tokens": 2839,
+        "cost_usd": 0.0359525,
+        "duration_s": 50.94,
+        "label": "2407.19323v3/b3plusplus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4514,
+        "output_tokens": 1319,
+        "cost_usd": 0.0026696800000000002,
+        "duration_s": 16.87,
+        "label": "2408.16162v2/b3plus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2921,
+        "output_tokens": 618,
+        "cost_usd": 0.0014684700000000001,
+        "duration_s": 8.2,
+        "label": "2408.04316v2/b3plus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3068,
+        "output_tokens": 1049,
+        "cost_usd": 0.00198226,
+        "duration_s": 15.05,
+        "label": "2407.19323v3/b3plusplus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3566,
+        "output_tokens": 1185,
+        "cost_usd": 0.020765,
+        "duration_s": 24.59,
+        "label": "2408.16162v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3510,
+        "output_tokens": 776,
+        "cost_usd": 0.0018013000000000003,
+        "duration_s": 10.44,
+        "label": "2408.16162v2/b3plus/reflection_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 4990,
+        "output_tokens": 1884,
+        "cost_usd": 0.21615,
+        "duration_s": 34.64,
+        "label": "2408.04316v2/b3plus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3221,
+        "output_tokens": 2661,
+        "cost_usd": 0.0346625,
+        "duration_s": 49.37,
+        "label": "2408.04316v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3220,
+        "output_tokens": 967,
+        "cost_usd": 0.0019331,
+        "duration_s": 12.35,
+        "label": "2408.04316v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4863,
+        "output_tokens": 1152,
+        "cost_usd": 0.0236775,
+        "duration_s": 23.52,
+        "label": "2408.16162v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7805,
+        "output_tokens": 2455,
+        "cost_usd": 0.3012,
+        "duration_s": 51.7,
+        "label": "2407.19323v3/b3plusplus/arbiter"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4514,
+        "output_tokens": 1199,
+        "cost_usd": 0.0025376800000000005,
+        "duration_s": 16.16,
+        "label": "2408.16162v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 6324,
+        "output_tokens": 2487,
+        "cost_usd": 0.281385,
+        "duration_s": 49.24,
+        "label": "2408.16162v2/b3plus/arbiter"
+      }
+    ]
+  }
+}

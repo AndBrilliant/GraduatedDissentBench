@@ -1,0 +1,551 @@
+{
+  "condition": "B3PLUSPLUS",
+  "paper_id": "2405.05635v2",
+  "verdict": "flagged",
+  "confidence": 0.95,
+  "reasoning": "Both reviewers independently identified multiple serious, overlapping flaws in the proof of the main result (Proposition 3.9). The key question is whether these flaws are RETRACTION-WORTHY (the central conclusion cannot be supported) or MAJOR-REVISION (the proof is broken but the result might be salvageable with substantial rework). After careful consideration: the paper presents a single proof of a single main theorem, and that proof chain is broken at multiple independent points — the directed system construction, the heart-theoretic embedding argument, and the final identification of the torsionfree class. While any one of these might conceivably be repaired, the accumulation of independent fundamental gaps means the paper as submitted provides essentially no valid proof of its central claim. However, the key test asks whether the paper's conclusions CANNOT be supported by the data/arguments as presented, not whether they might be true via some future proof. The proof as written is fundamentally broken at multiple critical junctures. The directed system construction is not merely imprecise but mathematically invalid (a tree does not automatically yield a directed system with coherent transition maps, and the paper explicitly disclaims the need for compatibility checks). The final step inverts the logical burden by showing only one inclusion when two are needed. These are not gaps that can be filled by 'additional arguments' — they require a completely different proof strategy. I classify the two most critical issues as RETRACTION-WORTHY because the proof as presented is fundamentally broken at its core, while noting that the theorem itself is not shown to be false — it is simply unproven.",
+  "findings": [
+    {
+      "finding": "The construction of a directed system from a spanning tree of the Hasse quiver in Proposition 3.9 is mathematically invalid. A spanning tree does not define a directed/filtered index category, and the paper's explicit claim that 'we don't have any compatibility condition to check on the maps as the underlying graph is a tree' is false. A direct limit requires a directed indexing category with coherent transition maps for all composable pairs. Without a properly defined directed system, the central object F (whose existence drives the entire main proof) is not well-defined.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers flag this as the most critical error. Reviewer A calls it MAJOR-REVISION on the grounds that the result might be salvageable by a different construction, but Reviewer B correctly argues that this is not a mere gap in exposition — it is an error in the definition of a fundamental categorical construction. The paper explicitly asserts that no compatibility check is needed, which is mathematically wrong. The direct limit F is the sole vehicle for the main theorem's proof, and without it the entire argument collapses. While a different proof strategy might exist, the proof as presented is fundamentally broken at this step. Under the key test: if confirmed, this finding alone means the paper's central conclusion is not supported by the argument as given, which is retraction-worthy.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The final step of Proposition 3.9 — concluding f = F(B) ∩ Λ-mod from Theorem 2.5 — is a non-sequitur. The argument at best establishes that simp(f) ⊆ F(B), which gives f = filt(simp(f)) ⊆ F(B) ∩ Λ-mod. The reverse inclusion — that every finite-dimensional module in F(B) lies in f — is the substantive content of the theorem and is entirely unproven. This is not a minor gap but a missing half of the main claimed equality.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.88,
+      "justification": "Both reviewers identify this independently. Reviewer A rates it MAJOR-REVISION; Reviewer B rates it RETRACTION-WORTHY and strengthens this in reflection by noting the logical inversion. The missing inclusion is not a detail that can be filled in by citing a known result — it is the core content of the theorem being proved. The paper provides no argument whatsoever for this direction. Combined with the directed system failure, the main theorem has no valid proof at any stage. Under the key test: the central conclusion is not supported.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Lemma 3.7's proof that F embeds into a torsionfree almost-torsion module B is flawed at multiple levels: (1) the claim that F is finitely generated in the HRS heart because it is an epimorphic image of a finite-dimensional module M conflates module-theoretic finite-dimensionality with finite presentation in a Grothendieck abelian category (the heart); (2) the claim that 'a non-zero map F → S must be a monomorphism, by simplicity of F' conflates the lim f-simple property with categorical simplicity in the heart or the module category.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers flag both sub-issues. The finite generation/presentation conflation is a genuine category-theoretic error, and the simplicity conflation is a logical error. Together they break the route from F to the large brick B, which is essential for the main theorem. However, alternative approaches to constructing or embedding into a large brick might exist (e.g., using different properties of the heart or different theorems about torsionfree classes). Since I have already classified two upstream errors as RETRACTION-WORTHY, and since this issue might conceivably be bypassed by a substantially different argument, MAJOR-REVISION is appropriate here to avoid double-counting the retraction rationale.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The claim that the Hasse quiver of the poset of f-simples is connected does not follow from directedness of the poset. Directedness guarantees upper bounds for pairs but does not imply that the covering-relation graph is connected. Since the spanning tree construction in Proposition 3.9 depends on connectivity of this graph, this is an additional independent gap upstream of the directed system construction.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Reviewer B identifies this explicitly; Reviewer A acknowledges it in reflection as a gap they should have flagged separately. The issue is real but might be addressable with a more careful combinatorial argument about the structure of the monobrick poset. It compounds the directed system problem but is somewhat subordinate to it.",
+      "source": "prover_b",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Lemma 3.6 reduces the claim 'every proper quotient of F is torsion' to checking only quotients of the form F/f(S) where S is simple and f: S → F is nonzero. This reduction is nontrivial and unjustified. Proving a property for all proper quotients from a property of maximal quotients requires arguments about existence of maximal submodules and closure properties that are not supplied.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "Reviewer A identifies this; Reviewer B acknowledges it in reflection. The reduction is not obviously wrong but requires proof. Since it feeds into the lim f-simple property of the colimit object, failure here would cascade. However, the reduction might be straightforwardly provable using standard module-theoretic facts about artinian modules, so MAJOR-REVISION is appropriate.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Proposition 2.9 ('only if' direction): the proof that non-directedness of the monobrick implies the existence of B1, B2 with disjoint upper sets B1↑, B2↑ is imprecise. Non-directedness only guarantees no common upper bound, not disjointness of strict upper sets. The notation is ambiguous about reflexivity, and the argument depends on this distinction.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.7,
+      "justification": "Reviewer A flags this; Reviewer B acknowledges it in reflection. Proposition 2.9 is foundational for the entire paper's framework. The issue may be fixable by clarifying definitions, but as stated the proof has a real gap. Since the proposition characterizes join-irreducibility in terms of directedness, an error here affects the paper's conceptual setup.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Corollary 2.6 asserts without proof that an f-simple B in filtcogen(v ∪ w) must lie in cogen(v ∪ w), claiming 'f-simples are not filtered by other torsionfree modules.' This requires justification.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.8,
+      "justification": "Reviewer A flags this as MINOR, noting it is likely straightforward from the definition. This is a local proof-compression issue that does not independently threaten the main conclusion.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Mismatch in ambient assumptions between introduction (artinian rings), notation section (finite-dimensional algebras over a field), and Section 3 (left noetherian rings). The paper does not clearly state standing hypotheses or verify that transitions between settings are valid.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers note this. Finite-dimensional algebras over a field are both artinian and noetherian, so the cited results likely apply, but the paper should be explicit. This is an expository issue, not a mathematical error.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Incomplete bibliographic data (multiple '[DATE]' entries, missing references, inconsistent citation numbering).",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers note this. It hinders verification but does not affect correctness.",
+      "source": "both",
+      "survived_reflection": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 2,
+    "MAJOR-REVISION": 4,
+    "MINOR": 3
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "The manuscript contains several serious logical and methodological gaps in the proof chain leading to the main result. The most important issue is that Proposition 3.9, the central theorem-level claim of the note, relies on unproved or incorrect constructions of a directed system indexed by a spanning tree / Hasse quiver and on a final identification of the torsionfree class with F(B)∩mod that is not actually established from the preceding lemmas. There are also substantial concerns about Lemmas 3.6 and 3.7, where category-theoretic arguments in the HRS heart appear incomplete or incorrect. These issues could invalidate the main conclusion as stated, though they are not obviously impossible to repair without a full reworking; hence major revision rather than definite retraction is the best classification overall.",
+    "findings": [
+      {
+        "finding": "The proof of Proposition 3.9 constructs a 'directed system' of f-simple modules from a spanning tree of the Hasse quiver, but a tree-shaped quiver does not by itself define a directed index category. The statement 'we don't have any compatibility condition to check on the maps as the underlying graph is a tree' is not sufficient: to form a direct limit one needs a directed poset/category and coherent transition maps for every comparable pair. A spanning tree of a connected graph need not be directed in the sense required for filtered colimits, and the proof does not define the indexing preorder or verify filteredness/coherence.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If confirmed, the central construction of the module F in Proposition 3.9 is not valid as written, so the main theorem is unsupported. This directly affects the paper's primary conclusion, but it may be repairable by replacing the construction with a genuine directed subsystem or another colimit argument."
+      },
+      {
+        "finding": "The final step of Proposition 3.9, 'So we obtain that f = F(B)∩Λ-mod by Theorem 2.5', is not justified. From the argument, one only gets that every f-simple embeds into B (via F⊆B), so simp(f)⊆F(B)∩Λ-mod. To conclude equality of torsionfree classes, one must show that every finite-dimensional module in F(B) lies in f, or equivalently that the f-simples cogenerating F(B)∩Λ-mod are exactly simp(f). This inclusion is not proved.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is a direct gap in the derivation of the main claimed characterization. If unfixable, the main theorem does not follow. However, the claim might still be salvageable with an additional argument, so this is major revision rather than automatic retraction."
+      },
+      {
+        "finding": "Lemma 3.7 claims that a lim f-simple module F is finitely generated in the HRS heart because some nonzero finite-dimensional submodule M⊆F gives an epimorphism M→F in the heart. Even if that epimorphism is valid, the argument silently assumes M is a finitely presented object of the heart. This requires justification from Theorem 3.2 (that objects of Db(mod) in the heart are the finitely presented ones), but the manuscript does not verify that the module M, viewed as a stalk complex, is indeed an object of the heart in the relevant way and finitely presented there. The proof is too compressed at a delicate categorical point.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The existence of the 'large brick' B is obtained through this lemma. If the finite-generation-in-the-heart step fails, the simple quotient argument collapses. This threatens the main result, but the issue may be reparable with a careful heart-theoretic proof."
+      },
+      {
+        "finding": "Lemma 3.7 ends with 'We therefore have a non-zero map F→S which must be a monomorphism, by simplicity of F.' But F is only assumed lim f-simple, i.e. every proper quotient is torsion; it is not established that every nonzero morphism from F to another object in lim f is monic, nor that F is simple in the heart. The proof conflates module-theoretic 'almost torsionfree/simple-quotient behavior' with categorical simplicity or brick-like behavior.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is a substantive logical error in the step producing an embedding F↪B. Without the embedding, the subsequent argument that all f-simples lie in F(B) breaks down. This undermines the main theorem but could potentially be fixed with an alternative argument."
+      },
+      {
+        "finding": "Lemma 3.6 reduces the claim 'every proper quotient of F is torsion' to checking only maximal quotients F/f(S) where S is simple and f:S→F is nonzero. The manuscript does not justify this reduction. In general, proving all proper quotients lie in a torsion class from information about maximal quotients requires an argument using existence of maximal submodules and closure properties; this is not supplied.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If this reduction is invalid, Lemma 3.6 may fail, and Proposition 3.9 loses a key input. The conclusion could still be true with a corrected proof, so revision rather than retraction is appropriate."
+      },
+      {
+        "finding": "In Proposition 2.9 ('only if' direction), the proof claims that if the monobrick of f-simples is not directed, then there exist B1, B2 such that B1↑ and B2↑ are disjoint. Non-directedness only says there exist two elements with no common upper bound. The notation B1↑ := {B | B1 ≺ B} appears to exclude B1 itself, and the argument uses disjointness of these upper sets in a way that depends delicately on whether reflexivity is included. As written, the proof is imprecise and potentially incorrect.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Proposition 2.9 is foundational for the main theorem because it identifies join-irreducibility with directedness of f-simples. A flaw here affects the whole paper's setup. It may well be fixable by clarifying notation and proof details, but as stated it is a serious issue."
+      },
+      {
+        "finding": "Corollary 2.6 argues that if an f-simple B belongs to filtcogen(v∪w), then 'f-simples are not filtered by other torsionfree modules, thus it must be that B∈cogen(v∪w)'. This is asserted rather than proved. One needs a precise argument that an f-simple object cannot appear as a nontrivial extension of other objects from f, or equivalently that any filtration by f-objects must be trivial. That may be true, but the proof as written is not rigorous.",
+        "severity": "MINOR",
+        "justification": "This is an important local gap, but it is likely straightforward to repair using the definition of f-simple. It does not by itself force a change in conclusions if the missing argument is supplied."
+      },
+      {
+        "finding": "The manuscript states in Corollary 2.10 that 'being completely join irreducible is equivalent to the existence of a (finitely-generated) brick B such that f=filtcogen(B)'. Since the paper also works over artinian/finite-dimensional settings and later allows non-finitely generated bricks in the large module category, the finite-generation hypothesis and exact source of this equivalence should be cited carefully. As written, the proof relies on 'a standard computation' without enough detail.",
+        "severity": "MINOR",
+        "justification": "This is mainly a reporting/clarity problem and likely does not alter the core result if the cited theorem indeed supports it."
+      },
+      {
+        "finding": "There is a mismatch in ambient assumptions: the introduction/abstract speak about finitely generated modules over an artinian ring, but the notation section specializes to finite-dimensional algebras over a field. Later Section 3 uses results for left noetherian rings. The manuscript should clearly state the standing assumptions under which each theorem is applied and verify that all transitions are valid.",
+        "severity": "MINOR",
+        "justification": "This is mostly an expository consistency issue. It does not obviously invalidate the mathematics because finite-dimensional algebras are artinian and noetherian, but the assumptions should be made precise."
+      },
+      {
+        "finding": "Several references contain incomplete bibliographic data ('[DATE]'), and one citation numbering appears inconsistent with the theorem labels used in the text. This hinders verification of quoted results.",
+        "severity": "MINOR",
+        "justification": "This does not affect correctness of the claims themselves, but it impairs reviewability and should be corrected."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "The manuscript attempts to prove that every join-irreducible torsionfree class in Λ-mod is cogenerated by a single (possibly infinite-dimensional) brick. However, the proof of the main result (Proposition 3.9) contains several critical methodological flaws: an unjustified claim about the Hasse quiver being connected, a misuse of spanning trees to construct a directed system of monomorphisms without verifying compatibility conditions, and a non-sequitur in concluding that the constructed torsionfree class equals the cogeneration class of a large brick. These errors undermine the central conclusion and cannot be fixed by minor revisions.",
+    "findings": [
+      {
+        "finding": "The claim that the Hasse quiver of the poset of f-simples is connected does not follow from directedness. Directedness only guarantees an upper bound for any two elements, but does not imply that the underlying undirected graph of the Hasse quiver (covering relations) is connected. The proof uses the finite height of the poset below F3, but the Hasse quiver edges correspond to covering relations, and there is no guarantee that the paths from F1 to F3 and from F2 to F3 are composed of covering relations without gaps.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the graph is not connected, the construction of a spanning tree in the next paragraph is invalid, and the entire main proof collapses. However, the claim might be salvageable with additional arguments about the structure of the poset (e.g., using the fact that f-simples are bricks and the poset is a monobrick poset), so it does not definitively invalidate all possible conclusions."
+      },
+      {
+        "finding": "The construction of a directed system from a spanning tree introduces arbitrary choices of maps and has no compatibility condition. The text states 'we don't have any compatibility condition to check on the maps as the underlying graph is a tree' — this is false. A directed system indexed by a poset (the tree with the order inherited from the original poset) requires that for any composable pair of edges, the composition of the chosen maps must equal the map assigned to the composed edge. The tree structure does not automatically enforce this; one must define maps consistently along paths. No such consistency check is provided.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "Without a properly defined directed system, the direct limit F is not well-defined, and Lemma 3.6 cannot be applied. The central step of obtaining a lim→ f-simple that contains all f-simples is therefore unsubstantiated."
+      },
+      {
+        "finding": "Even if a directed system existed, Lemma 3.6 only guarantees that the limit F is lim→ f-simple, but Lemma 3.7 then asserts that F embeds into a torsionfree almost-torsion module B. However, Lemma 3.7's proof relies on the existence of a simple quotient S in the heart, which requires F to be finitely generated as an object of the heart. The argument that F is finitely generated because it is an epimorphic image of a finitely presented object (via a finite-dimensional submodule M) is flawed: the epimorphism in the heart from M to F (Lemma 3.3) requires that the cokernel of M→F is torsion, but that cokernel is N, which is indeed torsion. However, this only shows that in the heart, the map M→F is an epimorphism, not that F is finitely generated in the heart; it shows that F is a quotient of M in the heart, but M is a finite-dimensional module, not necessarily a finitely presented object of the heart. The heart's finitely presented objects are given by the bounded derived category of mod, and an arbitrary finite-dimensional module may not be in that intersection.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This breaks the step that F embeds into a torsionfree almost-torsion module B, which is essential for the final conclusion. However, it is possible that a more refined argument could salvage the embedding without appealing to finite generation in the heart."
+      },
+      {
+        "finding": "The final conclusion 'f = F(B) ∩ Λ-mod' does not follow from the preceding statements. The text says 'we obtain that f = F(B) ∩ Λ-mod by Theorem 2.5.' Theorem 2.5 states that f = filt(simp(f)). To deduce that f = F(B) ∩ Λ-mod, one would need to show that the f-simples are all submodules of B and that B cogenerates exactly the subcategory filt(simp(f)). Even if B contains all f-simples, it does not automatically cogenerate only those modules; B might cogenerate additional modules not in f. No argument is given for the other inclusion.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The central theorem of the paper is unproven; the claimed result is not supported by the provided reasoning."
+      },
+      {
+        "finding": "Minor reporting issues: the manuscript references Theorem 1.1 as [3, Theorem 1.0.5] but the reference list is incomplete; [3] is not included in the bibliography. Also, the graph theory Lemma 3.8 (spanning tree) is standard but the proof by Zorn's lemma is overkill and the statement about 'non-empty connected graph' is trivial; this is a minor distraction.",
+        "severity": "MINOR",
+        "justification": "These do not affect the logical correctness but reflect poor referencing and unnecessary exposition."
+      }
+    ]
+  },
+  "reflection_a": {
+    "defense_for_self": "I stand by my original calibration overall: the manuscript is seriously compromised, but the defects I identified are, in the main, proof gaps and invalid intermediate arguments rather than definitive demonstrations that the headline theorem is false. Under the journal-style severity rubric provided, that is exactly MAJOR-REVISION, not automatic RETRACTION-WORTHY, unless one can show that the central conclusion cannot be salvaged by any reasonable reworking. I cannot responsibly claim that stronger impossibility from the text alone.\n\nMy strongest defense is therefore twofold.\n\nFirst, the errors I identified are not cosmetic; they strike the spine of the argument. Proposition 3.9 depends on (i) constructing an object F as a filtered/direct limit over the poset/graph of f-simple modules, (ii) proving F is lim f-simple, (iii) embedding F into a large brick B via heart-theoretic arguments, and (iv) concluding f = F(B) ∩ mod. I flagged independent, theorem-level failures at steps (i), (ii), (iii), and (iv). So my assessment was already maximally serious short of saying the theorem is impossible.\n\nSecond, I did not upgrade those findings to RETRACTION-WORTHY because the errors, though fatal to the proof as written, are still of a type that could in principle be repaired by a substantially different argument. That distinction matters under the rubric. A broken colimit construction, an unjustified reduction in a lemma, or an invalid final identification do not by themselves prove the target statement false. They prove only that the present manuscript does not establish it. That is the textbook domain of MAJOR-REVISION.\n\nAgainst the other reviewer’s stronger framings:\n\n1. On the directed-system/spanning-tree issue: I agree this is one of the most serious defects in the paper. But I intentionally classified it MAJOR-REVISION rather than RETRACTION-WORTHY because the underlying mathematical aim is not obviously impossible. There may exist a genuine directed indexing category extracted from the poset, or a different filtered-colimit construction avoiding the spanning-tree language entirely. The present construction is invalid as written; that is enough to make the current proof fail. But invalid proof step is not the same as showing the theorem cannot be supported by any corrected proof. So MAJOR-REVISION is the strongest justified rating on the present record.\n\n2. On the final step f = F(B) ∩ mod: again, this is absolutely central and absolutely unsupported in the manuscript. My finding already says exactly that only one inclusion is established. But calling this RETRACTION-WORTHY would require more than noting a gap; it would require confidence that no additional argument could close it. I do not have that confidence. In this area, equalities of torsionfree classes are often repaired by proving closure under filtrations, identifying simple objects on both sides, or using an external characterization theorem more carefully. The paper does none of this, so the result is unproved; but unproved is not yet mathematically impossible.\n\n3. On Lemma 3.7 and the HRS heart: I deliberately treated these as MAJOR-REVISION because they attack the route to the large brick B. The proof plainly conflates several notions: finite generation in the heart, finite presentation, simplicity in the heart, and the lim f-simple condition in the module category. These are not minor slips. However, category-theoretic arguments in hearts are often salvageable with more careful use of cited theorems, provided the surrounding hypotheses really hold. So again, severe but not responsibly escalated to retraction.\n\n4. On Proposition 2.9 and the directedness/Hasse-quiver discussion: here too, I defend my MAJOR-REVISION rating. This proposition is foundational because it links join-irreducibility to directedness of the monobrick of f-simples. The proof as stated is imprecise enough that later arguments built on it become unstable. But the defect I identified is one of proof precision and possibly misuse of upward-closure notation, not a demonstrated false statement. That is major revision territory.\n\nSo the strongest case for my original ratings is: I did not undersell the problems. I identified multiple independent failures, each sufficient to block the main theorem as written. What I refused to do, correctly in my view, is overclaim impossibility where the manuscript shows invalidity but not refutation.\n\nPut differently: if confirmed, my major findings would require the paper to be rewritten at the level of its main proof, not merely patched locally. That is exactly why they are serious. But because I cannot show from the manuscript alone that the theorem itself must fail, MAJOR-REVISION remains the correct category under the provided key test.\n\nFor the specific findings:\n\n- Proposition 3.9 directed-system construction: I strongly defend MAJOR-REVISION. The construction of F is not valid because a spanning tree does not automatically furnish a filtered diagram or coherent transition maps. Since F is the central object used later, the main theorem is unsupported. But one can imagine replacing the indexing machinery entirely, so not yet retraction-worthy.\n\n- Proposition 3.9 final identification f = F(B) ∩ mod: I strongly defend MAJOR-REVISION. Only simp(f) ⊆ F(B) ∩ mod is even plausibly reached from the text; the converse inclusion is absent. This is a direct gap in the theorem’s proof. Still, the missing inclusion may be provable by a different argument, so I do not upgrade by default.\n\n- Lemma 3.7 finite generation in the heart: I strongly defend MAJOR-REVISION. The manuscript uses a delicate heart-theoretic step without justifying that the finite-dimensional module M is finitely presented as an object of the heart. Since this feeds the existence of the simple quotient and hence of B, it is essential. Yet this is still potentially fixable by a more careful appeal to the cited theorem.\n\n- Lemma 3.7 ‘nonzero map F → S must be mono by simplicity of F’: I strongly defend MAJOR-REVISION. This is a genuine logical error. lim f-simple is not the same as simple in the heart or simple in the module category, and the proof silently swaps these notions. This breaks the embedding F ↪ B. But again, an alternative route might exist.\n\n- Lemma 3.6 reduction to maximal quotients of the form F/f(S): I strongly defend MAJOR-REVISION. The reduction is nontrivial and unproved. If invalid, the lemma may simply fail. Since the lemma is used to obtain lim f-simplicity of the colimit object, the downstream effect is severe.\n\n- Proposition 2.9 non-directedness/disjoint upper sets: I defend MAJOR-REVISION. This is not merely notation pedantry; the proof appears to use a stronger property than non-directedness gives. Because Proposition 2.9 underwrites later use of directedness, this is structurally important.\n\n- Corollary 2.6 and Corollary 2.10: I defend MINOR. These are local proof-compression/reporting issues. They matter, but unlike the Proposition 3.9 chain they do not independently destroy the main theorem.\n\n- Ambient assumptions mismatch and bibliographic issues: I defend MINOR. These are real but not conclusion-changing on their own.\n\nIn short: my ratings were already severe where severity was justified. The other reviewer’s rhetoric confirms the gravity of the flaws, but does not compel upgrading unless one crosses the important line from ‘main proof invalid’ to ‘main theorem unsalvageable.’ The manuscript as submitted is not publishable; that is already captured by my flagged verdict and repeated MAJOR-REVISION findings.",
+    "severity_i_now_upgrade": [],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      "Finding 1 — Proposition 3.9 directed system from a spanning tree: MAJOR-REVISION. The construction does not define a filtered index category or coherent transition maps, so the direct limit object central to the proof is not properly built. This invalidates the proof as written but does not prove the theorem itself false.",
+      "Finding 2 — Proposition 3.9 final equality f = F(B) ∩ Λ-mod: MAJOR-REVISION. The manuscript does not prove the necessary reverse inclusion. This is a direct theorem-level gap, severe enough to block acceptance, but not enough by itself to show the claim can never be repaired.",
+      "Finding 3 — Lemma 3.7 finite generation in the HRS heart: MAJOR-REVISION. The proof moves too quickly from a finite-dimensional submodule M ⊆ F to finite generation/finite presentation of F in the heart, without verifying the needed categorical hypotheses. This threatens the existence of the simple quotient used later.",
+      "Finding 4 — Lemma 3.7 conflation of lim f-simple with categorical simplicity: MAJOR-REVISION. The inference that a nonzero map F → S is monic 'by simplicity of F' is unsupported and appears incorrect. This breaks the claimed embedding into the large brick.",
+      "Finding 5 — Lemma 3.6 reduction to quotients by images of simples: MAJOR-REVISION. The manuscript does not justify why checking only such maximal quotients suffices to conclude every proper quotient is torsion. Since this feeds the lim f-simple property of the constructed object, the issue is central.",
+      "Finding 6 — Proposition 2.9 non-directedness versus disjoint upper sets: MAJOR-REVISION. The proof seems to assume a stronger combinatorial consequence than non-directedness yields, and the notation around B↑ is not precise enough to sustain the argument. This affects a foundational proposition.",
+      "Finding 7 — Corollary 2.6 filtration/cogeneration step: MINOR. The point is underproved but likely repairable from the definition of f-simple and standard closure arguments.",
+      "Finding 8 — Corollary 2.10 standard computation / finite-generation phrasing: MINOR. This is mostly clarity and citation support, not a demonstrated mathematical failure.",
+      "Finding 9 — mismatch of standing assumptions: MINOR. Expository consistency problem, important to fix but not independently fatal.",
+      "Finding 10 — incomplete references and citation inconsistencies: MINOR. Reviewability issue, not a correctness issue."
+    ],
+    "new_errors_noticed": [
+      "The other reviewer correctly highlights an additional serious gap I did not state explicitly: the manuscript appears to infer connectedness of the Hasse quiver of the poset of f-simples from directedness, which is not automatic. Even if every pair has a common upper bound, one still needs an argument that the underlying cover graph is connected. This should have been listed separately as a MAJOR-REVISION issue because the spanning-tree construction depends on it.",
+      "Relatedly, even if the poset is connected as an abstract comparability graph, the passage to the Hasse quiver requires cover relations, and the proof does not explain why the needed paths can be realized by covers rather than arbitrary comparabilities. That is another structural gap upstream of Proposition 3.9.",
+      "There is a broader coherence problem in Section 3: several arguments slide between module-category statements, heart-category statements, and derived-category identifications without restating hypotheses each time. This is not just exposition; it may conceal additional missing lemmas about when stalk complexes of modules lie in the heart and when quotient arguments in Mod correspond to epimorphisms in the heart."
+    ]
+  },
+  "reflection_b": {
+    "defense_for_self": "I argue that my initial severity ratings are justified and in some cases understated. The two RETRACTION-WORTHY findings (the directed system construction and the final conclusion) are genuinely fundamental because they directly attack the core logical chain of the main result (Proposition 3.9). The other reviewer's MAJOR-REVISION framing for these same issues is too lenient: they acknowledge the construction is 'not valid as written' and that the final step is 'not justified,' but then claim these 'may be repairable' with additional arguments. However, the paper's central claim—that every join-irreducible torsionfree class is cogenerated by a single brick—depends entirely on this construction and this deduction. The errors are not mere gaps in exposition; they are category-theoretic non-sequiturs (e.g., claiming a tree automatically yields a directed system without compatibility) and a missing inclusion that inverts the logical direction of Theorem 2.5. These are not salvageable by 'additional arguments' without rewriting the proof from scratch, which is the definition of retraction-worthy. My MAJOR-REVISION findings (Hasse quiver connectivity, Lemma 3.7's finite generation, Lemma 3.6's reduction) are correctly classified because they are serious but might potentially be fixed by a different approach or more careful reasoning, even if the current text fails. The other reviewer's MAJOR-REVISION ratings for the same issues are consistent with mine, though they underrate the tree/directed system problem.",
+    "severity_i_now_upgrade": [
+      "Finding 4 (final conclusion not following) should be upgraded from RETRACTION-WORTHY to even more severe: it is not just that the conclusion doesn't follow—the reasoning commits a logical inversion. Theorem 2.5 says f = filt(simp(f)). To get f = F(B) ∩ Λ-mod, one would need to prove that F(B) ∩ Λ-mod = filt(simp(f)). The paper only attempts to show simp(f) ⊆ F(B), which gives filt(simp(f)) ⊆ F(B) ∩ Λ-mod. The reverse inclusion (that every finite-dimensional module in F(B) lies in f) is not only unproven but is actually the substantive claim of the theorem. This is a circularity, not a gap. That makes it definitively retraction-worthy, not 'major-revision'.",
+      "Finding 3 (Lemma 3.7 finite generation) should be upgraded from MAJOR-REVISION to RETRACTION-WORTHY. The other reviewer correctly notes that even if M→F is an epimorphism in the heart, M being finite-dimensional does not guarantee it is finitely presented in the heart. But the deeper problem is: the heart is a Grothendieck category, and finite generation there is defined differently from module finite generation. The paper provides no argument that M (viewed as a stalk complex) is compact in the heart. Without this, the entire embedding of F into an almost-torsion module B collapses. Since B is the central object that supposedly cogenerates the class, losing Lemma 3.7 means the whole proof structure fails. This is not a 'may be reparable' issue—it's a fundamental category-theoretic oversight that requires a completely different approach.",
+      "Finding 2 (directed system) remains RETRACTION-WORTHY and I now consider it even more egregious. The other reviewer calls this 'MAJOR-REVISION' but then admits 'if confirmed, the central construction of the module F in Proposition 3.9 is not valid as written'. The phrase 'as written' is misleading: the problem is not that the description is imprecise—it's that the construction is mathematically impossible without additional data. A tree does not define a directed system; directedness requires an indexing category where every pair of objects has an upper bound, and compatibility conditions must hold for all composable morphisms. The paper asserts the opposite ('we don't have any compatibility condition'). This is not a gap—it's an error in the definition of a basic categorical construction. No amount of 'additional argument' can salvage a direct limit that was never properly defined."
+    ],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      "Finding 1 (Hasse quiver connectivity): I stand by MAJOR-REVISION. The other reviewer does not address this directly but their findings imply they accept it as a real issue. The connectivity claim is not obviously false (the poset might be connected via non-covering relations, but the argument uses covering relations specifically), so it's a gap that could potentially be fixed with a different combinatorial argument. MAJOR-REVISION is correct.",
+      "Finding 2 (directed system/tree): I stand by RETRACTION-WORTHY as argued above. The other reviewer's own analysis calls this a 'central construction' that is 'not valid as written'—that is a retraction-level error.",
+      "Finding 3 (Lemma 3.7 finite generation): I stand by MAJOR-REVISION as my original rating, but I now support upgrading to RETRACTION-WORTHY as argued above.",
+      "Finding 4 (final conclusion): I stand by RETRACTION-WORTHY as my original rating, and I now consider it even more severe.",
+      "Finding 5 (minor issues): I stand by MINOR. These do not affect the logical argument.",
+      "The other reviewer's additional findings (Proposition 2.9, Corollary 2.6, Corollary 2.10, ambient assumptions, references) are mostly MAJOR-REVISION or MINOR and are reasonable additions. I did not flag them initially, but they are valid concerns."
+    ],
+    "new_errors_noticed": [
+      "I missed the issue with Lemma 3.6's reduction of proper quotients to maximal quotients. The other reviewer correctly notes that this reduction requires justification from module theory (existence of maximal submodules, closure under extensions) that is not provided. This is another MAJOR-REVISION issue that further weakens the proof.",
+      "I missed the imprecision in Proposition 2.9 regarding the notation B↑ and whether it is reflexive. This is a foundational error that affects the characterization of join-irreducibility. If the 'only if' direction fails, the entire motivation for the main result collapses. This is potentially RETRACTION-WORTHY if it cannot be fixed by a simple clarification, but I conservatively agree with the other reviewer's MAJOR-REVISION rating pending further analysis.",
+      "I missed the mismatch in ambient assumptions (artinian vs. finite-dimensional vs. noetherian). While likely fixable, it creates a risk that some cited results do not apply in the intended context. This is MINOR-to-MAJOR depending on whether any specific theorem is actually misapplied."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "Both reviewers independently identified multiple serious, overlapping flaws in the proof of the main result (Proposition 3.9). The key question is whether these flaws are RETRACTION-WORTHY (the central conclusion cannot be supported) or MAJOR-REVISION (the proof is broken but the result might be salvageable with substantial rework). After careful consideration: the paper presents a single proof of a single main theorem, and that proof chain is broken at multiple independent points — the directed system construction, the heart-theoretic embedding argument, and the final identification of the torsionfree class. While any one of these might conceivably be repaired, the accumulation of independent fundamental gaps means the paper as submitted provides essentially no valid proof of its central claim. However, the key test asks whether the paper's conclusions CANNOT be supported by the data/arguments as presented, not whether they might be true via some future proof. The proof as written is fundamentally broken at multiple critical junctures. The directed system construction is not merely imprecise but mathematically invalid (a tree does not automatically yield a directed system with coherent transition maps, and the paper explicitly disclaims the need for compatibility checks). The final step inverts the logical burden by showing only one inclusion when two are needed. These are not gaps that can be filled by 'additional arguments' — they require a completely different proof strategy. I classify the two most critical issues as RETRACTION-WORTHY because the proof as presented is fundamentally broken at its core, while noting that the theorem itself is not shown to be false — it is simply unproven.",
+    "findings": [
+      {
+        "finding": "The construction of a directed system from a spanning tree of the Hasse quiver in Proposition 3.9 is mathematically invalid. A spanning tree does not define a directed/filtered index category, and the paper's explicit claim that 'we don't have any compatibility condition to check on the maps as the underlying graph is a tree' is false. A direct limit requires a directed indexing category with coherent transition maps for all composable pairs. Without a properly defined directed system, the central object F (whose existence drives the entire main proof) is not well-defined.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers flag this as the most critical error. Reviewer A calls it MAJOR-REVISION on the grounds that the result might be salvageable by a different construction, but Reviewer B correctly argues that this is not a mere gap in exposition — it is an error in the definition of a fundamental categorical construction. The paper explicitly asserts that no compatibility check is needed, which is mathematically wrong. The direct limit F is the sole vehicle for the main theorem's proof, and without it the entire argument collapses. While a different proof strategy might exist, the proof as presented is fundamentally broken at this step. Under the key test: if confirmed, this finding alone means the paper's central conclusion is not supported by the argument as given, which is retraction-worthy.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The final step of Proposition 3.9 — concluding f = F(B) ∩ Λ-mod from Theorem 2.5 — is a non-sequitur. The argument at best establishes that simp(f) ⊆ F(B), which gives f = filt(simp(f)) ⊆ F(B) ∩ Λ-mod. The reverse inclusion — that every finite-dimensional module in F(B) lies in f — is the substantive content of the theorem and is entirely unproven. This is not a minor gap but a missing half of the main claimed equality.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.88,
+        "justification": "Both reviewers identify this independently. Reviewer A rates it MAJOR-REVISION; Reviewer B rates it RETRACTION-WORTHY and strengthens this in reflection by noting the logical inversion. The missing inclusion is not a detail that can be filled in by citing a known result — it is the core content of the theorem being proved. The paper provides no argument whatsoever for this direction. Combined with the directed system failure, the main theorem has no valid proof at any stage. Under the key test: the central conclusion is not supported.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Lemma 3.7's proof that F embeds into a torsionfree almost-torsion module B is flawed at multiple levels: (1) the claim that F is finitely generated in the HRS heart because it is an epimorphic image of a finite-dimensional module M conflates module-theoretic finite-dimensionality with finite presentation in a Grothendieck abelian category (the heart); (2) the claim that 'a non-zero map F → S must be a monomorphism, by simplicity of F' conflates the lim f-simple property with categorical simplicity in the heart or the module category.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers flag both sub-issues. The finite generation/presentation conflation is a genuine category-theoretic error, and the simplicity conflation is a logical error. Together they break the route from F to the large brick B, which is essential for the main theorem. However, alternative approaches to constructing or embedding into a large brick might exist (e.g., using different properties of the heart or different theorems about torsionfree classes). Since I have already classified two upstream errors as RETRACTION-WORTHY, and since this issue might conceivably be bypassed by a substantially different argument, MAJOR-REVISION is appropriate here to avoid double-counting the retraction rationale.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The claim that the Hasse quiver of the poset of f-simples is connected does not follow from directedness of the poset. Directedness guarantees upper bounds for pairs but does not imply that the covering-relation graph is connected. Since the spanning tree construction in Proposition 3.9 depends on connectivity of this graph, this is an additional independent gap upstream of the directed system construction.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Reviewer B identifies this explicitly; Reviewer A acknowledges it in reflection as a gap they should have flagged separately. The issue is real but might be addressable with a more careful combinatorial argument about the structure of the monobrick poset. It compounds the directed system problem but is somewhat subordinate to it.",
+        "source": "prover_b",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Lemma 3.6 reduces the claim 'every proper quotient of F is torsion' to checking only quotients of the form F/f(S) where S is simple and f: S → F is nonzero. This reduction is nontrivial and unjustified. Proving a property for all proper quotients from a property of maximal quotients requires arguments about existence of maximal submodules and closure properties that are not supplied.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "Reviewer A identifies this; Reviewer B acknowledges it in reflection. The reduction is not obviously wrong but requires proof. Since it feeds into the lim f-simple property of the colimit object, failure here would cascade. However, the reduction might be straightforwardly provable using standard module-theoretic facts about artinian modules, so MAJOR-REVISION is appropriate.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Proposition 2.9 ('only if' direction): the proof that non-directedness of the monobrick implies the existence of B1, B2 with disjoint upper sets B1↑, B2↑ is imprecise. Non-directedness only guarantees no common upper bound, not disjointness of strict upper sets. The notation is ambiguous about reflexivity, and the argument depends on this distinction.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.7,
+        "justification": "Reviewer A flags this; Reviewer B acknowledges it in reflection. Proposition 2.9 is foundational for the entire paper's framework. The issue may be fixable by clarifying definitions, but as stated the proof has a real gap. Since the proposition characterizes join-irreducibility in terms of directedness, an error here affects the paper's conceptual setup.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Corollary 2.6 asserts without proof that an f-simple B in filtcogen(v ∪ w) must lie in cogen(v ∪ w), claiming 'f-simples are not filtered by other torsionfree modules.' This requires justification.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.8,
+        "justification": "Reviewer A flags this as MINOR, noting it is likely straightforward from the definition. This is a local proof-compression issue that does not independently threaten the main conclusion.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Mismatch in ambient assumptions between introduction (artinian rings), notation section (finite-dimensional algebras over a field), and Section 3 (left noetherian rings). The paper does not clearly state standing hypotheses or verify that transitions between settings are valid.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers note this. Finite-dimensional algebras over a field are both artinian and noetherian, so the cited results likely apply, but the paper should be explicit. This is an expository issue, not a mathematical error.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Incomplete bibliographic data (multiple '[DATE]' entries, missing references, inconsistent citation numbering).",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers note this. It hinders verification but does not affect correctness.",
+        "source": "both",
+        "survived_reflection": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 16698,
+    "duration_s": 184.16,
+    "n_api_calls": 27,
+    "cost_usd": 1.7486,
+    "total_input_tokens": 120686,
+    "total_output_tokens": 42220,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3902,
+        "output_tokens": 2604,
+        "cost_usd": 0.035795,
+        "duration_s": 46.69,
+        "label": "2405.03612v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3058,
+        "output_tokens": 1140,
+        "cost_usd": 0.019045,
+        "duration_s": 21.81,
+        "label": "2405.05635v2/b3plus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3872,
+        "output_tokens": 1081,
+        "cost_usd": 0.02049,
+        "duration_s": 22.76,
+        "label": "2405.03612v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3054,
+        "output_tokens": 731,
+        "cost_usd": 0.00162868,
+        "duration_s": 10.2,
+        "label": "2405.05635v2/b3plus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3893,
+        "output_tokens": 1281,
+        "cost_usd": 0.00246021,
+        "duration_s": 15.57,
+        "label": "2405.03612v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4961,
+        "output_tokens": 1806,
+        "cost_usd": 0.0304625,
+        "duration_s": 35.3,
+        "label": "2405.05635v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3863,
+        "output_tokens": 1387,
+        "cost_usd": 0.00256871,
+        "duration_s": 17.8,
+        "label": "2405.03612v2/b3plus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4773,
+        "output_tokens": 1236,
+        "cost_usd": 0.0026483100000000005,
+        "duration_s": 16.07,
+        "label": "2405.05635v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 5666,
+        "output_tokens": 1776,
+        "cost_usd": 0.21819,
+        "duration_s": 36.69,
+        "label": "2405.05635v2/b3plus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 1355,
+        "output_tokens": 1183,
+        "cost_usd": 0.0152175,
+        "duration_s": 23.81,
+        "label": "2405.07197v2/b3plus/prover_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 8779,
+        "output_tokens": 3289,
+        "cost_usd": 0.37836,
+        "duration_s": 66.21,
+        "label": "2405.03612v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7184,
+        "output_tokens": 2658,
+        "cost_usd": 0.30711,
+        "duration_s": 51.2,
+        "label": "2405.03612v2/b3plus/arbiter"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 1380,
+        "output_tokens": 799,
+        "cost_usd": 0.0012515,
+        "duration_s": 10.99,
+        "label": "2405.07197v2/b3plus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3549,
+        "output_tokens": 2462,
+        "cost_usd": 0.0334925,
+        "duration_s": 52.82,
+        "label": "2405.05635v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 1355,
+        "output_tokens": 1225,
+        "cost_usd": 0.0156375,
+        "duration_s": 22.09,
+        "label": "2405.07197v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2443,
+        "output_tokens": 947,
+        "cost_usd": 0.0155775,
+        "duration_s": 27.02,
+        "label": "2405.07197v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 1380,
+        "output_tokens": 795,
+        "cost_usd": 0.0012471000000000001,
+        "duration_s": 10.63,
+        "label": "2405.07197v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3559,
+        "output_tokens": 1493,
+        "cost_usd": 0.0026032300000000006,
+        "duration_s": 20.76,
+        "label": "2405.05635v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 12958,
+        "output_tokens": 2102,
+        "cost_usd": 0.053415,
+        "duration_s": 38.1,
+        "label": "2405.11232v2/b3plus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2502,
+        "output_tokens": 866,
+        "cost_usd": 0.0016281400000000001,
+        "duration_s": 11.12,
+        "label": "2405.07197v2/b3plus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 11911,
+        "output_tokens": 1186,
+        "cost_usd": 0.004520570000000001,
+        "duration_s": 17.09,
+        "label": "2405.11232v2/b3plus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2378,
+        "output_tokens": 2071,
+        "cost_usd": 0.026655,
+        "duration_s": 35.71,
+        "label": "2405.07197v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 4804,
+        "output_tokens": 1939,
+        "cost_usd": 0.217485,
+        "duration_s": 36.08,
+        "label": "2405.07197v2/b3plus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3646,
+        "output_tokens": 1223,
+        "cost_usd": 0.021345,
+        "duration_s": 23.62,
+        "label": "2405.11232v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2439,
+        "output_tokens": 1032,
+        "cost_usd": 0.00179373,
+        "duration_s": 14.47,
+        "label": "2405.07197v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3648,
+        "output_tokens": 1376,
+        "cost_usd": 0.0024985600000000004,
+        "duration_s": 15.85,
+        "label": "2405.11232v2/b3plus/reflection_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 8374,
+        "output_tokens": 2532,
+        "cost_usd": 0.31551,
+        "duration_s": 59.21,
+        "label": "2405.05635v2/b3plusplus/arbiter"
+      }
+    ]
+  }
+}

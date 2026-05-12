@@ -1,0 +1,630 @@
+{
+  "condition": "B3PLUSPLUS",
+  "paper_id": "2406.04846v2",
+  "verdict": "flagged",
+  "confidence": 0.97,
+  "reasoning": "Both reviewers independently identify multiple fundamental flaws in the manuscript that survived reflection and were reinforced by cross-examination. The paper claims an asymptotic gate-count improvement over Solovay-Kitaev for fault-tolerant single-qubit gate synthesis, but: (1) the stated gate-count scaling is internally inconsistent and impossible as written, (2) the core algebraic construction (Eq. 4) enabling transversal logical phase gates is unjustified and likely invalid, (3) the gate set used is ε-dependent rather than fixed, contradicting the problem the paper claims to solve, and (4) the fault-tolerance argument assumes the very continuous rotations it purports to synthesize. Each of these independently undermines the central theorem. Together they render the paper's main conclusions unsupportable.",
+  "findings": [
+    {
+      "finding": "The main gate-count complexity claim is internally inconsistent and mathematically impossible. The paper states a gate count of O(ε log(1/ε) log log(1/ε) ···) which decreases as ε→0, and the recursion structure (angle-doubling with constant gates per level) yields at most O(m) = O(log(1/ε)) gates, not the iterated-log product claimed. The choice of m and the precision allocation are mutually contradictory.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.97,
+      "justification": "The paper's sole headline contribution is an asymptotic scaling theorem. Both reviewers independently identify that the scaling formula is impossible (gate count decreasing with accuracy demand) and that the recursion structure cannot produce the claimed complexity. The derivation contains contradictory precision budgets (δ ≤ ε/⌈log₂(1/ε)⌉ vs. later claiming error ε·log(1/ε)·loglog(1/ε)···) and an asymptotically nonsensical choice of m. These are not isolated typos but pervasive failures in the proof of the central result. Without a valid derivation, the main theorem is unsupported.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The core construction for implementing logical phase gates P(α)_L transversally via solving Hv = w over ℝ (Eq. 4) is mathematically unjustified and likely invalid. The claim that full row rank over F₂ implies full row rank over ℝ is false, and even when a real solution exists, no proof is given that the resulting tensor product of physical phase gates preserves the code space and induces the correct logical action.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.95,
+      "justification": "Both reviewers identify this as the indispensable primitive enabling the entire recursive scheme. Reviewer B provides a concrete counterexample class (even-weight row dependencies). Reviewer A emphasizes the missing proof of logical action on all codewords/cosets and compatibility with stabilizer structure. If this construction fails, the recursion has no valid starting point and the entire method collapses. The Steane code example is stated without derivation and does not constitute a general proof.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The manuscript uses an ε-dependent finite gate set while framing its contribution as addressing the fixed finite universal gate-set approximation problem (Nielsen–Chuang challenge / Solovay-Kitaev improvement). An ε-indexed family of finite sets is fundamentally different from a single fixed finite set.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.93,
+      "justification": "This is a problem-definition error, not a presentation issue. The paper explicitly states gates are 'chosen from a finite set depending on the value of ε.' Standard lower bounds and comparisons to Solovay-Kitaev do not apply when the generating set changes with target precision. Reviewer A identified this; Reviewer B acknowledged it as a missed finding they would rate RETRACTION-WORTHY. The paper does not solve the problem it claims to address.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The fault-tolerance claim assumes availability of arbitrary physical phase rotations P(α) on each qubit to realize logical P(α)_L transversally, thereby presupposing the very continuous rotations the paper claims to synthesize fault-tolerantly from a finite discrete set.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.9,
+      "justification": "This collapses the distinction between physical analog control and fault-tolerant logical gate synthesis, which is the entire point of the FT synthesis problem. Reviewer A identified this as a category error that voids the claimed novelty. Reviewer B acknowledged this as a missed finding they would rate RETRACTION-WORTHY. If arbitrary-angle physical rotations are assumed at the encoded level, the claimed approximation breakthrough is vacated.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The recursive fault-tolerance argument lacks any error propagation analysis, threshold conditions, acceptance probabilities, or quantification of how noise accumulates through recursive levels. No explicit recursive FT circuit is provided.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Both reviewers note this gap. The paper claims FT recursive synthesis but provides only functional circuit identities without noise analysis. While this is a serious omission, it is downstream of the more fundamental construction errors: even a complete FT analysis cannot rescue a scheme whose primitive gate construction (Eq. 4) is invalid and whose problem formulation is misaligned. As a standalone issue, this is a major methodological gap rather than an independent proof of impossibility.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Resource-state preparation, distillation, and verification overhead at each recursion level are omitted from the gate-count analysis, potentially changing the asymptotic complexity materially.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Reviewer A identified this and later upgraded it to RETRACTION-WORTHY. However, since the asymptotic claim is already independently broken by the impossible scaling and invalid construction, this omission is best characterized as a major methodological gap that would need addressing in any corrected version, rather than an independent retraction-worthy flaw. If the underlying scheme were valid, this could in principle be repaired by a proper resource accounting.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The CSS/Steane-like code notation and matrix definitions (H, L, G, dimensions, logical operator roles) are insufficiently specified, obstructing verification of Eq. (4) and potentially concealing additional errors.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Both reviewers note this. While not independently fatal, it materially obstructs reproducibility and verification of the core construction. It contributes to the untrustworthiness of Eq. (4) but is subsidiary to the direct mathematical errors identified there.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The manuscript cites ease of implementing arbitrary physical P(α) on various hardware platforms as support for the method's significance, conflating native analog control with fault-tolerant logical implementability.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "This framing error weakens the paper's claimed practical relevance and reflects the same conceptual confusion underlying the FT assumption error. It is not independently theorem-breaking but contributes to a misleading presentation.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The notation O(log(1/ε) log log(1/ε) log log log(1/ε) ···) is nonstandard and ambiguously defined, with the termination condition ('when log log···log(1/ε) becomes O(1)') not rigorously specified.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Both reviewers note this. While the notation is imprecise, the fundamental problem is that the described procedure cannot achieve the claimed complexity regardless of how the notation is interpreted. This is a clarity issue, not the root cause of invalidity.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The statement about fault-tolerantly executing global phase e^{iα} is physically meaningless in the standard circuit model, as global phases are unobservable.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "Conceptual imprecision that does not independently alter conclusions but signals confusion in the treatment of phases.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The composition of approximation errors under Euler-angle decomposition (three phase gates + Hadamards) is not rigorously bounded; only a heuristic argument is given.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "This is repairable with a standard triangle-inequality argument and is not independently central once the deeper theorem-level defects are acknowledged.",
+      "source": "prover_a",
+      "survived_reflection": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 4,
+    "MAJOR-REVISION": 4,
+    "MINOR": 3
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.98,
+    "reasoning": "The manuscript contains multiple core methodological and mathematical errors that directly undermine its central claim of an efficient fault-tolerant approximation scheme using a finite gate set. Most seriously, the claimed gate-count scaling is internally inconsistent and appears wrong by orders of magnitude/sign; the construction actually uses an ε-dependent gate set, so it does not solve the stated finite fixed-set approximation problem; and the fault-tolerance argument conflates physical implementability of arbitrary phase rotations with fault-tolerant logical synthesis, which voids the claimed novelty. In addition, the key derivation of transversal logical phase implementation via solving Hv=w over R is not adequately justified and is generally not valid as stated for arbitrary CSS/Steane-like codes. These issues affect the main theorem-level conclusions, not just exposition.",
+    "findings": [
+      {
+        "finding": "The main complexity claim is mathematically inconsistent and appears incorrect. In the conclusion the paper states that the method uses O(ϵ log(1/ϵ) log log(1/ϵ) ···) gates, which decreases with smaller ϵ and tends to 0, an impossible gate-count scaling for increasingly accurate approximation.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "If the asymptotic gate complexity is misstated with the wrong dependence on ϵ, the paper's principal claimed improvement over Solovay-Kitaev and partial answer to Nielsen–Chuang is unsupported. This is not a cosmetic typo because the claimed contribution is precisely the asymptotic scaling."
+      },
+      {
+        "finding": "The manuscript explicitly uses a gate set that depends on ϵ ('chosen from a finite set depending on the value of ϵ'), while framing the contribution as a partial answer to Nielsen–Chuang's challenge about approximating with Ω(log(1/ϵ)) gates chosen from a finite set. A finite set depending on ϵ is not the same as a fixed finite universal gate set.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The central conceptual claim is misaligned with the problem statement. If the allowed generating set changes with target precision, then standard lower-bound and gate-synthesis comparisons to Solovay-Kitaev/fixed-gate universality do not apply in the stated way. Confirming this means the paper does not actually answer the challenge it claims to address."
+      },
+      {
+        "finding": "The construction's 'fault-tolerant' aspect relies on the availability of arbitrary physical P(α) rotations on each qubit (e.g., via control pulses/modulators) to realize logical P(α)_L transversally. This is not a fault-tolerant synthesis from the discrete FT set {Clifford,T}; it effectively assumes access to the very continuous rotations the paper claims to approximate fault-tolerantly.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This collapses the distinction between physical analog control and fault-tolerant logical gate synthesis. If arbitrary-angle physical rotations are assumed available and usable at the encoded level, then the claimed recursive approximation result is no longer a meaningful solution to FT gate synthesis over a finite set. The main novelty claim is thereby undermined."
+      },
+      {
+        "finding": "The key formula Eq. (4), asserting that for a Steane-like code one can obtain a logical phase gate P(α)_L = ⊗_j P(α v_j) by solving Hv=w over R, is not established. The argument from full row rank over F2 to existence of a real solution does not by itself imply that the resulting tensor product acts as the desired logical phase on the code space while preserving the code and inducing trivial action on stabilizers/other logical qubits.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "Eq. (4) is the core mechanism enabling the recursion. If this transversal logical-action claim is not generally valid, then the entire recursive FT implementation fails. The manuscript provides no rigorous proof of the induced phase on all codewords/cosets, only a heuristic linear-algebra argument that is insufficient."
+      },
+      {
+        "finding": "The paper repeatedly claims implementation 'using O(log(1/ϵ) log log(1/ϵ) ... ) FT gates chosen from a finite set', but the recursive construction of P(πℓ/2^m) appears to require state preparation/distillation/checking gadgets at each level, with nontrivial overhead not included in the gate count. The analysis counts only a narrow subset of gates and ignores resource-state production cost.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If state-preparation and verification overhead scale substantially with m or target logical error rate, the asymptotic resource claim may change materially. This may not fully invalidate the existence of a construction, but it could alter the claimed efficiency."
+      },
+      {
+        "finding": "The recursion argument from P(πℓ/2^{m-1}) to P(πℓ/2^m) via teleportation is incomplete as a fault-tolerance proof. The manuscript states that the circuit is FT 'if P(2α)_L is FT as well,' but does not quantify error propagation, threshold conditions, acceptance probabilities, or how noisy ancilla verification scales through recursive levels.",
+        "severity": "MAJOR-REVISION",
+        "justification": "A claim of fault tolerance requires more than functional circuit identities. Without an error analysis, the method may still be conceptually interesting, but the FT claim is insufficiently supported and could fail under realistic noise accumulation."
+      },
+      {
+        "finding": "The derivation of the final approximation schedule is internally inconsistent. The text first chooses δ ≤ ϵ/⌈log2(1/ϵ)⌉ for each phase gate, but later says each phase gate should have angle accurate to 'ϵ log2(1/ϵ) log2 log2(1/ϵ) ···', which is larger than ϵ, not smaller.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This is a direct contradiction in the core approximation proof. If the per-gate accuracy budget is wrong, the composition error bound and ensuing gate-count theorem are not established."
+      },
+      {
+        "finding": "The chosen value of m in the conclusion, m = ⌈ϵ / [log2(1/ϵ) log2 log2(1/ϵ) ···]⌉, has the wrong dimensional/asymptotic form; m should grow roughly like log2(1/δ), not shrink proportionally to ϵ.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "m determines the denominator 2^m in approximating α by πℓ/2^m and thus the actual circuit depth/recursion length. If m is wrong, the implementation length and approximation guarantee are both unsupported."
+      },
+      {
+        "finding": "The manuscript conflates operator approximation by dyadic phase angles with universal single-qubit synthesis without carefully tracking decomposition error under Euler-angle factorization. It asserts that approximating each phase gate suffices, but no rigorous constant-factor bound for the composed SU(2) approximation is presented.",
+        "severity": "MINOR",
+        "justification": "This is usually repairable with a straightforward triangle-inequality argument, but it should be stated correctly to justify the final approximation guarantee."
+      },
+      {
+        "finding": "The statement 'As the operator e^{iα} can be executed fault-tolerantly, I will restrict most discussions to SU(2)' is dubious and unexplained. Global phases are physically irrelevant, so 'executing' e^{iα} is not a meaningful FT operation in the usual circuit model.",
+        "severity": "MINOR",
+        "justification": "This is primarily conceptual imprecision and does not by itself alter conclusions, but it signals confusion in the treatment of phases."
+      },
+      {
+        "finding": "The notation and definitions around the CSS/Steane-like code are sloppy enough to obscure correctness: H is called a parity-check matrix of C and then written as [L|G] with L corresponding to logical operations, but dimensions and the relation between H, G, and logical operators are not properly specified.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Because the main constructive formula depends on these matrices, unclear or incorrect dimensions/roles hinder verification and may conceal substantive mistakes in Eq. (4)."
+      },
+      {
+        "finding": "The manuscript's final discussion cites ease of implementing arbitrary physical P(α) on superconducting, ion-trap, neutral-atom, and photonic platforms as support for the method. This is not evidence of fault-tolerant logical implementability and weakens the paper's methodological framing.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the practical argument is based on native analog control rather than encoded FT operations, the relevance to the claimed theorem is questionable. This may not invalidate all mathematical content, but it undermines the stated FT significance."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "The manuscript claims a significant advance in quantum computation — approximating single-qubit gates to accuracy ϵ using O(log(1/ϵ) log log(1/ϵ) log log log(1/ϵ) · · ·) fault-tolerant gates, which would beat the Solovay-Kitaev theorem's O(log^c(1/ϵ)) with c > 1.44. However, the methodological exposition contains critical inconsistencies and gaps that render the central claim unsupported. The core derivation conflates the number of recursion steps with gate count, uses an incorrect precision allocation (δ ≤ ϵ/⌈log₂(1/ϵ)⌉ that does not match the claimed asymptotic behavior), and provides no explicit construction or verification that the recursion doubles angles while maintaining fault-tolerance. The connection between the stated result and the actual procedure is broken. These are not minor issues of presentation; they go to the validity of the main result. Therefore, the manuscript is flagged as having fundamental methodological flaws.",
+    "findings": [
+      {
+        "finding": "The manuscript claims O(log(1/ϵ) log log(1/ϵ) log log log(1/ϵ) · · ·) gate complexity, but the described method (using recursion P(πℓ/2^m) → P(πℓ/2^{m-1}) → ...) produces at most O(m) gates (i.e., O(log(1/ϵ))), not the iterated-log product claimed. The recursion doubles the angle, not the gate count; the gate count per recursion level is constant (from Figs 1-2 circuits). The claimed complexity is unjustified and appears to be the result of a category error (confusing number of recursion levels with total gate count).",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The central result (asymptotically optimal gate count) is mathematically incoherent based on the described method. The paper's main conclusion is unsupported; the data (method) cannot produce the claimed outcome."
+      },
+      {
+        "finding": "The precision allocation is inconsistent: The author states 'δ ≤ ϵ/⌈log₂(1/ϵ)⌉' for approximating α by πℓ/2^m when approximating a single phase gate, but then claims total error for the full SU(2) decomposition (three phase gates + two H gates) accumulates to ϵ log₂(1/ϵ) log₂ log₂(1/ϵ) · · ·, which is not a proper error analysis. The Strang splitting (three phase gates) introduces error that scales linearly with number of gates, so total error should be at most 3δ, not the iterated-log product. The claimed error scaling does not follow from the given construction.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If corrected, the gate count would not achieve the advertised O(log(1/ϵ) log log ...) but rather O(log(1/ϵ)) with a different error trade-off, potentially invalidating the claimed improvement over Solovay-Kitaev."
+      },
+      {
+        "finding": "Fault-tolerant implementation of the recursion is not actually demonstrated: The author asserts that 'by recursively applying the quantum circuits in Figs. 1 and 2, I can implement any P(πℓ/2^m) gate in a FT manner with m, ℓ ∈ Z⁺ in O(n) times through the recursion'. No explicit recursive circuit, no analysis of fault-tolerance propagation through multiple recursion levels, and no quantification of ancillary overhead are provided. Figures referenced (Fig. 1 and 2) are absent from the manuscript text.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Without a concrete recursive FT protocol and error analysis, the claim of FT implementation is unsubstantiated. The key claim that the method 'interestingly does not involve the Solovay-Kitaev theorem' is moot if FT is not properly established."
+      },
+      {
+        "finding": "The definition of 'O(log[1/ϵ] log log[1/ϵ] log log log[1/ϵ] · · ·)' is ambiguous. The footnote says 'the product terminated when log log · · · log(1/ϵ) becomes O(1)', but this is not a standard Landau notation. For ϵ → 0, this product diverges as the iterated logarithm function (e.g., approximately log(1/ϵ) * log log(1/ϵ) * log log log(1/ϵ) * ... diverges extremely slowly but is not bounded by any constant multiple of log(1/ϵ)). However, the claimed gate count is actually super-logarithmic, not a known complexity class. The manuscript does not define this rigorously, leaving the reader without a clear mathematical claim.",
+        "severity": "MINOR",
+        "justification": "While this affects clarity, the main issue is the mismatch between the described procedure and the claimed complexity, not the notation itself. However, technical precision is lacking."
+      },
+      {
+        "finding": "The construction of P(α)_L via Eq. (4) using Gaussian elimination on Hv = w over ℝ is mathematically erroneous. The claim that 'H is of full row rank over F₂ and hence over ℝ' is false: a matrix may be full rank over F₂ but rank-deficient over ℝ (e.g., when rows are linearly independent over F₂ but have even-weight dependencies over ℝ). Moreover, solving Hv = w over ℝ for a binary matrix has no guarantee of producing a vector v that yields a valid logical operator. The example with Steane's code (Eq. 6) is not derived; it's just stated without verification that it satisfies the needed commutation relations.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The entire FT implementation of the primitive P(α)_L gate rests on this erroneous linear algebra. If the construction is invalid, the entire approximation scheme collapses, making retraction necessary."
+      }
+    ]
+  },
+  "reflection_a": {
+    "defense_for_self": "The strongest defense of my ratings is that the manuscript does not merely contain gaps, unclear exposition, or missing proofs around otherwise plausible claims. Its theorem-level contribution is broken at the level of problem definition, asymptotic statement, and enabling construction. That combination is exactly what makes several findings retraction-worthy under the provided standard.\n\n1. Why the RETRACTION-WORTHY findings are genuinely retraction-worthy\n\nA. Wrong asymptotic gate-count / impossible scaling is retraction-worthy, not a typo\nThe paper's headline contribution is an asymptotic improvement in gate complexity for approximating arbitrary single-qubit gates. If the stated dependence on epsilon has the wrong sign or wrong asymptotic form — e.g., gate count decreasing as accuracy demand tightens, or m chosen proportional to epsilon rather than log(1/epsilon) — then the main theorem is not simply imprecise; it is mathematically impossible as written. This is not analogous to a minor notation slip because the entire paper is organized around that claim. There is no independent empirical result that survives if the asymptotics fail. The central conclusion cannot be supported by the derivation as presented. That squarely meets the retraction threshold.\n\nFurther, the error appears in multiple places in mutually reinforcing ways: the final gate-count expression, the choice of m, and the per-gate precision allocation. This pattern is not one local typo. It shows the approximation theorem was not successfully derived. When the principal result of the paper is the asymptotic scaling, and that scaling is impossible or internally contradictory, the paper's core conclusion collapses.\n\nB. Epsilon-dependent gate set is retraction-worthy because it changes the problem being solved\nThis is not a pedantic objection. The manuscript frames itself as addressing the fixed finite universal gate-set approximation problem associated with Nielsen-Chuang / Solovay-Kitaev-style synthesis. But the construction explicitly selects gates from a finite set that depends on epsilon. That is a different computational model. Once the generating set changes with target precision, the comparison class changes, lower bounds change, and the claimed novelty relative to fixed-set synthesis is no longer valid.\n\nThis is retraction-worthy because the paper's central claim is not merely overstated in degree; it is about the wrong problem. A paper cannot claim to partially answer a challenge about approximation over a fixed finite set while using an epsilon-indexed family of finite sets. If that is the actual model, the title-level and theorem-level framing is false. That cannot be repaired by polishing exposition; it requires replacing the central claim with a substantively different one.\n\nC. The fault-tolerance claim is retraction-worthy because the paper assumes the very resource it claims to synthesize\nThe manuscript's novelty rests on fault-tolerant approximation using a finite gate set. But its implementation argument appeals to the availability of arbitrary physical phase rotations P(alpha) on each qubit, then uses those to realize logical P(alpha)_L transversally. That is a category error of the most serious kind: it replaces discrete fault-tolerant synthesis by native analog control. If arbitrary-angle physical rotations are admitted at the encoded implementation layer, then the claimed approximation breakthrough is vacated. The paper is no longer showing how to synthesize arbitrary logical rotations from a fixed FT gate set; it is assuming them physically.\n\nThis is retraction-worthy because it destroys the claimed contribution, not because it weakens practicality. The point of FT synthesis is to show how to implement non-native logical operations from a protected discrete set. If the construction instead presupposes arbitrary-angle logical action via transversal analog rotations, then it has not solved the stated problem at all. The data/method cannot support the central conclusion under the paper's own framing.\n\nD. Eq. (4) / transversal logical phase construction is retraction-worthy because it is the indispensable engine of the scheme\nThe recursive approximation depends on being able to fault-tolerantly implement logical phase gates P(alpha)_L by assigning qubitwise phases according to a solution of H v = w over the reals. The paper does not prove that this tensor-product operator preserves the code space and induces the claimed logical action on all encoded basis states. Full row rank over F2 does not establish the needed statement over R, nor does solvability of a linear system suffice to verify logical implementation. One must prove compatibility with the stabilizer structure, action on logical operators, and phase consistency across the code space.\n\nIf Eq. (4) is invalid or unjustified in the stated generality, the recursion has no valid primitive. Then the entire construction fails. This is exactly retraction-worthy: the foundational lemma supporting the main theorem is absent or false, so the theorem cannot be supported by the manuscript.\n\nE. Contradictory precision budgeting and wrong choice of m are retraction-worthy because they independently break the approximation theorem\nThese are not isolated bookkeeping errors. The paper first requires a small per-gate error delta <= epsilon / ceil(log2(1/epsilon)), then later states a much larger scale involving epsilon times iterated logs, which would exceed epsilon rather than divide it. Likewise, m should scale like log(1/delta) to obtain dyadic approximation accuracy; choosing m proportional to epsilon divided by logs is asymptotically nonsensical. Either one of these errors alone is enough to invalidate the approximation theorem. Together they show the proof of the main complexity claim was not carried through successfully.\n\nAgain, this is retraction-worthy because the central result depends on these derivations. There is no remaining theorem of comparable scope left intact if these are removed.\n\n2. Defense against the other reviewer's alternative framings\n\nThe other reviewer agrees the paper is fundamentally flawed, but in two places their framing is actually too charitable compared with the severity warranted by the manuscript.\n\nA. On the complexity claim: my stronger framing is justified\nThe other reviewer says the author may have confused recursion depth with gate count and that the actual method yields at most O(m) = O(log(1/epsilon)). I agree this is one way to diagnose the inconsistency. But that does not soften the severity. If the main advertised asymptotic improvement comes from a category error in counting, that is still retraction-worthy. The reason my rating remains strong is that the manuscript does not contain a proved weaker theorem either. It contains multiple contradictory formulas, not one isolated counting mistake. So the issue is not merely that a better complexity estimate should be substituted; it is that the theorem-level claim is unsupported and internally incoherent.\n\nB. On precision allocation: I rated one of these defects retraction-worthy, and that is correct\nThe other reviewer labels the precision-allocation inconsistency major revision. I disagree with that softer label because the manuscript's sole substantive payoff is the final asymptotic synthesis theorem. If the approximation composition argument and choice of m are wrong, there is no established main theorem left. This is not a side analysis that could alter magnitude while preserving direction. It is the proof of the headline claim. Under the provided standard, when the central conclusion cannot be supported by the derivation as presented, the correct classification is retraction-worthy.\n\nC. On Eq. (4): my assessment is, if anything, conservative\nThe other reviewer identifies an even sharper linear-algebra objection: full row rank over F2 does not imply full row rank over R. That strengthens rather than weakens my original rating. My original point was that the paper's stated argument is insufficient to establish logical action on the code space; the other reviewer's observation adds a direct mathematical failure in the supporting claim. This reinforces that Eq. (4) is not a fixable omission but a potentially false core lemma. Retraction-worthy is therefore the right severity.\n\nD. On fault tolerance: the lack is deeper than omitted threshold analysis\nThe other reviewer emphasizes absent recursion circuits and no explicit FT error propagation. I also flagged that as a major-revision issue for the recursive protocol details. But I separately rated the analog-rotation assumption as retraction-worthy because it voids the conceptual claim at a deeper level. Even a complete threshold analysis would not rescue a scheme whose primitive FT gate implementation assumes arbitrary physical P(alpha). That is why my more serious assessment should stand: this is not just an incomplete FT proof; it is a mismatch between the claimed model and the actual resource assumption.\n\n3. Why the major-revision findings are not overstated upward\n\nI deliberately distinguished between flaws that destroy the central theorem and flaws that could, in principle, be repaired while leaving some weaker contribution.\n\nA. Resource-state / ancilla-production overhead: major revision, not retraction\nI rated the omission of preparation/distillation/checking costs as major revision because, although serious, it does not automatically prove the construction impossible. It means the asymptotic gate-count claim is incomplete and potentially misleading. But if the underlying primitive and recursion were valid, one might still salvage a corrected resource analysis. So major revision is the right category.\n\nB. Recursive FT proof missing noise analysis: major revision, not retraction\nSimilarly, the lack of threshold/error-propagation analysis is a substantial methodological gap for a fault-tolerance claim, but by itself it does not prove the circuits cannot be made FT. If the primitive logical gate construction were correct and the problem formulation proper, this might be repairable. Hence major revision was appropriately calibrated.\n\nC. Sloppy CSS/Steane notation and platform-level analog-control discussion: major revision\nThese issues materially obstruct verification and distort significance, but they are not independently theorem-killing absent the deeper conceptual and mathematical failures already identified.\n\n4. Summary of why my original severe ratings should stand affirmatively\n\nThe manuscript fails on three independent theorem-critical axes:\n(1) it states impossible or contradictory asymptotics for its main result,\n(2) it solves a different problem than the one it claims to address by allowing epsilon-dependent gate sets and arbitrary-angle physical rotations, and\n(3) its core logical-gate construction is unproved and likely false in the stated generality.\n\nAny one of those would seriously threaten publication. In combination, they make the main conclusion unsupportable as presented. That is exactly what retraction-worthy means under the provided rubric. My ratings are not overstated; they are the strongest classification consistent with the manuscript's actual defects.",
+    "severity_i_now_upgrade": [
+      "Finding on resource-state production / verification overhead: from MAJOR-REVISION to RETRACTION-WORTHY, because the paper's central asymptotic claim counts only a selectively chosen subset of operations while omitting indispensable resources required by the very recursive implementation. Since the headline contribution is asymptotic efficiency, excluding mandatory overhead means the principal conclusion cannot be supported by the method as presented.",
+      "Finding on recursive fault-tolerance proof being incomplete: from MAJOR-REVISION to RETRACTION-WORTHY, because the paper does not merely omit threshold constants; it claims a fault-tolerant recursive construction without demonstrating that recursion preserves fault tolerance at all. Given that fault tolerance is part of the main theorem-level claim, absence of a valid FT argument means the central conclusion is unsupported, not just incomplete."
+    ],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      {
+        "finding": "Main complexity claim mathematically inconsistent / impossible scaling",
+        "severity": "RETRACTION-WORTHY",
+        "reason": "The paper's principal claimed result is the asymptotic gate count. If that formula decreases with increasing demanded accuracy or otherwise has the wrong asymptotic dependence, the central theorem is impossible as stated. This alone means the main conclusion cannot be supported."
+      },
+      {
+        "finding": "Uses an epsilon-dependent finite set while claiming progress on fixed finite-set synthesis",
+        "severity": "RETRACTION-WORTHY",
+        "reason": "This changes the computational model and the problem statement. A theorem about approximation from a fixed finite universal set cannot be claimed when the allowed set varies with epsilon. The paper's core framing is therefore false, not merely imprecise."
+      },
+      {
+        "finding": "Fault-tolerance claim assumes availability of arbitrary physical phase rotations",
+        "severity": "RETRACTION-WORTHY",
+        "reason": "The method presupposes the very continuous rotations it purports to synthesize fault-tolerantly from a finite set. That voids the claimed novelty and means the central contribution is unsupported in the stated FT model."
+      },
+      {
+        "finding": "Eq. (4) / logical transversal phase implementation via solving H v = w over R is unjustified and generally invalid as stated",
+        "severity": "RETRACTION-WORTHY",
+        "reason": "This is the core primitive enabling the recursion. The manuscript does not prove preservation of the code space or the correct induced logical action. If the primitive fails, the whole construction fails."
+      },
+      {
+        "finding": "Resource-state preparation / checking overhead omitted from asymptotic count",
+        "severity": "RETRACTION-WORTHY",
+        "reason": "Because asymptotic efficiency is the headline claim, selectively excluding mandatory subroutines is fatal. The presented count does not measure the actual construction and therefore cannot support the central efficiency conclusion."
+      },
+      {
+        "finding": "Recursive FT argument lacks actual proof that FT is preserved through levels",
+        "severity": "RETRACTION-WORTHY",
+        "reason": "The paper claims a fault-tolerant recursive synthesis theorem but provides no valid recursive FT analysis. Since 'fault-tolerant' is not ancillary but central to the claim, the theorem is unsupported."
+      },
+      {
+        "finding": "Contradictory precision allocation in the approximation proof",
+        "severity": "RETRACTION-WORTHY",
+        "reason": "The per-gate error budget is central to the final approximation theorem. Contradictory budgets mean the proof of the claimed epsilon-approximation does not exist as presented."
+      },
+      {
+        "finding": "Wrong asymptotic form for m",
+        "severity": "RETRACTION-WORTHY",
+        "reason": "m controls dyadic resolution and recursion depth. Choosing it with the wrong asymptotic dependence invalidates both the approximation guarantee and the claimed gate count."
+      },
+      {
+        "finding": "Operator-approximation composition under Euler decomposition not rigorously tracked",
+        "severity": "MINOR",
+        "reason": "This is fixable by a standard norm bound and is not independently central once the deeper theorem-level defects are set aside."
+      },
+      {
+        "finding": "Meaningless or confused statement about fault-tolerantly executing global phase e^{i alpha}",
+        "severity": "MINOR",
+        "reason": "Conceptually sloppy but not independently outcome-determinative."
+      },
+      {
+        "finding": "CSS/Steane notation and matrix roles insufficiently specified",
+        "severity": "MAJOR-REVISION",
+        "reason": "This materially obstructs verification and may conceal further mistakes, but by itself it is not the core reason the theorem fails."
+      },
+      {
+        "finding": "Platform-native arbitrary rotations cited as support for FT significance",
+        "severity": "MAJOR-REVISION",
+        "reason": "This weakens the framing and practical relevance, but the theorem-level invalidity already arises from deeper issues."
+      }
+    ],
+    "new_errors_noticed": [
+      "The manuscript appears to blur at least three different resource notions — recursion depth, gate count, and wall-clock execution rounds ('O(n) times through the recursion') — without defining which complexity measure is being optimized. This likely infects the central asymptotic statement beyond the specific formulas already flagged.",
+      "The claimed comparison to Solovay-Kitaev is potentially invalid even aside from the epsilon-dependent gate set because the manuscript seems to compare a construction using nonstandard native analog phase resources against SK's discrete fixed-set synthesis complexity. That is not an apples-to-apples asymptotic comparison.",
+      "If the logical phase implementation uses arbitrary real-valued exponents v_j, then physical realization may require qubit-specific arbitrary-angle rotations with potentially unbounded precision in the control parameters. The precision cost of specifying and implementing those analog angles is ignored, creating another hidden resource that undercuts the complexity claim.",
+      "The manuscript does not appear to distinguish approximation error from logical failure probability. In fault-tolerant synthesis these are separate quantities; a gate can be exact in angle but fail logically due to noise, or vice versa. Conflating them further undermines the claimed epsilon-level result.",
+      "The teleportation-based recursion likely requires measurement-dependent Pauli/frame corrections and possibly adaptive classical control at each level, but these are not included in the complexity/resource analysis.",
+      "The manuscript gives no proof that the proposed transversal operator acts correctly on all logical qubits if the code encodes more than one qubit, yet the notation with H = [L|G] suggests a more general setting than a single encoded qubit. This may make Eq. (4) even less tenable than initially stated."
+    ]
+  },
+  "reflection_b": {
+    "defense_for_self": "I will build the strongest case for my original severity ratings, arguing that each RETRACTION-WORTHY finding is genuinely fundamental and not overstated, and defending against the other reviewer's alternative framings.",
+    "severity_i_now_upgrade": [
+      "Finding 5 (Eq. 4 linear algebra error): I now argue this is even more clearly RETRACTION-WORTHY than initially stated. The other reviewer also identifies this as RETRACTION-WORTHY, confirming its severity. The error is not a minor oversight; it is a mathematical impossibility (full row rank over F₂ does not guarantee a real solution to Hv=w for arbitrary w, and even if a real solution exists, it does not guarantee the tensor product acts as a logical phase on the code space). Without this construction, the entire recursive FT scheme collapses, as it is the only mechanism proposed to implement P(α)_L transversally. This is therefore a foundational flaw that invalidates the paper's core contribution.",
+      "Finding 1 (gate count mismatch): I upgrade my own earlier assessment: this is not just a conceptual mistake, but a direct disproof of the claimed asymptotic result. The manuscript's recursion doubles the angle at each step, producing O(m) gates = O(log(1/ϵ)) gates. The claimed iterated-log product is not derivable from the described method. This is a mathematical error in the central theorem, not a presentation issue. The other reviewer's parallel finding (finding 1 about complexity scaling decreasing with ϵ) further corroborates that the complexity claim is internally inconsistent. Thus, RETRACTION-WORTHY is fully justified."
+    ],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      {
+        "id": 1,
+        "severity": "RETRACTION-WORTHY",
+        "reason": "The central result (asymptotically optimal gate count) is mathematically incoherent given the described method. The recursion doubles the angle, not gate count; the gate count per level is constant. The claimed complexity is a category error (confusing recursion depth with total gate count). This is not an overstatement—it directly contradicts the paper's main claim. The other reviewer's finding 1 (complexity scaling decreasing with ϵ) independently confirms that the claimed scaling is impossible. No revision can salvage this; the claim is fundamentally wrong."
+      },
+      {
+        "id": 2,
+        "severity": "MAJOR-REVISION",
+        "reason": "The precision allocation is inconsistent: δ ≤ ϵ/⌈log₂(1/ϵ)⌉ leads to a total error of at most 3δ (for three phase gates), not the iterated-log product claimed. If corrected, the gate count would not achieve the advertised O(log(1/ϵ) log log ...) but rather O(log(1/ϵ)) with a different error trade-off. The other reviewer's finding 7 (contradiction in error budget) supports this inconsistency. While this alone might not force retraction if the main claim were salvageable, it reinforces that the complexity claim is unsupported. However, since the main claim is already broken (finding 1), this is a contributing error but not the primary one. I maintain MAJOR-REVISION for this specific finding, but note it is part of a larger cascade."
+      },
+      {
+        "id": 3,
+        "severity": "MAJOR-REVISION",
+        "reason": "Fault-tolerant implementation of recursion is not demonstrated. No explicit recursive circuit, no FT propagation analysis, no overhead quantification. The other reviewer's finding 6 (incomplete FT proof) strongly agrees. This is not a minor omission—the paper claims a FT method but provides no FT analysis. However, I do not escalate to RETRACTION-WORTHY because the paper could theoretically be fixed with a proper FT analysis (if the underlying construction were valid—but see finding 5). Given the other fatal errors, this is a secondary concern. MAJOR-REVISION remains appropriate for this specific finding."
+      },
+      {
+        "id": 4,
+        "severity": "MINOR",
+        "reason": "The notation 'O(log[1/ϵ] log log[1/ϵ] ...)' is ambiguous and nonstandard. The other reviewer's finding 1 (complexity impossibility) goes further, but I maintain MINOR for this specific finding because the notation itself, while sloppy, is not the cause of the paper's failure—the underlying mathematical error is. I acknowledge that the other reviewer's identification of a sign error (complexity decreasing with ϵ) is a deeper issue, but that is captured in finding 1 of their review and in my finding 1. For this specific finding, the ambiguity is a clarity problem, not a validity problem. MINOR stands."
+      },
+      {
+        "id": 5,
+        "severity": "RETRACTION-WORTHY",
+        "reason": "The construction of P(α)_L via Eq. (4) using Gaussian elimination on Hv = w over ℝ is mathematically erroneous. The claim that 'H is of full row rank over F₂ and hence over ℝ' is false: a matrix may be full rank over F₂ but rank-deficient over ℝ (e.g., rows with even-weight dependencies). Moreover, solving Hv = w over ℝ for a binary matrix has no guarantee of producing a vector v that yields a valid logical operator. The example with Steane's code is not derived. The other reviewer's finding 4 (core mechanism not established) and finding 11 (sloppy definitions) strongly concur and also rate this RETRACTION-WORTHY. This is not a minor mathematical oversight; it is a complete failure of the proposed mechanism. Without this, the entire FT scheme collapses. RETRACTION-WORTHY is not overstated—it is the minimum appropriate response."
+      }
+    ],
+    "new_errors_noticed": [
+      "The other reviewer correctly notes (finding 2) that the manuscript uses an ϵ-dependent gate set, not a fixed finite set, which undermines the framing as an answer to Nielsen–Chuang's challenge. I missed this in my review. This is a conceptual misalignment that further invalidates the claimed contribution. I would rate this as RETRACTION-WORTHY if I were to add it, because it means the paper does not address the problem it claims to solve.",
+      "The other reviewer correctly notes (finding 3) that the FT construction assumes access to arbitrary physical P(α) rotations, which collapses the distinction between physical analog control and FT logical gate synthesis. I missed this. This is a third independent reason the paper's central claim is unsupported. I would rate this as RETRACTION-WORTHY because the paper's claimed novelty (efficient FT synthesis from a finite set) is directly contradicted by assuming infinite-precision continuous rotations at the physical level."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.97,
+    "reasoning": "Both reviewers independently identify multiple fundamental flaws in the manuscript that survived reflection and were reinforced by cross-examination. The paper claims an asymptotic gate-count improvement over Solovay-Kitaev for fault-tolerant single-qubit gate synthesis, but: (1) the stated gate-count scaling is internally inconsistent and impossible as written, (2) the core algebraic construction (Eq. 4) enabling transversal logical phase gates is unjustified and likely invalid, (3) the gate set used is ε-dependent rather than fixed, contradicting the problem the paper claims to solve, and (4) the fault-tolerance argument assumes the very continuous rotations it purports to synthesize. Each of these independently undermines the central theorem. Together they render the paper's main conclusions unsupportable.",
+    "findings": [
+      {
+        "finding": "The main gate-count complexity claim is internally inconsistent and mathematically impossible. The paper states a gate count of O(ε log(1/ε) log log(1/ε) ···) which decreases as ε→0, and the recursion structure (angle-doubling with constant gates per level) yields at most O(m) = O(log(1/ε)) gates, not the iterated-log product claimed. The choice of m and the precision allocation are mutually contradictory.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.97,
+        "justification": "The paper's sole headline contribution is an asymptotic scaling theorem. Both reviewers independently identify that the scaling formula is impossible (gate count decreasing with accuracy demand) and that the recursion structure cannot produce the claimed complexity. The derivation contains contradictory precision budgets (δ ≤ ε/⌈log₂(1/ε)⌉ vs. later claiming error ε·log(1/ε)·loglog(1/ε)···) and an asymptotically nonsensical choice of m. These are not isolated typos but pervasive failures in the proof of the central result. Without a valid derivation, the main theorem is unsupported.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The core construction for implementing logical phase gates P(α)_L transversally via solving Hv = w over ℝ (Eq. 4) is mathematically unjustified and likely invalid. The claim that full row rank over F₂ implies full row rank over ℝ is false, and even when a real solution exists, no proof is given that the resulting tensor product of physical phase gates preserves the code space and induces the correct logical action.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.95,
+        "justification": "Both reviewers identify this as the indispensable primitive enabling the entire recursive scheme. Reviewer B provides a concrete counterexample class (even-weight row dependencies). Reviewer A emphasizes the missing proof of logical action on all codewords/cosets and compatibility with stabilizer structure. If this construction fails, the recursion has no valid starting point and the entire method collapses. The Steane code example is stated without derivation and does not constitute a general proof.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The manuscript uses an ε-dependent finite gate set while framing its contribution as addressing the fixed finite universal gate-set approximation problem (Nielsen–Chuang challenge / Solovay-Kitaev improvement). An ε-indexed family of finite sets is fundamentally different from a single fixed finite set.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.93,
+        "justification": "This is a problem-definition error, not a presentation issue. The paper explicitly states gates are 'chosen from a finite set depending on the value of ε.' Standard lower bounds and comparisons to Solovay-Kitaev do not apply when the generating set changes with target precision. Reviewer A identified this; Reviewer B acknowledged it as a missed finding they would rate RETRACTION-WORTHY. The paper does not solve the problem it claims to address.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The fault-tolerance claim assumes availability of arbitrary physical phase rotations P(α) on each qubit to realize logical P(α)_L transversally, thereby presupposing the very continuous rotations the paper claims to synthesize fault-tolerantly from a finite discrete set.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.9,
+        "justification": "This collapses the distinction between physical analog control and fault-tolerant logical gate synthesis, which is the entire point of the FT synthesis problem. Reviewer A identified this as a category error that voids the claimed novelty. Reviewer B acknowledged this as a missed finding they would rate RETRACTION-WORTHY. If arbitrary-angle physical rotations are assumed at the encoded level, the claimed approximation breakthrough is vacated.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The recursive fault-tolerance argument lacks any error propagation analysis, threshold conditions, acceptance probabilities, or quantification of how noise accumulates through recursive levels. No explicit recursive FT circuit is provided.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Both reviewers note this gap. The paper claims FT recursive synthesis but provides only functional circuit identities without noise analysis. While this is a serious omission, it is downstream of the more fundamental construction errors: even a complete FT analysis cannot rescue a scheme whose primitive gate construction (Eq. 4) is invalid and whose problem formulation is misaligned. As a standalone issue, this is a major methodological gap rather than an independent proof of impossibility.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Resource-state preparation, distillation, and verification overhead at each recursion level are omitted from the gate-count analysis, potentially changing the asymptotic complexity materially.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Reviewer A identified this and later upgraded it to RETRACTION-WORTHY. However, since the asymptotic claim is already independently broken by the impossible scaling and invalid construction, this omission is best characterized as a major methodological gap that would need addressing in any corrected version, rather than an independent retraction-worthy flaw. If the underlying scheme were valid, this could in principle be repaired by a proper resource accounting.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The CSS/Steane-like code notation and matrix definitions (H, L, G, dimensions, logical operator roles) are insufficiently specified, obstructing verification of Eq. (4) and potentially concealing additional errors.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Both reviewers note this. While not independently fatal, it materially obstructs reproducibility and verification of the core construction. It contributes to the untrustworthiness of Eq. (4) but is subsidiary to the direct mathematical errors identified there.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The manuscript cites ease of implementing arbitrary physical P(α) on various hardware platforms as support for the method's significance, conflating native analog control with fault-tolerant logical implementability.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "This framing error weakens the paper's claimed practical relevance and reflects the same conceptual confusion underlying the FT assumption error. It is not independently theorem-breaking but contributes to a misleading presentation.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The notation O(log(1/ε) log log(1/ε) log log log(1/ε) ···) is nonstandard and ambiguously defined, with the termination condition ('when log log···log(1/ε) becomes O(1)') not rigorously specified.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Both reviewers note this. While the notation is imprecise, the fundamental problem is that the described procedure cannot achieve the claimed complexity regardless of how the notation is interpreted. This is a clarity issue, not the root cause of invalidity.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The statement about fault-tolerantly executing global phase e^{iα} is physically meaningless in the standard circuit model, as global phases are unobservable.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "Conceptual imprecision that does not independently alter conclusions but signals confusion in the treatment of phases.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The composition of approximation errors under Euler-angle decomposition (three phase gates + Hadamards) is not rigorously bounded; only a heuristic argument is given.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "This is repairable with a standard triangle-inequality argument and is not independently central once the deeper theorem-level defects are acknowledged.",
+        "source": "prover_a",
+        "survived_reflection": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 12350,
+    "duration_s": 184.0,
+    "n_api_calls": 23,
+    "cost_usd": 1.5798,
+    "total_input_tokens": 156820,
+    "total_output_tokens": 38122,
+    "calls": [
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 5605,
+        "output_tokens": 1489,
+        "cost_usd": 0.00315125,
+        "duration_s": 18.14,
+        "label": "2406.03201v2/b3plus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 23622,
+        "output_tokens": 2572,
+        "cost_usd": 0.084775,
+        "duration_s": 44.67,
+        "label": "2406.03201v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3821,
+        "output_tokens": 1700,
+        "cost_usd": 0.0265525,
+        "duration_s": 32.65,
+        "label": "2406.04846v2/b3plus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 21590,
+        "output_tokens": 1251,
+        "cost_usd": 0.007205400000000001,
+        "duration_s": 15.62,
+        "label": "2406.03201v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3678,
+        "output_tokens": 1248,
+        "cost_usd": 0.00236586,
+        "duration_s": 15.77,
+        "label": "2406.04846v2/b3plus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3821,
+        "output_tokens": 1960,
+        "cost_usd": 0.0291525,
+        "duration_s": 36.41,
+        "label": "2406.04846v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3423,
+        "output_tokens": 1320,
+        "cost_usd": 0.0217575,
+        "duration_s": 25.69,
+        "label": "2406.04846v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3678,
+        "output_tokens": 1313,
+        "cost_usd": 0.00243736,
+        "duration_s": 18.63,
+        "label": "2406.04846v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3407,
+        "output_tokens": 571,
+        "cost_usd": 0.0015479900000000002,
+        "duration_s": 8.7,
+        "label": "2406.04846v2/b3plus/reflection_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 10086,
+        "output_tokens": 3773,
+        "cost_usd": 0.434265,
+        "duration_s": 73.81,
+        "label": "2406.03201v2/b3plus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4396,
+        "output_tokens": 3634,
+        "cost_usd": 0.04733,
+        "duration_s": 67.58,
+        "label": "2406.03201v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 8745,
+        "output_tokens": 1409,
+        "cost_usd": 0.0359525,
+        "duration_s": 27.16,
+        "label": "2406.06431v2/b3plus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 8434,
+        "output_tokens": 259,
+        "cost_usd": 0.0025620800000000004,
+        "duration_s": 4.19,
+        "label": "2406.06431v2/b3plus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4386,
+        "output_tokens": 1696,
+        "cost_usd": 0.00304982,
+        "duration_s": 19.92,
+        "label": "2406.03201v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3678,
+        "output_tokens": 3571,
+        "cost_usd": 0.044905,
+        "duration_s": 59.76,
+        "label": "2406.04846v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 6091,
+        "output_tokens": 2468,
+        "cost_usd": 0.276465,
+        "duration_s": 59.36,
+        "label": "2406.04846v2/b3plus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2010,
+        "output_tokens": 665,
+        "cost_usd": 0.011675,
+        "duration_s": 12.12,
+        "label": "2406.06431v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2025,
+        "output_tokens": 366,
+        "cost_usd": 0.0009493500000000001,
+        "duration_s": 5.84,
+        "label": "2406.06431v2/b3plus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3638,
+        "output_tokens": 1486,
+        "cost_usd": 0.00261686,
+        "duration_s": 18.45,
+        "label": "2406.04846v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 8745,
+        "output_tokens": 1229,
+        "cost_usd": 0.0341525,
+        "duration_s": 22.76,
+        "label": "2406.06431v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 8434,
+        "output_tokens": 116,
+        "cost_usd": 0.00240478,
+        "duration_s": 2.34,
+        "label": "2406.06431v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 3523,
+        "output_tokens": 1638,
+        "cost_usd": 0.175695,
+        "duration_s": 29.06,
+        "label": "2406.06431v2/b3plus/arbiter"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 9984,
+        "output_tokens": 2388,
+        "cost_usd": 0.32886,
+        "duration_s": 50.75,
+        "label": "2406.04846v2/b3plusplus/arbiter"
+      }
+    ]
+  }
+}

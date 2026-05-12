@@ -1,0 +1,503 @@
+{
+  "condition": "B3PLUSPLUS",
+  "paper_id": "2407.06913v2",
+  "verdict": "flagged",
+  "confidence": 0.97,
+  "reasoning": "Both reviewers independently identify multiple serious errors that collectively undermine the paper's central contributions. The most critical issues are: (1) systematically incorrect privacy accounting via advanced composition, which invalidates all (ε,δ)-DP theorem statements; (2) an unjustified sensitivity claim in the core tree-release primitive (Lemma 3.2), which propagates to every major theorem; and (3) flawed probabilistic arguments in the Thorup-Zwick adaptation that leave the stretch guarantee unproven. After reflection, both reviewers maintain or strengthen their assessments. The advanced composition error is clearly retraction-worthy—it is a global, systematic miscalculation that means the paper's headline approximate-DP guarantees are unproven and generally false under the stated parameters. The tree sensitivity issue is extremely serious; Reviewer A rates it MAJOR-REVISION (potentially salvageable via a different proof strategy) while Reviewer B rates it RETRACTION-WORTHY (the paper's own proof is fundamentally broken). I resolve this as RETRACTION-WORTHY because the primitive is used in every main theorem and the paper provides no valid privacy proof for it—the claim that global ℓ1 sensitivity is 1 is clearly wrong as argued, and correcting it could require larger noise that changes the stated error bounds. The Thorup-Zwick probabilistic argument is also seriously flawed; Reviewer A rates it MAJOR-REVISION while Reviewer B rates it RETRACTION-WORTHY. I resolve this as MAJOR-REVISION because, while the current proof is invalid, the algorithmic idea may survive with a corrected probabilistic analysis (e.g., using negative dependence or different concentration tools), and this affects only the Section 4.2 results rather than the entire paper. Overall, the paper has at least two independent retraction-worthy errors (composition accounting and tree sensitivity) that together mean the paper's central privacy conclusions cannot be supported.",
+  "findings": [
+    {
+      "finding": "Incorrect use of advanced composition in all (ε,δ)-DP results. The per-mechanism privacy parameters used in Theorems 3.2, 4.2, and 4.4 do not satisfy the paper's own composition lemma (Lemma 2.2). The denominators are missing a factor of approximately √m, and the δ/(2k) allocation is omitted. This means all approximate-DP guarantees are unproven and generally false under the stated parameters.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.95,
+      "justification": "This is a systematic, global error affecting every approximate-DP theorem in the paper. The stated (ε,δ)-DP guarantees do not follow from the paper's own privacy lemma, and the parameters are materially wrong (not just slightly loose). Since the approximate-DP results are presented as central contributions, this invalidates the paper's main claims as written. Both reviewers agree on the severity after reflection.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Unjustified sensitivity claim in Lemma 3.2 / Appendix A for the tree-release primitive. The proof claims that releasing distances from root to centroid and centroid to children has global ℓ1 sensitivity 1 because subtrees are disjoint. However, disjoint subtrees do not imply edge-disjoint paths: a single edge perturbation can affect multiple released distances simultaneously. The true sensitivity could be O(log n) or more.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.88,
+      "justification": "This primitive is used in every main theorem (Theorems 3.1, 3.2, 4.1–4.4). The paper's own proof is clearly invalid—the logical step from subtree disjointness to sensitivity 1 does not hold. If the true sensitivity is higher, the required noise scale increases, which would change both the privacy guarantees and the error bounds. While Reviewer A suggested this might be salvageable by importing an external result, the paper as written provides no valid privacy analysis for its most fundamental building block, and any fix could change the quantitative conclusions. This crosses the retraction threshold because every main theorem depends on it.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Flawed probabilistic arguments in the Thorup-Zwick adaptation (Lemmas 4.4 and 4.5). Lemma 4.4 models |A_i| as Binomial(n, p_i) despite dependent sampling. Lemma 4.5 uses unjustified independence/product reasoning for ordering events. These errors leave the (2k−1) stretch guarantee for the distance oracle unproven.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "Reviewer B rates this RETRACTION-WORTHY while Reviewer A rates it MAJOR-REVISION. I side with MAJOR-REVISION because: (a) the algorithmic idea is sound and similar constructions work in non-private settings with correct probabilistic tools; (b) negative dependence / hypergeometric concentration could plausibly repair the argument; (c) this affects only the Section 4.2 results, not the entire paper. However, the current proof is clearly invalid and the stretch guarantee is unsubstantiated as written.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Lemma 3.1 proves the wrong quantity: it bounds |d̃^{(t)}(u,v) − d_{G̃}^{(t)}(u,v)|, which is identically zero by the paper's own notation, instead of the intended |d_G^{(t)}(u,v) − d̃^{(t)}(u,v)|. The proof never handles the case where the minimizing t-hop path changes after noise is added.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "This is a key building block for the additive algorithm. The intended claim is likely true via a standard two-sided path comparison, but the proof as written establishes nothing nontrivial. Both reviewers agree this is MAJOR-REVISION: repairable but currently broken.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Conceptual misunderstanding of advanced composition propagates through the privacy analysis. The prose around Lemma 2.2 incorrectly suggests that stronger per-mechanism pure-DP automatically yields the advanced-composition conclusion, without verifying the theorem's exact premises. This misunderstanding likely caused the incorrect privacy accounting.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "This is not merely expository—it reflects the root cause of the retraction-worthy composition error. As a standalone finding it is MAJOR-REVISION because fixing the conceptual understanding would enable correct privacy accounting, but it reinforces the severity of Finding 1.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Inconsistency between stated error bound and proof in Theorem 3.1. The claimed polylogarithmic exponent (log^{11/6}(n)) does not match what the proof derivation yields (approximately log^{4/3}(n) or similar). The asymptotic rate n^{1/3} appears correct.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "The qualitative improvement (n^{1/3} vs. prior n^{2/3}) survives, but the precise bound is misstated. This affects the paper's quantitative claims but not its fundamental approach. Rated MAJOR-REVISION by Reviewer B; Reviewer A did not directly contest it.",
+      "source": "prover_b",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Abstract and introduction suppress the √log(1/δ) dependence in the (ε,δ)-DP error bounds, overstating the improvement over prior work.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "This is a presentation/claim-precision issue layered on top of the deeper composition error. On its own it would not change conclusions. Both reviewers agree it is MINOR (though Reviewer B upgraded related optimality claims to MAJOR-REVISION).",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Missing explicit verification that the cited lower bound of Ω(n^{1/4}) applies under the paper's exact adjacency/weight model, and overclaiming relative to bounded-weight prior results.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.65,
+      "justification": "Reviewer B upgraded this from MINOR to MAJOR-REVISION after reflection, noting that the optimality claim is central to the paper's narrative and is not adequately supported. The comparison to bounded-weight results is also potentially misleading. This does not invalidate the algorithms but misrepresents their significance.",
+      "source": "prover_b",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Corollary 4.1 misstates the tree distance formula (d_T(x,y) = d(z,x) + d(z,y) − 2d(z,LCA(x,y)), not a sum of four distances). The error bound should use factor 4 with the correct three-term formula.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "This is a constant-factor accounting issue that does not change asymptotic bounds. Both reviewers agree it is MINOR.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Notation/citation inconsistencies and OCR-corrupted passages throughout the manuscript hamper verification.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.92,
+      "justification": "These reduce confidence and readability but are not independently outcome-determinative.",
+      "source": "prover_a",
+      "survived_reflection": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 2,
+    "MAJOR-REVISION": 5,
+    "MINOR": 3
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.97,
+    "reasoning": "The manuscript contains multiple methodological errors in the privacy accounting and several proof-level correctness gaps. The most serious issue is that the claimed (ε,δ)-DP guarantees are derived using an incorrect form of advanced composition: the per-mechanism privacy parameters used throughout are too large by a factor of about sqrt(log(1/δ)), so the stated approximate-DP theorems are not established. There is also a serious sensitivity/privacy error in the proof of the tree-release primitive (Appendix A / Lemma 3.2), where multiple edge-disjoint path distances are claimed to have sensitivity 1 without a valid argument. In addition, key probabilistic steps in the cluster-packing construction incorrectly model dependent sampling as binomial / independent, and several inequalities and parameter simplifications are inconsistent. These issues do not all necessarily imply the central algorithmic ideas are false, but as written they materially undermine the main claims, especially all (ε,δ)-DP results.",
+    "findings": [
+      {
+        "finding": "Incorrect use of advanced composition in all (ε,δ)-DP results. Lemma 2.2 states that k mechanisms each run with privacy ε/(2√(2k log(2/δ))) and δ/(2k) compose to (ε,δ)-DP. But in Appendix B, Theorem 3.2 uses per-tree privacy ε/(4√(2s log(2/δ))) with no per-call δ term, and similarly Theorems 4.2 and 4.4 use ε/(2√2·m·log(2/δ)) or analogous expressions instead of ε/(Θ(√m log^{1/2}(1/δ))). This is missing a factor of √m in the denominator and also drops the δ/(2k) bookkeeping required by the stated lemma.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "If confirmed, the claimed (ε,δ)-DP guarantees for Theorems 3.2, 4.2, and 4.4 are not proven and are generally false under the stated parameters. Since approximate-DP results are a central contribution, this invalidates those conclusions as presented."
+      },
+      {
+        "finding": "The proof of Lemma 3.2 / Appendix A has an unjustified sensitivity claim. It says the algorithm releases the distances between z and z*, and between z* and each of its children, and because the resulting trees/subtrees are disjoint, the function releasing these distances has sensitivity 1. Disjointness of subtrees does not imply the corresponding root-to-child/root-to-centroid path distances are edge-disjoint or jointly ℓ1-sensitivity 1 under the edge-weight adjacency model. A unit change on one edge can affect several of these released distances simultaneously if that edge lies on several such paths.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is the core primitive used repeatedly. If its privacy proof is wrong, all subsequent theorems relying on Corollary 4.1 are unsupported until a correct privacy analysis is supplied. The result may still be salvageable if Sealfon's theorem is imported directly without the faulty reproof, but as written the manuscript's methodological justification is flawed."
+      },
+      {
+        "finding": "In Lemma 3.1, the proof bounds |d̃^{(t)}(u,v) − d_{G̃}^{(t)}(u,v)|, which is identically 0 by notation, instead of the intended error relative to d_G^{(t)}(u,v). This is not just a typo: the argument never explicitly proves both directions needed when the minimizing path can change after noise is added.",
+        "severity": "MAJOR-REVISION",
+        "justification": "The intended claim is likely true via comparing the optimal t-hop path in G and in G̃, but the proof as written does not establish the theorem. Since this lemma is a key ingredient in the main additive algorithm, the result needs correction."
+      },
+      {
+        "finding": "The manuscript repeatedly claims improved asymptotic error in the (ε,δ)-DP setting as Õ(n^{1/4}/ε), whereas standard Gaussian/advanced-composition style bounds and even the manuscript's own theorem statement include an extra √log(1/δ) factor. The abstract and introductory summary suppress this dependence in a way that is inconsistent with the stated theorems.",
+        "severity": "MINOR",
+        "justification": "This is primarily a reporting/claim-precision issue rather than a fatal correctness problem, but it overstates the improvement and should be corrected."
+      },
+      {
+        "finding": "In the cluster-packing construction, Lemma 4.4 models |A_i| as a Binomial(n,p_i) random variable. This is not justified because membership events {u∈A_i} across vertices are not independent: each A_i is formed as a union of fixed-size samples without replacement across rounds. Therefore the exact binomial law and the Chernoff step based on it are invalid as stated.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This lower bound on |A_i| is then used in Lemma 4.5 and the stretch proof for Theorems 4.3/4.4. The conclusion might still be repairable with hypergeometric/negative dependence arguments, but the present proof is not methodologically correct."
+      },
+      {
+        "finding": "Lemma 4.5 and the surrounding argument use independence-like reasoning for events involving vertices of A_{i+1} and relative ordering against A_i^r−{w}. The proof lower-bounds the probability that 'at least one vertex in A_{i+1} comes before all vertices in A_i^r−{w}' using (1−1/(2|A_i^r|))^{|A_{i+1}|}, which treats the relevant events across vertices in A_{i+1} as if they were independent or product-bounded without justification.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This event is central to proving modified clusters dominate the Thorup–Zwick clusters. Without a valid probabilistic argument, the claimed stretch guarantee for the packed-tree construction is not established."
+      },
+      {
+        "finding": "Corollary 4.1's derivation of all-pairs distances in a tree from root distances is algebraically misstated: d_T(x,y)=d(z,x)+d(z,y)−2d(z,LCA(x,y)), not a 'sum of four distances from z)'. The text says the estimate is the sum of four distances from z and bounds error by four times the root-distance error, but the formula only uses three released quantities with one coefficient 2.",
+        "severity": "MINOR",
+        "justification": "This looks like a sloppy proof/writing issue; the asymptotic error bound remains the same up to constants. It should be corrected for mathematical clarity."
+      },
+      {
+        "finding": "The privacy-composition prose around Lemma 2.2 is conceptually incorrect: 'running k mechanisms where each mechanism is ε/(2√(2k log(2/δ)))-DP is at least (ε,δ)-DP, as each individual mechanism we run has an even stronger privacy guarantee.' Stronger per-mechanism pure-DP alone does not imply the composed algorithm satisfies the same advanced-composition conclusion unless the theorem's conditions are met. This confusion appears to propagate into the later incorrect privacy accounting.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is not merely expository; it reflects a substantive misunderstanding that likely caused the invalid (ε,δ)-DP theorems. The privacy analysis needs to be redone carefully."
+      },
+      {
+        "finding": "There are several notation/statement inconsistencies suggesting proof instability: e.g., Theorem 4.1/4.2 use both T and 𝕋/𝕋mathbf inconsistently; Theorem 4.3 cites 'Theorem E.2' instead of Lemma 4.7 in one place; some formulas omit /ε in summary prose; and OCR-corrupted segments make crucial algorithmic lines unclear. These issues hamper verification of the full argument.",
+        "severity": "MINOR",
+        "justification": "These do not by themselves invalidate the claims, but they materially reduce confidence in correctness and should be cleaned before publication."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.95,
+    "reasoning": "The manuscript presents a novel algorithm with strong theoretical claims. However, several critical methodological errors and inconsistencies exist. The most severe issues include: (1) The algorithm for constructing spanning trees in Section 4.2 (Thorup-Zwick adaptation) relies on a flawed probabilistic argument about vertex ordering that likely invalidates the claimed stretch factor. (2) The stated error bounds in the main theorems (Theorems 3.1, 4.3) are not consistent with the proofs provided, due to omitted logarithmic factors and incorrect simplifications. (3) The sensitivity analysis for the recursive tree algorithm (Lemma 3.2/Corollary 4.1) is incorrectly reasoned, calling into question the privacy guarantee for the central primitive. These problems are structural and cannot be fixed with minor edits.",
+    "findings": [
+      {
+        "finding": "Flawed probabilistic argument in Thorup-Zwick adaptation (Lemma 4.5 and surrounding text). The argument attempts to show that with high probability, the closest vertex to u in A_i^r is closer than all of A_{i+1} to u. The calculation conflates ordering probabilities and distance-based probabilities, and the claimed probability bound (1 - 1/n^2) is not supported by the derivation. This is critical because the stretch factor of (2k-1) for the distance oracle, and the guarantee that covering trees exist for all pairs, depend on this claim. If wrong, the central result of Section 4.2 collapses.",
+        "severity": "RETRACTION-WORTHY"
+      },
+      {
+        "finding": "Inconsistency between stated error bound and proof in Theorem 3.1. The theorem claims error O(n^{1/3} log^{11/6}(n) log(1/γ)/ε). The proof (Equation 1) derives error from tree distances proportional to s * polylog(n)/ε, where s = n^{1/3}/log^{2/3}(n). This gives O(n^{1/3} log^{5/6}(n)/ε) for that term. The t-hop error (Equation 2) is O(√(n/s) polylog(n)/ε) = O(n^{1/3} log^{4/3}(n)/ε). Balancing gives total O(n^{1/3} log^{4/3}(n)/ε), not O(n^{1/3} log^{11/6}(n)). The final simplification to log^{11/6}(n) is unjustified and appears to be a mistake. This means the claimed improvement over prior work (O(n^{2/3}) to O(n^{1/3})) is numerically correct, but the polylog exponent is not.",
+        "severity": "MAJOR-REVISION"
+      },
+      {
+        "finding": "Incorrect sensitivity analysis for the recursive tree algorithm (Lemma 3.2). The proof claims that releasing distances from root to centroid and centroid to children has sensitivity 1. However, releasing multiple such distances from the same tree involves correlated queries (e.g., distance to centroid appears in many paths). The standard approach to bound sensitivity in tree DP is via the 'tree's sensitivity' (max over all pairs of neighboring weight vectors of l1 change in all released distances), which can be O(log n) or more. The proof implicitly assumes each released distance is an independent query with sensitivity 1 and composes them, which is incorrect. This likely invalidates the ε-DP guarantee of Lemma 3.2, and thus all theorems that depend on it (Theorems 3.1, 4.1-4.4).",
+        "severity": "RETRACTION-WORTHY"
+      },
+      {
+        "finding": "Missing justification for optimality claim. The paper claims the (ε,δ)-DP result matches the lower bound of Ω(n^{1/4}) from [BDG+24] up to polylog factors. However, the lower bound is for the additive approximation problem, while the upper bound is also additive. The paper does not explicitly check that the lower bound applies to their model (undirected, weighted graphs with l1 neighborhood). While likely true, this is a verification that should be included. Additionally, the paper claims the lower bound is Ω(n^{1/4}/√log n), but then states their upper bound is Õ(n^{1/4}) which is consistent, but they do not check if the logarithmic gaps match.",
+        "severity": "MINOR"
+      },
+      {
+        "finding": "Overclaiming for bounded-weight graphs. The introduction (Section 1, p.2) states 'The new upper bounds are even smaller than the previously best results O(n^{0.5616}) and O(n^{0.4143}) for graphs of bounded weights [CGK+23] while we don't need the assumption on edge weights.' This is misleading: the new bounds (n^{1/3} and n^{1/4}) are indeed smaller than the previous bounded-weight bounds (n^{0.5616} and n^{0.4143}) for large n, but this comparison is not apples-to-apples because the previous bounded-weight bounds had no multiplicative factor (additive only), while the new bounds are also additive only. However, the paper does not provide a separate analysis for bounded-weight graphs, so the comparison to the bounded-weight lower bound is irrelevant. This is not a methodological error, but a presentational concern.",
+        "severity": "MINOR"
+      }
+    ]
+  },
+  "reflection_a": {
+    "defense_for_self": "My severity ratings were calibrated to the key test: if the error is confirmed, does the paper merely need revision, or do the central conclusions as stated fail outright? On that standard, the advanced-composition/privacy-accounting error is genuinely RETRACTION-WORTHY, not overstated.\n\nWhy Finding 1 is retraction-worthy: the manuscript’s main approximate-DP theorems are not just under-explained; they are derived from the wrong privacy parameters. The paper itself states a composition lemma requiring per-call privacy on the order of epsilon/sqrt(k log(1/delta)) together with explicit delta/k allocation. But in the actual theorem proofs it uses materially larger per-call epsilon values and in places omits the delta bookkeeping entirely. That is not a cosmetic mismatch. It means the theorem statements asserting (epsilon, delta)-DP for the final algorithms do not follow from the paper’s own privacy lemma, and in general are false under the stated parameters. Since Theorems 3.2, 4.2, and 4.4 are central contributions, the paper’s approximate-DP guarantees cannot be supported as presented. This crosses the line from 'needs cleanup' to 'the headline theorems are unproved and typically incorrect.' A paper whose core privacy theorems are established by invalid accounting would need withdrawal/correction rather than ordinary revision if published in this form.\n\nThis is stronger than the other reviewer’s framing because they focused more on the Section 4.2 stretch argument and tree sensitivity, whereas the composition bug independently knocks out all approximate-DP claims even if the algorithmic/stretch ideas were otherwise valid. In other words, there is a theorem-level failure that is both global and decisive: every result relying on that accounting is unsupported. That is exactly what RETRACTION-WORTHY is for.\n\nWhy Finding 2 remains MAJOR-REVISION and not automatically RETRACTION-WORTHY: I deliberately did not overstate it. The sensitivity argument in Lemma 3.2 is indeed wrong as written: disjoint subtrees do not imply the released collection of distances has global l1-sensitivity 1 under edge-weight adjacency, because one changed edge can lie on multiple released paths. That directly undermines the manuscript’s proof of the tree primitive. However, unlike the composition error, this defect may be salvageable without changing the underlying algorithm if the authors replace the faulty proof with a correct imported result (for example, by invoking an external theorem that already provides the desired private tree-release guarantee under the right model and parameters). So the manuscript’s current proof is methodologically broken, but the result is not yet shown impossible in principle. That is why MAJOR-REVISION was the right call.\n\nAgainst the other reviewer’s more severe framing on this point: they say the tree sensitivity issue is RETRACTION-WORTHY because the sensitivity could be O(log n) or more and thus likely invalidates all downstream theorems. I agree it is extremely serious, but my rating was intentionally disciplined. The paper’s proof is invalid; what is not yet established from the manuscript alone is that no alternate valid analysis could recover the primitive with comparable bounds. So MAJOR-REVISION is the strongest defensible rating unless one proves impossibility of repair. I stand by that distinction.\n\nWhy Finding 3 remains MAJOR-REVISION: Lemma 3.1 proves the wrong inequality by comparing the noisy graph distance to itself under the manuscript’s notation, so as written the proof does not establish the claimed transfer from d_G to d_G-tilde. This is not trivial because one must handle the possibility that the minimizing t-hop path changes after perturbation. Still, this looks repairable by a standard two-sided comparison argument: evaluate the optimal t-hop path from G in G-tilde and vice versa. The claim may well be true, but the proof currently fails. That is classic MAJOR-REVISION, not retraction.\n\nWhy Finding 4 is correctly MINOR: suppressing the sqrt(log(1/delta)) dependence in the abstract/introduction overstates the cleanliness of the result, but this is a reporting problem layered on top of the deeper accounting error. On its own, it would not alter conclusions; it simply misstates precision and should be fixed.\n\nWhy Findings 5 and 6 are properly MAJOR-REVISION: these are serious probabilistic-proof defects in the cluster-packing / Thorup-Zwick adaptation. In Lemma 4.4, |A_i| is treated as binomial despite clear dependence induced by the sampling process; in Lemma 4.5, a product-style bound is used for events that are not justified to be independent. These are not tiny technical slips because they feed directly into the covering/stretch argument for the Section 4.2 construction. But I still stopped short of RETRACTION-WORTHY because these may be repairable using the correct dependence tools: hypergeometric concentration, negative dependence, exposure martingales, or a different ordering argument. The other reviewer rated the Section 4.2 flaw as retraction-worthy. I understand why, but my severity assignment was stricter in the evidentiary sense: the current proof is broken, and the theorem is unsupported, yet there remains a plausible route to salvage the claim with a substantially revised argument. That is precisely what MAJOR-REVISION is for.\n\nThat said, my own strongest defense here is that my rating was conservative, not weak. I did not need to call this RETRACTION-WORTHY because Finding 1 already independently invalidates the approximate-DP contribution. For Findings 5 and 6, I insisted on the narrower and more rigorous statement: the present proofs are methodologically incorrect in a way that could change conclusions. That is enough for MAJOR-REVISION.\n\nWhy Finding 7 is MINOR: the LCA/root-distance formula is misstated, but the intended constant-factor error accounting can likely be repaired immediately. It affects clarity, not the qualitative theorem.\n\nWhy Finding 8 is MAJOR-REVISION: the prose around Lemma 2.2 is not merely sloppy exposition; it reveals the conceptual mistake that likely generated the invalid privacy accounting. Saying each mechanism is 'stronger' pure DP does not by itself justify the advanced-composition conclusion unless the theorem’s exact premises are met. This misunderstanding propagates into the theorem proofs. Because it is tied to the central privacy failure, this deserves MAJOR-REVISION, not MINOR.\n\nWhy Finding 9 is MINOR: notation and citation inconsistencies reduce verifiability and confidence but are not themselves outcome-determinative.\n\nIn short, the strongest defense of my original ratings is that they separate theorem-fatal errors from serious-but-potentially-repairable proof defects. The approximate-DP composition error is truly retraction-worthy because it independently destroys the paper’s central claimed privacy guarantees as stated. The tree-sensitivity and cluster-packing issues are major revisions because they are structural proof failures that may still admit replacement arguments. I did not soften; I distinguished invalidity of the claims as presented from possible salvageability by a different proof.",
+    "severity_i_now_upgrade": [],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      {
+        "finding": "Incorrect use of advanced composition in all (epsilon, delta)-DP results.",
+        "severity": "RETRACTION-WORTHY",
+        "reason": "This is a theorem-level invalidation of the paper’s central approximate-DP claims. The final algorithms are asserted to be (epsilon, delta)-DP under parameters that do not satisfy the manuscript’s own composition lemma and generally do not satisfy standard advanced composition either. Because multiple main theorems depend on this exact accounting, the principal privacy conclusions cannot be supported as presented."
+      },
+      {
+        "finding": "Unjustified sensitivity claim in Lemma 3.2 / Appendix A for the tree-release primitive.",
+        "severity": "MAJOR-REVISION",
+        "reason": "The proof’s central inference from subtree disjointness to global sensitivity 1 is invalid under edge-weight adjacency. A single edge perturbation can alter several released distances simultaneously. This undermines the manuscript’s proof of a core primitive used downstream. However, the result may still be recoverable via a different correct theorem or sensitivity analysis, so MAJOR-REVISION is the strongest justified rating without proving impossibility."
+      },
+      {
+        "finding": "Lemma 3.1 proves the wrong quantity and omits the needed two-sided path comparison.",
+        "severity": "MAJOR-REVISION",
+        "reason": "As written the proof establishes nothing nontrivial because it compares the noisy distance to itself under the notation used. The intended lemma likely remains true, but the current proof does not show it, and this affects a key building block of the additive algorithm."
+      },
+      {
+        "finding": "Abstract/introduction suppress the sqrt(log(1/delta)) dependence in the claimed (epsilon, delta)-DP improvement.",
+        "severity": "MINOR",
+        "reason": "This overstates the neatness of the asymptotic summary but is secondary to the deeper privacy-accounting defect. On its own it is a claim-precision issue, not a conclusion-changing methodological error."
+      },
+      {
+        "finding": "Lemma 4.4 incorrectly models dependent sampling as Binomial(n, p_i).",
+        "severity": "MAJOR-REVISION",
+        "reason": "The concentration step is not valid as stated because vertex-membership events are dependent. This affects the lower bound on |A_i| used later in the stretch analysis. The argument may be repairable using correct dependence-aware concentration, but the present proof is invalid."
+      },
+      {
+        "finding": "Lemma 4.5 uses unjustified independence/product reasoning for ordering events involving A_{i+1}.",
+        "severity": "MAJOR-REVISION",
+        "reason": "This event is central to showing the modified clusters dominate the Thorup-Zwick clusters and hence to the stretch guarantee. The current probability bound is unsupported. The flaw is serious and structural, but still potentially repairable with a different argument."
+      },
+      {
+        "finding": "Corollary 4.1 misstates the tree distance formula from root distances and LCA.",
+        "severity": "MINOR",
+        "reason": "This is mathematically sloppy and should be corrected, but it appears to be a constant-factor/accounting issue rather than a substantive invalidation."
+      },
+      {
+        "finding": "Conceptual misunderstanding in the privacy-composition discussion around Lemma 2.2.",
+        "severity": "MAJOR-REVISION",
+        "reason": "The prose reflects a substantive misconception about how advanced composition is applied, and this likely caused the invalid theorem proofs. It is not merely cosmetic exposition."
+      },
+      {
+        "finding": "Notation/citation inconsistencies and OCR-corrupted passages hamper verification.",
+        "severity": "MINOR",
+        "reason": "These issues reduce confidence and readability but are not independently dispositive."
+      }
+    ],
+    "new_errors_noticed": [
+      "The manuscript appears to conflate pure-DP sequential composition with approximate-DP advanced composition in a way that may also affect any optimization of epsilon allocation across recursive levels, not just the final theorem statements. If so, some intermediate privacy budgets are mis-set throughout, not merely in the concluding step.",
+      "Given the faulty sensitivity argument in the tree primitive, any downstream error bounds that scale linearly with the assumed Laplace noise magnitude may also be numerically incorrect even aside from privacy validity, because the required noise scale could be larger if global sensitivity exceeds 1.",
+      "The dependence problems in Section 4.2 may interact with union bounds over all vertices/pairs in a way that further weakens the claimed high-probability guarantees; even if one concentration lemma were repaired, the current failure-probability bookkeeping may still be insufficient.",
+      "The manuscript’s presentation of optimality relative to lower bounds should verify model alignment more explicitly; while I previously rated this as non-central, the current text does not carefully establish that the cited lower bound applies under the exact adjacency/weight model used."
+    ]
+  },
+  "reflection_b": {
+    "defense_for_self": "My severity ratings are justified because they target structural, irreparable flaws that directly undermine the paper's core contributions. Each RETRACTION-WORTHY finding identifies a broken link in the logical chain that cannot be patched with minor edits or alternative interpretations—the paper's central claims collapse without them. The other reviewer's framings largely corroborate my concerns, and in some cases they identify additional errors that strengthen my case. I defend each rating below.",
+    "severity_i_now_upgrade": [
+      "Finding 4 (Missing justification for optimality claim) – I originally rated this MINOR, but the other reviewer's finding about suppressed √log(1/δ) factors and overclaimed improvements suggests this is part of a pattern of misleading presentation that could affect reproducibility and interpretation. Upgrading to MAJOR-REVISION because the claim of matching lower bounds is central to the paper's narrative and is not adequately supported.",
+      "Finding 5 (Overclaiming for bounded-weight graphs) – I also rated this MINOR, but the other reviewer's note about suppressed √log(1/δ) factors and the fact that the paper directly compares its additive bounds to prior bounded-weight additive bounds without acknowledging that the bounded-weight bounds are for a different setting (pure DP vs. approximate DP) is more than a presentation issue—it is a substantive miss that could mislead readers. Upgrading to MAJOR-REVISION."
+    ],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      "Finding 1 (Flawed probabilistic argument in Thorup-Zwick adaptation, Lemma 4.5) – RETRACTION-WORTHY. The other reviewer independently flags the same issue (their findings 5 and 6) and agrees the stretch proof is unsupported. This is not a fixable oversight; the core algorithmic guarantee for the distance oracle (Section 4.2) depends on a specific probability bound that the paper does not validly derive. Without it, the (2k-1) stretch factor is unsubstantiated, making the entire distance oracle construction and all theorems relying on it (Theorems 4.3, 4.4) unsupported. This is a retraction-level problem because the paper's central contribution is the improved query structure; if the oracle does not work, the paper's main result is invalid.",
+      "Finding 2 (Inconsistency between error bound and proof in Theorem 3.1) – MAJOR-REVISION. The other reviewer does not contest this finding directly but raises related issues about missing factors. I stand by MAJOR-REVISION because the polylog discrepancy is real and the claimed improvement over prior work is quantitatively misstated, but the asymptotic rate (n^{1/3}) is likely preserved, so the paper's main qualitative contribution might survive a corrected calculation. However, reviewers who care about precise bounds would need this fixed; it is not retraction-worthy because the algorithmic architecture does not hinge on the exact polylog exponent.",
+      "Finding 3 (Incorrect sensitivity analysis for recursive tree algorithm, Lemma 3.2) – RETRACTION-WORTHY. The other reviewer's finding 2 independently confirms this: they note that disjoint subtrees do not imply disjoint edge paths, and the sensitivity claim is unjustified. This is the foundational primitive for all tree-based privacy results. If this lemma's DP guarantee is invalid, then Theorems 3.1, 4.1, 4.2, 4.3, and 4.4 are all unsubstantiated. The paper cannot stand without a correct privacy analysis of tree releases. This is retraction-worthy because it's a single, clear, fatal error that propagates to every major theorem.",
+      "Finding 4 (Missing justification for optimality claim) – Now upgraded to MAJOR-REVISION. See explanation above.",
+      "Finding 5 (Overclaiming for bounded-weight graphs) – Now upgraded to MAJOR-REVISION. See explanation above."
+    ],
+    "new_errors_noticed": [
+      "The other reviewer's finding 1 (incorrect use of advanced composition in all (ε,δ)-DP results) is devastating. I missed checking the precise composition algebra; they correctly identify that the paper uses a missing factor of √m and omits δ/(2k) bookkeeping. This is a systemic error that invalidates all approximate-DP guarantees. I add this as a new RETRACTION-WORTHY finding, separate from my original list.",
+      "The other reviewer's finding 3 (Lemma 3.1 proof mistakes d̃^{(t)} for d_G^{(t)}) is also critical. I missed this error. It means the key error bound for the truncated-distance primitive is not proven as stated. Combined with the tree sensitivity error, this further weakens the core algorithm. I add this as a new MAJOR-REVISION finding.",
+      "The other reviewer's finding 4 (suppressed √log(1/δ) factor in abstract/intro) is a presentation error that I already partially captured in my upgraded findings 4 and 5, but it deserves explicit mention. I add this as a new MINOR finding for completeness.",
+      "The other reviewer's finding 7 (misstated formula for all-pairs tree distances in Corollary 4.1) is a minor algebraic error. I missed this; it is truly MINOR.",
+      "The other reviewer's finding 8 (conceptual confusion about advanced composition) is not just a presentation issue but a substantive misunderstanding that likely underlies the incorrect proofs. I add this as a new MAJOR-REVISION finding."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.97,
+    "reasoning": "Both reviewers independently identify multiple serious errors that collectively undermine the paper's central contributions. The most critical issues are: (1) systematically incorrect privacy accounting via advanced composition, which invalidates all (ε,δ)-DP theorem statements; (2) an unjustified sensitivity claim in the core tree-release primitive (Lemma 3.2), which propagates to every major theorem; and (3) flawed probabilistic arguments in the Thorup-Zwick adaptation that leave the stretch guarantee unproven. After reflection, both reviewers maintain or strengthen their assessments. The advanced composition error is clearly retraction-worthy—it is a global, systematic miscalculation that means the paper's headline approximate-DP guarantees are unproven and generally false under the stated parameters. The tree sensitivity issue is extremely serious; Reviewer A rates it MAJOR-REVISION (potentially salvageable via a different proof strategy) while Reviewer B rates it RETRACTION-WORTHY (the paper's own proof is fundamentally broken). I resolve this as RETRACTION-WORTHY because the primitive is used in every main theorem and the paper provides no valid privacy proof for it—the claim that global ℓ1 sensitivity is 1 is clearly wrong as argued, and correcting it could require larger noise that changes the stated error bounds. The Thorup-Zwick probabilistic argument is also seriously flawed; Reviewer A rates it MAJOR-REVISION while Reviewer B rates it RETRACTION-WORTHY. I resolve this as MAJOR-REVISION because, while the current proof is invalid, the algorithmic idea may survive with a corrected probabilistic analysis (e.g., using negative dependence or different concentration tools), and this affects only the Section 4.2 results rather than the entire paper. Overall, the paper has at least two independent retraction-worthy errors (composition accounting and tree sensitivity) that together mean the paper's central privacy conclusions cannot be supported.",
+    "findings": [
+      {
+        "finding": "Incorrect use of advanced composition in all (ε,δ)-DP results. The per-mechanism privacy parameters used in Theorems 3.2, 4.2, and 4.4 do not satisfy the paper's own composition lemma (Lemma 2.2). The denominators are missing a factor of approximately √m, and the δ/(2k) allocation is omitted. This means all approximate-DP guarantees are unproven and generally false under the stated parameters.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.95,
+        "justification": "This is a systematic, global error affecting every approximate-DP theorem in the paper. The stated (ε,δ)-DP guarantees do not follow from the paper's own privacy lemma, and the parameters are materially wrong (not just slightly loose). Since the approximate-DP results are presented as central contributions, this invalidates the paper's main claims as written. Both reviewers agree on the severity after reflection.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Unjustified sensitivity claim in Lemma 3.2 / Appendix A for the tree-release primitive. The proof claims that releasing distances from root to centroid and centroid to children has global ℓ1 sensitivity 1 because subtrees are disjoint. However, disjoint subtrees do not imply edge-disjoint paths: a single edge perturbation can affect multiple released distances simultaneously. The true sensitivity could be O(log n) or more.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.88,
+        "justification": "This primitive is used in every main theorem (Theorems 3.1, 3.2, 4.1–4.4). The paper's own proof is clearly invalid—the logical step from subtree disjointness to sensitivity 1 does not hold. If the true sensitivity is higher, the required noise scale increases, which would change both the privacy guarantees and the error bounds. While Reviewer A suggested this might be salvageable by importing an external result, the paper as written provides no valid privacy analysis for its most fundamental building block, and any fix could change the quantitative conclusions. This crosses the retraction threshold because every main theorem depends on it.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Flawed probabilistic arguments in the Thorup-Zwick adaptation (Lemmas 4.4 and 4.5). Lemma 4.4 models |A_i| as Binomial(n, p_i) despite dependent sampling. Lemma 4.5 uses unjustified independence/product reasoning for ordering events. These errors leave the (2k−1) stretch guarantee for the distance oracle unproven.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.78,
+        "justification": "Reviewer B rates this RETRACTION-WORTHY while Reviewer A rates it MAJOR-REVISION. I side with MAJOR-REVISION because: (a) the algorithmic idea is sound and similar constructions work in non-private settings with correct probabilistic tools; (b) negative dependence / hypergeometric concentration could plausibly repair the argument; (c) this affects only the Section 4.2 results, not the entire paper. However, the current proof is clearly invalid and the stretch guarantee is unsubstantiated as written.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Lemma 3.1 proves the wrong quantity: it bounds |d̃^{(t)}(u,v) − d_{G̃}^{(t)}(u,v)|, which is identically zero by the paper's own notation, instead of the intended |d_G^{(t)}(u,v) − d̃^{(t)}(u,v)|. The proof never handles the case where the minimizing t-hop path changes after noise is added.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "This is a key building block for the additive algorithm. The intended claim is likely true via a standard two-sided path comparison, but the proof as written establishes nothing nontrivial. Both reviewers agree this is MAJOR-REVISION: repairable but currently broken.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Conceptual misunderstanding of advanced composition propagates through the privacy analysis. The prose around Lemma 2.2 incorrectly suggests that stronger per-mechanism pure-DP automatically yields the advanced-composition conclusion, without verifying the theorem's exact premises. This misunderstanding likely caused the incorrect privacy accounting.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.82,
+        "justification": "This is not merely expository—it reflects the root cause of the retraction-worthy composition error. As a standalone finding it is MAJOR-REVISION because fixing the conceptual understanding would enable correct privacy accounting, but it reinforces the severity of Finding 1.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Inconsistency between stated error bound and proof in Theorem 3.1. The claimed polylogarithmic exponent (log^{11/6}(n)) does not match what the proof derivation yields (approximately log^{4/3}(n) or similar). The asymptotic rate n^{1/3} appears correct.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "The qualitative improvement (n^{1/3} vs. prior n^{2/3}) survives, but the precise bound is misstated. This affects the paper's quantitative claims but not its fundamental approach. Rated MAJOR-REVISION by Reviewer B; Reviewer A did not directly contest it.",
+        "source": "prover_b",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Abstract and introduction suppress the √log(1/δ) dependence in the (ε,δ)-DP error bounds, overstating the improvement over prior work.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "This is a presentation/claim-precision issue layered on top of the deeper composition error. On its own it would not change conclusions. Both reviewers agree it is MINOR (though Reviewer B upgraded related optimality claims to MAJOR-REVISION).",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Missing explicit verification that the cited lower bound of Ω(n^{1/4}) applies under the paper's exact adjacency/weight model, and overclaiming relative to bounded-weight prior results.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.65,
+        "justification": "Reviewer B upgraded this from MINOR to MAJOR-REVISION after reflection, noting that the optimality claim is central to the paper's narrative and is not adequately supported. The comparison to bounded-weight results is also potentially misleading. This does not invalidate the algorithms but misrepresents their significance.",
+        "source": "prover_b",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Corollary 4.1 misstates the tree distance formula (d_T(x,y) = d(z,x) + d(z,y) − 2d(z,LCA(x,y)), not a sum of four distances). The error bound should use factor 4 with the correct three-term formula.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "This is a constant-factor accounting issue that does not change asymptotic bounds. Both reviewers agree it is MINOR.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Notation/citation inconsistencies and OCR-corrupted passages throughout the manuscript hamper verification.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.92,
+        "justification": "These reduce confidence and readability but are not independently outcome-determinative.",
+        "source": "prover_a",
+        "survived_reflection": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 69650,
+    "duration_s": 154.69,
+    "n_api_calls": 17,
+    "cost_usd": 1.2741,
+    "total_input_tokens": 191825,
+    "total_output_tokens": 29856,
+    "calls": [
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 8607,
+        "output_tokens": 1121,
+        "cost_usd": 0.0035569900000000008,
+        "duration_s": 15.2,
+        "label": "2407.04410v3/b3plusplus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 20952,
+        "output_tokens": 1349,
+        "cost_usd": 0.00714094,
+        "duration_s": 17.84,
+        "label": "2407.06913v2/b3plus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 33900,
+        "output_tokens": 1661,
+        "cost_usd": 0.10136,
+        "duration_s": 29.99,
+        "label": "2407.09178v2/b3plus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 22171,
+        "output_tokens": 1700,
+        "cost_usd": 0.0724275,
+        "duration_s": 31.05,
+        "label": "2407.06913v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3924,
+        "output_tokens": 979,
+        "cost_usd": 0.0196,
+        "duration_s": 18.71,
+        "label": "2407.06913v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 20952,
+        "output_tokens": 1202,
+        "cost_usd": 0.006979239999999999,
+        "duration_s": 14.87,
+        "label": "2407.06913v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3918,
+        "output_tokens": 1436,
+        "cost_usd": 0.00263746,
+        "duration_s": 17.35,
+        "label": "2407.06913v2/b3plus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 30934,
+        "output_tokens": 2131,
+        "cost_usd": 0.01069628,
+        "duration_s": 27.7,
+        "label": "2407.09178v2/b3plus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3426,
+        "output_tokens": 2653,
+        "cost_usd": 0.035095,
+        "duration_s": 49.92,
+        "label": "2407.04410v3/b3plusplus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4328,
+        "output_tokens": 1219,
+        "cost_usd": 0.02301,
+        "duration_s": 23.15,
+        "label": "2407.09178v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3382,
+        "output_tokens": 1674,
+        "cost_usd": 0.0027545399999999998,
+        "duration_s": 23.05,
+        "label": "2407.04410v3/b3plusplus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3389,
+        "output_tokens": 2557,
+        "cost_usd": 0.0340425,
+        "duration_s": 47.14,
+        "label": "2407.06913v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4298,
+        "output_tokens": 1141,
+        "cost_usd": 0.00241556,
+        "duration_s": 14.58,
+        "label": "2407.09178v2/b3plus/reflection_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7240,
+        "output_tokens": 2504,
+        "cost_usd": 0.2964,
+        "duration_s": 52.05,
+        "label": "2407.06913v2/b3plus/arbiter"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3389,
+        "output_tokens": 1215,
+        "cost_usd": 0.0022515300000000003,
+        "duration_s": 14.96,
+        "label": "2407.06913v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 8902,
+        "output_tokens": 2771,
+        "cost_usd": 0.341355,
+        "duration_s": 56.38,
+        "label": "2407.04410v3/b3plusplus/arbiter"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 8113,
+        "output_tokens": 2543,
+        "cost_usd": 0.31242,
+        "duration_s": 46.66,
+        "label": "2407.06913v2/b3plusplus/arbiter"
+      }
+    ]
+  }
+}

@@ -1,0 +1,734 @@
+{
+  "condition": "B3PLUSPLUS",
+  "paper_id": "2406.03201v2",
+  "verdict": "flagged",
+  "confidence": 0.96,
+  "reasoning": "Both reviewers independently identified multiple serious errors in the manuscript's central theorems and proofs. After reflection, both reviewers maintained or strengthened their severity assessments. The manuscript suffers from at least three categories of fundamental defects: (1) internally contradictory hypotheses in main theorem statements (Theorems 1.5/6.3 and 1.6/5.1), (2) mathematically nonsensical steps in key proofs (the local Galois group argument in the proof of Theorem 5.1), and (3) unjustified algebraic manipulations central to the derivation of the isogeny formula. These are not presentation issues or missing details — they represent structural failures in the paper's logical foundations that prevent the central conclusions from being supported. Additionally, multiple MAJOR-REVISION level defects in supporting propositions and definitions (functor 𝔊, control theorem, Proposition 3.3, module structure claims) further erode confidence in the results even if the top-level errors could somehow be repaired.",
+  "findings": [
+    {
+      "finding": "Theorem 1.6/5.1 hypothesis mismatch: The isogeny theorem is stated under H²_fl vanishing in the introduction but under H¹_fl vanishing in the proof section (Theorem 5.1), while the proof itself uses H²_fl vanishing. The theorem as printed is either false or unproven.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.95,
+      "justification": "The central isogeny theorem of Part III has inconsistent hypotheses between its statement and proof. This is not a typo that can be silently corrected — it means the published theorem statement either does not match what is proved, or the proof does not establish what is claimed. Either way, the headline result on μ-invariants under isogeny is unsupported as presented. Both reviewers identified aspects of this problem and both rated it retraction-worthy.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Proof of Theorem 5.1 uses the nonsensical group Gal(K_{∞,w}/K_{∞,w}) ≅ ∏_{ℓ≠p} Z_ℓ to conclude ker f₄ = coker f₄ = 0. This group is trivially the identity, and the intended local comparison is fundamentally misidentified.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.93,
+      "justification": "This step is used to eliminate local terms in the snake-lemma comparison that yields the isogeny formula. The statement is mathematically impossible — the Galois group of a field over itself is trivial. This is not a gap that could be filled; it indicates the authors lost track of the relevant local extension. The proof collapses at this point. Reviewer A identified this; Reviewer B's concerns about the Euler characteristic derivation are complementary and reinforce the conclusion that the proof is broken at multiple points.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The derivation of equation (11) in the proof of Theorem 5.1 relies on unjustified multiplicativity of Euler characteristics from the flat cohomology long exact sequence. The claimed ratio of Euler characteristics does not follow from the provided setup without additional finiteness/vanishing hypotheses that are not established.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.88,
+      "justification": "This is a third independent failure point in the proof of Theorem 5.1, identified primarily by Reviewer B and acknowledged by Reviewer A in reflection. The algebraic manipulation assumes properties of Euler characteristics that are not generally valid for arbitrary Λ-modules. Combined with the hypothesis mismatch and the local Galois group error, this makes the proof of Theorem 5.1 triply broken. Any one of these errors alone would be sufficient; together they are decisive.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Theorem 1.5/6.3 has an internal contradiction: the Galois group of the trivializing extension is described as an open subgroup of GL₂(Z_ℓ) but then stated to be pro-p, while working over Z_ℓ with ℓ-adic μ-invariants. An open subgroup of GL₂(Z_ℓ) is pro-ℓ (up to finite index), not pro-p for p ≠ ℓ.",
+      "severity": "RETRACTION-WORTHY",
+      "confidence_in_severity": 0.85,
+      "justification": "The entire noncommutative Iwasawa-theoretic framework of Part II depends on the correct identification of the ambient prime and group structure. If G is pro-ℓ rather than pro-p, then Λ(G) is the wrong Iwasawa algebra, the μ-invariant is defined over the wrong prime, and all cohomological/Nakayama arguments are in the wrong category. However, there is a small possibility this is a systematic notational confusion (consistently swapping p and ℓ) that could be mechanically corrected without changing the mathematical content, which introduces slight uncertainty. Nevertheless, as printed, the theorem specifies mutually incompatible hypotheses and the main result of Part II is incoherent.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The functor 𝔊 defined in §2.4 is malformed: it is written as '𝔊 := lim ...' rather than 𝔊(X), Φ₀ is incorrectly defined as X, notation alternates between 𝔊 and 𝒢, and the claimed properties (Lemma 2.9) are internally inconsistent with the definitions and with standard Iwasawa module behavior. Proposition 3.5 and the characteristic ideal computation in Theorem 4.9 depend centrally on this functor.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "Both reviewers identified this as a serious problem. Reviewer B upgraded it to RETRACTION-WORTHY in reflection, while Reviewer A rated it MAJOR-REVISION. The definition is clearly corrupted and the claimed properties cannot be verified. However, it is possible that the underlying mathematical construction exists and functions correctly (as in the cited reference [Lee20]) and that the corruption is editorial rather than conceptual. Because the functor is used in Part I's main results, this is at minimum a major defect, but I stop short of RETRACTION-WORTHY because the issue may be recoverable if the correct definitions from the source are restored.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Proposition 3.3 assumes A(K_n) is finite for each n, but for abelian varieties over global function fields, A(K_n) is finitely generated — finiteness forces rank 0. The proposition is misstated or uses the wrong hypothesis.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "This is a genuine mathematical misstatement that affects the validity of the proposition and downstream arguments about growth formulas. It may be repairable by replacing 'A(K_n) finite' with an appropriate finiteness condition on a p-primary part, but as written it is incorrect. Both reviewers identified this issue.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Lemma 3.4(i) claims that finiteness of X/pX and X/ω_n X implies X is a finitely generated torsion Λ-module with μ=0 and characteristic ideal coprime to all ω_n. This inference is substantially stronger than what follows from the stated hypotheses.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "This lemma is a building block for the structure results in Part I. The conclusions require careful structure-theoretic arguments that are not provided. If false, downstream claims on characteristic ideals are affected. Identified by Reviewer A and maintained through reflection.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Proposition 3.5 claims an injection from the Pontryagin dual of A(L_∞)⊗Q_p/Z_p into a direct sum of cyclic Λ-modules with finite cokernel, deduced from a pseudo-isomorphism and the assertion that the source has no nontrivial finite Λ-submodule. The passage from pseudo-isomorphism to injection is not justified, and the Z_p-torsion-freeness claim for the dual is suspect.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "This feeds directly into the characteristic ideal determination in Part I. The argument has a genuine gap in the passage from pseudo-isomorphism to actual injection, which is a well-known subtlety in Iwasawa theory that requires explicit verification.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Corollary 4.3 states a 'Λ-isomorphism' where the left side (T_p M^S(E/L_n)) is naturally a Z_p-module attached to a finite layer, not a Λ-module. The module structures are confused.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "This structural mismatch affects the derivation used in Proposition 4.6 and ultimately the characteristic ideal formula. It may reflect a notation issue or a genuine conceptual error.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Proposition 4.6 claims E₀(L_{n,v})^• is 'isomorphic to countable copies of Q_p' and uses this to conclude (Im f_n)[Φ_n]=0. This local claim is unsupported and likely incorrect without precise topological/module analysis.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "This is the key local input for the characteristic ideal formula in Part I. If the local structure claim fails, the main theorem on characteristic ideals is not established.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Theorem 4.9 is stated as an 'obvious consequence' of Proposition 4.6 without the necessary argument controlling characteristic ideals across the exact sequence 0→M^S→R^S→𝔛^S→0 and through Pontryagin duality.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "This is one of the principal results of Part I. The omitted argument is non-trivial, especially regarding finite/pseudo-null corrections to characteristic ideals.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The control theorem for fine Mordell-Weil groups (Proposition 4.2) has an insufficiently justified kernel decomposition: the claim that ker(h_n) decomposes as a direct sum over primes of local H¹ groups is not properly argued for infinite products over a p-adic extension.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "Reviewer B identified this and upgraded it in reflection. The control theorem is important for Part I, but the issue is more likely a gap in justification than a fundamental impossibility, so MAJOR-REVISION is appropriate.",
+      "source": "prover_b",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Proposition 6.2 uses an overly compressed Nakayama argument to conclude finite generation of S(E/K_∞)^∨ over Λ(H), inside the already inconsistent pro-p/pro-ℓ framework of Part II.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "Central to the noncommutative μ-invariant equality. The compressed argument plus the ambient inconsistency makes this unreliable, though it might be repairable in a corrected framework.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The definition of μ-invariant (Definition 2.14) uses a sum of ranks over Ω(G), which is undefined. Subsequent arguments use Howson's results which assume the standard definition.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "If the definition is nonstandard or incompatible with cited results, all μ-invariant calculations in Parts II and III are potentially affected. However, this may be correctable by adopting the standard definition.",
+      "source": "prover_b",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Remark 5.2 incorrectly states that 'the order of the kernel of isogeny equals its separable degree' and applies this to the purely inseparable Frobenius isogeny. For purely inseparable isogenies, the scheme-theoretic kernel is nontrivial even though the separable degree is 1.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "While presented as a remark rather than a theorem, this reveals a misunderstanding of finite flat group schemes that is directly relevant to the isogeny arguments central to Theorem 5.1.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Extensive notation/definition corruption throughout: placeholders like '[JOURNAL]', inconsistent symbols (M^S vs 𝓜^S, Ж^S vs 𝔛^S), malformed sequences, garbled Carlitz polynomial construction, incorrect cross-references, and undefined lemma numbers.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.9,
+      "justification": "These are severe editorial problems that impede verification but do not by themselves invalidate mathematical claims. Both reviewers agreed on MINOR severity for these issues.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Remark 2.4 claims R^S(A/L_∞) is independent of S 'using the Noetherianness of Z_p[[G]]' without hypotheses or proof.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.88,
+      "justification": "This may be true under specific assumptions but is stated too loosely. It does not directly drive the main theorems.",
+      "source": "prover_a",
+      "survived_reflection": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 4,
+    "MAJOR-REVISION": 11,
+    "MINOR": 2
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.97,
+    "reasoning": "The manuscript contains several serious mathematical/methodological defects, especially in the statements and proofs of its main theorems. The most consequential issues are internal inconsistencies in hypotheses and conclusions (notably Theorems 1.5/6.3 and 1.6/5.1), misuse or misstatement of cohomological assumptions, invalid or unsupported deductions in key proofs, and multiple places where objects or maps are incorrectly defined. These are not merely presentation problems: if confirmed, they undermine the validity of the principal claimed results on characteristic ideals, vanishing of μ-invariants in noncommutative extensions, and the isogeny formula. Some other issues are minor typographical/editorial corruption, but the central mathematical exposition as presented is not reliable.",
+    "findings": [
+      {
+        "finding": "Theorem 1.5/6.3 has an internal contradiction about the Galois group of the trivializing extension: the text says the Galois group is an open subgroup of GL_2(Z_ℓ), but then states 'such that G = Gal(K_∞/K) is pro-p' while discussing ℓ-adic μ-invariants and Λ(G) over Z_ℓ. A nontrivial open subgroup of GL_2(Z_ℓ) is pro-ℓ (up to finite index), not pro-p for p ≠ ℓ.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This is a foundational structural error in the setup of the noncommutative part. If G is misidentified, the Iwasawa algebra, cohomology, and μ-invariant statements are formulated over the wrong prime and the main theorem in Part II is not even correctly stated in the presented form. This breaks the central conclusion of that part."
+      },
+      {
+        "finding": "Theorem 1.6 is stated in the abstract and introduction assuming H^2_fl(K_∞,E_i[p^∞])=0, but the proof section states Theorem 5.1 under the different assumption H^1_fl(K_∞,E_i[p^∞])=0. The subsequent proof actually uses H^2_fl(K_∞,E_i[p^∞])=0 multiple times.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "The main isogeny formula is proved under inconsistent hypotheses, and the printed theorem statement in the proof section does not match the argument. If the theorem truly requires H^2-vanishing, the stated result is false as written; if H^1-vanishing were intended, the proof does not establish it. This invalidates the central theorem of Part III as presented."
+      },
+      {
+        "finding": "In the proof of Theorem 5.1, the authors conclude 'As K_∞ is unramified at every prime v, we obtain that for any prime v and w|v, Gal(K_{∞,w}/K_{∞,w}) ≅ ∏_{ℓ≠p} Z_ℓ. Therefore, ker f_4 = coker f_4 = 0.' This is nonsensical: Gal(K_{∞,w}/K_{∞,w}) is the trivial group, and the intended local/global comparison is not correctly formulated.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "This step is used to force vanishing of local kernel/cokernel terms in the key snake-lemma comparison for the isogeny formula. Since the group and map are incorrectly identified, the proof of the theorem collapses at a crucial point."
+      },
+      {
+        "finding": "Proposition 3.3 assumes 'if the groups A(K_n) and Ш(A/K_n)[p^∞] are finite for each n>0', then concludes '#S(A/K_n)=#Ш(A/K_n)[p^∞]=p^{e_n}'. But A(K_n) for an abelian variety over a global function field is generally finitely generated, not finite; for elliptic curves this would force rank 0. The proposition is misstated or uses the wrong hypothesis.",
+        "severity": "MAJOR-REVISION",
+        "justification": "As written, the proposition is mathematically wrong or at best severely misstated. It may be repairable by replacing 'A(K_n) finite' with a finiteness statement for the p-primary quotient/completion, but in its current form it undermines subsequent arguments relying on growth formulas."
+      },
+      {
+        "finding": "The proof of Lemma 3.4(i) claims that finiteness of X/pX and X/ω_n X implies that X=(A(L_∞)[p^∞])^∨ is a finitely generated torsion Λ-module with μ=0 and characteristic ideal coprime to all ω_n. This inference is not justified from the cited facts alone.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This lemma is used as a building block for Proposition 3.5 and later structure results. The stated conclusions are substantially stronger than the demonstrated input and require a careful structure-theoretic argument. If false or incomplete, downstream claims on characteristic ideals are affected."
+      },
+      {
+        "finding": "The definition of the functor 𝔊 in §2.4 is malformed: it is written as 'For a finitely generated Λ-module X, we define 𝔊 := lim ...' rather than 𝔊(X); then Φ_0 is incorrectly defined as X; later notation alternates between 𝔊 and 𝒢. The subsequent use of its properties includes garbled formulas like '(Λ/ω_{e+1,e}) = 0'.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is not just typographical noise because Proposition 3.5 and the structure theorem for Mordell–Weil groups rely centrally on this functor. The formal statements are too corrupted to verify the argument as written."
+      },
+      {
+        "finding": "Proposition 3.5 claims an injection '(A(L_∞)⊗Q_p/Z_p)^∨ ↪ Λ^r ⊕ ⨁ Λ/Φ_{c_i}' with finite cokernel, deduced from a pseudo-isomorphism and the assertion that the source has no nontrivial finite Λ-submodule because it is Z_p-torsion free. But Pontryagin duals of discrete p-primary groups need not be Z_p-torsion free in the required sense, and the passage from pseudo-isomorphism to injection with finite cokernel is not justified as written.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This proposition feeds directly into the determination of characteristic ideals in Part I. The claimed module structure may be correct under extra work, but the presented proof is insufficient and uses a questionable property of the dual module."
+      },
+      {
+        "finding": "Corollary 4.3 states a 'Λ-isomorphism' T_p M^S(E/L_n) → ⨁_{c_i≤n} Λ/Φ_{c_i}. The left side is naturally a Z_p-module attached to the finite layer L_n, not a Λ-module over the full extension in the obvious sense. The module structures and notation appear confused.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is a substantive structural mismatch, not a cosmetic typo. The result is then used in Proposition 4.6 to identify multiplicities in the characteristic ideal, so the derivation of the main formula is not trustworthy as presented."
+      },
+      {
+        "finding": "In Proposition 4.6, the argument that E_0(L_{n,v})^• is 'isomorphic to countable copies of Q_p' and hence (Im f_n)[Φ_n]=0 is unsupported and likely false without a precise topological/module analysis of local units over characteristic-p local fields in the arithmetic Z_p-extension.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This step is the key local input used to conclude s_m=e_m and thus derive the characteristic ideal formula. If this local linear algebra fails, the main theorem on Char_Λ(R^S(E/L_∞)^∨) is not established."
+      },
+      {
+        "finding": "Theorem 4.9 is announced as an 'obvious consequence' of Proposition 4.6 and the finiteness of 𝔛^S(E/L_∞), but passing from M^S to R^S via 0→M^S→R^S→𝔛^S→0 requires precise control of characteristic ideals of Pontryagin duals and finite modules. The proof is omitted despite being essential.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Theorem 4.9 is one of the principal results of the paper. Given the delicacy of characteristic ideals and duality, the omission is not harmless, especially since finite/pseudo-null corrections matter. The conclusion may still be true, but the manuscript does not adequately justify it."
+      },
+      {
+        "finding": "The proof of Proposition 6.2 uses [Pal14, Theorem 4.4] to say the cokernel of f is a co-finitely generated Z_ℓ-module and then invokes Nakayama to deduce that S(E/K_∞)^∨ is finitely generated over Λ(H). This inference is too quick and omits the exact module-theoretic hypotheses needed; moreover it sits inside the inconsistent 'G pro-p' setup.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is central to the equality of μ-invariants in the noncommutative case. Because the ambient group-theoretic setup is already inconsistent, this insufficiently justified step further weakens confidence in the main theorem of Part II."
+      },
+      {
+        "finding": "Remark 5.2 says 'the order of the kernel of isogeny equals its separable degree' and applies this to the purely inseparable Frobenius isogeny to conclude equality of μ-invariants. For a purely inseparable isogeny, the kernel as a finite flat group scheme is nontrivial even though the separable degree is 1; the statement conflates geometric points with scheme-theoretic kernel.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is a mathematically incorrect interpretation of inseparable isogenies. While presented as a remark/example rather than a main theorem, it indicates a serious issue in handling finite flat kernels, which are also central in Theorem 5.1."
+      },
+      {
+        "finding": "Section 2.2 gives an incorrect and garbled construction of Carlitz polynomials (e.g. '1 = X, t = X^p + tX, t^n = t) ...'). The resulting discussion of geometric Z_p-extensions is not mathematically readable as written.",
+        "severity": "MINOR",
+        "justification": "This section is badly corrupted, but the main results later focus mostly on the arithmetic extension. It should be corrected for accuracy and readability, though it may not alone overturn the main conclusions."
+      },
+      {
+        "finding": "The manuscript repeatedly contains notation/definition corruption: e.g. M^S vs 𝓜^S, Ж^S/𝔛^S/𝒮^S, III for Ш, '[JOURNAL]' placeholders, malformed products/direct sums in Selmer definitions, and inconsistent use of E versus A. Several displayed sequences are syntactically invalid.",
+        "severity": "MINOR",
+        "justification": "These issues make verification difficult and may conceal deeper errors, but by themselves they are largely editorial unless tied to one of the substantive defects above."
+      },
+      {
+        "finding": "The claim in Remark 2.4 that R^S(A/L_∞) is independent of S 'using the Noetherianess of Z_p[[G]]' is stated without hypotheses or proof and is stronger than the usual dependence statements for fine Selmer groups.",
+        "severity": "MINOR",
+        "justification": "This may be true in the cited source under specific assumptions, but as stated it is too loose. It does not directly drive the main theorems."
+      },
+      {
+        "finding": "There are several incorrect cross-references and equation references in proofs, e.g. deriving a relation 'from equation (5)' where the relevant snake-lemma sequence is elsewhere, and referring to undefined Lemma 2.9. These make it impossible to audit some arguments reliably.",
+        "severity": "MINOR",
+        "justification": "This is partly a presentation problem, but it materially obstructs verification. On its own it suggests major revision rather than invalidation."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.9,
+    "reasoning": "The manuscript contains a critical error in the proof of Theorem 5.1 (isogeny and μ-invariants). Specifically, the argument uses the assumption H²_fl(K∞, E_i[p^∞]) = 0 to derive an equality of Euler characteristics, but the derivation of the key formula (equation 11) is not correctly justified from the provided setup. The claimed 'long exact sequence of flat cohomology corresponding to the short exact sequence 0 → A → E_1[p^∞] → E_2[p^∞] → 0' does not directly yield the given expression for the ratio of Euler characteristics without further hypotheses on flat cohomology groups (e.g., finiteness, vanishing of higher terms) which are not established in the manuscript. Additionally, the use of the functor 𝔊 and the claimed properties (e.g., Lemma 2.9) are poorly defined and the reference [Lee20] does not correspond to the numbered lemma cited (the lemma appears to merge two separated lemmas without clear justification). These issues undermine the central result of the second part of the paper and likely affect the claimed conclusions.",
+    "findings": [
+      {
+        "finding": "The derivation of the key formula (11) for the change of μ-invariant under isogeny (Theorem 5.1) relies on unjustified algebraic manipulation of flat cohomology Euler characteristics. The long exact sequence of flat cohomology for 0 → A → E_1[p^∞] → E_2[p^∞] → 0 does not obviously yield the expression given in equation (11) without additional assumptions on the finiteness and vanishing of H²_fl(K∞, E_i[p^∞]) that are not fully proven. Furthermore, the argument that the ratio χ(Γ, coker f₁)/χ(Γ, ker f₁) equals the claimed product of Euler characteristics is not justified; it appears to assume that the cohomology of the relevant complexes behaves like a multiplicative Euler characteristic, which is not generally true for arbitrary Λ-modules.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "If this error is confirmed, the proof of Theorem 5.1 is invalid. Since Theorem 5.1 is a central result of Part II, the main conclusion about the behavior of μ-invariants under isogeny is unsupported. This would require retraction of the paper or major revision to fix the argument."
+      },
+      {
+        "finding": "The functor 𝔊 (defined in §2.4) and its properties (Lemma 2.9) are used crucially in Proposition 3.5 and subsequent results. The cited lemma from [Lee20] does not appear to be correctly reproduced in the manuscript. Specifically, property (3) of the functor, which states 'For m ≥ 0, 𝔊(Λ/Φ_m^e) = Λ/Φ_m^{e-1} if e ≥ 2, and 0 if e=1', is not clearly derived from definitions and contradicts standard behavior of Iwasawa modules. The manuscript does not provide the necessary background to verify this claim.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the functor 𝔊 does not satisfy these properties, then Proposition 3.5 (the structure of the Mordell-Weil group), Corollary 4.1, and the subsequent derivation of the characteristic ideal in Theorem 4.9 could be incorrect. The argument is not salvageable without a clear justification or correction of the functor's properties."
+      },
+      {
+        "finding": "The definition of μ-invariant in Definition 2.14 is nonstandard: it uses a sum of ranks over Ω(G) (which is not defined) instead of the usual definition using the number of copies of ℤ_p in the Iwasawa module. This makes the definition ambiguous and possibly incorrect. The subsequent use of μ in the proofs (e.g., via Howson's results) assumes the standard definition, so the manuscript's definition may be incompatible.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If the definition is misstated, then all results relying on μ-invariant calculations (e.g., Theorem 5.1, Theorem 6.3) are potentially flawed. The manuscript must clarify the definition or adopt the standard one."
+      },
+      {
+        "finding": "In the proof of Proposition 4.2 (control theorem for fine Mordell-Weil groups), the claim that 'ker(h_n) ≅ ⊕_{v∈S} H^1(Γ_{n,v}, E(L_{∞,v})[p^∞])' is not fully justified. The decomposition of the product over primes and the use of Shapiro's lemma are not correctly argued for the infinite product of local cohomology groups over a p-adic extension. The boundedness claim for the kernel of m_n relies on this.",
+        "severity": "MAJOR-REVISION",
+        "justification": "If this step is incorrect, the control theorem (Proposition 4.2) may be invalid, which affects the derivation of the characteristic ideal in Theorem 4.9. The argument needs substantial clarification."
+      },
+      {
+        "finding": "The manuscript contains numerous typographical errors and incomplete sentences (e.g., the definition of Carlitz polynomials is truncated, the lemma numbering is inconsistent, references to undefined symbols like 'Ω(G)' and 'ω_{0,-1}' appear). These do not affect the mathematical content directly but indicate a lack of careful proofreading.",
+        "severity": "MINOR",
+        "justification": "These issues do not change the conclusions but should be corrected to improve clarity and reproducibility."
+      }
+    ]
+  },
+  "reflection_a": {
+    "defense_for_self": "The strongest defense of my original severity ratings is that the RETRACTION-WORTHY findings are not merely gaps in exposition or omitted lemmas; they are failures in the logical and structural foundations of the paper’s main theorems. In each such case, the theorem as printed is either internally inconsistent, proved under contradictory hypotheses, or contains a decisive step that is mathematically nonsensical. Under the rubric provided, that is exactly when one should say 'retraction-worthy': the central conclusions cannot be supported by the manuscript as presented.\n\n1. Why my RETRACTION-WORTHY ratings are not overstated\n\n(a) Theorem 1.5 / 6.3: wrong ambient prime and impossible group-theoretic setup\nThis is not a technicality. The manuscript simultaneously treats the trivializing extension of an elliptic curve’s Tate module as having Galois group an open subgroup of GL_2(Z_ℓ) and then says G = Gal(K_∞/K) is pro-p while forming Λ(G) over Z_ℓ and discussing ℓ-adic μ-invariants. A nontrivial open subgroup of GL_2(Z_ℓ) is, after finite index issues, pro-ℓ, not pro-p for p ≠ ℓ. So the statement as printed does not merely have an unclear hypothesis; it specifies mutually incompatible hypotheses.\n\nThat is foundational because the entire noncommutative Iwasawa-theoretic machine depends on the correct coefficient ring and prime: the completed group algebra, the finiteness notion over Λ(H), the definition of μ, the use of Nakayama, and the cohomological control all depend on whether one is in the p-adic or ℓ-adic setting. If G is the wrong kind of group, then the object Λ(G) is the wrong Iwasawa algebra for the theorem, and the theorem is not even formulated in a coherent category. A theorem whose hypotheses define no coherent mathematical situation for the intended argument is not salvageably 'major revision' in its current published form; it means the principal result of that part is unsupported.\n\nAgainst any softer framing: one might say this is a typo, replacing p by ℓ. But the burden is not on the reviewer to repair the theorem. As printed, the theorem is false/incoherent. Moreover the inconsistency infects the proof section as well, so it is not a single isolated typo in the introduction. Because Part II’s central conclusion is built in this incorrect ambient setting, my RETRACTION-WORTHY rating is appropriate.\n\n(b) Theorem 1.6 / 5.1: theorem stated under one vanishing hypothesis, proved using another\nThis is precisely the kind of defect that invalidates a central theorem as presented. The abstract/introduction formulate the isogeny result under H^2_fl(K_∞,E_i[p^∞]) = 0, but the proof section prints Theorem 5.1 with H^1_fl(K_∞,E_i[p^∞]) = 0 instead. The proof then repeatedly uses H^2-vanishing, not H^1-vanishing.\n\nThat means at least one of the following must be true:\n- the theorem statement in the proof section is false as written;\n- the proof does not prove the stated theorem;\n- the introduction/abstract state a different theorem from the one actually proved.\nAny one of these is enough to say the principal theorem is unsound in the manuscript as published. This is not simply an omitted detail or a missing citation. The theorem’s assumptions determine whether the Euler characteristic manipulations and exact-sequence truncations even make sense. If the argument requires H^2 = 0 and the theorem only assumes H^1 = 0, then the theorem is not established. If H^1 was intended, the proof is irrelevant. A central theorem proved under contradictory hypotheses is classically retraction-level as to that result, because the published conclusion cannot be trusted.\n\nThis also directly answers the other reviewer’s narrower focus on equation (11): yes, the Euler characteristic manipulation is problematic, but the problem is even deeper. Before one reaches equation (11), the theorem is already unstable at the level of its stated assumptions. My framing is therefore stronger and more fundamental, not overstated.\n\n(c) Proof of Theorem 5.1: the local Galois-group step is mathematically nonsensical\nThe manuscript states: because K_∞ is unramified at every prime v, for any v and w|v, Gal(K_{∞,w}/K_{∞,w}) ≅ ∏_{ℓ≠p} Z_ℓ; therefore ker f_4 = coker f_4 = 0. This is not a subtle abuse. Gal(K_{∞,w}/K_{∞,w}) is the trivial group, full stop. The displayed group is nonsense because the numerator and denominator field are identical. So the local term used to kill the kernel and cokernel is not just unjustified; it is literally built from the wrong object.\n\nThis matters because those local kernel/cokernel vanishings are a crucial step in the snake-lemma comparison that yields the isogeny formula. Once that step fails, the proof collapses at a key juncture. Unlike a routine local cohomology estimate that could perhaps be supplied later, this is an indication that the authors lost track of the relevant local extension altogether. If one cannot correctly identify the local Galois group entering the diagram chase, the claimed exactness consequences cannot be accepted.\n\nHere again, the other reviewer’s concern about unjustified Euler characteristic multiplicativity is valid but secondary. There is an earlier, harder failure: the proof uses a plainly false statement about a trivial Galois group to annihilate terms it needs gone. That is decisive. The theorem’s proof is fundamentally broken, so RETRACTION-WORTHY is the right severity.\n\n2. Why these are genuinely central and not merely repairable by revision\nThe key test given in the prompt is: if confirmed, would this need retraction, revision, or just noting? For the three findings above, the answer is retraction of the theorem(s) as published because:\n- they strike the main theorems, not side lemmas;\n- they are not just missing details but contradictions or impossible statements;\n- they prevent verification of the paper’s headline conclusions on characteristic ideals, vanishing/equality of μ-invariants, and the isogeny formula.\n\nA major-revision defect is something like an omitted argument that might be filled in without changing the theorem’s statement. But where the theorem’s setup is internally inconsistent, or the proof uses a hypothesis different from the theorem’s printed hypothesis, or a crucial proof step invokes a meaningless Galois group, the result is not currently supportable. In publication terms, those results would need to be withdrawn and replaced, not merely polished.\n\n3. Defense of my most serious assessments against the other reviewer's alternative framings\n\n(a) On Theorem 5.1, my assessment is stronger because the defect is stronger\nThe other reviewer identifies a serious flaw in the derivation of equation (11) from flat cohomology. I agree that is a grave problem. But my assessment goes further because there are two prior defects that make the theorem retraction-worthy even before debating the Euler characteristic algebra:\n- the theorem is stated under inconsistent hypotheses (H^1 vs H^2 vanishing), and\n- the proof kills local terms via a nonsensical group Gal(K_{∞,w}/K_{∞,w}).\nThese are more basic than a possibly repairable issue in the manipulation of Euler characteristics. If the statement and the proof do not even match, and a crucial local comparison uses a mathematically impossible object, then the theorem is broken at a structural level. So my rating is not inflated; it is better calibrated to the depth of the failure.\n\n(b) On Part II (Theorem 6.3), the other review understates the ambient inconsistency\nThe other review focuses more on the μ-definition and module-theoretic presentation. Those are valid concerns, but the more severe issue is that the theorem is built in the wrong prime-adic world. If the extension is attached to an open subgroup of GL_2(Z_ℓ), then the relevant completed group algebra and structural statements are ℓ-adic, not pro-p in the paper’s sense. This is not cosmetic and cannot be brushed aside as notation. The theorem as formulated mixes incompatible categories. Any subsequent use of Howson/Palvannan/Nakayama in that setting is moot until the ambient group is corrected. Therefore my severe rating is the right one.\n\n(c) Why I did not over-upgrade all serious issues\nI reserved RETRACTION-WORTHY for defects that by themselves break central theorem statements or decisive proof steps. I did not mark every unclear proof or corrupted definition that way. For example, the malformed functor 𝔊, the unsupported structure claims in Proposition 3.5, and the local analysis in Proposition 4.6 were rated MAJOR-REVISION, not RETRACTION-WORTHY, because in principle those arguments might be repaired without changing the paper’s ultimate claims. This restraint supports the credibility of the RETRACTION-WORTHY labels I did assign.\n\n4. Why my MAJOR-REVISION findings remain appropriately severe\nSeveral findings are not retraction-level individually but still could materially alter conclusions. I continue to defend those ratings strongly:\n- Proposition 3.3 assumes finiteness of A(K_n), which is generally false for abelian varieties over global function fields unless rank is zero. That is a genuine mathematical misstatement, not a stylistic issue.\n- Lemma 3.4(i) draws strong torsion/μ=0/characteristic-ideal conclusions from insufficient finiteness input. This is a structure-theoretic gap that affects downstream theorems.\n- The functor 𝔊 in §2.4 is so badly malformed that the resulting propositions cannot be audited reliably. Because those propositions feed Part I’s characteristic ideal computations, this is major.\n- Proposition 3.5’s passage from pseudo-isomorphism to actual injection with finite cokernel is not justified, and its no-finite-submodule argument is suspect.\n- Corollary 4.3 confuses module structures between finite-layer objects and Λ-modules over the infinite extension; that is substantive, not cosmetic.\n- Proposition 4.6 relies on unsupported local structure claims about E_0(L_{n,v})^• and uses them to deduce annihilator information critical to the characteristic ideal formula.\n- Theorem 4.9 is asserted as 'obvious' despite requiring careful control of characteristic ideals across short exact sequences and duals.\n- Proposition 6.2 combines an overly compressed argument with the already inconsistent pro-p/pro-ℓ setup, making the finite-generation conclusion untrustworthy as presented.\n- Remark 5.2 materially mishandles inseparable isogenies by conflating separable degree with kernel order as a finite flat group scheme, showing misunderstanding of exactly the objects needed in Theorem 5.1.\n\nThese are all too serious to be reduced to MINOR. They affect whether the main formulas are actually established.\n\n5. Additional point in favor of my original overall judgment\nWhat makes this manuscript especially concerning is not one isolated mistake but the pattern: wrong hypotheses, malformed definitions, garbled module structures, impossible local Galois groups, and omitted proofs precisely where the main conclusions are asserted. When multiple central arguments fail independently, the chance that the headline results survive unchanged becomes low. That pattern justifies a firm stance on severity.\n\nIn short: my RETRACTION-WORTHY findings meet the exact standard in the prompt. They show that the central conclusions cannot be supported by the manuscript as presented. My MAJOR-REVISION findings identify further substantial defects that could change conclusions but are not by themselves enough to force retraction. I therefore stand by the original severity assignments and, if anything, think the case for them is stronger after comparing the alternative review.",
+    "severity_i_now_upgrade": [
+      "The finding on the derivation of equation (11) / Euler characteristic manipulation in Theorem 5.1, highlighted by the other reviewer, should itself be treated as RETRACTION-WORTHY if separated out as its own finding, because it independently invalidates the main isogeny theorem beyond the hypothesis mismatch and local-Galois-group error already identified."
+    ],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      "RETRACTION-WORTHY: Theorem 1.5/6.3 internal contradiction ('open subgroup of GL_2(Z_ℓ)' but 'G is pro-p'). Reason: this makes the main noncommutative theorem incoherent at the level of its basic setup; the wrong prime-adic category invalidates the stated μ-invariant and Iwasawa algebra framework.",
+      "RETRACTION-WORTHY: Theorem 1.6/5.1 hypothesis mismatch (H^2_fl in abstract/introduction vs H^1_fl in theorem statement in proof, while proof uses H^2_fl). Reason: the central theorem is not proved as stated, and at least one printed version is false or unsupported.",
+      "RETRACTION-WORTHY: Proof of Theorem 5.1 uses the nonsensical group Gal(K_{∞,w}/K_{∞,w}) ≅ ∏_{ℓ≠p} Z_ℓ to deduce ker f_4 = coker f_4 = 0. Reason: this destroys a crucial local step in the proof; it is not an omitted detail but a mathematically impossible statement.",
+      "MAJOR-REVISION: Proposition 3.3 assumes A(K_n) finite. Reason: as written this is generally false and materially affects the proposition’s validity, but may be repairable by correcting the hypothesis to the appropriate Selmer/Mordell-Weil quotient finiteness.",
+      "MAJOR-REVISION: Lemma 3.4(i) infers torsion, μ=0, and characteristic-ideal coprimality from insufficient finiteness data. Reason: the conclusion is much stronger than what is justified and feeds later structure results.",
+      "MAJOR-REVISION: Definition and use of functor 𝔊 in §2.4 are malformed/corrupted. Reason: since Part I’s structure theorem relies on it, the argument cannot be validated in present form.",
+      "MAJOR-REVISION: Proposition 3.5 unjustified passage from pseudo-isomorphism to injection with finite cokernel, plus dubious claim about absence of finite Λ-submodules. Reason: this is central to the module-structure description used later.",
+      "MAJOR-REVISION: Corollary 4.3 confuses finite-layer Z_p-modules with Λ-modules over the tower. Reason: the algebraic structure is mismatched in a way that undermines the stated isomorphism.",
+      "MAJOR-REVISION: Proposition 4.6 unsupported local claim about E_0(L_{n,v})^• and resulting annihilator conclusion. Reason: this is a key local input for the characteristic ideal formula and is not established.",
+      "MAJOR-REVISION: Theorem 4.9 treated as 'obvious consequence' without the needed characteristic-ideal argument across exact sequences and duals. Reason: this omission concerns one of the paper’s principal results.",
+      "MAJOR-REVISION: Proposition 6.2 over-compressed Nakayama argument inside inconsistent ambient setup. Reason: finite generation over Λ(H) is central and not adequately justified.",
+      "MAJOR-REVISION: Remark 5.2 conflates separable degree with order of kernel for inseparable isogenies. Reason: this is mathematically wrong and reveals misunderstanding of finite flat kernels central to the paper’s isogeny arguments.",
+      "MINOR: Carlitz polynomial section badly garbled. Reason: serious editorial corruption, though probably not by itself fatal to the main conclusions.",
+      "MINOR: notation/definition corruption, placeholders, malformed sequences. Reason: impedes verification and signals poor reliability, but not every such issue changes conclusions on its own.",
+      "MINOR: loose claim of S-independence of R^S(A/L_∞) without hypotheses. Reason: likely needs qualification but is not the main engine of the results.",
+      "MINOR: incorrect cross-references/undefined lemmas. Reason: obstructive but not independently outcome-determinative."
+    ],
+    "new_errors_noticed": [
+      "The other reviewer correctly identifies an additional independent defect in Theorem 5.1: the derivation of equation (11) appears to misuse multiplicativity of Euler characteristics in a way not justified by the long exact flat cohomology sequence. I should have listed this separately as another major central error, likely RETRACTION-WORTHY.",
+      "The definition of the μ-invariant appears ambiguous/nonstandard in the manuscript, including use of an undefined Ω(G). Given how central μ is to Parts II and III, this is another substantive defect beyond mere notation.",
+      "The control argument in Proposition 4.2 may also be more fragile than I initially stated: the decomposition of local terms and boundedness of kernels through Shapiro-type arguments over infinite products deserves separate scrutiny and may be a distinct MAJOR-REVISION issue."
+    ]
+  },
+  "reflection_b": {
+    "defense_for_self": "My original ratings were deliberately conservative and grounded in the specific mathematical failures that each finding represents. I stand by them because the errors I identified go to the core of the paper's logical structure—they are not matters of presentation or incomplete justification but of fundamental impossibility or incoherence. I will now build the strongest case for each retraction-worthy and major-revision severity, and I will argue why the other reviewer's alternative framings do not reduce the severity of my findings.",
+    "severity_i_now_upgrade": [
+      "Finding 2 (functor 𝔊 and Lemma 2.9): I originally rated this MAJOR-REVISION. However, upon deeper reflection, I see that the other reviewer's findings (e.g., finding 6 about malformed definition of 𝔊, finding 3 about garbled formulas) actually reinforce that this is not a salvageable error. The functor 𝔊 is defined in a corrupted, self-contradictory way (e.g., '𝔊 := lim ...' instead of 𝔊(X), and Φ_0 incorrectly defined as X). The property claimed (Lemma 2.9(3): 𝔊(Λ/Φ_m^e) = Λ/Φ_m^{e-1} if e≥2, else 0) is internally inconsistent with the definitions given and with standard behavior of Iwasawa modules over function fields. This is not a missing justification—it is an impossibility. The paper's entire structure for Mordell-Weil groups (Proposition 3.5) and characteristic ideals (Theorem 4.9) depends on this functor. If the functor cannot exist as described, those results are not merely incomplete; they are built on sand. The other reviewer's finding 6 (malformed definition) and finding 3 (garbled formulas) confirm that the argument is not just unverified but mathematically incoherent. Therefore, I now upgrade this finding to RETRACTION-WORTHY, because without a correct definition and properties of 𝔊, the central results of Part I cannot be sustained.",
+      "Finding 4 (Proposition 4.2 control theorem): I originally rated this MAJOR-REVISION. The other reviewer's findings do not contradict me but rather add weight. Their finding 8 (Corollary 4.3 Λ-isomorphism confusion) and finding 9 (Proposition 4.6 local analysis) show that the control theorem and its consequences are riddled with similar structural mismatches. The claim that 'ker(h_n) ≅ ⊕_{v∈S} H^1(Γ_{n,v}, E(L_{∞,v})[p^∞])' is not just poorly justified—it is mathematically suspect because the decomposition over primes in an infinite extension requires careful handling of the product topology and the fact that the local Galois groups Γ_{n,v} are not independent. This error propagates into the derivation of the characteristic ideal. I now upgrade this to RETRACTION-WORTHY because the control theorem is a linchpin for the entire Part I, and its proof is fundamentally flawed. If the kernel decomposition is incorrect, then the subsequent 'boundedness' claim and the entire derivation of the characteristic ideal are unsupported. The paper cannot stand without a valid control theorem."
+    ],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      {
+        "finding": "Finding 1 (derivation of formula (11) in Theorem 5.1) — RETRACTION-WORTHY.",
+        "reason": "The other reviewer's finding 2 (inconsistent hypotheses in Theorem 1.6/5.1) and finding 3 (nonsensical local Galois group) actually corroborate my assessment. They show that the proof of Theorem 5.1 is not just missing justification but is internally contradictory. The other reviewer's finding 2 shows that the theorem statement in the proof uses H^1 vanishing while the argument uses H^2 vanishing—this is a fatal inconsistency. My finding 1 identifies the specific unjustified algebraic manipulation (the Euler characteristic ratio not making sense). Together, these confirm that the proof of Theorem 5.1 is irredeemably broken. The other reviewer's finding 3 (the 'nonsensical' local Galois group step) is another fatal blow. Thus, my retraction-worthy rating is not overstated; it is the only appropriate rating for a theorem whose proof contains multiple logical contradictions and unsupported leaps.",
+        "severity": "RETRACTION-WORTHY"
+      },
+      {
+        "finding": "Finding 3 (nonstandard definition of μ-invariant) — MAJOR-REVISION.",
+        "reason": "The other reviewer's finding 1 (about the Galois group in Theorem 1.5/6.3 being pro-ℓ vs pro-p) actually underscores why my concern about the μ-invariant definition is serious. If the definition is nonstandard, and the paper then uses results like Howson's that assume the standard definition, the argument for the noncommutative μ-invariant is built on undefined or mismatched concepts. The other reviewer's finding 1 shows a foundational structural error in the noncommutative part (pro-p vs pro-ℓ), which makes the entire Part II suspect. My finding 3 is a necessary precondition for any meaningful use of μ-invariants. I stand by MAJOR-REVISION because if the definition is corrected, the rest of the argument might still be salvageable (unlike the retraction-worthy errors). However, I note that the other reviewer's findings about the noncommutative part being structurally mis-specified mean that even a corrected definition might not save Part II. But that is not my finding's fault; I rated it correctly.",
+        "severity": "MAJOR-REVISION"
+      },
+      {
+        "finding": "Finding 5 (typographical errors) — MINOR.",
+        "reason": "The other reviewer's finding 12 (garbled Carlitz polynomials), 13 (notation corruption), 14 (Remark 2.4), and 15 (incorrect cross-references) all fall into the same category. These are severe editorial problems, but they do not by themselves invalidate the mathematical claims. I rated them MINOR because they are about clarity and reproducibility, not about logical fallacies. The other reviewer's findings 12-15 are similarly MINOR, and we agree on this. I stand by MINOR.",
+        "severity": "MINOR"
+      }
+    ],
+    "new_errors_noticed": [
+      "I failed to notice that Finding 2 (functor 𝔊) is even more severe than I originally thought. The other reviewer's finding 6 (malformed definition) and finding 3 (garbled formulas) make it clear that the functor is not just poorly defined but mathematically incoherent. This justifies upgrading it to RETRACTION-WORTHY, as argued above.",
+      "I also failed to notice the internal contradiction in Theorem 1.5/6.3 about the Galois group being both pro-p and an open subgroup of GL₂(Z_ℓ) (other reviewer's finding 1). This is indeed retraction-worthy for Part II. While it was not in my original list, it reinforces the broader conclusion that the manuscript is unreliable.",
+      "I also now see that the other reviewer's finding 7 (Proposition 3.3 about finiteness of A(K_n)) is a serious misstatement that I missed. If A(K_n) is assumed finite, then for a global function field, this forces rank 0, which is not generally assumed. This is a MAJOR-REVISION issue that I should have caught. However, it does not rise to retraction-worthy because it might be a misstatement that can be corrected (e.g., to 'finite p-primary part'). But it is a significant error in the assumptions."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.96,
+    "reasoning": "Both reviewers independently identified multiple serious errors in the manuscript's central theorems and proofs. After reflection, both reviewers maintained or strengthened their severity assessments. The manuscript suffers from at least three categories of fundamental defects: (1) internally contradictory hypotheses in main theorem statements (Theorems 1.5/6.3 and 1.6/5.1), (2) mathematically nonsensical steps in key proofs (the local Galois group argument in the proof of Theorem 5.1), and (3) unjustified algebraic manipulations central to the derivation of the isogeny formula. These are not presentation issues or missing details — they represent structural failures in the paper's logical foundations that prevent the central conclusions from being supported. Additionally, multiple MAJOR-REVISION level defects in supporting propositions and definitions (functor 𝔊, control theorem, Proposition 3.3, module structure claims) further erode confidence in the results even if the top-level errors could somehow be repaired.",
+    "findings": [
+      {
+        "finding": "Theorem 1.6/5.1 hypothesis mismatch: The isogeny theorem is stated under H²_fl vanishing in the introduction but under H¹_fl vanishing in the proof section (Theorem 5.1), while the proof itself uses H²_fl vanishing. The theorem as printed is either false or unproven.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.95,
+        "justification": "The central isogeny theorem of Part III has inconsistent hypotheses between its statement and proof. This is not a typo that can be silently corrected — it means the published theorem statement either does not match what is proved, or the proof does not establish what is claimed. Either way, the headline result on μ-invariants under isogeny is unsupported as presented. Both reviewers identified aspects of this problem and both rated it retraction-worthy.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Proof of Theorem 5.1 uses the nonsensical group Gal(K_{∞,w}/K_{∞,w}) ≅ ∏_{ℓ≠p} Z_ℓ to conclude ker f₄ = coker f₄ = 0. This group is trivially the identity, and the intended local comparison is fundamentally misidentified.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.93,
+        "justification": "This step is used to eliminate local terms in the snake-lemma comparison that yields the isogeny formula. The statement is mathematically impossible — the Galois group of a field over itself is trivial. This is not a gap that could be filled; it indicates the authors lost track of the relevant local extension. The proof collapses at this point. Reviewer A identified this; Reviewer B's concerns about the Euler characteristic derivation are complementary and reinforce the conclusion that the proof is broken at multiple points.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The derivation of equation (11) in the proof of Theorem 5.1 relies on unjustified multiplicativity of Euler characteristics from the flat cohomology long exact sequence. The claimed ratio of Euler characteristics does not follow from the provided setup without additional finiteness/vanishing hypotheses that are not established.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.88,
+        "justification": "This is a third independent failure point in the proof of Theorem 5.1, identified primarily by Reviewer B and acknowledged by Reviewer A in reflection. The algebraic manipulation assumes properties of Euler characteristics that are not generally valid for arbitrary Λ-modules. Combined with the hypothesis mismatch and the local Galois group error, this makes the proof of Theorem 5.1 triply broken. Any one of these errors alone would be sufficient; together they are decisive.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Theorem 1.5/6.3 has an internal contradiction: the Galois group of the trivializing extension is described as an open subgroup of GL₂(Z_ℓ) but then stated to be pro-p, while working over Z_ℓ with ℓ-adic μ-invariants. An open subgroup of GL₂(Z_ℓ) is pro-ℓ (up to finite index), not pro-p for p ≠ ℓ.",
+        "severity": "RETRACTION-WORTHY",
+        "confidence_in_severity": 0.85,
+        "justification": "The entire noncommutative Iwasawa-theoretic framework of Part II depends on the correct identification of the ambient prime and group structure. If G is pro-ℓ rather than pro-p, then Λ(G) is the wrong Iwasawa algebra, the μ-invariant is defined over the wrong prime, and all cohomological/Nakayama arguments are in the wrong category. However, there is a small possibility this is a systematic notational confusion (consistently swapping p and ℓ) that could be mechanically corrected without changing the mathematical content, which introduces slight uncertainty. Nevertheless, as printed, the theorem specifies mutually incompatible hypotheses and the main result of Part II is incoherent.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The functor 𝔊 defined in §2.4 is malformed: it is written as '𝔊 := lim ...' rather than 𝔊(X), Φ₀ is incorrectly defined as X, notation alternates between 𝔊 and 𝒢, and the claimed properties (Lemma 2.9) are internally inconsistent with the definitions and with standard Iwasawa module behavior. Proposition 3.5 and the characteristic ideal computation in Theorem 4.9 depend centrally on this functor.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "Both reviewers identified this as a serious problem. Reviewer B upgraded it to RETRACTION-WORTHY in reflection, while Reviewer A rated it MAJOR-REVISION. The definition is clearly corrupted and the claimed properties cannot be verified. However, it is possible that the underlying mathematical construction exists and functions correctly (as in the cited reference [Lee20]) and that the corruption is editorial rather than conceptual. Because the functor is used in Part I's main results, this is at minimum a major defect, but I stop short of RETRACTION-WORTHY because the issue may be recoverable if the correct definitions from the source are restored.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Proposition 3.3 assumes A(K_n) is finite for each n, but for abelian varieties over global function fields, A(K_n) is finitely generated — finiteness forces rank 0. The proposition is misstated or uses the wrong hypothesis.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "This is a genuine mathematical misstatement that affects the validity of the proposition and downstream arguments about growth formulas. It may be repairable by replacing 'A(K_n) finite' with an appropriate finiteness condition on a p-primary part, but as written it is incorrect. Both reviewers identified this issue.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Lemma 3.4(i) claims that finiteness of X/pX and X/ω_n X implies X is a finitely generated torsion Λ-module with μ=0 and characteristic ideal coprime to all ω_n. This inference is substantially stronger than what follows from the stated hypotheses.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.82,
+        "justification": "This lemma is a building block for the structure results in Part I. The conclusions require careful structure-theoretic arguments that are not provided. If false, downstream claims on characteristic ideals are affected. Identified by Reviewer A and maintained through reflection.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Proposition 3.5 claims an injection from the Pontryagin dual of A(L_∞)⊗Q_p/Z_p into a direct sum of cyclic Λ-modules with finite cokernel, deduced from a pseudo-isomorphism and the assertion that the source has no nontrivial finite Λ-submodule. The passage from pseudo-isomorphism to injection is not justified, and the Z_p-torsion-freeness claim for the dual is suspect.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "This feeds directly into the characteristic ideal determination in Part I. The argument has a genuine gap in the passage from pseudo-isomorphism to actual injection, which is a well-known subtlety in Iwasawa theory that requires explicit verification.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Corollary 4.3 states a 'Λ-isomorphism' where the left side (T_p M^S(E/L_n)) is naturally a Z_p-module attached to a finite layer, not a Λ-module. The module structures are confused.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.78,
+        "justification": "This structural mismatch affects the derivation used in Proposition 4.6 and ultimately the characteristic ideal formula. It may reflect a notation issue or a genuine conceptual error.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Proposition 4.6 claims E₀(L_{n,v})^• is 'isomorphic to countable copies of Q_p' and uses this to conclude (Im f_n)[Φ_n]=0. This local claim is unsupported and likely incorrect without precise topological/module analysis.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "This is the key local input for the characteristic ideal formula in Part I. If the local structure claim fails, the main theorem on characteristic ideals is not established.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Theorem 4.9 is stated as an 'obvious consequence' of Proposition 4.6 without the necessary argument controlling characteristic ideals across the exact sequence 0→M^S→R^S→𝔛^S→0 and through Pontryagin duality.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.78,
+        "justification": "This is one of the principal results of Part I. The omitted argument is non-trivial, especially regarding finite/pseudo-null corrections to characteristic ideals.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The control theorem for fine Mordell-Weil groups (Proposition 4.2) has an insufficiently justified kernel decomposition: the claim that ker(h_n) decomposes as a direct sum over primes of local H¹ groups is not properly argued for infinite products over a p-adic extension.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "Reviewer B identified this and upgraded it in reflection. The control theorem is important for Part I, but the issue is more likely a gap in justification than a fundamental impossibility, so MAJOR-REVISION is appropriate.",
+        "source": "prover_b",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Proposition 6.2 uses an overly compressed Nakayama argument to conclude finite generation of S(E/K_∞)^∨ over Λ(H), inside the already inconsistent pro-p/pro-ℓ framework of Part II.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.78,
+        "justification": "Central to the noncommutative μ-invariant equality. The compressed argument plus the ambient inconsistency makes this unreliable, though it might be repairable in a corrected framework.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The definition of μ-invariant (Definition 2.14) uses a sum of ranks over Ω(G), which is undefined. Subsequent arguments use Howson's results which assume the standard definition.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "If the definition is nonstandard or incompatible with cited results, all μ-invariant calculations in Parts II and III are potentially affected. However, this may be correctable by adopting the standard definition.",
+        "source": "prover_b",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Remark 5.2 incorrectly states that 'the order of the kernel of isogeny equals its separable degree' and applies this to the purely inseparable Frobenius isogeny. For purely inseparable isogenies, the scheme-theoretic kernel is nontrivial even though the separable degree is 1.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "While presented as a remark rather than a theorem, this reveals a misunderstanding of finite flat group schemes that is directly relevant to the isogeny arguments central to Theorem 5.1.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Extensive notation/definition corruption throughout: placeholders like '[JOURNAL]', inconsistent symbols (M^S vs 𝓜^S, Ж^S vs 𝔛^S), malformed sequences, garbled Carlitz polynomial construction, incorrect cross-references, and undefined lemma numbers.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.9,
+        "justification": "These are severe editorial problems that impede verification but do not by themselves invalidate mathematical claims. Both reviewers agreed on MINOR severity for these issues.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Remark 2.4 claims R^S(A/L_∞) is independent of S 'using the Noetherianness of Z_p[[G]]' without hypotheses or proof.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.88,
+        "justification": "This may be true under specific assumptions but is stated too loosely. It does not directly drive the main theorems.",
+        "source": "prover_a",
+        "survived_reflection": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 64240,
+    "duration_s": 226.34,
+    "n_api_calls": 28,
+    "cost_usd": 2.6548,
+    "total_input_tokens": 192808,
+    "total_output_tokens": 49089,
+    "calls": [
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2508,
+        "output_tokens": 1092,
+        "cost_usd": 0.0018783600000000001,
+        "duration_s": 13.62,
+        "label": "2406.01892v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 9377,
+        "output_tokens": 2647,
+        "cost_usd": 0.33918,
+        "duration_s": 50.42,
+        "label": "2405.20571v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 5627,
+        "output_tokens": 1529,
+        "cost_usd": 0.0293575,
+        "duration_s": 32.67,
+        "label": "2406.03201v2/b3plus/reflection_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7154,
+        "output_tokens": 1908,
+        "cost_usd": 0.25041,
+        "duration_s": 35.4,
+        "label": "2406.01892v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 5605,
+        "output_tokens": 1489,
+        "cost_usd": 0.00315125,
+        "duration_s": 18.14,
+        "label": "2406.03201v2/b3plus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 23622,
+        "output_tokens": 2572,
+        "cost_usd": 0.084775,
+        "duration_s": 44.67,
+        "label": "2406.03201v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3821,
+        "output_tokens": 1700,
+        "cost_usd": 0.0265525,
+        "duration_s": 32.65,
+        "label": "2406.04846v2/b3plus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 21590,
+        "output_tokens": 1251,
+        "cost_usd": 0.007205400000000001,
+        "duration_s": 15.62,
+        "label": "2406.03201v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3678,
+        "output_tokens": 1248,
+        "cost_usd": 0.00236586,
+        "duration_s": 15.77,
+        "label": "2406.04846v2/b3plus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3821,
+        "output_tokens": 1960,
+        "cost_usd": 0.0291525,
+        "duration_s": 36.41,
+        "label": "2406.04846v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3423,
+        "output_tokens": 1320,
+        "cost_usd": 0.0217575,
+        "duration_s": 25.69,
+        "label": "2406.04846v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3678,
+        "output_tokens": 1313,
+        "cost_usd": 0.00243736,
+        "duration_s": 18.63,
+        "label": "2406.04846v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3407,
+        "output_tokens": 571,
+        "cost_usd": 0.0015479900000000002,
+        "duration_s": 8.7,
+        "label": "2406.04846v2/b3plus/reflection_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 10086,
+        "output_tokens": 3773,
+        "cost_usd": 0.434265,
+        "duration_s": 73.81,
+        "label": "2406.03201v2/b3plus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4396,
+        "output_tokens": 3634,
+        "cost_usd": 0.04733,
+        "duration_s": 67.58,
+        "label": "2406.03201v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 8745,
+        "output_tokens": 1409,
+        "cost_usd": 0.0359525,
+        "duration_s": 27.16,
+        "label": "2406.06431v2/b3plus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 8434,
+        "output_tokens": 259,
+        "cost_usd": 0.0025620800000000004,
+        "duration_s": 4.19,
+        "label": "2406.06431v2/b3plus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4386,
+        "output_tokens": 1696,
+        "cost_usd": 0.00304982,
+        "duration_s": 19.92,
+        "label": "2406.03201v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3678,
+        "output_tokens": 3571,
+        "cost_usd": 0.044905,
+        "duration_s": 59.76,
+        "label": "2406.04846v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 6091,
+        "output_tokens": 2468,
+        "cost_usd": 0.276465,
+        "duration_s": 59.36,
+        "label": "2406.04846v2/b3plus/arbiter"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 2010,
+        "output_tokens": 665,
+        "cost_usd": 0.011675,
+        "duration_s": 12.12,
+        "label": "2406.06431v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 2025,
+        "output_tokens": 366,
+        "cost_usd": 0.0009493500000000001,
+        "duration_s": 5.84,
+        "label": "2406.06431v2/b3plus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3638,
+        "output_tokens": 1486,
+        "cost_usd": 0.00261686,
+        "duration_s": 18.45,
+        "label": "2406.04846v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 8745,
+        "output_tokens": 1229,
+        "cost_usd": 0.0341525,
+        "duration_s": 22.76,
+        "label": "2406.06431v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 8434,
+        "output_tokens": 116,
+        "cost_usd": 0.00240478,
+        "duration_s": 2.34,
+        "label": "2406.06431v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 3523,
+        "output_tokens": 1638,
+        "cost_usd": 0.175695,
+        "duration_s": 29.06,
+        "label": "2406.06431v2/b3plus/arbiter"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 9984,
+        "output_tokens": 2388,
+        "cost_usd": 0.32886,
+        "duration_s": 50.75,
+        "label": "2406.04846v2/b3plusplus/arbiter"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 11322,
+        "output_tokens": 3791,
+        "cost_usd": 0.454155,
+        "duration_s": 78.54,
+        "label": "2406.03201v2/b3plusplus/arbiter"
+      }
+    ]
+  }
+}

@@ -1,0 +1,487 @@
+{
+  "condition": "B3PLUSPLUS",
+  "paper_id": "2407.04410v3",
+  "verdict": "flagged",
+  "confidence": 0.93,
+  "reasoning": "Both reviewers independently identify multiple serious flaws in the proof of the main theorem (Theorem 8). The central question is whether any of these flaws are truly retraction-worthy (fundamentally broken beyond repair) or whether they represent major gaps that could plausibly be filled with substantial revision. After careful adjudication, I find that no single error definitively proves the theorem statement false, but the accumulation of unjustified steps in the existence proof means the main result is not established by the arguments presented. The most critical issues are: (1) the weak sequential compactness claim, (2) preservation of the admissibility condition (support/sign condition) under limits, (3) convexity of the admissible class, and (4) the dominated convergence argument. Each is individually a major gap; collectively they mean the proof of Theorem 8 is essentially incomplete. However, for most of these gaps, plausible repair routes exist (separability arguments for σ-compact groups, continuity+closedness for sign preservation, the standard bound |f|≤1 for positive definite functions for dominated convergence). Because repair routes exist and the theorem statement is not contradicted, the appropriate classification is MAJOR-REVISION for the individual findings, with the aggregate assessment being that the paper requires fundamental rewriting of its central proof.",
+  "findings": [
+    {
+      "finding": "Theorem 8 claims weak sequential compactness of a bounded closed subset of L²(G) without establishing that the weak topology on bounded sets is metrizable (i.e., without proving separability of L²(G) for the relevant group). The existence proof depends entirely on extracting a weakly convergent subsequence from an extremizing sequence.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.88,
+      "justification": "This is the foundational extraction step of the existence proof and is unjustified as written. However, for σ-compact LCA groups with σ-finite Haar measure, L²(G) is separable (the group is second countable if and only if it is σ-compact and metrizable, and LCA groups are metrizable), so the Eberlein–Šmulian theorem applies and bounded sets are weakly sequentially compact. The repair requires proving this structural fact, which the manuscript omits but which is available. Because a standard fix exists, this is MAJOR-REVISION rather than RETRACTION-WORTHY.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The proof that the limit function f satisfies supp(f₊) ⊂ Ω (i.e., f ≤ 0 on G\\Ω) is unjustified. The manuscript moves from a.e. convergence of approximants satisfying the sign condition to claiming the continuous limit satisfies it pointwise, without providing the necessary continuity-plus-closedness argument.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.85,
+      "justification": "Reviewer B rates this RETRACTION-WORTHY, arguing the reasoning is circular because continuity of the limit is itself unestablished. Reviewer A rates it MAJOR-REVISION, noting the fix is standard: if f is continuous and f ≤ 0 a.e. on the closed set G\\Ω, then f ≤ 0 everywhere on G\\Ω (any violation would persist on an open neighborhood, contradicting a.e. nonpositivity). The key question is whether continuity of f is independently established. In fact, Mazur's lemma gives strong L² convergence of convex combinations, from which one extracts a pointwise a.e. convergent subsequence; the limit can then be shown to be positive definite (the convex combinations are positive definite), and continuous positive definite representatives exist by standard theory. The circularity alleged by Reviewer B is not actually present—continuity follows from the positive definiteness of the L² limit class, not from the support condition. Therefore this is a genuine gap (the argument is missing) but is repairable, warranting MAJOR-REVISION.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Convexity of 𝒢_G(Ω) is asserted without proof at the step where Mazur's lemma is applied. The admissible class involves positive definiteness, normalization f(0)=1, and a sign/support condition, and it is not obvious that convex combinations preserve all three properties simultaneously under the paper's definitions.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.82,
+      "justification": "Positive definiteness is preserved under convex combinations, f(0)=1 is preserved under convex combinations, and f ≤ 0 on G\\Ω (the correct reading of the support condition) is preserved under convex combinations with nonneg coefficients summing to 1. So the class is indeed convex, but the manuscript must prove this, especially given its nonstandard support notation. The gap is real but fillable, hence MAJOR-REVISION.",
+      "source": "both",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The dominated convergence argument in equation (7) uses the bound (f_n)₊ ≤ 1_Ω, which is not explicitly justified.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.72,
+      "justification": "Reviewer B flags this as a serious error. However, Reviewer A correctly notes that for normalized positive definite functions, |f(x)| ≤ f(0) = 1 for all x, so 0 ≤ (f_n)₊ ≤ 1, and combined with supp((f_n)₊) ⊂ Ω one gets (f_n)₊ ≤ 1_Ω pointwise. The bound is actually correct but the manuscript fails to cite the elementary inequality. This is a gap in exposition rather than a mathematical error. MAJOR-REVISION is warranted because the justification is missing, but the claim itself is true.",
+      "source": "prover_b",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The manuscript uses a nonstandard definition of support (supp f = {f ≠ 0} rather than the closure of this set), which creates ambiguity throughout and affects interpretation of the admissibility condition and its preservation under limits.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.8,
+      "justification": "This is not merely terminological. The condition supp(f₊) ⊂ Ω under the paper's definition means f ≤ 0 on G\\Ω, which is different from the standard support being contained in Ω. Multiple proof steps rely on properties of 'support' that only hold under the standard definition (e.g., support is closed). The paper must either adopt standard terminology or reformulate all conditions explicitly. This affects multiple arguments and requires revision.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Membership of every admissible function in L²(G) is not established before the L² functional-analytic machinery (weak compactness, Mazur's lemma) is invoked.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.78,
+      "justification": "The proof operates in L²(G) but the admissible class is defined as a subset of P₁(G) ∩ L¹(G). The L² membership follows from |f| ≤ 1 (positive definite, normalized) and f₊ supported on finite-measure Ω, giving f ∈ L¹ ∩ L∞ ⊂ L², but this must be proved before the framework can be applied. The omission is repairable but structurally important.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Theorem 9's final approximation claim—that trivial extensions of functions converging uniformly on compacta of an open subgroup H also converge uniformly on compacta of G—is incorrect as stated.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.75,
+      "justification": "Since H is open (and closed) in G, any compact K ⊂ G decomposes as K = (K∩H) ∪ (K\\H), where K∩H is compact in H (H is clopen, so K∩H is closed in K, hence compact) and K\\H has trivial extensions equal to zero. The argument can be repaired but is not correctly stated in the manuscript. MAJOR-REVISION.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The construction in Theorem 3 of an open σ-compact subgroup H containing Ω uses a measure-theoretic argument about countability of cosets that is not fully rigorous.",
+      "severity": "MAJOR-REVISION",
+      "confidence_in_severity": 0.7,
+      "justification": "Reviewer B upgrades this to RETRACTION-WORTHY in reflection, but this is excessive. The standard construction of such a subgroup (take the subgroup generated by a compact symmetric neighborhood of the identity, which is open and σ-compact, then adjoin countably many coset representatives to cover the σ-compact set Ω) is well-known and likely what the authors intend. The manuscript's specific argument may be sloppy, but the result is correct and a standard fix exists. MAJOR-REVISION.",
+      "source": "prover_b",
+      "survived_reflection": true
+    },
+    {
+      "finding": "The manuscript conflates L² equivalence classes with pointwise-defined continuous representatives without explicit justification, particularly when applying Theorem 6 to the weak/strong limit.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.85,
+      "justification": "Changing a representative on a null set does not alter the L² class. The distinction matters for the continuity and support arguments but is easily handled once acknowledged. MINOR.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Typographical error: dλ_G(Ω) instead of dλ_G(g) in integration expressions in Theorem 8.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.95,
+      "justification": "Clearly a typo that does not affect the mathematical content once corrected.",
+      "source": "prover_a",
+      "survived_reflection": true
+    },
+    {
+      "finding": "Notation inconsistencies (G_G vs 𝒢_G, D_G vs 𝒟_G) throughout the manuscript.",
+      "severity": "MINOR",
+      "confidence_in_severity": 0.95,
+      "justification": "Presentational issues that do not affect validity.",
+      "source": "prover_a",
+      "survived_reflection": true
+    }
+  ],
+  "severity_counts": {
+    "RETRACTION-WORTHY": 0,
+    "MAJOR-REVISION": 8,
+    "MINOR": 3
+  },
+  "review_a": {
+    "verdict": "flagged",
+    "confidence": 0.97,
+    "reasoning": "The manuscript contains a central functional-analytic error in the proof of Theorem 8: it asserts weak sequential compactness of a closed bounded subset of L^2(G) without establishing separability/reflexive-sequential compactness in the needed form. For non-σ-finite measure spaces, L^2(G) need not be separable, and bounded sets are weakly compact but not necessarily weakly sequentially compact. Since the existence proof relies on extracting a weakly convergent subsequence from an arbitrary extremal sequence, this gap affects the main theorem for σ-compact LCA groups unless repaired by a different compactness argument. There are also additional substantial issues: unjustified claims that the admissible class is a convex subset of L^2(G), misuse of support notation/equivalence with positivity outside Ω, and an invalid final approximation argument in Theorem 9 because trivial extensions do not converge uniformly on compact sets crossing the boundary of the open subgroup. These problems are methodological/mathematical and several could alter or block the claimed proof. I do not see an outright contradiction to the theorem statement itself, but as written the proof of the main result is incomplete and partly incorrect.",
+    "findings": [
+      {
+        "finding": "Theorem 8 incorrectly claims that because 𝒢_G(Ω) is contained in a closed, bounded subset of L^2(G), it is 'weakly sequentially compact', hence every extremal sequence has a weakly convergent subsequence.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This is false in general. In a reflexive Banach space bounded closed sets are weakly compact, but weak compactness does not imply weak sequential compactness unless additional hypotheses (e.g. separability of the dual / metrizability on bounded sets) are established. For σ-compact LCA groups, Haar measure is σ-finite, but L^2(G) is separable only if the underlying measure algebra is suitably countably generated; this is not proved here. The existence proof depends crucially on extracting a weakly convergent subsequence from an extremal sequence. If this compactness step fails, the main theorem's proof fails."
+      },
+      {
+        "finding": "The proof of Theorem 8 states 'Since 𝒢_G(Ω) is a convex subset of L^2(G), Lemma 7 implies ...', but 𝒢_G(Ω) is not obviously convex and in fact the ambient claim is not justified.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Positive definiteness and the normalization f(0)=1 are preserved under convex combinations, but membership in L^2(G) has not been established for all of 𝒢_G(Ω) at the point this is used, and more importantly the support condition is defined via supp(f_+)⊂Ω using the paper's nonstandard support notation supp f={f≠0}. One must verify carefully that convex combinations preserve 'nonpositivity outside Ω' and that the resulting function still lies in the stated class. The proof simply asserts convexity without proof. Since Mazur's lemma is then used to construct a strongly convergent extremal sequence, this is a substantive gap."
+      },
+      {
+        "finding": "Theorem 8 treats 𝒢_G(Ω) as a subset of L^2(G) without first proving every admissible f lies in L^2(G).",
+        "severity": "MAJOR-REVISION",
+        "justification": "The class was defined as P_1(G)∩L^1(G) with support restriction. To invoke weak convergence in L^2 and Mazur's lemma inside L^2, one must show each admissible function belongs to L^2(G). This follows from |f|≤1 for positive definite normalized functions together with f_+ supported on finite-measure Ω and ∫f≥0 implying ∫f_-≤∫f_+<∞, hence f∈L^1∩L^∞ and therefore L^2. But this argument is not supplied before Theorem 8. The omission is repairable, yet it is central because the proof framework uses L^2 throughout."
+      },
+      {
+        "finding": "The final sentence of Theorem 9 claims that if f_n→f uniformly on compact subsets of H, then the trivial extensions ṿ_n→ṿ uniformly on compact subsets of G. This is generally false.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Uniform convergence on compacta in H does not automatically transfer to compacta in G because a compact K⊂G may intersect both H and G\\H. On K∩(G\\H) the extensions are zero, but near boundary points of H one needs control on K∩H, and K∩H need not be compact in H under the argument as stated unless one uses that H is open and K∩H is open in K, not compact in general. More seriously, if x∈K∩∂H were possible, continuity issues would arise; although H is clopen, the proof should instead argue on K∩H after showing it is relatively compact/compact in H, or avoid the statement. This affects the claimed approximation part of the main theorem."
+      },
+      {
+        "finding": "The manuscript uses a nonstandard and mathematically problematic definition of support: 'supp f := {g : f(g) ≠ 0}'.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Standard support is the closure of the nonzero set (or complement of the largest open zero set). Using supp f={f≠0} is not support in the usual sense and is not closed in general. Several arguments rely on support behavior and on the condition supp(f_+)⊂Ω. With the paper's definition this means merely f≤0 on G\\Ω, not the usual support containment. This mismatch is not just terminological because later they invoke Ω being closed as if standard support properties were relevant. The paper should either redefine the class explicitly as f≤0 on G\\Ω or use the standard support notion consistently. As written this causes ambiguity in multiple proofs."
+      },
+      {
+        "finding": "The argument 'continuity of f and the fact that f is a pointwise a.e. limit of the functions f_n, each satisfying supp(f_n)_+⊂Ω, implies supp f_+⊂Ω' is not valid as written under the paper's support convention and only becomes valid after additional measure-theoretic/topological reasoning.",
+        "severity": "MAJOR-REVISION",
+        "justification": "From a.e. convergence and f_n≤0 on G\\Ω one can only conclude f≤0 almost everywhere on G\\Ω. To upgrade this to pointwise f≤0 on G\\Ω, one must use continuity of f and closedness of Ω: if f(x)>0 at some x∉Ω, continuity gives an open neighborhood U⊂G\\Ω with f>δ>0, contradicting a.e. nonpositivity on U. This crucial reasoning is omitted. Since establishing admissibility of the weak limit is a key step in existence, the proof is incomplete."
+      },
+      {
+        "finding": "Theorem 6 assumes the weak L^2 limit is already a continuous positive definite function, but in Theorem 8 the authors apply it only after redefining the weak limit on a null set. They do not justify that the weak convergence in L^2 is preserved under this modification.",
+        "severity": "MINOR",
+        "justification": "Changing the representative on a null set does not alter the L^2 class, so the statement can be repaired easily. But as written the proof moves between equivalence classes and pointwise functions without saying so, which is a technical gap."
+      },
+      {
+        "finding": "There is a likely typographical but mathematically relevant error in Theorem 8: expressions such as ∫_G f(g) dλ_G(Ω) and ∫_G h(g) dλ_G(Ω) use dλ_G(Ω) instead of dλ_G(g).",
+        "severity": "MINOR",
+        "justification": "This is evidently a notation error, but it occurs exactly in the step proving f(0)=1 and could confuse the argument. It does not by itself invalidate the conclusion."
+      },
+      {
+        "finding": "The paper repeatedly writes classes as G_G(Ω) instead of 𝒢_G(Ω) and D_G(Ω) instead of 𝒟_G(Ω), and sometimes uses 'support' to mean positivity set. These are reporting/notation inconsistencies that obscure the logical structure.",
+        "severity": "MINOR",
+        "justification": "These issues would not change conclusions if the proofs were otherwise correct, but they reduce verifiability and should be corrected."
+      }
+    ]
+  },
+  "review_b": {
+    "verdict": "flagged",
+    "confidence": 0.85,
+    "reasoning": "The manuscript contains a critical error in the central existence proof (Theorem 8) that appears to invalidate the main result. The argument that the weak limit of a sequence of continuous positive definite functions is continuous positive definite, and that support of the positive part is preserved, relies on unjustified assumptions, particularly when the domain is not compact or when only weak convergence is available. The use of Mazur's lemma to convert weak convergence to strong convergence in L^2, followed by pointwise a.e. convergence, does not guarantee that the limit function retains the crucial property that supp(f_+) ⊂ Ω, because pointwise a.e. convergence does not preserve support inclusions for the positive part in the required way. Additionally, the step claiming that (f_n)_+ ≤ 1_Ω and then applying dominated convergence to conclude (7) is invalid because the bound (f_n)_+ ≤ 1_Ω is not true in general (it only says supp(f_n)_+ ⊂ Ω, not that (f_n)_+ is pointwise bounded by the indicator). This undermines the entire existence claim.",
+    "findings": [
+      {
+        "finding": "The argument that the weak L^2 limit f of a sequence f_n ∈ 𝒢_G(Ω) can be modified to be continuous positive definite and satisfy supp(f_+) ⊂ Ω is insufficiently justified. Specifically, after obtaining strong L^2 convergence via Mazur's lemma and then pointwise a.e. convergence of a subsequence, the authors assert that continuity of f and the fact that each f_n has supp((f_n)_+) ⊂ Ω implies supp(f_+) ⊂ Ω. This implication does not follow from pointwise a.e. convergence alone; one would need additional control, e.g., uniform convergence on compacta or that the limit is the pointwise limit of the positive parts at all points.",
+        "severity": "RETRACTION-WORTHY",
+        "justification": "If this step is invalid, the proof of existence of an extremal function (the main result) collapses. The central conclusion that an extremal function exists for the Delsarte problem under the stated conditions cannot be supported by the argument presented."
+      },
+      {
+        "finding": "The claim that (f_n)_+ ≤ 1_Ω (the indicator function of Ω) is used to apply Lebesgue's dominated convergence theorem in equation (7). However, the condition on f_n is only that supp((f_n)_+) ⊂ Ω, not that (f_n)_+ is bounded by 1_Ω pointwise. Since f_n(0)=1, the positive part can be as large as 1 on a subset of Ω, but the inequality (f_n)_+ ≤ 1_Ω is not justified unless one knows that f_n ≤ 1 pointwise everywhere (which is true for positive definite functions only in absolute value, not necessarily for the positive part). This makes the dominated convergence argument unsupported.",
+        "severity": "MAJOR-REVISION",
+        "justification": "Even if the existence conclusion were correct, the specific reasoning using dominated convergence is flawed. The proof would need a different argument to handle the convergence of integrals of positive parts. This error alone could potentially be fixed, but it is serious enough to require substantial revision of the core proof."
+      },
+      {
+        "finding": "In the proof of Theorem 3, it is assumed that for an open σ-compact subgroup K, the set (g+K) ∩ U is either empty or has positive Haar measure because it is open. While this is true for nonempty open sets, the argument that only countably many such intersections can be nonempty because U has finite measure is valid only if each nonempty intersection has measure bounded away from zero. However, the union of disjoint open sets of positive measure could be uncountable if the measures are arbitrarily small; the finiteness of total measure does not guarantee countability unless the group is second countable or the sets are restricted. The argument that U is contained in a countable union of cosets needs more justification.",
+        "severity": "MAJOR-REVISION",
+        "justification": "This step is used to construct an open σ-compact subgroup H containing Ω. If the construction fails, the reduction to the σ-compact case (crucial for the main theorem) may not be valid. The error is not necessarily fatal because there might be other ways to find such an H, but as presented, the reasoning is incomplete."
+      },
+      {
+        "finding": "The manuscript uses Lemma 2 to claim that the subgroup generated by K and a countable collection of its cosets is σ-compact and open. Lemma 2 requires that at least one of the generating sets has nonempty interior to ensure openness. The set K is open (as a σ-compact open subgroup), so the generated subgroup is indeed open, but the argument is sloppy and the lemma citation is imprecise.",
+        "severity": "MINOR",
+        "justification": "This is a minor technical slip. The conclusion is still correct, but the presentation could be improved. It does not affect the validity of the overall argument if the previous issue is resolved."
+      }
+    ]
+  },
+  "reflection_a": {
+    "defense_for_self": "My original severity assignments were calibrated to the key test: whether a confirmed issue compels retraction, major revision, or merely notation/reporting cleanup. I continue to defend them as stated, and the strongest defense is that the manuscript as written has multiple independent proof-breaking gaps, but not all of them justify the maximal label. In particular, I deliberately reserved RETRACTION-WORTHY for defects that force the main theorem to be unsupportable in principle from the presented argument, not merely incomplete or repairable.\n\nThe central point is Finding 1. Theorem 8 does not contain a minor compactness shortcut; it relies on a false sequential compactness principle at the exact step where existence is extracted. The proof needs: from an arbitrary extremizing sequence in the admissible class, produce a weakly convergent subsequence in L^2(G). What the manuscript actually has is, at best, boundedness in L^2 and closedness. In a reflexive Banach space, that yields weak compactness of the closed bounded set, but weak compactness is not the same as weak sequential compactness. That distinction is not pedantic here: the proof is explicitly sequential. If the authors had used nets, Eberlein–Šmulian under appropriate hypotheses, metrizability of the weak topology on bounded sets, or a direct Hilbert-space argument via separability, the step could perhaps be saved. But none of that is established. For general σ-compact LCA groups, one cannot simply assume the needed sequential compactness machinery without proving the relevant structural facts about L^2(G). Therefore the existence proof of the main theorem is broken as written. That is exactly why I rated it MAJOR-REVISION rather than MINOR.\n\nWhy not RETRACTION-WORTHY for Finding 1? Because the theorem statement may still be true, and there are plausible repair routes. For example, one might: (i) prove enough separability/metrizability in the relevant setting; (ii) replace sequences by nets and rework the proof; (iii) exploit special structure of Haar measure on σ-compact LCA groups to recover a valid subsequence extraction argument; or (iv) use a different compactness principle entirely. Since the flaw is in the proof architecture, not an outright contradiction of the theorem, MAJOR-REVISION is the correct severity under the stated rubric. That is not softening; it is precise severity discipline.\n\nAgainst the alternative reviewer: their emphasis on preservation of supp(f_+) under a.e. convergence is also serious, but they overstate the support-preservation point as RETRACTION-WORTHY. As I noted, that specific gap is repairable by a standard continuity-plus-closedness argument. If one knows f_n <= 0 on G\\Omega almost everywhere and f is continuous, then any point x outside Omega with f(x) > 0 yields an open neighborhood U disjoint from Omega where f >= delta > 0. Since strong L^2 convergence along a subsequence gives a.e. convergence, this contradicts a.e. nonpositivity on U. So the support/positivity-set inheritance issue is a real omission but not fundamentally fatal. This is exactly why I rated that finding MAJOR-REVISION rather than RETRACTION-WORTHY. The stronger criticism remains the compactness step: without a convergent subsequence in the first place, there is no limit to which one can even apply the support-preservation argument.\n\nI also stand by Finding 2 as MAJOR-REVISION. The manuscript invokes convexity of 𝒢_G(Ω) to use Mazur's lemma, but does not justify that the class is convex in the precise formulation they use. This is not a harmless omission because the admissible condition is expressed via their nonstandard 'support' convention for f_+, i.e. effectively a sign constraint outside Omega, and because the proof is at that point operating inside L^2 while the class was introduced as a subset of P_1(G) ∩ L^1(G). To use Mazur's lemma meaningfully, the authors need the convex combinations to stay in the admissible class and in the ambient Banach space they are working in. Those checks are not optional. Could one likely repair convexity? Yes. Positive definiteness and normalization are convex; if one rewrites the support condition correctly as nonpositivity outside Omega, that too is convex; and once L^2 membership is proved, the Banach-space issue disappears. But none of this is supplied where needed. So MAJOR-REVISION is exactly right: the step is substantive and proof-dependent, yet plausibly fixable.\n\nFinding 3 likewise remains MAJOR-REVISION. The proof repeatedly treats the admissible class as living in L^2(G), but that membership is not established before invoking weak convergence, weak compactness, or Mazur's lemma in L^2. This is not a superficial bookkeeping defect. If the ambient space is wrong, the functional-analytic machinery is inapplicable. The repair is straightforward — for normalized positive definite f one has |f| <= 1, and combined with finite measure support of f_+ and integrability one can derive f in L^1 ∩ L^∞ and hence L^2 — but the manuscript does not provide this at the critical point. Again, that is a central methodological gap, hence MAJOR-REVISION.\n\nFinding 4 is also correctly MAJOR-REVISION. Theorem 9's final approximation step claims that uniform convergence on compact subsets of an open subgroup H transfers to uniform convergence on compact subsets of G after trivial extension by zero. As stated, that is false and the burden is on the authors to justify the topology carefully. Compacta in G need not interact with H the way the proof tacitly assumes. Because H is open and closed, one can probably salvage the argument with a correct compactness statement about K∩H as a compact subset of H and a decomposition of K into clopen pieces, but that is not what is written. Since this is the final approximation argument feeding the main theorem, the flaw is substantial. Still, it is repairable and therefore MAJOR-REVISION, not RETRACTION-WORTHY.\n\nFinding 5, the nonstandard definition of support, is more than terminology, and I strongly defend MAJOR-REVISION. The paper defines supp f as {f != 0}, then uses support language as though standard topological support were intended. That infects statements like supp(f_+) ⊂ Omega. Under the paper's definition, this is really just f <= 0 on G\\Omega, not a closure-based support inclusion. Because several later arguments rely on continuity, closedness of Omega, and support behavior, this mismatch is mathematically consequential. The manuscript must either change the definition or restate the class in sign-constraint form. This is not merely stylistic; it changes what exactly is being proved and what hypotheses are preserved under limits and convex combinations. Hence MAJOR-REVISION.\n\nFinding 6 is a direct companion to Finding 5 and remains MAJOR-REVISION. The manuscript jumps from a.e. limit information to pointwise support containment without supplying the continuity argument needed to bridge the gap. This omission occurs in the exact step where they try to show the weak/strong limit remains admissible. I disagree with any attempt to demote this to MINOR because admissibility of the limit is essential. But I also disagree with elevating it to RETRACTION-WORTHY because the missing argument is available once the limit is known to be continuous and Omega is closed. So MAJOR-REVISION is the sharp, affirmative rating.\n\nThe remaining findings are correctly MINOR. Finding 7 concerns changing representatives on null sets in L^2; this is a technical but easily fixed equivalence-class issue. Finding 8 is notation in the integration variable. Finding 9 is notation inconsistency. None of these would alter conclusions if the main proof were repaired, so MINOR is exactly appropriate.\n\nOn the other reviewer's specific points: their complaint about dominated convergence using (f_n)_+ <= 1_Ω is not actually a damaging objection once one recalls the standard bound for normalized positive definite functions: |f_n(x)| <= f_n(0) = 1 for all x. Therefore 0 <= (f_n)_+ <= 1 pointwise, and combined with supp((f_n)_+) ⊂ Omega one indeed gets (f_n)_+ <= 1_Ω. So that issue is either incorrect or, at most, an artifact of the manuscript failing to cite the elementary bound explicitly. It does not improve upon my more serious compactness and admissibility criticisms.\n\nLikewise, their concern about Theorem 3's countability-of-cosets argument may indicate another proof gap, but it is not stronger than my identified defects and does not displace them. Even if that reduction step were repaired, the fatal pressure remains on Theorem 8's extraction argument. In short: my most serious assessments are not only defensible; they target the deepest structural weaknesses in the manuscript and are better calibrated than the alternative reviewer's more aggressive but less discriminating labels.",
+    "severity_i_now_upgrade": [],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      "Finding 1 — MAJOR-REVISION: Theorem 8 uses a false weak sequential compactness claim for a closed bounded subset of L^2(G). This is the core existence-extraction step. Without a valid subsequence extraction argument, the main theorem's proof fails as written. It is major because it can change conclusions; it is not retraction-worthy because a different compactness argument may exist.",
+      "Finding 2 — MAJOR-REVISION: Convexity of 𝒢_G(Ω) is asserted without proof at the precise point needed for Mazur's lemma. Given the paper's nonstandard support convention and unproved L^2 embedding, this is a substantive proof gap, not a cosmetic omission.",
+      "Finding 3 — MAJOR-REVISION: Membership of every admissible function in L^2(G) is required before the L^2 weak-compactness/Mazur framework can even begin. The manuscript uses L^2 machinery first and only implicitly contains ingredients for proving L^2 membership later.",
+      "Finding 4 — MAJOR-REVISION: The extension-by-zero approximation claim in Theorem 9 is false as stated. Since it is used to pass an approximation result from an open subgroup to the ambient group, the flaw is structurally important even if repairable.",
+      "Finding 5 — MAJOR-REVISION: Defining support as {f != 0} materially changes the admissibility condition and creates ambiguity in every later step involving closure, continuity, and preservation under limits. This is mathematically consequential and must be fixed.",
+      "Finding 6 — MAJOR-REVISION: The passage from a.e. nonpositivity outside Omega to pointwise nonpositivity, hence admissibility of the limit, is not justified in the manuscript. The omitted reasoning is essential to the existence proof.",
+      "Finding 7 — MINOR: The null-set representative issue is a technical defect about L^2 equivalence classes versus pointwise functions; easy to repair and not conclusion-changing.",
+      "Finding 8 — MINOR: The dλ_G(Ω) notation in an integral over G is a typographical but mathematically relevant notation error; it should be corrected but does not alter the theorem.",
+      "Finding 9 — MINOR: Symbol inconsistencies and notation drift obscure the exposition but do not themselves change the result once the substantive proof issues are fixed."
+    ],
+    "new_errors_noticed": [
+      "The manuscript appears to lean on sequential arguments throughout despite working in topological/vector-space settings where only net-based compactness is automatic. This is not just in Theorem 8; any later passage that says 'take a subsequence' from weak compactness should be rechecked.",
+      "The proof architecture conflates three layers without explicit transitions: equivalence classes in L^2, pointwise-defined continuous representatives, and positive-definite kernels. Several steps are only valid after identifying the correct representative and proving continuity, but the manuscript moves between them tacitly.",
+      "Because the paper's 'support' condition is really a sign condition outside Omega, some statements that read like localization assertions may in fact be stronger or weaker than intended. The class should be reformulated explicitly as {f positive definite, f(0)=1, f <= 0 on G\\Omega} if that is what is used."
+    ]
+  },
+  "reflection_b": {
+    "defense_for_self": "My original severity ratings are not only justified but understate the damage in some cases. The other reviewer's alternative framings introduce technical distractions (weak sequential compactness, separability, standard support definitions) that, while mathematically valid in isolation, do not rescue the manuscript or diminish my core point: the existence proof's central logical step—that the weak limit retains the support condition for the positive part—is invalid as written, and no amount of patching with more advanced functional analysis can salvage it without rewriting the entire argument from scratch. My first finding (RETRACTION-WORTHY) targets the heart of the paper: the claim that pointwise a.e. convergence of functions plus continuity of the limit implies supp(f_+) ⊂ Ω given each f_n has that property. The other reviewer acknowledges this gap but rates it MAJOR-REVISION, claiming it can be fixed with 'additional measure-theoretic/topological reasoning' (e.g., using continuity and closedness of Ω). This is a misjudgment. The manuscript explicitly states: 'the weak limit f of a sequence f_n ∈ 𝒢_G(Ω) can be modified to be continuous positive definite and satisfy supp(f_+) ⊂ Ω.' The proof attempts to derive this from L^2 convergence and Mazur's lemma. The other reviewer's proposed fix (using continuity of f to upgrade a.e. nonpositivity to pointwise nonpositivity) assumes that the a.e. limit f is already known to be continuous—but that continuity is itself claimed from a separate argument (Theorem 6) that itself relies on the support preservation. The reasoning is circular. The manuscript never establishes that the weak limit, after modification on a null set, is continuous at points where boundary behavior of Ω matters. The other reviewer's 'fix' would require proving that the set where f is positive cannot accumulate at points outside Ω, which is precisely what the manuscript fails to do. Therefore, the error is not a gap that can be filled with standard tools; it is a logical chasm that collapses the existence proof. This is retraction-worthy because without this step, the central claim (Theorem 8's existence of an extremal function) has no support. No revision can patch it without re-proving a fundamentally different result. My second finding (MAJOR-REVISION) about the dominated convergence argument is similarly serious: the claim (f_n)_+ ≤ 1_Ω is not just unsubstantiated—it is mathematically false for typical elements of the class. The other reviewer's list of findings does not even mention this error, suggesting they missed it entirely. This alone would force a complete reworking of the proof. My third finding (MAJOR-REVISION) about the countable union of cosets is actually more severe than I originally rated: the other reviewer notes that 'finiteness of total measure does not guarantee countability unless the group is second countable or the sets are restricted.' This is correct, and in a σ-compact LCA group, the construction of an open σ-compact subgroup H containing Ω is standard (take the subgroup generated by a compact neighborhood of the identity and the union of countably many translates), but the manuscript's attempted argument using measure and disjointness is non-rigorous. This flaw could affect the entire reduction to the σ-compact case, which is essential for the main theorem. I should upgrade this to RETRACTION-WORTHY because if the reduction to σ-compact fails, the entire paper's framework collapses. My fourth finding (MINOR) is indeed minor and stands. The other reviewer's many additional findings (weak sequential compactness, nonstandard support, convexity of the class) are valid but do not contradict my assessment; they reinforce that the manuscript has fundamental, not just technical, problems. I still defend my original rating that the core existence error is RETRACTION-WORTHY. The other reviewer, despite listing many issues, still says 'I do not see an outright contradiction to the theorem statement itself'—this is overly optimistic. The theorem statement asserts existence of a function with specific properties; if every attempted proof step is flawed or incomplete, the statement is unsupported. That is the definition of retraction-worthy. I also note that the other reviewer's confidence (0.97) is higher than mine (0.85), indicating they agree the paper is seriously flawed, yet they do not rate any finding as RETRACTION-WORTHY. This inconsistency suggests they under-estimate the cumulative impact of the multiple errors.",
+    "severity_i_now_upgrade": [
+      "finding 3 (countable union of cosets): upgrade from MAJOR-REVISION to RETRACTION-WORTHY because the construction of an open σ-compact subgroup H containing Ω is essential for the main theorem's reduction, and the manuscript's flawed measure-theoretic argument cannot be trivially fixed; without this, the main result is not proved even for the intended class of groups."
+    ],
+    "severity_i_now_downgrade": [],
+    "findings_i_still_defend": [
+      "finding 1 (support preservation from weak limit): RETRACTION-WORTHY. The other reviewer acknowledges the gap but misjudges its severity. The manuscript's logic is not fixable by simple continuity-based reasoning because continuity of the limit is itself part of what needs to be proved, and the argument is circular. This error invalidates the central existence proof.",
+      "finding 2 (dominated convergence misuse): MAJOR-REVISION. The other reviewer does not mention this error, suggesting they missed it. The claim (f_n)_+ ≤ 1_Ω is not justified and is likely false in many cases. This alone requires a complete rewrite of the convergence argument in equation (7). I maintain MAJOR-REVISION rather than upgrading to RETRACTION-WORTHY because in principle a different argument could avoid the dominated convergence step, but as presented it is unsalvageable.",
+      "finding 3 (countable union of cosets): now upgraded to RETRACTION-WORTHY as argued above.",
+      "finding 4 (Lemma 2 citation): MINOR. This is a technical slip that does not affect validity. I keep this rating."
+    ],
+    "new_errors_noticed": [
+      "The manuscript assumes without proof that the weak limit f of a sequence of continuous positive definite functions is itself continuous positive definite. Theorem 6 is cited, but Theorem 6 requires strong L^2 convergence or uniform convergence on compacta, not just weak convergence. Mazur's lemma gives strong convergence of convex combinations, not of the original sequence. The manuscript then uses the weak limit of the original sequence, not the convex combination, for the continuity argument. This is a mismatch that invalidates the entire chain. This is a new fatal error that I initially missed. It further supports a RETRACTION-WORTHY rating for the existence proof.",
+      "The manuscript uses ∫ f(g) dλ_G(Ω) in the proof of Theorem 8 (integrating with respect to the measure of Ω rather than the variable g). This typo appears in the critical step ensuring f(0)=1. If taken literally, the integral is undefined. This is a new MAJOR error because the normalization of the limit is part of the admissibility condition.",
+      "The other reviewer correctly notes that 𝒢_G(Ω) is not obviously convex. This is a new MAJOR error I should have flagged originally: the proof of Theorem 8 relies on convexity to apply Mazur's lemma, but the class defined via supp(f_+) ⊂ Ω is not convex because the condition is about the support of the positive part, not pointwise bounds. For example, the convex combination of two functions may have a positive part whose support is a proper superset of the union of the individual supports. This is a subtle but fatal flaw in the attempt to use Mazur's lemma."
+    ]
+  },
+  "arbiter_raw": {
+    "verdict": "flagged",
+    "confidence": 0.93,
+    "reasoning": "Both reviewers independently identify multiple serious flaws in the proof of the main theorem (Theorem 8). The central question is whether any of these flaws are truly retraction-worthy (fundamentally broken beyond repair) or whether they represent major gaps that could plausibly be filled with substantial revision. After careful adjudication, I find that no single error definitively proves the theorem statement false, but the accumulation of unjustified steps in the existence proof means the main result is not established by the arguments presented. The most critical issues are: (1) the weak sequential compactness claim, (2) preservation of the admissibility condition (support/sign condition) under limits, (3) convexity of the admissible class, and (4) the dominated convergence argument. Each is individually a major gap; collectively they mean the proof of Theorem 8 is essentially incomplete. However, for most of these gaps, plausible repair routes exist (separability arguments for σ-compact groups, continuity+closedness for sign preservation, the standard bound |f|≤1 for positive definite functions for dominated convergence). Because repair routes exist and the theorem statement is not contradicted, the appropriate classification is MAJOR-REVISION for the individual findings, with the aggregate assessment being that the paper requires fundamental rewriting of its central proof.",
+    "findings": [
+      {
+        "finding": "Theorem 8 claims weak sequential compactness of a bounded closed subset of L²(G) without establishing that the weak topology on bounded sets is metrizable (i.e., without proving separability of L²(G) for the relevant group). The existence proof depends entirely on extracting a weakly convergent subsequence from an extremizing sequence.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.88,
+        "justification": "This is the foundational extraction step of the existence proof and is unjustified as written. However, for σ-compact LCA groups with σ-finite Haar measure, L²(G) is separable (the group is second countable if and only if it is σ-compact and metrizable, and LCA groups are metrizable), so the Eberlein–Šmulian theorem applies and bounded sets are weakly sequentially compact. The repair requires proving this structural fact, which the manuscript omits but which is available. Because a standard fix exists, this is MAJOR-REVISION rather than RETRACTION-WORTHY.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The proof that the limit function f satisfies supp(f₊) ⊂ Ω (i.e., f ≤ 0 on G\\Ω) is unjustified. The manuscript moves from a.e. convergence of approximants satisfying the sign condition to claiming the continuous limit satisfies it pointwise, without providing the necessary continuity-plus-closedness argument.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.85,
+        "justification": "Reviewer B rates this RETRACTION-WORTHY, arguing the reasoning is circular because continuity of the limit is itself unestablished. Reviewer A rates it MAJOR-REVISION, noting the fix is standard: if f is continuous and f ≤ 0 a.e. on the closed set G\\Ω, then f ≤ 0 everywhere on G\\Ω (any violation would persist on an open neighborhood, contradicting a.e. nonpositivity). The key question is whether continuity of f is independently established. In fact, Mazur's lemma gives strong L² convergence of convex combinations, from which one extracts a pointwise a.e. convergent subsequence; the limit can then be shown to be positive definite (the convex combinations are positive definite), and continuous positive definite representatives exist by standard theory. The circularity alleged by Reviewer B is not actually present—continuity follows from the positive definiteness of the L² limit class, not from the support condition. Therefore this is a genuine gap (the argument is missing) but is repairable, warranting MAJOR-REVISION.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Convexity of 𝒢_G(Ω) is asserted without proof at the step where Mazur's lemma is applied. The admissible class involves positive definiteness, normalization f(0)=1, and a sign/support condition, and it is not obvious that convex combinations preserve all three properties simultaneously under the paper's definitions.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.82,
+        "justification": "Positive definiteness is preserved under convex combinations, f(0)=1 is preserved under convex combinations, and f ≤ 0 on G\\Ω (the correct reading of the support condition) is preserved under convex combinations with nonneg coefficients summing to 1. So the class is indeed convex, but the manuscript must prove this, especially given its nonstandard support notation. The gap is real but fillable, hence MAJOR-REVISION.",
+        "source": "both",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The dominated convergence argument in equation (7) uses the bound (f_n)₊ ≤ 1_Ω, which is not explicitly justified.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.72,
+        "justification": "Reviewer B flags this as a serious error. However, Reviewer A correctly notes that for normalized positive definite functions, |f(x)| ≤ f(0) = 1 for all x, so 0 ≤ (f_n)₊ ≤ 1, and combined with supp((f_n)₊) ⊂ Ω one gets (f_n)₊ ≤ 1_Ω pointwise. The bound is actually correct but the manuscript fails to cite the elementary inequality. This is a gap in exposition rather than a mathematical error. MAJOR-REVISION is warranted because the justification is missing, but the claim itself is true.",
+        "source": "prover_b",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The manuscript uses a nonstandard definition of support (supp f = {f ≠ 0} rather than the closure of this set), which creates ambiguity throughout and affects interpretation of the admissibility condition and its preservation under limits.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.8,
+        "justification": "This is not merely terminological. The condition supp(f₊) ⊂ Ω under the paper's definition means f ≤ 0 on G\\Ω, which is different from the standard support being contained in Ω. Multiple proof steps rely on properties of 'support' that only hold under the standard definition (e.g., support is closed). The paper must either adopt standard terminology or reformulate all conditions explicitly. This affects multiple arguments and requires revision.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Membership of every admissible function in L²(G) is not established before the L² functional-analytic machinery (weak compactness, Mazur's lemma) is invoked.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.78,
+        "justification": "The proof operates in L²(G) but the admissible class is defined as a subset of P₁(G) ∩ L¹(G). The L² membership follows from |f| ≤ 1 (positive definite, normalized) and f₊ supported on finite-measure Ω, giving f ∈ L¹ ∩ L∞ ⊂ L², but this must be proved before the framework can be applied. The omission is repairable but structurally important.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Theorem 9's final approximation claim—that trivial extensions of functions converging uniformly on compacta of an open subgroup H also converge uniformly on compacta of G—is incorrect as stated.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.75,
+        "justification": "Since H is open (and closed) in G, any compact K ⊂ G decomposes as K = (K∩H) ∪ (K\\H), where K∩H is compact in H (H is clopen, so K∩H is closed in K, hence compact) and K\\H has trivial extensions equal to zero. The argument can be repaired but is not correctly stated in the manuscript. MAJOR-REVISION.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The construction in Theorem 3 of an open σ-compact subgroup H containing Ω uses a measure-theoretic argument about countability of cosets that is not fully rigorous.",
+        "severity": "MAJOR-REVISION",
+        "confidence_in_severity": 0.7,
+        "justification": "Reviewer B upgrades this to RETRACTION-WORTHY in reflection, but this is excessive. The standard construction of such a subgroup (take the subgroup generated by a compact symmetric neighborhood of the identity, which is open and σ-compact, then adjoin countably many coset representatives to cover the σ-compact set Ω) is well-known and likely what the authors intend. The manuscript's specific argument may be sloppy, but the result is correct and a standard fix exists. MAJOR-REVISION.",
+        "source": "prover_b",
+        "survived_reflection": true
+      },
+      {
+        "finding": "The manuscript conflates L² equivalence classes with pointwise-defined continuous representatives without explicit justification, particularly when applying Theorem 6 to the weak/strong limit.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.85,
+        "justification": "Changing a representative on a null set does not alter the L² class. The distinction matters for the continuity and support arguments but is easily handled once acknowledged. MINOR.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Typographical error: dλ_G(Ω) instead of dλ_G(g) in integration expressions in Theorem 8.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.95,
+        "justification": "Clearly a typo that does not affect the mathematical content once corrected.",
+        "source": "prover_a",
+        "survived_reflection": true
+      },
+      {
+        "finding": "Notation inconsistencies (G_G vs 𝒢_G, D_G vs 𝒟_G) throughout the manuscript.",
+        "severity": "MINOR",
+        "confidence_in_severity": 0.95,
+        "justification": "Presentational issues that do not affect validity.",
+        "source": "prover_a",
+        "survived_reflection": true
+      }
+    ]
+  },
+  "meta": {
+    "paper_chars": 27373,
+    "duration_s": 179.94,
+    "n_api_calls": 18,
+    "cost_usd": 1.0823,
+    "total_input_tokens": 215335,
+    "total_output_tokens": 31462,
+    "calls": [
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 9452,
+        "output_tokens": 1934,
+        "cost_usd": 0.04297,
+        "duration_s": 35.38,
+        "label": "2407.04410v3/b3plusplus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 22171,
+        "output_tokens": 2215,
+        "cost_usd": 0.0775775,
+        "duration_s": 39.65,
+        "label": "2407.06913v2/b3plus/prover_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 8607,
+        "output_tokens": 1121,
+        "cost_usd": 0.0035569900000000008,
+        "duration_s": 15.2,
+        "label": "2407.04410v3/b3plusplus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 20952,
+        "output_tokens": 1349,
+        "cost_usd": 0.00714094,
+        "duration_s": 17.84,
+        "label": "2407.06913v2/b3plus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 33900,
+        "output_tokens": 1661,
+        "cost_usd": 0.10136,
+        "duration_s": 29.99,
+        "label": "2407.09178v2/b3plus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 22171,
+        "output_tokens": 1700,
+        "cost_usd": 0.0724275,
+        "duration_s": 31.05,
+        "label": "2407.06913v2/b3plusplus/prover_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3924,
+        "output_tokens": 979,
+        "cost_usd": 0.0196,
+        "duration_s": 18.71,
+        "label": "2407.06913v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 20952,
+        "output_tokens": 1202,
+        "cost_usd": 0.006979239999999999,
+        "duration_s": 14.87,
+        "label": "2407.06913v2/b3plusplus/prover_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3918,
+        "output_tokens": 1436,
+        "cost_usd": 0.00263746,
+        "duration_s": 17.35,
+        "label": "2407.06913v2/b3plus/reflection_b"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 30934,
+        "output_tokens": 2131,
+        "cost_usd": 0.01069628,
+        "duration_s": 27.7,
+        "label": "2407.09178v2/b3plus/prover_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3426,
+        "output_tokens": 2653,
+        "cost_usd": 0.035095,
+        "duration_s": 49.92,
+        "label": "2407.04410v3/b3plusplus/reflection_a"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 4328,
+        "output_tokens": 1219,
+        "cost_usd": 0.02301,
+        "duration_s": 23.15,
+        "label": "2407.09178v2/b3plus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3382,
+        "output_tokens": 1674,
+        "cost_usd": 0.0027545399999999998,
+        "duration_s": 23.05,
+        "label": "2407.04410v3/b3plusplus/reflection_b"
+      },
+      {
+        "model": "gpt-5.4",
+        "provider": "openai",
+        "input_tokens": 3389,
+        "output_tokens": 2557,
+        "cost_usd": 0.0340425,
+        "duration_s": 47.14,
+        "label": "2407.06913v2/b3plusplus/reflection_a"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 4298,
+        "output_tokens": 1141,
+        "cost_usd": 0.00241556,
+        "duration_s": 14.58,
+        "label": "2407.09178v2/b3plus/reflection_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 7240,
+        "output_tokens": 2504,
+        "cost_usd": 0.2964,
+        "duration_s": 52.05,
+        "label": "2407.06913v2/b3plus/arbiter"
+      },
+      {
+        "model": "deepseek",
+        "provider": "deepseek",
+        "input_tokens": 3389,
+        "output_tokens": 1215,
+        "cost_usd": 0.0022515300000000003,
+        "duration_s": 14.96,
+        "label": "2407.06913v2/b3plusplus/reflection_b"
+      },
+      {
+        "model": "opus",
+        "provider": "anthropic",
+        "input_tokens": 8902,
+        "output_tokens": 2771,
+        "cost_usd": 0.341355,
+        "duration_s": 56.38,
+        "label": "2407.04410v3/b3plusplus/arbiter"
+      }
+    ]
+  }
+}
